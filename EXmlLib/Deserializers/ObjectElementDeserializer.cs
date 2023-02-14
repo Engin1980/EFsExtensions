@@ -13,30 +13,58 @@ namespace EXmlLib.Deserializers
 {
   public class ObjectElementDeserializer : IElementDeserializer
   {
-    public delegate void CustomPropertyDeserializationDelegate();
-
-    public Dictionary<string, CustomPropertyDeserializationDelegate> CustomProperties { get; private set; }
+    public delegate void PropertyDeserializeHandler(XElement element, object target, PropertyInfo propertyInfo, EXmlContext context);
+    public Dictionary<string, PropertyDeserializeHandler> CustomProperties { get; private set; }
     public Predicate<Type> AcceptsTypePredicate { get; set; }
+
 
     public ObjectElementDeserializer()
     {
-      this.CustomProperties = new();
       this.AcceptsTypePredicate = t => t.IsAssignableTo(typeof(object));
+      this.CustomProperties = new();
     }
-
 
     public ObjectElementDeserializer(
-      Predicate<Type> acceptsType,
-      Dictionary<string, CustomPropertyDeserializationDelegate> customPropertyDeserialization)
+      Predicate<Type> acceptsType, Dictionary<string, PropertyDeserializeHandler> customPropertiesDeserializers)
     {
       this.AcceptsTypePredicate = acceptsType ?? throw new ArgumentNullException(nameof(acceptsType));
-      this.CustomProperties = customPropertyDeserialization ?? new();
+      this.CustomProperties = customPropertiesDeserializers ?? throw new ArgumentNullException(nameof(customPropertiesDeserializers));
     }
-
 
     public bool AcceptsType(Type type)
     {
       return AcceptsTypePredicate.Invoke(type);
+    }
+
+    protected void DeserializeProperty(XElement element, object target, PropertyInfo propertyInfo, EXmlContext context)
+    {
+      var propName = context.ResolvePropertyName(propertyInfo);
+      XElement? elm = Utils.TryGetElementByName(element, propName);
+      XAttribute? attr = Utils.TryGetAttributeByName(element, propertyInfo.Name);
+      if (elm == null || attr == null)
+      {
+        object val;
+        if (elm != null)
+        {
+          IElementDeserializer deserializer = context.ResolveElementDeserializer(propertyInfo.PropertyType)
+            ?? throw new EXmlException($"Unable to find element deserializer for type '{propertyInfo.PropertyType}'");
+          val = SafeUtils.Deserialize(elm, propertyInfo.PropertyType, deserializer, context);
+        }
+        else // if (attr != null)
+        {
+          IAttributeDeserializer deserializer = context.ResolveAttributeDeserializer(propertyInfo.PropertyType)
+            ?? throw new EXmlException($"Unable to find attribute deserializer for type '{propertyInfo.PropertyType}'.");
+          val = SafeUtils.Deserialize(attr!, propertyInfo.PropertyType, deserializer);
+        }
+        SafeUtils.SetPropertyValue(propertyInfo, target, val);
+      }
+
+      else
+      {
+        if (!context.IgnoreMissingProperties)
+          throw new EXmlException($"Unable to find xml element or attribute for property '{propertyInfo.Name}'.");
+        return;
+      }
     }
 
     public object Deserialize(XElement element, Type targetType, EXmlContext context)
@@ -45,50 +73,34 @@ namespace EXmlLib.Deserializers
       IFactory factory = context.TryResolveFactory(targetType) ?? context.DefaultObjectFactory;
       ret = SafeUtils.CreateInstance(factory, targetType);
       var props = targetType.GetProperties(
-        System.Reflection.BindingFlags.Instance
-        | System.Reflection.BindingFlags.Public
-        | System.Reflection.BindingFlags.NonPublic);
+        BindingFlags.Instance
+        | BindingFlags.Public
+        | BindingFlags.NonPublic);
       foreach (var prop in props)
       {
         if (prop.GetCustomAttributes(true).Any(q => q is EXmlIgnore))
           continue;
+
         if (CustomProperties.ContainsKey(prop.Name))
         {
           try
           {
-            CustomProperties[prop.Name].Invoke();
+            CustomProperties[prop.Name].Invoke(element, ret, prop, context);
           }
           catch (Exception ex)
           {
-            throw new EXmlException($"Failed to evaluate custom property '{targetType}.{prop.Name}' deserialization.", ex);
+            throw new EXmlException($"Failed to deserialize property '{prop.Name}' using custom deserializer.", ex);
           }
         }
         else
         {
-          var propName = context.ResolvePropertyName(prop);
-
-          object val;
-          XElement? elm;
-          XAttribute? attr;
-
-          if ((elm = Utils.TryGetElementByName(element, propName)) != null)
+          try
           {
-            IElementDeserializer deserializer = context.ResolveElementDeserializer(prop.PropertyType)
-              ?? throw new EXmlException($"Unable to find element deserializer for type '{prop.PropertyType}'");
-            val = SafeUtils.Deserialize(elm, prop.PropertyType, deserializer, context);
-            SafeUtils.SetPropertyValue(prop, ret, val);
+            DeserializeProperty(element, ret, prop, context);
           }
-          else if ((attr = Utils.TryGetAttributeByName(element, prop.Name)) != null)
+          catch (Exception ex)
           {
-            IAttributeDeserializer deserializer = context.ResolveAttributeDeserializer(prop.PropertyType)
-              ?? throw new EXmlException($"Unable to find attribute deserializer for type '{prop.PropertyType}'.");
-            val = SafeUtils.Deserialize(attr, prop.PropertyType, deserializer);
-            SafeUtils.SetPropertyValue(prop, ret, val);
-          }
-          else
-          {
-            if (!context.IgnoreMissingProperties)
-              throw new EXmlException($"Unable to find xml element or attribute for property '{prop.Name}'.");
+            throw new EXmlException($"Failed to deserialize property '{prop.Name}'.", ex);
           }
         }
       }

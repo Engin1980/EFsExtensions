@@ -11,7 +11,6 @@ namespace ChecklistModule.Types
   {
     public string Id { get; set; }
     public string CallSpeech { get; set; }
-    [EXmlFlat]
     public List<CheckItem> Items { get; set; }
   }
 }

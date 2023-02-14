@@ -52,24 +52,29 @@ namespace ChecklistModule
     {
       EXml<CheckSet> ret = new EXml<CheckSet>();
 
-      ret.Context.ElementDeserializers.Insert(0,
-        new ObjectElementDeserializer(
+      var oed = new ObjectElementDeserializer(
           t => t == typeof(CheckDefinition),
-          new Dictionary<string, ObjectElementDeserializer.CustomPropertyDeserializationDelegate>
+          new Dictionary<string, ObjectElementDeserializer.PropertyDeserializeHandler>
         {
           { "Bytes", null }
-        }));
-      
-      ret.Context.ElementDeserializers.Insert(0, 
-        new ObjectElementDeserializer(
-          q => q == typeof(CheckSet),
-          new Dictionary<string, ObjectElementDeserializer.CustomPropertyDeserializationDelegate>
-          {
-            {
-              "Checklists": ????
-            }
+        });
+      ret.Context.ElementDeserializers.Insert(0, oed);
 
-        }));
+
+      oed = new ObjectElementDeserializer(
+          q => q == typeof(CheckSet),
+          new Dictionary<string, ObjectElementDeserializer.PropertyDeserializeHandler>
+          {
+            { "Checklists", (e,t,f,c) => {
+              var deser = c.ResolveElementDeserializer(typeof(List<CheckList>));
+              var items = e.LElements("checklist")
+                .Select(q=>SafeUtils.Deserialize(q, typeof(CheckList), deser, c))
+                .ToList();
+              SafeUtils.SetPropertyValue(f, t, items);
+            }}
+        });
+      ret.Context.ElementDeserializers.Insert(0, oed);
+
       ret.Context.ElementDeserializers.Insert(0, new CheckSetDeserializer());
       return ret;
     }
