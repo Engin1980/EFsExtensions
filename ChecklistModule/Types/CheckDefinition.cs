@@ -15,7 +15,7 @@ namespace ChecklistModule.Types
       File
     }
 
-    public System.IO.Stream Bytes { get; set; }
+    public byte[] Bytes { get; set; }
     public string Value { get; set; }
     public CheckDefinitionType Type { get; set; }
   }

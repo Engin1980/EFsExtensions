@@ -1,3 +1,5 @@
+using ChecklistModule.Support;
+using ChecklistModule.Types;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -23,12 +25,16 @@ namespace ChecklistModule
   public partial class CtrInit : UserControl
   {
     private readonly Context context;
+    private readonly Player player;
+
     public CtrInit()
     {
       InitializeComponent();
     }
+
     public CtrInit(Context context) : this()
     {
+      this.player = new();
       this.context = context;
       this.DataContext = context;
     }
@@ -50,6 +56,24 @@ namespace ChecklistModule
       recentXmlFile = dialog.FileName;
 
       this.context.LoadFile(recentXmlFile);
+    }
+
+    private void lblChecklist_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+      Label lbl = (Label)sender;
+      CheckList checkList = (CheckList)lbl.Tag;
+      this.player.ClearQueue();
+      this.player.PlayAsync(checkList.EntrySpeechBytes);
+      this.player.PlayAsync(checkList.ExitSpeechBytes);
+    }
+
+    private void lblItem_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+      Label lbl = (Label)sender;
+      CheckItem checkItem = (CheckItem)lbl.Tag;
+      this.player.ClearQueue();
+      this.player.PlayAsync(checkItem.Call.Bytes);
+      this.player.PlayAsync(checkItem.Confirmation.Bytes);
     }
   }
 }

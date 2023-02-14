@@ -1,4 +1,5 @@
-﻿using ChecklistModule.Types;
+﻿using ChecklistModule.Support;
+using ChecklistModule.Types;
 using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase;
 using EXmlLib;
@@ -52,11 +53,76 @@ namespace ChecklistModule
       }
       catch (Exception ex)
       {
-
+        throw new ApplicationException("Error binding checklist references.", ex);
       }
 
+      try
+      {
+        InitializeSoundStreams(tmp);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Error creating sound streams for checklist.", ex);
+      }
 
       this.ChecklistSet = tmp;
+    }
+
+    private void InitializeSoundStreams(CheckSet checkSet)
+    {
+      Synthetizer synthetizer = Synthetizer.CreateDefault();
+      Dictionary<string, byte[]> generatedSounds = new();
+      foreach (var checklist in checkSet.Checklists)
+      {
+        // TODO correct load meta data and checklist entry/exit speeches
+        InitializeSoundStreamsForChecklist(checklist, generatedSounds, synthetizer);
+
+        foreach (var item in checklist.Items)
+        {
+          InitializeSoundStreamsForItems(item.Call, generatedSounds, synthetizer);
+          InitializeSoundStreamsForItems(item.Confirmation, generatedSounds, synthetizer);
+        }
+      }
+    }
+
+    private void InitializeSoundStreamsForChecklist(
+      CheckList checklist,
+      Dictionary<string, byte[]> generatedSounds,
+      Synthetizer synthetizer)
+    {
+      checklist.EntrySpeechBytes = synthetizer.Generate($"This is the entry part of the thing called internaly as a {checklist.CallSpeech} checklist");
+      checklist.ExitSpeechBytes = synthetizer.Generate($"wow, it seems to be the fact that the situation is over and the {checklist.CallSpeech} checklist completed");
+    }
+
+    private void InitializeSoundStreamsForItems(
+      CheckDefinition checkDefinition,
+      Dictionary<string, byte[]> generatedSounds,
+      Synthetizer synthetizer)
+    {
+      if (checkDefinition.Type == CheckDefinition.CheckDefinitionType.File)
+        try
+        {
+          checkDefinition.Bytes = System.IO.File.ReadAllBytes(checkDefinition.Value);
+        }
+        catch (Exception ex)
+        {
+          throw new EXmlException($"Unable to load sound file '{checkDefinition.Value}'.", ex);
+        }
+      else if (checkDefinition.Type == CheckDefinition.CheckDefinitionType.Speech)
+        try
+        {
+          if (generatedSounds.ContainsKey(checkDefinition.Value))
+            checkDefinition.Bytes = generatedSounds[checkDefinition.Value];
+          else
+          {
+            checkDefinition.Bytes = synthetizer.Generate(checkDefinition.Value);
+            generatedSounds[checkDefinition.Value] = checkDefinition.Bytes;
+          }
+        }
+        catch (Exception ex)
+        {
+          throw new EXmlException($"Unable to generated sound for speech '{checkDefinition.Value}'.", ex);
+        }
     }
 
     private void BindNextChecklists(CheckSet tmp)
@@ -69,7 +135,7 @@ namespace ChecklistModule
           if (i < tmp.Checklists.Count - 1) checklist.NextChecklist = tmp.Checklists[i + 1];
         }
         else
-          checklist.NextChecklist = tmp.Checklists.Single(q=>q.Id == checklist.NextChecklistId);
+          checklist.NextChecklist = tmp.Checklists.Single(q => q.Id == checklist.NextChecklistId);
       }
     }
 
@@ -99,6 +165,8 @@ namespace ChecklistModule
 
       oed = new ObjectElementDeserializer()
         .WithCustomTargetType(typeof(CheckList))
+        .WithIgnoredProperty(nameof(CheckList.EntrySpeechBytes))
+        .WithIgnoredProperty(nameof(CheckList.ExitSpeechBytes))
         .WithCustomPropertyDeserialization(
         nameof(CheckList.Items),
         (e, t, p, c) =>

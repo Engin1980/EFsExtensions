@@ -14,5 +14,7 @@ namespace ChecklistModule.Types
     public List<CheckItem> Items { get; set; }
     public string NextChecklistId { get; set; }
     public CheckList NextChecklist { get; set; }
+    public byte[] EntrySpeechBytes { get; set; }
+    public byte[] ExitSpeechBytes { get; set; }
   }
 }

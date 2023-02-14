@@ -46,19 +46,31 @@
           <TreeView ItemsSource="{Binding Checklists}">
             <TreeView.Resources>
               <HierarchicalDataTemplate DataType="{x:Type types:CheckList}" ItemsSource="{Binding Items}">
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{Binding CallSpeech}" />
-                  <TextBlock Text=" (" />
-                  <TextBlock Text="{Binding Id}" />
-                  <TextBlock Text=")" />
-                </StackPanel>
+                <Label x:Name="lblChecklist" Margin="0" Padding="0" 
+                       MouseRightButtonDown="lblChecklist_MouseRightButtonDown"
+                       Tag="{Binding}" >
+                  <Label.Content>
+                    <StackPanel Orientation="Horizontal" >
+                      <TextBlock Text="{Binding CallSpeech}" />
+                      <TextBlock Text=" (" />
+                      <TextBlock Text="{Binding Id}" />
+                      <TextBlock Text=")" />
+                    </StackPanel>
+                  </Label.Content>
+                </Label>
               </HierarchicalDataTemplate>
               <HierarchicalDataTemplate DataType="{x:Type types:CheckItem}">
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{Binding Call.Value}" />
-                  <TextBlock Text=" => " />
-                  <TextBlock Text="{Binding Confirmation.Value}" />
-                </StackPanel>
+                <Label x:Name="lblItem" Margin="0" Padding="0" 
+                       MouseRightButtonDown="lblItem_MouseRightButtonDown" 
+                       Tag="{Binding}">
+                  <Label.Content>
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding Call.Value}" />
+                      <TextBlock Text=" => " />
+                      <TextBlock Text="{Binding Confirmation.Value}" />
+                    </StackPanel>
+                  </Label.Content>
+                </Label>
               </HierarchicalDataTemplate>
             </TreeView.Resources>
           </TreeView>
