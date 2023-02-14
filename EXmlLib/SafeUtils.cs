@@ -70,7 +70,7 @@ namespace EXmlLib
       return ret;
     }
 
-    public static void SetPropertyValue(PropertyInfo prop, object target, object val)
+    public static void SetPropertyValue(PropertyInfo prop, object target, object? val)
     {
       try
       {

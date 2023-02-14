@@ -4,6 +4,13 @@
              xmlns:local="clr-namespace:Chlaot"
              StartupUri="FrmInit.xaml">
     <Application.Resources>
-         
-    </Application.Resources>
+    <Style TargetType="TextBlock">
+      <Setter Property="FontFamily" Value="Consolas" />
+      <Setter Property="FontSize" Value="16" />
+    </Style>
+    <Style TargetType="TextBox">
+      <Setter Property="FontFamily" Value="Consolas"/>
+      <Setter Property="FontSize" Value="16" />
+    </Style>
+  </Application.Resources>
 </Application>

@@ -1,5 +1,4 @@
-﻿using ChecklistModule.Deserializers;
-using ChecklistModule.Types;
+﻿using ChecklistModule.Types;
 using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase;
 using EXmlLib;
@@ -31,7 +30,7 @@ namespace ChecklistModule
 
     internal void LoadFile(string xmlFile)
     {
-      CheckSet? tmp;
+      CheckSet tmp;
       var factory = new XmlSerializerFactory();
       XDocument doc;
 
@@ -39,12 +38,38 @@ namespace ChecklistModule
       {
         doc = XDocument.Load(xmlFile);
         EXml<CheckSet> exml = CreateDeserializer();
-        this.ChecklistSet = exml.Deserialize(doc);
+        tmp = exml.Deserialize(doc);
       }
       catch (Exception ex)
       {
         throw ex;
         // this.DoLog(LogLevel.ERROR, "Unable to read checklist-set from '{xmlFile}'.", ex);
+      }
+
+      try
+      {
+        BindNextChecklists(tmp);
+      }
+      catch (Exception ex)
+      {
+
+      }
+
+
+      this.ChecklistSet = tmp;
+    }
+
+    private void BindNextChecklists(CheckSet tmp)
+    {
+      for (int i = 0; i < tmp.Checklists.Count; i++)
+      {
+        var checklist = tmp.Checklists[i];
+        if (checklist.NextChecklistId is null)
+        {
+          if (i < tmp.Checklists.Count - 1) checklist.NextChecklist = tmp.Checklists[i + 1];
+        }
+        else
+          checklist.NextChecklist = tmp.Checklists.Single(q=>q.Id == checklist.NextChecklistId);
       }
     }
 
@@ -52,30 +77,63 @@ namespace ChecklistModule
     {
       EXml<CheckSet> ret = new EXml<CheckSet>();
 
-      var oed = new ObjectElementDeserializer(
-          t => t == typeof(CheckDefinition),
-          new Dictionary<string, ObjectElementDeserializer.PropertyDeserializeHandler>
-        {
-          { "Bytes", null }
-        });
+      var oed = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(CheckDefinition))
+        .WithIgnoredProperty(nameof(CheckDefinition.Bytes));
       ret.Context.ElementDeserializers.Insert(0, oed);
 
-
-      oed = new ObjectElementDeserializer(
-          q => q == typeof(CheckSet),
-          new Dictionary<string, ObjectElementDeserializer.PropertyDeserializeHandler>
+      oed = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(CheckSet))
+        .WithCustomPropertyDeserialization(
+          nameof(CheckSet.Checklists),
+          (e, t, f, c) =>
           {
-            { "Checklists", (e,t,f,c) => {
-              var deser = c.ResolveElementDeserializer(typeof(List<CheckList>));
-              var items = e.LElements("checklist")
-                .Select(q=>SafeUtils.Deserialize(q, typeof(CheckList), deser, c))
-                .ToList();
-              SafeUtils.SetPropertyValue(f, t, items);
-            }}
+            var deser = c.ResolveElementDeserializer(typeof(List<CheckList>));
+            var items = e.LElements("checklist")
+              .Select(q => SafeUtils.Deserialize(q, typeof(CheckList), deser, c))
+              .Cast<CheckList>()
+              .ToList();
+            SafeUtils.SetPropertyValue(f, t, items);
+          });
+      ret.Context.ElementDeserializers.Insert(0, oed);
+
+      oed = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(CheckList))
+        .WithCustomPropertyDeserialization(
+        nameof(CheckList.Items),
+        (e, t, p, c) =>
+        {
+          var deser = c.ResolveElementDeserializer(typeof(List<CheckItem>));
+          var items = e.LElements("item")
+          .Select(q => SafeUtils.Deserialize(q, typeof(CheckItem), deser, c))
+          .Cast<CheckItem>()
+          .ToList();
+          SafeUtils.SetPropertyValue(p, t, items);
+        })
+        .WithCustomPropertyDeserialization(
+        nameof(CheckList.NextChecklistId),
+        (e, t, p, c) =>
+        {
+          string? val = e.LElementOrNull("nextChecklistId")?.Attribute("id")?.Value;
+          SafeUtils.SetPropertyValue(p, t, val);
         });
       ret.Context.ElementDeserializers.Insert(0, oed);
 
-      ret.Context.ElementDeserializers.Insert(0, new CheckSetDeserializer());
+      oed = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(CheckSet))
+      .WithCustomPropertyDeserialization(
+        "Checklists",
+        (e, t, f, c) =>
+        {
+          var deser = c.ResolveElementDeserializer(typeof(CheckList));
+          var val = e.LElements("checklist")
+          .Select(q => SafeUtils.Deserialize(q, typeof(CheckList), deser, c))
+          .Cast<CheckList>()
+          .ToList();
+          SafeUtils.SetPropertyValue(f, t, val);
+        });
+      ret.Context.ElementDeserializers.Insert(0, oed);
+
       return ret;
     }
 

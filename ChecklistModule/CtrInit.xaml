@@ -4,48 +4,88 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ChecklistModule"
+             xmlns:types="clr-namespace:ChecklistModule.Types"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+
   <DockPanel DataContext="{Binding ChecklistSet}">
     <DockPanel DockPanel.Dock="Top">
       <Button x:Name="btnLoadChecklistFile" 
               Click="btnLoadChecklistFile_Click"
               DockPanel.Dock="Top" Margin="8" Padding="8">Load Check-List XML file</Button>
-      <DockPanel>
-        <Grid DockPanel.Dock="Top" DataContext="{Binding Meta}">
-          <Grid.ColumnDefinitions>
-            <ColumnDefinition />
-            <ColumnDefinition />
-          </Grid.ColumnDefinitions>
-          <Grid.RowDefinitions>
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-            <RowDefinition />
-          </Grid.RowDefinitions>
-          <Label Grid.Row="0" Grid.Column="0">Label</Label>
-          <Label Grid.Row="0" Grid.Column="1" Content="{Binding Label}" />
-          <Label Grid.Row="1" Grid.Column="0">Author</Label>
-          <Label Grid.Row="1" Grid.Column="1" Content="{Binding Author}" />
-          <Label Grid.Row="2" Grid.Column="0">Description</Label>
-          <Label Grid.Row="2" Grid.Column="1" Content="{Binding Description}" />
-          <Label Grid.Row="3" Grid.Column="0">Web</Label>
-          <Label Grid.Row="3" Grid.Column="1" Content="{Binding Web}" />
-          <Label Grid.Row="4" Grid.Column="0">Email</Label>
-          <Label Grid.Row="4" Grid.Column="1" Content="{Binding Email}" />
-          <Label Grid.Row="5" Grid.Column="0">License</Label>
-          <Label Grid.Row="5" Grid.Column="1" Content="{Binding License}" />
-        </Grid>
-        <ItemsControl ItemsSource="{Binding Checklists}">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate>
-              <Label Content="{Binding Id}" />
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
-      </DockPanel>
+      <TabControl>
+        <TabItem Header="Metainfo">
+          <Grid DockPanel.Dock="Top" DataContext="{Binding Meta}">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+              <RowDefinition />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Grid.Column="0">Label</Label>
+            <Label Grid.Row="0" Grid.Column="1" Content="{Binding Label}" />
+            <Label Grid.Row="1" Grid.Column="0">Author</Label>
+            <Label Grid.Row="1" Grid.Column="1" Content="{Binding Author}" />
+            <Label Grid.Row="2" Grid.Column="0">Description</Label>
+            <Label Grid.Row="2" Grid.Column="1" Content="{Binding Description}" />
+            <Label Grid.Row="3" Grid.Column="0">Web</Label>
+            <Label Grid.Row="3" Grid.Column="1" Content="{Binding Web}" />
+            <Label Grid.Row="4" Grid.Column="0">Email</Label>
+            <Label Grid.Row="4" Grid.Column="1" Content="{Binding Email}" />
+            <Label Grid.Row="5" Grid.Column="0">License</Label>
+            <Label Grid.Row="5" Grid.Column="1" Content="{Binding License}" />
+          </Grid>
+        </TabItem>
+        <TabItem Header="Checklist content">
+          <TreeView ItemsSource="{Binding Checklists}">
+            <TreeView.Resources>
+              <HierarchicalDataTemplate DataType="{x:Type types:CheckList}" ItemsSource="{Binding Items}">
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{Binding CallSpeech}" />
+                  <TextBlock Text=" (" />
+                  <TextBlock Text="{Binding Id}" />
+                  <TextBlock Text=")" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type types:CheckItem}">
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{Binding Call.Value}" />
+                  <TextBlock Text=" => " />
+                  <TextBlock Text="{Binding Confirmation.Value}" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+            </TreeView.Resources>
+          </TreeView>
+        </TabItem>
+        <TabItem Header="Checklist sequences">
+          <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Checklists}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding CallSpeech}" />
+                      <TextBlock Text=" (" />
+                      <TextBlock Text="{Binding Id}" />
+                      <TextBlock Text=")   = = >   " />
+                      <TextBlock Text="{Binding NextChecklist.CallSpeech}" />
+                      <TextBlock Text=" (" />
+                      <TextBlock Text="{Binding NextChecklist.Id}" />
+                      <TextBlock Text=")" />
+                    </StackPanel>
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </TabItem>
+      </TabControl>
     </DockPanel>
   </DockPanel>
 </UserControl>

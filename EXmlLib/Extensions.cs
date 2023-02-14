@@ -14,6 +14,11 @@ namespace EXmlLib
       return element.Elements().First(q => q.Name.LocalName == name);
     }
 
+    public static XElement? LElementOrNull(this XElement element, string name)
+    {
+      return element.Elements().FirstOrDefault(q => q.Name.LocalName == name);
+    }
+
     public static IEnumerable<XElement> LElements(this XElement element, string name)
     {
       return element.Elements().Where(q => q.Name.LocalName == name);

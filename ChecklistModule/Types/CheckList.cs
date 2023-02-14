@@ -12,5 +12,7 @@ namespace ChecklistModule.Types
     public string Id { get; set; }
     public string CallSpeech { get; set; }
     public List<CheckItem> Items { get; set; }
+    public string NextChecklistId { get; set; }
+    public CheckList NextChecklist { get; set; }
   }
 }

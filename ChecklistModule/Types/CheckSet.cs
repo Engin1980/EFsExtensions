@@ -10,7 +10,6 @@ namespace ChecklistModule.Types
   public class CheckSet
   {
     public MetaInfo Meta { get; set; }
-    [EXmlFlat("checklist")]
     public List<CheckList> Checklists { get; set; }
   }
 }

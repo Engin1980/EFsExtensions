@@ -14,26 +14,59 @@ namespace EXmlLib.Deserializers
   public class ObjectElementDeserializer : IElementDeserializer
   {
     public delegate void PropertyDeserializeHandler(XElement element, object target, PropertyInfo propertyInfo, EXmlContext context);
-    public Dictionary<string, PropertyDeserializeHandler> CustomProperties { get; private set; }
-    public Predicate<Type> AcceptsTypePredicate { get; set; }
+    private readonly Dictionary<string, PropertyDeserializeHandler> customProperties = new();
+    private Predicate<Type> predicate;
 
+    public ObjectElementDeserializer WithCustomTargetType(Type type, bool includeInhreited = false)
+    {
+      if (type == null) throw new ArgumentNullException(nameof(type));
+      Predicate<Type> predicate = includeInhreited
+        ? q => type.IsAssignableFrom(q)
+        : q => q == type;
+      return this.WithCustomTargetTypeAcceptancy(predicate);
+    }
+
+    public ObjectElementDeserializer WithCustomTargetTypeAcceptancy(Predicate<Type> targetTypePredicate)
+    {
+      this.predicate = targetTypePredicate ?? throw new ArgumentNullException(nameof(targetTypePredicate));
+      return this;
+    }
+
+
+    public ObjectElementDeserializer WithIgnoredProperty(
+      string propertyName)
+    {
+      this.customProperties[propertyName] = (e, t, p, c) => { };
+      return this;
+    }
+
+    public ObjectElementDeserializer WithIgnoredProperty(
+      PropertyInfo propertyInfo)
+    {
+      return this.WithIgnoredProperty(propertyInfo.Name);
+    }
+
+    public ObjectElementDeserializer WithCustomPropertyDeserialization(
+      PropertyInfo propertyInfo, PropertyDeserializeHandler handler)
+    {
+      return this.WithCustomPropertyDeserialization(propertyInfo.Name, handler);
+    }
+
+    public ObjectElementDeserializer WithCustomPropertyDeserialization(
+      string propertyName, PropertyDeserializeHandler handler)
+    {
+      this.customProperties[propertyName] = handler ?? throw new ArgumentNullException(nameof(handler));
+      return this;
+    }
 
     public ObjectElementDeserializer()
     {
-      this.AcceptsTypePredicate = t => t.IsAssignableTo(typeof(object));
-      this.CustomProperties = new();
-    }
-
-    public ObjectElementDeserializer(
-      Predicate<Type> acceptsType, Dictionary<string, PropertyDeserializeHandler> customPropertiesDeserializers)
-    {
-      this.AcceptsTypePredicate = acceptsType ?? throw new ArgumentNullException(nameof(acceptsType));
-      this.CustomProperties = customPropertiesDeserializers ?? throw new ArgumentNullException(nameof(customPropertiesDeserializers));
+      this.predicate = t => t.IsAssignableTo(typeof(object));
     }
 
     public bool AcceptsType(Type type)
     {
-      return AcceptsTypePredicate.Invoke(type);
+      return predicate.Invoke(type);
     }
 
     protected void DeserializeProperty(XElement element, object target, PropertyInfo propertyInfo, EXmlContext context)
@@ -41,7 +74,7 @@ namespace EXmlLib.Deserializers
       var propName = context.ResolvePropertyName(propertyInfo);
       XElement? elm = Utils.TryGetElementByName(element, propName);
       XAttribute? attr = Utils.TryGetAttributeByName(element, propertyInfo.Name);
-      if (elm == null || attr == null)
+      if (elm != null || attr != null)
       {
         object val;
         if (elm != null)
@@ -81,11 +114,11 @@ namespace EXmlLib.Deserializers
         if (prop.GetCustomAttributes(true).Any(q => q is EXmlIgnore))
           continue;
 
-        if (CustomProperties.ContainsKey(prop.Name))
+        if (customProperties.TryGetValue(prop.Name, out PropertyDeserializeHandler? pdh))
         {
           try
           {
-            CustomProperties[prop.Name].Invoke(element, ret, prop, context);
+            pdh.Invoke(element, ret, prop, context);
           }
           catch (Exception ex)
           {
