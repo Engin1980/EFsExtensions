@@ -41,15 +41,8 @@
   <xsd:complexType name="checklistMetaInfo">
     <xsd:sequence>
       <xsd:element name="autostart" minOccurs="0" maxOccurs="1" type="autostartConditionTop" />
-      <xsd:element name="customBoundaryCallouts" minOccurs="0" maxOccurs="1">
-        <xsd:complexType>
-          <xsd:all>
-            <xsd:element name="entryCall" minOccurs="1" type="callOrConfirmation" />
-            <xsd:element name="exitCall" minOccurs="1" type="callOrConfirmation" />
-          </xsd:all>
-        </xsd:complexType>
-      </xsd:element>
-
+      <xsd:element name="entryCall" minOccurs="0" maxOccurs="1" type="callOrConfirmation" />
+      <xsd:element name="exitCall" minOccurs="1" maxOccurs="1" type="callOrConfirmation" />
     </xsd:sequence>
   </xsd:complexType>
 
@@ -58,6 +51,7 @@
       <xsd:element name="and" type="autostartCondition"/>
       <xsd:element name="or" type="autostartCondition"/>
       <xsd:element name="property" type="autostartProperty"/>
+      <xsd:element name="for" type="autostartDelay" />
     </xsd:choice>
   </xsd:complexType>
 
@@ -66,20 +60,39 @@
       <xsd:element name="and" type="autostartCondition"/>
       <xsd:element name="or" type="autostartCondition"/>
       <xsd:element name="property" type="autostartProperty"/>
+      <xsd:element name="for" type="autostartDelay" />
     </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:complexType name="autostartDelay">
+    <xsd:choice minOccurs="1" maxOccurs="1">
+      <xsd:element name="and" type="autostartCondition"/>
+      <xsd:element name="or" type="autostartCondition"/>
+      <xsd:element name="property" type="autostartProperty"/>
+    </xsd:choice>
+    <xsd:attribute name="seconds" type="xsd:nonNegativeInteger" use="required" />
   </xsd:complexType>
 
   <xsd:complexType name="autostartProperty">
     <xsd:attribute name="name" type="autostartPropertyName"/>
-    <xsd:attribute name="value" type="autostartPropertyValue"/>
+    <xsd:attribute name="direction" type="autostartPropertyDirection" />
+    <xsd:attribute name="value" type="xsd:integer"/>
   </xsd:complexType>
 
+  <xsd:simpleType name="autostartPropertyDirection">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="above"/>
+      <xsd:enumeration value="below"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
   <xsd:simpleType name="autostartPropertyName">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="altitude"/>
       <xsd:enumeration value="height"/>
-      <xsd:enumeration value="speed"/>
-      <xsd:enumeration value="delay"/>
+      <xsd:enumeration value="gs"/>
+      <xsd:enumeration value="ias" />
+      <xsd:enumeration value="bank" />
     </xsd:restriction>
   </xsd:simpleType>
 

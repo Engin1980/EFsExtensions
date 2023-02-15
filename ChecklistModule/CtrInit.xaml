@@ -10,9 +10,13 @@
 
   <DockPanel DataContext="{Binding ChecklistSet}">
     <DockPanel DockPanel.Dock="Top">
-      <Button x:Name="btnLoadChecklistFile" 
+      <DockPanel DockPanel.Dock="Top">
+        <Button x:Name="btnSettings" DockPanel.Dock="Right"
+                Margin="8" Padding="8" Click="btnSettings_Click">Settings</Button>
+        <Button x:Name="btnLoadChecklistFile" 
               Click="btnLoadChecklistFile_Click"
-              DockPanel.Dock="Top" Margin="8" Padding="8">Load Check-List XML file</Button>
+              Margin="8" Padding="8">Load Check-List XML file</Button>
+      </DockPanel>
       <TabControl>
         <TabItem Header="Metainfo">
           <Grid DockPanel.Dock="Top" DataContext="{Binding Meta}">
@@ -91,6 +95,21 @@
                       <TextBlock Text="{Binding NextChecklist.Id}" />
                       <TextBlock Text=")" />
                     </StackPanel>
+                  </StackPanel>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </TabItem>
+        <TabItem Header="Autostarts">
+          <ScrollViewer>
+            <ItemsControl ItemsSource="{Binding Checklists}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding CallSpeech}" />
+                    <TextBlock Text="  = = >  " />
+                    <TextBlock Text="{Binding MetaInfo.Autostart.DisplayString,FallbackValue=(None)}" />
                   </StackPanel>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>

@@ -5,6 +5,9 @@
     <Compile Update="CtrRun.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="CtrSettings.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Update="Xmls\ChecklistSchema.xsd">
@@ -16,6 +19,9 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="CtrRun.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="CtrSettings.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

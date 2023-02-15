@@ -75,5 +75,10 @@ namespace ChecklistModule
       this.player.PlayAsync(checkItem.Call.Bytes);
       this.player.PlayAsync(checkItem.Confirmation.Bytes);
     }
+
+    private void btnSettings_Click(object sender, RoutedEventArgs e)
+    {
+      new CtrSettings(context.Settings).ShowDialog();
+    }
   }
 }

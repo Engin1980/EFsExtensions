@@ -46,16 +46,15 @@
       <autostart>
         <and>
           <or>
-            <property name="speed" value="gt30" />
-            <property name="height" value="gt0" />
+            <property name="ias" direction="above" value="30" />
+            <for seconds="10">
+              <property name="height" direction="above" value="0" />
+            </for>
           </or>
-          <property name="delay" value="lt10" />
         </and>
       </autostart>
-      <customBoundaryCallouts>
-        <entryCall type="speech" value="dudla entry blabla"/>
-        <exitCall type="speech" value="bubla exit dada"/>
-      </customBoundaryCallouts>
+      <customEntryCallout type="speech" value="dudla entry blabla"/>
+      <customExitCallout type="speech" value="bubla exit dada"/>
     </metaInfo>
     <nextChecklistId />
   </checklist>
@@ -78,13 +77,6 @@
     <item>
       <call type="speech" value="Taxi Lights"/>
       <confirmation type="speech" value="On"/>
-    </item>
-    <nextChecklistId />
-  </checklist>
-  <checklist id="beforeTaxi" callSpeech="Before Taxi">
-    <item>
-      <call type="speech" value="Aviation owitch" />
-      <confirmation type="speech" value="On" />
     </item>
     <nextChecklistId />
   </checklist>
@@ -152,6 +144,6 @@
       <call type="speech" value="Speed Brakes" />
       <confirmation type="speech" value="Retracted" />
     </item>
-    <nextChecklistId/>
+    <nextChecklistId id="beforeStart" />
   </checklist>
 </checklistSet>

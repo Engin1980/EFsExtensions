@@ -1,5 +1,6 @@
 ﻿using ChecklistModule.Support;
 using ChecklistModule.Types;
+using ChecklistModule.Types.Autostarts;
 using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase;
 using EXmlLib;
@@ -22,6 +23,7 @@ namespace ChecklistModule
   {
     public delegate void LogDelegate(LogLevel level, string messaga);
     public event LogDelegate Log;
+    public Settings Settings { get; } = new Settings();
 
     public CheckSet ChecklistSet
     {
@@ -49,6 +51,15 @@ namespace ChecklistModule
 
       try
       {
+        CheckSanity(tmp);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Error loading checklist.", ex);
+      }
+
+      try
+      {
         BindNextChecklists(tmp);
       }
       catch (Exception ex)
@@ -68,9 +79,21 @@ namespace ChecklistModule
       this.ChecklistSet = tmp;
     }
 
+    private void CheckSanity(CheckSet tmp)
+    {
+      // check no duplicit
+      var ids = tmp.Checklists.Select(q => q.Id);
+      var dids = ids.Distinct();
+      var exc = ids.Except(dids);
+      if (exc.Any())
+      {
+        throw new ApplicationException("There are repeated checklist id definitions: " + string.Join(", ", exc));
+      }
+    }
+
     private void InitializeSoundStreams(CheckSet checkSet)
     {
-      Synthetizer synthetizer = Synthetizer.CreateDefault();
+      Synthetizer synthetizer = new(Settings.Synthetizer.Voice, Settings.Synthetizer.Rate); //Synthetizer.CreateDefault();
       Dictionary<string, byte[]> generatedSounds = new();
       foreach (var checklist in checkSet.Checklists)
       {
@@ -90,8 +113,19 @@ namespace ChecklistModule
       Dictionary<string, byte[]> generatedSounds,
       Synthetizer synthetizer)
     {
-      checklist.EntrySpeechBytes = synthetizer.Generate($"This is the entry part of the thing called internaly as a {checklist.CallSpeech} checklist");
-      checklist.ExitSpeechBytes = synthetizer.Generate($"wow, it seems to be the fact that the situation is over and the {checklist.CallSpeech} checklist completed");
+      if (checklist.MetaInfo?.CustomEntryCallout != null)
+        InitializeSoundStreamsForItems(checklist.MetaInfo.CustomEntryCallout, generatedSounds, synthetizer);
+      if (checklist.MetaInfo?.CustomExitCallout != null)
+        InitializeSoundStreamsForItems(checklist.MetaInfo.CustomExitCallout, generatedSounds, synthetizer);
+
+      checklist.EntrySpeechBytes =
+        checklist.MetaInfo?.CustomEntryCallout != null
+        ? checklist.MetaInfo.CustomEntryCallout.Bytes
+        : synthetizer.Generate($"{checklist.CallSpeech} checklist");
+      checklist.ExitSpeechBytes =
+        checklist.MetaInfo?.CustomExitCallout != null
+        ? checklist.MetaInfo.CustomExitCallout.Bytes
+        : synthetizer.Generate($"{checklist.CallSpeech} checklist completed");
     }
 
     private void InitializeSoundStreamsForItems(
@@ -201,6 +235,8 @@ namespace ChecklistModule
           SafeUtils.SetPropertyValue(f, t, val);
         });
       ret.Context.ElementDeserializers.Insert(0, oed);
+
+      ret.Context.ElementDeserializers.Insert(0, new AutostartDeserializer());
 
       return ret;
     }
