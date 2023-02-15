@@ -19,11 +19,15 @@ using System.Xml.Serialization;
 
 namespace ChecklistModule
 {
-  public class Context : NotifyPropertyChangedBase, Eng.Chlaot.ChlaotModuleBase.IModuleProcessor
+  public class Context : NotifyPropertyChangedBase, IModuleProcessor
   {
+    public Context(Settings settings)
+    {
+      Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+    }
+
     public delegate void LogDelegate(LogLevel level, string messaga);
-    public event LogDelegate Log;
-    public Settings Settings { get; } = new Settings();
+    public Settings Settings { get; private set; }
 
     public CheckSet ChecklistSet
     {
@@ -113,18 +117,18 @@ namespace ChecklistModule
       Dictionary<string, byte[]> generatedSounds,
       Synthetizer synthetizer)
     {
-      if (checklist.MetaInfo?.CustomEntryCallout != null)
-        InitializeSoundStreamsForItems(checklist.MetaInfo.CustomEntryCallout, generatedSounds, synthetizer);
-      if (checklist.MetaInfo?.CustomExitCallout != null)
-        InitializeSoundStreamsForItems(checklist.MetaInfo.CustomExitCallout, generatedSounds, synthetizer);
+      if (checklist.MetaInfo?.CustomEntrySpeech != null)
+        InitializeSoundStreamsForItems(checklist.MetaInfo.CustomEntrySpeech, generatedSounds, synthetizer);
+      if (checklist.MetaInfo?.CustomExitSpeech != null)
+        InitializeSoundStreamsForItems(checklist.MetaInfo.CustomExitSpeech, generatedSounds, synthetizer);
 
       checklist.EntrySpeechBytes =
-        checklist.MetaInfo?.CustomEntryCallout != null
-        ? checklist.MetaInfo.CustomEntryCallout.Bytes
+        checklist.MetaInfo?.CustomEntrySpeech != null
+        ? checklist.MetaInfo.CustomEntrySpeech.Bytes
         : synthetizer.Generate($"{checklist.CallSpeech} checklist");
       checklist.ExitSpeechBytes =
-        checklist.MetaInfo?.CustomExitCallout != null
-        ? checklist.MetaInfo.CustomExitCallout.Bytes
+        checklist.MetaInfo?.CustomExitSpeech != null
+        ? checklist.MetaInfo.CustomExitSpeech.Bytes
         : synthetizer.Generate($"{checklist.CallSpeech} checklist completed");
     }
 
@@ -239,17 +243,6 @@ namespace ChecklistModule
       ret.Context.ElementDeserializers.Insert(0, new AutostartDeserializer());
 
       return ret;
-    }
-
-    private void DoLog(LogLevel level, string message, Exception? cause = null)
-    {
-      StringBuilder sb = new(" ");
-      while (cause != null)
-      {
-        sb = sb.Append(cause.ToString());
-        cause = cause.InnerException;
-      }
-      this.Log?.Invoke(level, message + sb.ToString());
     }
   }
 }

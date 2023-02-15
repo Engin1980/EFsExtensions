@@ -53,8 +53,8 @@
           </or>
         </and>
       </autostart>
-      <customEntryCallout type="speech" value="dudla entry blabla"/>
-      <customExitCallout type="speech" value="bubla exit dada"/>
+      <customEntrySpeech type="speech" value="dudla entry blabla"/>
+      <customExitSpeech type="speech" value="bubla exit dada"/>
     </metaInfo>
     <nextChecklistId />
   </checklist>

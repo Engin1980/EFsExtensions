@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChecklistModule"
         mc:Ignorable="d"
-        Title="CtrSettings" Height="450" Width="800">
+        Title="CtrSettings" Height="450" Width="800" Closed="Window_Closed">
   <StackPanel>
     <GroupBox Header="Synthetizer" DataContext="{Binding Synthetizer}" Margin="8">
       <Grid>
@@ -25,6 +25,40 @@
         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Rate}" Margin="2" />
         <Button x:Name="btnTestSynthetizer" Grid.Row="2" Grid.Column="1"  Margin="2"
                 Content="Test synthetizer" Click="btnTestSynthetizer_Click" />
+      </Grid>
+    </GroupBox>
+    <GroupBox Header="Key shortcuts" DataContext="{Binding Shortcuts}" Margin="8">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition />
+          <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+        </Grid.RowDefinitions>
+        <Label Content="Play / Pause" Grid.Row="0" Grid.Column="0" />
+        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="1" DataContext="{Binding PlayPause}">
+          <CheckBox IsChecked="{Binding Control}" Content="Control" Margin="0 4 8 0" />
+          <CheckBox IsChecked="{Binding Alt}" Content="Alt" Margin="0 4 8 0" />
+          <CheckBox IsChecked="{Binding Shift}" Content="Shift" Margin="0 4 8 0" />
+          <ComboBox ItemsSource="{Binding AllKeys,Mode=OneTime}" SelectedItem="{Binding Key}" />
+        </StackPanel>
+        <Label Content="Skip to next checklist" Grid.Row="1" Grid.Column="0" />
+        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" DataContext="{Binding SkipToNext}">
+          <CheckBox IsChecked="{Binding Control}" Content="Control" Margin="0 4 8 0" />
+          <CheckBox IsChecked="{Binding Alt}" Content="Alt" Margin="0 4 8 0" />
+          <CheckBox IsChecked="{Binding Shift}" Content="Shift" Margin="0 4 8 0" />
+          <ComboBox ItemsSource="{Binding AllKeys,Mode=OneTime}" SelectedItem="{Binding Key}" />
+        </StackPanel>
+        <Label Content="Skip to previous checklist" Grid.Row="2" Grid.Column="0" />
+        <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="1" DataContext="{Binding SkipToPrevious}">
+          <CheckBox IsChecked="{Binding Control}" Content="Control" Margin="0 4 8 0" />
+          <CheckBox IsChecked="{Binding Alt}" Content="Alt" Margin="0 4 8 0" />
+          <CheckBox IsChecked="{Binding Shift}" Content="Shift" Margin="0 4 8 0" />
+          <ComboBox ItemsSource="{Binding AllKeys,Mode=OneTime}" SelectedItem="{Binding Key}" />
+        </StackPanel>
       </Grid>
     </GroupBox>
   </StackPanel>

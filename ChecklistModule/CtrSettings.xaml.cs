@@ -52,5 +52,10 @@ namespace ChecklistModule
         btnTestSynthetizer.IsEnabled = true;
       }
     }
+
+    private void Window_Closed(object sender, EventArgs e)
+    {
+      this.settings.Save();
+    }
   }
 }

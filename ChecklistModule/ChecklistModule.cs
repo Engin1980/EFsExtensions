@@ -26,8 +26,18 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     public ChecklistModule()
     {
-      this._Context = new Context();
-      this._Context.Log += _Context_Log;
+      Settings settings;
+      try
+      {
+        settings = Settings.Load();
+      }catch(Exception ex)
+      {
+        settings = new Settings();
+      }
+
+
+      this._Context = new Context(settings);
+      //this._Context.Log += _Context_Log;
 
       this._InitControl = new CtrInit(this._Context);
       this._RunControl = new CtrRun(this._Context);
