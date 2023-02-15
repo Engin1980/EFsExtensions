@@ -4,15 +4,30 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Chlaot"
+        xmlns:converters="clr-namespace:Chlaot.Converters"
         mc:Ignorable="d"
         Title="FrmInit" Height="450" Width="800">
+  <Window.Resources>
+    <converters:BoolToRedGreenConverter x:Key="BoolToRedGreenConverter" />
+  </Window.Resources>
   <DockPanel>
     <TextBox x:Name="txtConsole" DockPanel.Dock="Bottom" Height="100" TextWrapping="Wrap" />
+    <Button DockPanel.Dock="Bottom" x:Name="btnRun" Content="Run" Padding="8" />
+
+
     <DockPanel>
       <ListView x:Name="lstModules" DockPanel.Dock="left" ItemsSource="{Binding Modules}" SelectionChanged="lstModules_SelectionChanged"  >
         <ListView.ItemTemplate>
           <DataTemplate>
-            <Label Content="{Binding Name}" Tag="{Binding Name}" />
+            <Label Tag="{Binding Name}">
+              <Label.Content>
+                <StackPanel Orientation="Horizontal">
+                  <Ellipse Width="12" Height="12" 
+                           Fill="{Binding IsReady,Converter={StaticResource BoolToRedGreenConverter}}"  />
+                  <TextBlock Text="{Binding Name}" Margin="8 0 0 0" />
+                </StackPanel>
+              </Label.Content>
+            </Label>
           </DataTemplate>
         </ListView.ItemTemplate>
       </ListView>

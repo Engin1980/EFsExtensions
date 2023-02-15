@@ -28,6 +28,7 @@ namespace Chlaot
 
       Log(LogLevel.INFO, "Loading check-list module...");
       module = new Eng.Chlaot.Modules.ChecklistModule.ChecklistModule();
+      module.Init((level, message) => Log?.Invoke(level, message));
       if (this.Modules.Any(q => q.Name == module.Name))
       {
         Log(LogLevel.ERROR, $"Unable to add '{module.Name}' module. Module with this name already exists.");

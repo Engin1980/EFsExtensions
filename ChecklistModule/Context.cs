@@ -21,9 +21,14 @@ namespace ChecklistModule
 {
   public class Context : NotifyPropertyChangedBase, IModuleProcessor
   {
-    public Context(Settings settings)
+    private IModule.LogHandler logHandler;
+    Action<bool> setIsReadyFlagAction;
+
+    public Context(Settings settings, IModule.LogHandler logHandler, Action<bool> setIsReadyFlagAction)
     {
       Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+      this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
+      this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
     }
 
     public delegate void LogDelegate(LogLevel level, string messaga);
@@ -43,44 +48,53 @@ namespace ChecklistModule
 
       try
       {
-        doc = XDocument.Load(xmlFile);
-        EXml<CheckSet> exml = CreateDeserializer();
-        tmp = exml.Deserialize(doc);
-      }
-      catch (Exception ex)
-      {
-        throw ex;
-        // this.DoLog(LogLevel.ERROR, "Unable to read checklist-set from '{xmlFile}'.", ex);
-      }
+        try
+        {
+          doc = XDocument.Load(xmlFile);
+          EXml<CheckSet> exml = CreateDeserializer();
+          tmp = exml.Deserialize(doc);
+        }
+        catch (Exception ex)
+        {
+          throw ex;
+          // this.DoLog(LogLevel.ERROR, "Unable to read checklist-set from '{xmlFile}'.", ex);
+        }
 
-      try
-      {
-        CheckSanity(tmp);
-      }
-      catch (Exception ex)
-      {
-        throw new ApplicationException("Error loading checklist.", ex);
-      }
+        try
+        {
+          CheckSanity(tmp);
+        }
+        catch (Exception ex)
+        {
+          throw new ApplicationException("Error loading checklist.", ex);
+        }
 
-      try
-      {
-        BindNextChecklists(tmp);
-      }
-      catch (Exception ex)
-      {
-        throw new ApplicationException("Error binding checklist references.", ex);
-      }
+        try
+        {
+          BindNextChecklists(tmp);
+        }
+        catch (Exception ex)
+        {
+          throw new ApplicationException("Error binding checklist references.", ex);
+        }
 
-      try
-      {
-        InitializeSoundStreams(tmp);
+        try
+        {
+          InitializeSoundStreams(tmp);
+        }
+        catch (Exception ex)
+        {
+          throw new ApplicationException("Error creating sound streams for checklist.", ex);
+        }
       }
       catch (Exception ex)
       {
-        throw new ApplicationException("Error creating sound streams for checklist.", ex);
+        this.setIsReadyFlagAction(false);
+        throw new ApplicationException($"Failed to load checklist from '{xmlFile}'.", ex);
       }
 
       this.ChecklistSet = tmp;
+      this.setIsReadyFlagAction(true);
     }
 
     private void CheckSanity(CheckSet tmp)
@@ -243,6 +257,11 @@ namespace ChecklistModule
       ret.Context.ElementDeserializers.Insert(0, new AutostartDeserializer());
 
       return ret;
+    }
+
+    internal void SetLogEventHanler(IModule.LogHandler handler)
+    {
+      this.logHandler = handler;
     }
   }
 }
