@@ -33,22 +33,28 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     {
       this.IsReady = false;
     }
-    public void Init(IModule.LogHandler logHandler)
+    public void Init(LogHandler? logHandler)
     {
       Settings settings;
       try
       {
         settings = Settings.Load();
+        logHandler?.Invoke(LogLevel.INFO, "Settings loaded.");
       }
       catch (Exception ex)
       {
+        logHandler?.Invoke(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
         settings = new Settings();
       }
-
 
       this._Context = new Context(settings, logHandler, q => this.IsReady = q);
       this._InitControl = new CtrInit(this._Context);
       this._RunControl = new CtrRun(this._Context);
+    }
+
+    public void Start()
+    {
+      throw new NotImplementedException();
     }
   }
 }

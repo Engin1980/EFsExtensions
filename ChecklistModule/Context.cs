@@ -16,15 +16,16 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using ChlaotModuleBase;
 
 namespace ChecklistModule
 {
   public class Context : NotifyPropertyChangedBase, IModuleProcessor
   {
-    private IModule.LogHandler logHandler;
-    Action<bool> setIsReadyFlagAction;
+    private readonly LogHandler logHandler;
+    private readonly Action<bool> setIsReadyFlagAction;
 
-    public Context(Settings settings, IModule.LogHandler logHandler, Action<bool> setIsReadyFlagAction)
+    public Context(Settings settings, LogHandler logHandler, Action<bool> setIsReadyFlagAction)
     {
       Settings = settings ?? throw new ArgumentNullException(nameof(settings));
       this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
@@ -48,6 +49,7 @@ namespace ChecklistModule
 
       try
       {
+        logHandler?.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
           doc = XDocument.Load(xmlFile);
@@ -56,10 +58,10 @@ namespace ChecklistModule
         }
         catch (Exception ex)
         {
-          throw ex;
-          // this.DoLog(LogLevel.ERROR, "Unable to read checklist-set from '{xmlFile}'.", ex);
+          throw new ApplicationException("Unable to read/deserialize checklist-set from '{xmlFile}'. Invalid file content?", ex);
         }
 
+        logHandler?.Invoke(LogLevel.INFO, $"Checking sanity");
         try
         {
           CheckSanity(tmp);
@@ -69,6 +71,7 @@ namespace ChecklistModule
           throw new ApplicationException("Error loading checklist.", ex);
         }
 
+        logHandler?.Invoke(LogLevel.INFO, $"Binding checklist references");
         try
         {
           BindNextChecklists(tmp);
@@ -78,6 +81,7 @@ namespace ChecklistModule
           throw new ApplicationException("Error binding checklist references.", ex);
         }
 
+        logHandler?.Invoke(LogLevel.INFO, $"Loading/generating sounds");
         try
         {
           InitializeSoundStreams(tmp);
@@ -86,15 +90,19 @@ namespace ChecklistModule
         {
           throw new ApplicationException("Error creating sound streams for checklist.", ex);
         }
+
+        this.ChecklistSet = tmp;
+        this.setIsReadyFlagAction(true);
+        logHandler?.Invoke(LogLevel.INFO, $"Checklist file '{xmlFile}' successfully loaded.");
+
       }
       catch (Exception ex)
       {
         this.setIsReadyFlagAction(false);
-        throw new ApplicationException($"Failed to load checklist from '{xmlFile}'.", ex);
+        logHandler?.Invoke(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage());
       }
 
-      this.ChecklistSet = tmp;
-      this.setIsReadyFlagAction(true);
+      
     }
 
     private void CheckSanity(CheckSet tmp)
@@ -259,9 +267,5 @@ namespace ChecklistModule
       return ret;
     }
 
-    internal void SetLogEventHanler(IModule.LogHandler handler)
-    {
-      this.logHandler = handler;
-    }
   }
 }

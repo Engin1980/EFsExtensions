@@ -1,4 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
+﻿using ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.Modules.ChecklistModule;
 using System;
 using System.Collections.Generic;
@@ -11,32 +12,30 @@ namespace Chlaot
 {
   public class Context
   {
-    public delegate void LogDelegate(LogLevel level, string message);
-    public LogDelegate Log { get; set; }
-
     public BindingList<IModule> Modules { get; private set; } = new BindingList<IModule>();
+    private LogHandler? LogHandler { get; set; }
 
-    public Context(LogDelegate logFunction)
+    internal void SetLogHandler(LogHandler logHandler)
     {
-      this.Log = logFunction;
+      this.LogHandler = logHandler;
     }
 
     internal void InitModules()
     {
-      Log(LogLevel.INFO, "Loading modules...");
+      LogHandler?.Invoke(LogLevel.INFO, "Loading modules...");
       IModule module;
 
-      Log(LogLevel.INFO, "Loading check-list module...");
+      LogHandler?.Invoke(LogLevel.INFO, "Loading check-list module...");
       module = new Eng.Chlaot.Modules.ChecklistModule.ChecklistModule();
-      module.Init((level, message) => Log?.Invoke(level, message));
+      module.Init((level, message) => this.LogHandler?.Invoke(level, $"[{module.Name}] {message}"));
       if (this.Modules.Any(q => q.Name == module.Name))
       {
-        Log(LogLevel.ERROR, $"Unable to add '{module.Name}' module. Module with this name already exists.");
+        LogHandler?.Invoke(LogLevel.ERROR, $"Unable to add '{module.Name}' module. Module with this name already exists.");
       }
       else
         Modules.Add(module);
 
-      Log(LogLevel.INFO, "Modules loaded.");
+      LogHandler?.Invoke(LogLevel.INFO, "Modules loaded.");
     }
   }
 }

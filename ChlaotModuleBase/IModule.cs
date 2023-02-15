@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChlaotModuleBase;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -11,10 +12,10 @@ namespace Eng.Chlaot.ChlaotModuleBase
 {
   public interface IModule : INotifyPropertyChanged
   {
-    public delegate void LogHandler(LogLevel level, string message);
-
     public bool IsReady { get; }
     public void Init(LogHandler logHandler);
+    void Start();
+
     public Control InitControl { get; }
     public Control RunControl { get; }
     public string Name { get; }

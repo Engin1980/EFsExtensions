@@ -33,8 +33,8 @@ namespace Chlaot
 
     public void InitializeContext()
     {
-      this.Context = new Context(
-        (l, s) => LogToConsole(l, s));
+      this.Context = new Context();
+      this.Context.SetLogHandler((l, m) => this.LogToConsole(l, m));
       this.Context.InitModules();
     }
 
@@ -42,7 +42,7 @@ namespace Chlaot
     {
       txtConsole.AppendText("\n");
       txtConsole.AppendText(level + ":: " + message);
-
+      txtConsole.ScrollToEnd();
     }
 
     private void lstModules_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -50,6 +50,13 @@ namespace Chlaot
       IModule module = lstModules.SelectedItem as IModule;
       pnlContent.Children.Clear();
       pnlContent.Children.Add(module.InitControl);
+    }
+
+    private void btnRun_Click(object sender, RoutedEventArgs e)
+    {
+      FrmRun frmRun= new FrmRun(Context);
+      this.Close();
+      frmRun.Show();
     }
   }
 }
