@@ -30,28 +30,12 @@ namespace Chlaot
     {
       this.Context = context;
       this.Context.SetLogHandler((l, m) => LogToConsole(l, m));
-      RemoveUnreadyModules();
+      this.Context.RemoveUnreadyModules();
+
       this.DataContext = this.Context;
-      StartModules();
-    }
+      if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
 
-    private void StartModules()
-    {
-      foreach (var module in Context.Modules)
-      {
-        module.Start();
-        LogToConsole(LogLevel.INFO, $"Module '{module.Name}' started.");
-      }
-    }
-
-    private void RemoveUnreadyModules()
-    {
-      var unready = this.Context.Modules.Where(q => q.IsReady == false).ToList();
-      foreach (var module in unready)
-      {
-        this.Context.Modules.Remove(module);
-        LogToConsole(LogLevel.INFO, $"Module '{module.Name}' removed, not ready.");
-      }
+      this.Context.RunModules();
     }
 
     private void lstModules_SelectionChanged(object sender, SelectionChangedEventArgs e)

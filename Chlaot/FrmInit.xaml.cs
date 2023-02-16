@@ -26,15 +26,14 @@ namespace Chlaot
     public FrmInit()
     {
       InitializeComponent();
-      InitializeContext();
 
-      this.DataContext = this.Context;
-    }
-
-    public void InitializeContext()
-    {
       this.Context = new Context();
       this.Context.SetLogHandler((l, m) => this.LogToConsole(l, m));
+      this.Context.SetUpModules();
+
+      this.DataContext = this.Context;
+      if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
+
       this.Context.InitModules();
     }
 
@@ -54,7 +53,7 @@ namespace Chlaot
 
     private void btnRun_Click(object sender, RoutedEventArgs e)
     {
-      FrmRun frmRun= new FrmRun(Context);
+      FrmRun frmRun = new FrmRun(Context);
       this.Close();
       frmRun.Show();
     }

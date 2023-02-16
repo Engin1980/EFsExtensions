@@ -19,7 +19,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     private Control _RunControl;
     public Control RunControl => _RunControl;
 
-    private Context _Context;
+    private InitContext initContext;
+    private RunContext runContext;
+    private LogHandler logHandler;
+    private Settings settings;
 
     public string Name => "Check-lists";
 
@@ -33,9 +36,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     {
       this.IsReady = false;
     }
-    public void Init(LogHandler? logHandler)
+    public void SetUp(LogHandler? logHandler)
     {
-      Settings settings;
+      this.logHandler = logHandler;
+
       try
       {
         settings = Settings.Load();
@@ -46,15 +50,21 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         logHandler?.Invoke(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
         settings = new Settings();
       }
-
-      this._Context = new Context(settings, logHandler, q => this.IsReady = q);
-      this._InitControl = new CtrInit(this._Context);
-      this._RunControl = new CtrRun(this._Context);
     }
 
-    public void Start()
+    public void Init()
     {
-      throw new NotImplementedException();
+      this.initContext = new InitContext(this.settings, logHandler, q => this.IsReady = q);
+      this._InitControl = new CtrInit(this.initContext);
+    }
+
+    public void Run()
+    {
+      this.runContext = new(this.initContext, logHandler);
+      this._RunControl = new CtrRun(this.runContext);
+
+      this.initContext = null;
+      this.initContext = null;
     }
   }
 }

@@ -13,8 +13,11 @@ namespace Eng.Chlaot.ChlaotModuleBase
   public interface IModule : INotifyPropertyChanged
   {
     public bool IsReady { get; }
-    public void Init(LogHandler logHandler);
-    void Start();
+
+    public void SetUp(LogHandler logHandler);
+
+    public void Init();
+    void Run();
 
     public Control InitControl { get; }
     public Control RunControl { get; }

@@ -24,7 +24,7 @@ namespace ChecklistModule
   /// </summary>
   public partial class CtrInit : UserControl
   {
-    private readonly Context context;
+    private readonly InitContext context;
     private readonly Player player;
 
     public CtrInit()
@@ -32,7 +32,7 @@ namespace ChecklistModule
       InitializeComponent();
     }
 
-    public CtrInit(Context context) : this()
+    public CtrInit(InitContext context) : this()
     {
       this.player = new();
       this.context = context;

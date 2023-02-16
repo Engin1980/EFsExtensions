@@ -17,22 +17,24 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using ChlaotModuleBase;
+using System.Reflection.Metadata.Ecma335;
+using System.Security.Policy;
 
 namespace ChecklistModule
 {
-  public class Context : NotifyPropertyChangedBase, IModuleProcessor
+  public class InitContext : NotifyPropertyChangedBase, IModuleProcessor
   {
     private readonly LogHandler logHandler;
     private readonly Action<bool> setIsReadyFlagAction;
+    public static LogHandler EmptyLogHandler { get => (l, m) => { }; }
 
-    public Context(Settings settings, LogHandler logHandler, Action<bool> setIsReadyFlagAction)
+    public InitContext(Settings settings, LogHandler logHandler, Action<bool> setIsReadyFlagAction)
     {
       Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-      this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
+      this.logHandler = logHandler ?? EmptyLogHandler;
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
     }
 
-    public delegate void LogDelegate(LogLevel level, string messaga);
     public Settings Settings { get; private set; }
 
     public CheckSet ChecklistSet
@@ -102,7 +104,7 @@ namespace ChecklistModule
         logHandler?.Invoke(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage());
       }
 
-      
+
     }
 
     private void CheckSanity(CheckSet tmp)
@@ -266,6 +268,5 @@ namespace ChecklistModule
 
       return ret;
     }
-
   }
 }
