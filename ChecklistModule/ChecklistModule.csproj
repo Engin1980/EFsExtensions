@@ -16,8 +16,4 @@
     <ProjectReference Include="..\EXmlLib\EXmlLib.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Converters\" />
-  </ItemGroup>
-
 </Project>

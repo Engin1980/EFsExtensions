@@ -82,6 +82,17 @@ namespace ChecklistModule
 
       [XmlIgnore]
       public List<Key> AllKeys => Enum.GetValues(typeof(Key)).Cast<Key>().ToList();
+
+      public override string ToString()
+      {
+        List<string> tmp = new();
+        if (Alt) tmp.Add("Alt");
+        if (Control) tmp.Add("Ctrl");
+        if (Shift) tmp.Add("Shift");
+        tmp.Add(Key.ToString());
+        string ret = string.Join("+", tmp);
+        return ret;
+      }
     }
 
     public class KeyShortcuts

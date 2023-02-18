@@ -28,14 +28,7 @@ namespace Chlaot
 
     public FrmRun(Context context) : this()
     {
-      this.Context = context;
-      this.Context.SetLogHandler((l, m) => LogToConsole(l, m));
-      this.Context.RemoveUnreadyModules();
-
-      this.DataContext = this.Context;
-      if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
-
-      this.Context.RunModules();
+      this.Context = context;      
     }
 
     private void lstModules_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -50,6 +43,17 @@ namespace Chlaot
       txtConsole.AppendText("\n");
       txtConsole.AppendText(level + ":: " + message);
       txtConsole.ScrollToEnd();
+    }
+
+    private void Window_Loaded(object sender, RoutedEventArgs e)
+    {
+      this.Context.SetLogHandler((l, m) => LogToConsole(l, m));
+      this.Context.RemoveUnreadyModules();
+
+      this.DataContext = this.Context;
+      if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
+
+      this.Context.RunModules();
     }
   }
 }

@@ -26,15 +26,6 @@ namespace Chlaot
     public FrmInit()
     {
       InitializeComponent();
-
-      this.Context = new Context();
-      this.Context.SetLogHandler((l, m) => this.LogToConsole(l, m));
-      this.Context.SetUpModules();
-
-      this.DataContext = this.Context;
-      if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
-
-      this.Context.InitModules();
     }
 
     public void LogToConsole(LogLevel level, string message)
@@ -56,6 +47,23 @@ namespace Chlaot
       FrmRun frmRun = new FrmRun(Context);
       this.Close();
       frmRun.Show();
+    }
+
+    private void Window_Loaded(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void Window_Initialized(object sender, EventArgs e)
+    {
+      this.Context = new Context();
+      this.Context.SetLogHandler((l, m) => this.LogToConsole(l, m));
+      this.Context.SetUpModules();
+
+      this.DataContext = this.Context;
+      if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
+
+      this.Context.InitModules();
     }
   }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChecklistModule.Support;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -32,73 +33,11 @@ namespace ChecklistModule
     public CtrRun(RunContext context) : this()
     {
       this.context = context;
-      this.context.CurrentChanged += Context_CurrentChanged;
-      this.XC = new XCo(this.context);
       this.DataContext = context;
-    }
 
-    private void Context_CurrentChanged()
-    {
-      //WalkDownLogicalTree(tvwTree);
-    }
-
-
-    //void WalkDownLogicalTree(object current)
-    //{
-    //  AdjustStyleIfRequired(current);
-
-    //  // The logical tree can contain any type of object, not just 
-    //  // instances of DependencyObject subclasses.  LogicalTreeHelper
-    //  // only works with DependencyObject subclasses, so we must be
-    //  // sure that we do not pass it an object of the wrong type.
-    //  DependencyObject depObj = current as DependencyObject;
-
-    //  if (depObj != null)
-    //    foreach (object logicalChild in LogicalTreeHelper.GetChildren(depObj))
-    //      WalkDownLogicalTree(logicalChild);
-    //}
-
-    //private void AdjustStyleIfRequired(object current)
-    //{
-    //  if (current is Label lbl)
-    //  {
-    //    if (lbl.Tag == this.context.CurrentChecklist || lbl.Tag == this.context.CurrentCheckItem)
-    //    {
-    //      lbl.Background = new SolidColorBrush(Colors.Yellow);
-    //    }
-    //  }
-    //}
-
-    private void UserControl_Loaded(object sender, RoutedEventArgs e)
-    {
-      Context_CurrentChanged();
-    }
-
-    public XCo XC { get; set; }
-
-    public class XCo : IValueConverter
-    {
-      private RunContext context;
-      public XCo(RunContext context)
-      {
-        this.context = context;
-      }
-      public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-      {
-        SolidColorBrush ret;
-        if (value == context.CurrentChecklist)
-        {
-          ret = new SolidColorBrush(Colors.Yellow);
-        }
-        else
-          ret = new SolidColorBrush(Colors.White);
-        return ret;
-      }
-
-      public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
-      {
-        throw new NotImplementedException();
-      }
+      Window window = Window.GetWindow(this);
+      var keyHookWrapper = new KeyHookWrapper(window);
+      this.context.Run(keyHookWrapper);
     }
   }
 }

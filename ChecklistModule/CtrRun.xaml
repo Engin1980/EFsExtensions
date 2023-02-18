@@ -5,35 +5,45 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ChecklistModule"
              xmlns:types="clr-namespace:ChecklistModule.Types"
+             xmlns:runTypes="clr-namespace:ChecklistModule.Types.RunViews"
+             xmlns:converters="clr-namespace:ChecklistModule.Converters"
              mc:Ignorable="d" 
              x:Name="ctrRun"
-             d:DesignHeight="450" d:DesignWidth="800" Loaded="UserControl_Loaded">
-  <TabControl DataContext="{Binding ChecklistSet}">
+             d:DesignHeight="450" d:DesignWidth="800">
+  <UserControl.Resources>
+    <converters:RunStateToSolidBrushColorConverter x:Key="RunStateToSolidBrushColorConverter" />
+    <converters:RunStateToTreeNodeExpandedConverter x:Key="RunStateToTreeNodeExpandedConverter" />
+  </UserControl.Resources>
+  <TabControl DataContext="{Binding CheckListViews}">
     <TabItem Header="Checklist content">
-      <TreeView ItemsSource="{Binding Checklists}" x:Name="tvwTree">
+      <TreeView ItemsSource="{Binding }" x:Name="tvwTree">
+        <TreeView.ItemContainerStyle>
+          <Style TargetType="TreeViewItem">
+            <Setter Property="IsExpanded" Value="{Binding State, Converter={StaticResource RunStateToTreeNodeExpandedConverter}}"/>
+          </Style>
+        </TreeView.ItemContainerStyle>
         <TreeView.Resources>
-          <HierarchicalDataTemplate DataType="{x:Type types:CheckList}" ItemsSource="{Binding Items}">
+          <HierarchicalDataTemplate DataType="{x:Type runTypes:CheckListView}" ItemsSource="{Binding Items}">
             <Label x:Name="lblChecklist" Margin="0" Padding="0" 
-                    Tag="{Binding}"
-                    Background="{Binding Converter={Binding ElementName=ctrRun, Path=XC}}">
+                    Background="{Binding State, Converter={StaticResource RunStateToSolidBrushColorConverter}}">
               <Label.Content>
                 <StackPanel Orientation="Horizontal" >
-                  <TextBlock Text="{Binding CallSpeech}" />
+                  <TextBlock Text="{Binding CheckList.CallSpeech}" />
                   <TextBlock Text=" (" />
-                  <TextBlock Text="{Binding Id}" />
+                  <TextBlock Text="{Binding CheckList.Id}" />
                   <TextBlock Text=")" />
                 </StackPanel>
               </Label.Content>
             </Label>
           </HierarchicalDataTemplate>
-          <HierarchicalDataTemplate DataType="{x:Type types:CheckItem}">
+          <HierarchicalDataTemplate DataType="{x:Type runTypes:CheckItemView}">
             <Label x:Name="lblItem" Margin="0" Padding="0" 
-                       Tag="{Binding}">
+                    Background="{Binding State, Converter={StaticResource RunStateToSolidBrushColorConverter}}">
               <Label.Content>
                 <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{Binding Call.Value}" />
+                  <TextBlock Text="{Binding CheckItem.Call.Value}" />
                   <TextBlock Text=" => " />
-                  <TextBlock Text="{Binding Confirmation.Value}" />
+                  <TextBlock Text="{Binding CheckItem.Confirmation.Value}" />
                 </StackPanel>
               </Label.Content>
             </Label>
