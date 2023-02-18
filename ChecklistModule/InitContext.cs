@@ -86,7 +86,7 @@ namespace ChecklistModule
         logHandler?.Invoke(LogLevel.INFO, $"Loading/generating sounds");
         try
         {
-          InitializeSoundStreams(tmp);
+          InitializeSoundStreams(tmp, System.IO.Path.GetDirectoryName(xmlFile)!);
         }
         catch (Exception ex)
         {
@@ -119,19 +119,19 @@ namespace ChecklistModule
       }
     }
 
-    private void InitializeSoundStreams(CheckSet checkSet)
+    private void InitializeSoundStreams(CheckSet checkSet, string relativePath)
     {
       Synthetizer synthetizer = new(Settings.Synthetizer.Voice, Settings.Synthetizer.Rate); //Synthetizer.CreateDefault();
       Dictionary<string, byte[]> generatedSounds = new();
       foreach (var checklist in checkSet.Checklists)
       {
         // TODO correct load meta data and checklist entry/exit speeches
-        InitializeSoundStreamsForChecklist(checklist, generatedSounds, synthetizer);
+        InitializeSoundStreamsForChecklist(checklist, generatedSounds, synthetizer, relativePath);
 
         foreach (var item in checklist.Items)
         {
-          InitializeSoundStreamsForItems(item.Call, generatedSounds, synthetizer);
-          InitializeSoundStreamsForItems(item.Confirmation, generatedSounds, synthetizer);
+          InitializeSoundStreamsForItems(item.Call, generatedSounds, synthetizer, relativePath);
+          InitializeSoundStreamsForItems(item.Confirmation, generatedSounds, synthetizer, relativePath);
         }
       }
     }
@@ -139,12 +139,13 @@ namespace ChecklistModule
     private void InitializeSoundStreamsForChecklist(
       CheckList checklist,
       Dictionary<string, byte[]> generatedSounds,
-      Synthetizer synthetizer)
+      Synthetizer synthetizer, 
+      string relativePath)
     {
       if (checklist.MetaInfo?.CustomEntrySpeech != null)
-        InitializeSoundStreamsForItems(checklist.MetaInfo.CustomEntrySpeech, generatedSounds, synthetizer);
+        InitializeSoundStreamsForItems(checklist.MetaInfo.CustomEntrySpeech, generatedSounds, synthetizer, relativePath);
       if (checklist.MetaInfo?.CustomExitSpeech != null)
-        InitializeSoundStreamsForItems(checklist.MetaInfo.CustomExitSpeech, generatedSounds, synthetizer);
+        InitializeSoundStreamsForItems(checklist.MetaInfo.CustomExitSpeech, generatedSounds, synthetizer, relativePath);
 
       checklist.EntrySpeechBytes =
         checklist.MetaInfo?.CustomEntrySpeech != null
@@ -159,12 +160,14 @@ namespace ChecklistModule
     private void InitializeSoundStreamsForItems(
       CheckDefinition checkDefinition,
       Dictionary<string, byte[]> generatedSounds,
-      Synthetizer synthetizer)
+      Synthetizer synthetizer,
+      string relativePath)
     {
       if (checkDefinition.Type == CheckDefinition.CheckDefinitionType.File)
         try
         {
-          checkDefinition.Bytes = System.IO.File.ReadAllBytes(checkDefinition.Value);
+          checkDefinition.Bytes = System.IO.File.ReadAllBytes(
+            System.IO.Path.Combine(relativePath, checkDefinition.Value));
         }
         catch (Exception ex)
         {

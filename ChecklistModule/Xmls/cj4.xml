@@ -16,7 +16,7 @@
     </item>
     <item>
       <call type="speech" value="Emergency Light Switch"/>
-      <confirmation type="speech" value="on"/>
+      <confirmation type="file" value="on"/>
     </item>
     <item>
       <call type="speech" value="Standby Flight Display Switch"/>
@@ -53,8 +53,7 @@
           </or>
         </and>
       </autostart>
-      <customEntrySpeech type="speech" value="dudla entry blabla"/>
-      <customExitSpeech type="speech" value="bubla exit dada"/>
+      <customEntrySpeech type="speech" value="Initial start up checklist"/>
     </metaInfo>
     <nextChecklistId />
   </checklist>
