@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChecklistModule", "Checklis
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXmlLib", "EXmlLib\EXmlLib.csproj", "{652FEC0D-F773-4A71-9E53-90E0ABF45B48}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESimConnect", "ESimConnect\ESimConnect.csproj", "{5AFE86DB-63C2-443F-9AB1-8E0055202231}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{652FEC0D-F773-4A71-9E53-90E0ABF45B48}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{652FEC0D-F773-4A71-9E53-90E0ABF45B48}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{652FEC0D-F773-4A71-9E53-90E0ABF45B48}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AFE86DB-63C2-443F-9AB1-8E0055202231}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AFE86DB-63C2-443F-9AB1-8E0055202231}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AFE86DB-63C2-443F-9AB1-8E0055202231}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AFE86DB-63C2-443F-9AB1-8E0055202231}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
