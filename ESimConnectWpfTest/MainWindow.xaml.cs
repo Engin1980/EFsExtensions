@@ -50,6 +50,8 @@ namespace ESimConnectWpfTest
     private BindingList<PropertyInfo> properties = new();
     private void Window_Initialized(object sender, EventArgs e)
     {
+      ESimConnect.ESimConnect.EnsureDllFilesAvailable();
+
       lstProperties.ItemsSource = properties;
     }
 

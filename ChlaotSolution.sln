@@ -15,7 +15,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EXmlLib", "EXmlLib\EXmlLib.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESimConnect", "ESimConnect\ESimConnect.csproj", "{5AFE86DB-63C2-443F-9AB1-8E0055202231}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESimConnectWpfTest", "ESimConnectWpfTest\ESimConnectWpfTest.csproj", "{532B685B-9D3F-4E4F-8C3D-FA194F265C8C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESimConnectWpfTest", "ESimConnectWpfTest\ESimConnectWpfTest.csproj", "{532B685B-9D3F-4E4F-8C3D-FA194F265C8C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{6DE45974-2B03-4253-A45A-26097E955597}"
+	ProjectSection(SolutionItems) = preProject
+		Libs\Microsoft.FlightSimulator.SimConnect.dll = Libs\Microsoft.FlightSimulator.SimConnect.dll
+		Libs\SimConnect.dll = Libs\SimConnect.dll
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

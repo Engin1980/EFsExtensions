@@ -71,6 +71,21 @@ namespace ESimConnect
     private IntPtr windowHandle;
     public bool IsOpened { get => this.simConnect != null; }
 
+    public static void EnsureDllFilesAvailable()
+    {
+      string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
+      path = System.IO.Path.GetDirectoryName(path);
+
+      var firstFile = System.IO.Path.Combine(path, "Microsoft.FlightSimulator.SimConnect.dll");
+      var secondFile = System.IO.Path.Combine(path, "SimConnect.dll");
+
+      if (System.IO.File.Exists(firstFile) == false)
+        throw new ESimConnectException($"The required dll file '{firstFile}' not found.");
+
+      if (System.IO.File.Exists(secondFile) == false)
+        throw new ESimConnectException($"The required dll file '{secondFile}' not found.");
+    }
+
     public void Close()
     {
       if (this.simConnect != null)
