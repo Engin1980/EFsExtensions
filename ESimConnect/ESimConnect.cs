@@ -167,7 +167,7 @@ namespace ESimConnect
         {
           simConnect.AddToDataDefinition(eTypeId,
             att.Name, att.Unit, att.Type,
-            epsilon, DEFAULT_DATUM_ID_AS_ZERO);
+            epsilon, SimConnect.SIMCONNECT_UNUSED);
         }
         catch (Exception ex)
         {
@@ -230,15 +230,45 @@ namespace ESimConnect
     {
       var fieldType = field.FieldType;
       var simType = att.Type;
-      if (fieldType == typeof(string) &&
-        (simType != SIMCONNECT_DATATYPE.STRING8
-        && simType != SIMCONNECT_DATATYPE.STRING32
-        && simType != SIMCONNECT_DATATYPE.STRING64
-        && simType != SIMCONNECT_DATATYPE.STRING128
-        && simType != SIMCONNECT_DATATYPE.STRING256
-        && simType != SIMCONNECT_DATATYPE.STRING260))
-        throw new InvalidRequestException($"If the field '{field.Name}' is of type string, " +
-          $"the expected sim-type should be string too (but declared type is '{simType}'.");
+      if (fieldType == typeof(string))
+      {
+        if (simType != SIMCONNECT_DATATYPE.STRING8
+          && simType != SIMCONNECT_DATATYPE.STRING32
+          && simType != SIMCONNECT_DATATYPE.STRING64
+          && simType != SIMCONNECT_DATATYPE.STRING128
+          && simType != SIMCONNECT_DATATYPE.STRING256
+          && simType != SIMCONNECT_DATATYPE.STRING260)
+          throw new InvalidRequestException($"If the field '{field.Name}' is of type string, " +
+            $"the expected sim-type should be string too (but declared type is '{simType}'.");
+
+        var marshalAsAttribute = field.GetCustomAttribute<MarshalAsAttribute>() ??
+          throw new InvalidRequestException($"If the field '{field.Name}' is of type string, " +
+            $"it should have an '[MarshalAs(UnmanagedType.ByValTStr, SizeConst = XXX)]', where XXX is the correct string size.");
+        if (marshalAsAttribute.SizeConst == 8 && simType != SIMCONNECT_DATATYPE.STRING8 )
+          throw new InvalidRequestException($"If the field '{field.Name}' has simType = {simType}, " +
+            $"the '[MarshalAs(UnmanagedType.ByValTStr, SizeConst = XXX)]' " +
+            $"SizeConst must match (provided value is {marshalAsAttribute.SizeConst}).");
+        if (marshalAsAttribute.SizeConst == 32 && simType != SIMCONNECT_DATATYPE.STRING32)
+          throw new InvalidRequestException($"If the field '{field.Name}' has simType = {simType}, " +
+            $"the '[MarshalAs(UnmanagedType.ByValTStr, SizeConst = XXX)]' " +
+            $"SizeConst must match (provided value is {marshalAsAttribute.SizeConst}).");
+        if (marshalAsAttribute.SizeConst == 64 && simType != SIMCONNECT_DATATYPE.STRING64)
+          throw new InvalidRequestException($"If the field '{field.Name}' has simType = {simType}, " +
+            $"the '[MarshalAs(UnmanagedType.ByValTStr, SizeConst = XXX)]' " +
+            $"SizeConst must match (provided value is {marshalAsAttribute.SizeConst}).");
+        if (marshalAsAttribute.SizeConst == 128 && simType != SIMCONNECT_DATATYPE.STRING128)
+          throw new InvalidRequestException($"If the field '{field.Name}' has simType = {simType}, " +
+            $"the '[MarshalAs(UnmanagedType.ByValTStr, SizeConst = XXX)]' " +
+            $"SizeConst must match (provided value is {marshalAsAttribute.SizeConst}).");
+        if (marshalAsAttribute.SizeConst == 256 && simType != SIMCONNECT_DATATYPE.STRING256)
+          throw new InvalidRequestException($"If the field '{field.Name}' has simType = {simType}, " +
+            $"the '[MarshalAs(UnmanagedType.ByValTStr, SizeConst = XXX)]' " +
+            $"SizeConst must match (provided value is {marshalAsAttribute.SizeConst}).");
+        if (marshalAsAttribute.SizeConst == 260 && simType != SIMCONNECT_DATATYPE.STRING260)
+          throw new InvalidRequestException($"If the field '{field.Name}' has simType = {simType}, " +
+            $"the '[MarshalAs(UnmanagedType.ByValTStr, SizeConst = XXX)]' " +
+            $"SizeConst must match (provided value is {marshalAsAttribute.SizeConst}).");
+      }
     }
 
     private static void EnsureTypeHasRequiredAttribute(Type t)

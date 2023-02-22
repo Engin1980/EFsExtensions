@@ -24,21 +24,43 @@ namespace ESimConnectWpfTest
   /// </summary>
   public partial class MainWindow : Window
   {
-
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct DataStruct
+    public struct OtherDataStruct
     {
       [DataDefinition(
-        SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED,
-        type: SIMCONNECT_DATATYPE.STRING128)]
+        SimVars.Aircraft.Miscelaneous.TITLE,
+        type: SIMCONNECT_DATATYPE.STRING256)]
+      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
       public string title;
 
-      [DataDefinition(SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED)]
+      [DataDefinition(
+        SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED,
+        SimUnits.Speed.KNOT,
+        SIMCONNECT_DATATYPE.INT32)]
       public int speed;
 
-      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE)]
+      [DataDefinition(
+        SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE,
+        SimUnits.Length.FOOT,
+        SIMCONNECT_DATATYPE.INT32)]
       public int altitude;
-    }
+
+      [DataDefinition(
+        SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND,
+        SimUnits.Length.FOOT,
+        SIMCONNECT_DATATYPE.INT64)]
+      public int height;
+
+      [DataDefinition(
+        SimVars.Aircraft.Miscelaneous.PLANE_BANK_DEGREES,
+        SimUnits.Angle.DEGREE,
+        SIMCONNECT_DATATYPE.INT64)]
+      public int bank;
+
+      [DataDefinition(SimVars.Miscellaneous.SIM_DISABLED,
+        type: SIMCONNECT_DATATYPE.INT32)]
+      public int simDisabled;
+    };
 
     private ESimConnect.ESimConnect simCon = new();
 
@@ -73,11 +95,16 @@ namespace ESimConnectWpfTest
         Update();
       else
         Connect();
+
+      if (simCon.IsOpened)
+        btnUpdate.Content = "Update";
     }
 
     private void Update()
     {
-      throw new NotImplementedException();
+      Log("Requesting Update");
+      this.simCon.RequestData<OtherDataStruct>();
+      Log("Requested Update");
     }
 
     private void Connect()
@@ -112,7 +139,7 @@ namespace ESimConnectWpfTest
       Log("Registering type");
       try
       {
-        simCon.RegisterType<DataStruct>(1);
+        simCon.RegisterType<OtherDataStruct>(1);
         Log("Type registered.");
       }
       catch (Exception ex)
@@ -131,25 +158,28 @@ namespace ESimConnectWpfTest
     {
       Log("SimConnect-internal got data.");
 
-      DataStruct ds = default;
-      try
-      {
-        ds = (DataStruct)e.Data;
-      }
-      catch (Exception ex)
-      {
-        Log("Failed to convert obtained data to my structure.", ex);
-      }
+      //DataStruct ds = default;
+      //try
+      //{
+      //  ds = (DataStruct)e.Data;
+      //}
+      //catch (Exception ex)
+      //{
+      //  Log("Failed to convert obtained data to my structure.", ex);
+      //}
 
-      UpdateDataView(ds);
+      //UpdateDataView(ds);
+      UpdateDataView(e.Data);
     }
 
-    private void UpdateDataView(DataStruct ds)
+    private void UpdateDataView(object ds)
     {
       var fields = ds.GetType().GetFields(
         System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
       properties.Clear();
+
+      properties.Add(new PropertyInfo() { Name = "Date&Time", Value = DateTime.Now.ToString() });
 
       foreach (var field in fields)
       {
