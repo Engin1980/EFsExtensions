@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<checklistSet
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://tempuri.org/Schema.xsd"
+  xsi:noNamespaceSchemaLocation="ChecklistSchema.xsd"
+  firstChecklistId="batteryOn">
+  <meta>
+    <label>A320 FBW checklist</label>
+    <author>Marek Vajgl</author>
+    <description>Simple checklists test for A320 FBW customized</description>
+  </meta>
+  <checklist id="beforeStart" callSpeech="Before Start-up">
+    <item>
+      <call type="speech" value="Battery Switch"/>
+      <confirmation type="speech" value="on"/>
+    </item>
+    <item>
+      <call type="speech" value="Emergency Light Switch"/>
+      <confirmation type="file" value="on"/>
+    </item>
+    <item>
+      <call type="speech" value="Standby Flight Display Switch"/>
+      <confirmation type="speech" value="on"/>
+    </item>
+    <item>
+      <call type="speech" value="Avionics Switch"/>
+      <confirmation type="speech" value="Dispatch"/>
+    </item>
+    <item>
+      <call type="speech" value="Parking Brake"/>
+      <confirmation type="speech" value="Set"/>
+    </item>
+    <item>
+      <call type="speech" value="Passenger Briefing"/>
+      <confirmation type="speech" value="Started"/>
+    </item>
+    <item>
+      <call type="speech" value="Seatbelts"/>
+      <confirmation type="speech" value="On"/>
+    </item>
+    <item>
+      <call type="speech" value="Climate Control"/>
+      <confirmation type="speech" value="Off"/>
+    </item>
+    <metaInfo>
+      <autostart>
+        <and>
+          <or>
+            <property name="ias" direction="above" value="30" />
+            <for seconds="10">
+              <property name="height" direction="above" value="0" />
+            </for>
+          </or>
+        </and>
+      </autostart>
+      <customEntrySpeech type="speech" value="Initial start up checklist"/>
+    </metaInfo>
+    <nextChecklistId />
+  </checklist>
+  <checklist id="start" callSpeech="Start">
+    <item>
+      <call type="speech" value="Throttles"/>
+      <confirmation type="speech" value="Idle"/>
+    </item>
+    <nextChecklistId />
+  </checklist>
+  <checklist id="beforeTaxi" callSpeech="Before Taxi">
+    <item>
+      <call type="speech" value="Avionics Switch"/>
+      <confirmation type="speech" value="On"/>
+    </item>
+    <item>
+      <call type="speech" value="Climate Control Selector"/>
+      <confirmation type="speech" value="On"/>
+    </item>
+    <item>
+      <call type="speech" value="Taxi Lights"/>
+      <confirmation type="speech" value="On"/>
+    </item>
+    <nextChecklistId />
+  </checklist>
+  <checklist id="inTaxi" callSpeech="In Taxi" beginCallFile="sound/inTaxiStart.wav" endCallFile="sound/inTaxiCompleted.wav">
+    <item>
+      <call type="speech" value="sound/cj4/flaps.wav"/>
+      <confirmation type="speech" value="sound/set.wav"/>
+    </item>
+  </checklist>
+  <checklist id="beforeTakeoff" callSpeech="Before Take Off">
+    <item>
+      <call type="speech" value="Ice Protection System" />
+      <confirmation type="speech" value="Check" />
+    </item>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="takeoff" callSpeech="Take Off">
+    <item>
+      <call type="speech" value="Throttles" />
+      <confirmation type="speech" value="Take Off" />
+    </item>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="afterTakeoff" callSpeech="After Take Off">
+    <item>
+      <call type="speech" value="Landing Gear" />
+      <confirmation type="speech" value="Up" />
+    </item>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="descent" callSpeech="Descent">
+    <item>
+      <call type="speech" value="Pressurezation" />
+      <confirmation type="speech" value="Verify" />
+    </item>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="approach" callSpeech="Approach">
+    <item>
+      <call type="speech" value="Landing Data" />
+      <confirmation type="speech" value="Check" />
+    </item>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="beforeLanding" callSpeech="Before Landing">
+    <item>
+      <call type="speech" value="Landing Gear" />
+      <confirmation type="speech" value="Down Three Green" />
+    </item>
+    <nextChecklistId id="vacated" />
+    <checklist id="goAround" callSpeech="Go Around">
+      <item>
+        <call type="speech" value="Gear"/>
+        <confirmation type="speech" value="Up"/>
+      </item>
+      <item>
+        <call type="speech" value="Flaps"/>
+        <confirmation type="speech" value="As required"/>
+      </item>
+      <nextChecklistId id="approach" />
+    </checklist>
+  </checklist>
+  <checklist id="vacated" callSpeech="Vacated">
+    <item>
+      <call type="speech" value="Speed Brakes" />
+      <confirmation type="speech" value="Retracted" />
+    </item>
+    <nextChecklistId id="beforeStart" />
+  </checklist>
+</checklistSet>
