@@ -1,6 +1,7 @@
 using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -69,6 +70,7 @@ namespace ESimConnect
     private int nextRequestId = 1;
     private SimConnect? simConnect;
     private IntPtr windowHandle;
+    private Window window;
     public bool IsOpened { get => this.simConnect != null; }
 
     public static void EnsureDllFilesAvailable()
@@ -84,6 +86,17 @@ namespace ESimConnect
 
       if (System.IO.File.Exists(secondFile) == false)
         throw new ESimConnectException($"The required dll file '{secondFile}' not found.");
+    }
+
+    public ESimConnect()
+    {
+      Application.Current.Dispatcher.Invoke(() =>
+      {
+        this.window = new Window();
+        var wih = new WindowInteropHelper(window);
+        wih.EnsureHandle();
+        this.windowHandle = new WindowInteropHelper(this.window).Handle;
+      });
     }
 
     public void Close()
@@ -105,7 +118,6 @@ namespace ESimConnect
       if (this.simConnect != null)
         throw new InvalidRequestException("SimConnect already opened.");
 
-      this.windowHandle = GetCurrentWindowHandle();
       try
       {
         RegisterWindowsQueueHandle();
@@ -160,7 +172,7 @@ namespace ESimConnect
           throw new InvalidRequestException($"Field '{field.Name}' has not the required '{nameof(DataDefinitionAttribute)}' attribute.");
         EnsureFieldHasCorrectType(field, att);
       }
-      foreach (var field in fields)
+      foreach (var field in fields.OrderBy(f => Marshal.OffsetOf(t, f.Name).ToInt32()))
       {
         DataDefinitionAttribute att = field.GetCustomAttribute<DataDefinitionAttribute>()!;
         try
@@ -244,7 +256,7 @@ namespace ESimConnect
         var marshalAsAttribute = field.GetCustomAttribute<MarshalAsAttribute>() ??
           throw new InvalidRequestException($"If the field '{field.Name}' is of type string, " +
             $"it should have an '[MarshalAs(UnmanagedType.ByValTStr, SizeConst = XXX)]', where XXX is the correct string size.");
-        if (marshalAsAttribute.SizeConst == 8 && simType != SIMCONNECT_DATATYPE.STRING8 )
+        if (marshalAsAttribute.SizeConst == 8 && simType != SIMCONNECT_DATATYPE.STRING8)
           throw new InvalidRequestException($"If the field '{field.Name}' has simType = {simType}, " +
             $"the '[MarshalAs(UnmanagedType.ByValTStr, SizeConst = XXX)]' " +
             $"SizeConst must match (provided value is {marshalAsAttribute.SizeConst}).");
@@ -289,22 +301,20 @@ namespace ESimConnect
       }
     }
 
-    private static IntPtr GetCurrentWindowHandle()
+    private static IntPtr GetWindowHandle(Window window)
     {
-      Window window = Application.Current.Windows.OfType<Window>().First(q => q.IsActive);
       IntPtr ret = new WindowInteropHelper(window).Handle;
       return ret;
     }
 
     private void RegisterWindowsQueueHandle()
     {
-      IntPtr handle = GetCurrentWindowHandle();
-      if (registeredWindowsQueueHandles.Contains(handle)) return;
+      if (registeredWindowsQueueHandles.Contains(this.windowHandle)) return;
 
-      HwndSource lHwndSource = HwndSource.FromHwnd(handle);
+      HwndSource lHwndSource = HwndSource.FromHwnd(this.windowHandle);
       lHwndSource.AddHook(new HwndSourceHook(DefWndProc));
 
-      this.registeredWindowsQueueHandles.Add(handle);
+      this.registeredWindowsQueueHandles.Add(this.windowHandle);
     }
 
     private void SimConnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)

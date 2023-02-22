@@ -14,9 +14,9 @@
     <converters:RunStateToSolidBrushColorConverter x:Key="RunStateToSolidBrushColorConverter" />
     <converters:RunStateToTreeNodeExpandedConverter x:Key="RunStateToTreeNodeExpandedConverter" />
   </UserControl.Resources>
-  <TabControl DataContext="{Binding CheckListViews}">
+  <TabControl >
     <TabItem Header="Checklist content">
-      <TreeView ItemsSource="{Binding }" x:Name="tvwTree">
+      <TreeView ItemsSource="{Binding CheckListViews}" x:Name="tvwTree">
         <TreeView.ItemContainerStyle>
           <Style TargetType="TreeViewItem">
             <Setter Property="IsExpanded" Value="{Binding State, Converter={StaticResource RunStateToTreeNodeExpandedConverter}}"/>
@@ -50,6 +50,44 @@
           </HierarchicalDataTemplate>
         </TreeView.Resources>
       </TreeView>
+    </TabItem>
+    <TabItem Header="Sim Data">
+      <Grid DataContext="{Binding SimData}">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition />
+          <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0" Content="Is Sim Paused" />
+        <Label Grid.Row="0" Grid.Column="1" Content="{Binding IsSimPaused}" />
+
+        <Label Grid.Row="1" Grid.Column="0" Content="Parking Brake Set" />
+        <Label Grid.Row="1" Grid.Column="1" Content="{Binding ParkingBrake}" />
+
+        <Label Grid.Row="2" Grid.Column="0" Content="Altitude (ft)" />
+        <Label Grid.Row="2" Grid.Column="1" Content="{Binding Altitude}" />
+
+        <Label Grid.Row="3" Grid.Column="0" Content="Height (ft)" />
+        <Label Grid.Row="3" Grid.Column="1" Content="{Binding Height}" />
+
+        <Label Grid.Row="4" Grid.Column="0" Content="Bank Angle (deg)" />
+        <Label Grid.Row="4" Grid.Column="1" Content="{Binding BankAngle}" />
+
+        <Label Grid.Row="5" Grid.Column="0" Content="Indicated Speed (kts)" />
+        <Label Grid.Row="5" Grid.Column="1" Content="{Binding IndicatedSpeed}" />
+
+        <Label Grid.Row="6" Grid.Column="0" Content="Ground Speed (kts)" />
+        <Label Grid.Row="6" Grid.Column="1" Content="{Binding GroundSpeed}" />
+      </Grid>
     </TabItem>
   </TabControl>
 </UserControl>

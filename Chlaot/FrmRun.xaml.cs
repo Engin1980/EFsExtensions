@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -28,7 +29,7 @@ namespace Chlaot
 
     public FrmRun(Context context) : this()
     {
-      this.Context = context;      
+      this.Context = context;
     }
 
     private void lstModules_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -40,9 +41,14 @@ namespace Chlaot
 
     private void LogToConsole(LogLevel level, string message)
     {
-      txtConsole.AppendText("\n");
-      txtConsole.AppendText(level + ":: " + message);
-      txtConsole.ScrollToEnd();
+      if (Thread.CurrentThread != Application.Current.Dispatcher.Thread)
+        Application.Current.Dispatcher.Invoke(new Action(() => { this.LogToConsole(level, message); }));
+      else
+      {
+        txtConsole.AppendText("\n");
+        txtConsole.AppendText(level + ":: " + message);
+        txtConsole.ScrollToEnd();
+      }
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)

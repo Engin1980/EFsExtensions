@@ -1,13 +1,16 @@
 ﻿using ChecklistModule.Support;
 using ChecklistModule.Types;
+using ChecklistModule.Types.Autostarts;
 using ChecklistModule.Types.RunViews;
 using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Printing;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
@@ -16,20 +19,180 @@ namespace ChecklistModule
 {
   public class RunContext : NotifyPropertyChangedBase
   {
+    public class AutoplayChecklistEvaluator
+    {
+      private readonly Dictionary<AutostartDelay, int> historyCounter = new();
+      private CheckList? prevList = null;
+      private SimData simData;
+      public bool EvaluateIfShouldPlay(CheckList checkList, SimData simData)
+      {
+        this.simData = simData;
+        if (this.simData.IsSimPaused) return false;
+
+        if (prevList != checkList)
+        {
+          historyCounter.Clear();
+          prevList = checkList;
+        }
+
+        bool ret = checkList.MetaInfo.Autostart != null
+          ? Evaluate(checkList.MetaInfo.Autostart)
+          : false;
+
+        return ret;
+      }
+
+      private bool Evaluate(IAutostart autostart)
+      {
+        bool ret;
+        switch (autostart)
+        {
+          case AutostartCondition condition:
+            ret = EvaluateCondition(condition);
+            break;
+          case AutostartDelay delay:
+            ret = EvaluateDelay(delay);
+            break;
+          case AutostartProperty property:
+            ret = EvaluateProperty(property);
+            break;
+          default:
+            throw new NotImplementedException();
+        }
+        return ret;
+      }
+
+      private bool EvaluateCondition(AutostartCondition condition)
+      {
+        List<bool> subs = condition.Items.Select(q => Evaluate(q)).ToList();
+        var ret = condition.Operator switch
+        {
+          AutostartConditionOperator.Or => subs.Any(q => q),
+          AutostartConditionOperator.And => subs.All(q => q),
+          _ => throw new NotImplementedException(),
+        };
+
+        return ret;
+      }
+
+      private bool EvaluateDelay(AutostartDelay delay)
+      {
+        bool tmp = Evaluate(delay.Item);
+        if (tmp)
+        {
+          historyCounter.SetOrApply(delay, 1, q => q = 1);
+        }
+        bool ret = historyCounter[delay] >= delay.Seconds;
+        return ret;
+      }
+
+      private bool EvaluateProperty(AutostartProperty property)
+      {
+        SimData sd = this.simData ?? throw new ApplicationException("Not expecting simData to be null here.");
+        double expected = property.Value;
+        double actual = property.Name switch
+        {
+          AutostartPropertyName.Altitude => sd.Altitude,
+          AutostartPropertyName.IAS => sd.IndicatedSpeed,
+          AutostartPropertyName.GS => sd.GroundSpeed,
+          AutostartPropertyName.Height => sd.Height,
+          AutostartPropertyName.Bank => sd.BankAngle,
+          AutostartPropertyName.ParkingBrake => sd.ParkingBrake ? 1 : 0,
+          _ => throw new NotImplementedException()
+        };
+
+        bool ret = property.Direction switch
+        {
+          AutostartPropertyDirection.Above => actual > expected,
+          AutostartPropertyDirection.Below => actual < expected,
+          _ => throw new NotImplementedException()
+        };
+
+        return ret;
+      }
+    }
     public class PlaybackManager
     {
       private readonly RunContext parent;
+      private int currentItemIndex = 0;
+      private CheckListView currentList;
+      private bool isCallPlayed = false;
       private bool isEntryPlayed = false;
       private bool isPlaying = false;
-      private bool isCallPlayed = false;
-      private Task? runPlayTask = null;
       private CheckListView? previousList;
-      private CheckListView currentList;
-      private int currentItemIndex = 0;
+      private Task? runPlayTask = null;
+      public bool IsWaitingForNextChecklist { get => currentItemIndex == 0 && isEntryPlayed == false; }
 
       public PlaybackManager(RunContext parent)
       {
         this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
+      }
+
+      public CheckList GetCurrentChecklist() => currentList.CheckList;
+
+      public void PauseAsync()
+      {
+        this.isPlaying = false;
+        this.isCallPlayed = false;
+        this.isEntryPlayed = false;
+      }
+
+      public void Play()
+      {
+        lock (this)
+        {
+          this.isPlaying = true;
+          if (this.runPlayTask != null) return;
+
+          byte[] playData = ResolveAndMarkNexPlayBytes(out bool stopPlaying);
+          InternalPlayer player = new(playData);
+          player.PlaybackFinished += Player_PlaybackFinished;
+          player.PlayAsync();
+          if (stopPlaying) this.isPlaying = false;
+        }
+        AdjustRunStates();
+      }
+
+      public void Reset()
+      {
+        this.currentList = parent.CheckListViews.First();
+        this.currentItemIndex = 0;
+        this.AdjustRunStates();
+      }
+
+      public void TogglePlay()
+      {
+        if (isPlaying)
+          PauseAsync();
+        else
+          Play();
+      }
+
+      internal void SkipToNext()
+      {
+        currentList = parent.CheckListViews.First(q => q.CheckList == currentList.CheckList.NextChecklist);
+        currentItemIndex = 0;
+        isEntryPlayed = false;
+        isCallPlayed = false;
+        AdjustRunStates();
+        if (!isPlaying) this.Play();
+      }
+
+      internal void SkipToPrev()
+      {
+        if (isEntryPlayed || currentItemIndex > 0)
+        {
+          currentItemIndex = 0;
+          isCallPlayed = false;
+          isEntryPlayed = false;
+        }
+        else if (previousList != null)
+        {
+          currentList = previousList;
+          previousList = null;
+        }
+        AdjustRunStates();
+        if (!isPlaying) this.Play();
       }
 
       private void AdjustRunStates()
@@ -52,38 +215,6 @@ namespace ChecklistModule
         if (currentItemIndex < currentList.Items.Count)
           currentList.Items[currentItemIndex].State = RunState.Current;
       }
-
-      public void Reset()
-      {
-        this.currentList = parent.CheckListViews.First();
-        this.currentItemIndex = 0;
-        this.AdjustRunStates();
-      }
-
-      public void TogglePlay()
-      {
-        if (isPlaying)
-          PauseAsync();
-        else
-          Play();
-      }
-
-      public void Play()
-      {
-        lock (this)
-        {
-          this.isPlaying = true;
-          if (this.runPlayTask != null) return;
-
-          byte[] playData = ResolveAndMarkNexPlayBytes(out bool stopPlaying);
-          InternalPlayer player = new(playData);
-          player.PlaybackFinished += Player_PlaybackFinished;
-          player.PlayAsync();
-          if (stopPlaying) this.isPlaying = false;
-        }
-        AdjustRunStates();
-      }
-
       private void Player_PlaybackFinished(InternalPlayer sender)
       {
         lock (this)
@@ -132,47 +263,42 @@ namespace ChecklistModule
         }
         return ret;
       }
-
-      public void PauseAsync()
-      {
-        this.isPlaying = false;
-        this.isCallPlayed = false;
-        this.isEntryPlayed = false;
-      }
-
-      internal void SkipToPrev()
-      {
-        if (isEntryPlayed || currentItemIndex > 0)
-        {
-          currentItemIndex = 0;
-          isCallPlayed = false;
-          isEntryPlayed = false;
-        }
-        else if (previousList != null)
-        {
-          currentList = previousList;
-          previousList = null;
-        }
-        AdjustRunStates();
-        if (!isPlaying) this.Play();
-      }
-
-      internal void SkipToNext()
-      {
-        currentList = parent.CheckListViews.First(q => q.CheckList == currentList.CheckList.NextChecklist);
-        currentItemIndex = 0;
-        isEntryPlayed = false;
-        isCallPlayed = false;
-        AdjustRunStates();
-        if (!isPlaying) this.Play();
-      }
     }
 
-    public CheckSet CheckSet
+    private const int CONNECTION_TIMER_INTERVAL = 10000;
+
+    private const int REFRESH_TIMER_INTERVAL = 1000;
+
+    private readonly AutoplayChecklistEvaluator autoplayEvaluator;
+
+    private readonly LogHandler logHandler;
+
+    private readonly PlaybackManager playback;
+
+    private readonly Settings settings;
+
+    private readonly Sim sim;
+
+    private System.Timers.Timer? connectionTimer = null;
+
+    private int keyHookPlayPauseId = -1;
+
+    private int keyHookSkipNextId = -1;
+
+    private int keyHookSkipPrevId = -1;
+
+    private KeyHookWrapper? keyHookWrapper;
+
+    private System.Timers.Timer? refreshTimer = null;
+
+
+    public SimData SimData
     {
-      get => base.GetProperty<CheckSet>(nameof(CheckSet))!;
-      set => base.UpdateProperty(nameof(CheckSet), value);
+      get => base.GetProperty<SimData>(nameof(SimData))!;
+      set => base.UpdateProperty(nameof(SimData), value);
     }
+
+    public static LogHandler EmptyLogHandler { get => (l, m) => { }; }
 
     public List<CheckListView> CheckListViews
     {
@@ -180,12 +306,11 @@ namespace ChecklistModule
       set => base.UpdateProperty(nameof(CheckListViews), value);
     }
 
-    private readonly Settings settings;
-    private readonly LogHandler logHandler;
-    private readonly PlaybackManager playback;
-    private KeyHookWrapper? keyHookWrapper;
-    public static LogHandler EmptyLogHandler { get => (l, m) => { }; }
-
+    public CheckSet CheckSet
+    {
+      get => base.GetProperty<CheckSet>(nameof(CheckSet))!;
+      set => base.UpdateProperty(nameof(CheckSet), value);
+    }
     public RunContext(InitContext initContext, LogHandler logHandler)
     {
       this.CheckSet = initContext.ChecklistSet;
@@ -208,6 +333,15 @@ namespace ChecklistModule
         .ToList();
 
       this.playback = new PlaybackManager(this);
+      this.sim = new(logHandler ?? EmptyLogHandler);
+      this.sim.SimDataUpdated += Sim_SimDataUpdated;
+      this.SimData = this.sim.SimData;
+      this.autoplayEvaluator = new();
+    }
+
+    private void Sim_SimDataUpdated()
+    {
+      this.SimData = sim.SimData;
     }
 
     internal void Run(KeyHookWrapper keyHookWrapper)
@@ -215,13 +349,49 @@ namespace ChecklistModule
       this.keyHookWrapper = keyHookWrapper ?? throw new ArgumentNullException(nameof(keyHookWrapper));
       playback.Reset();
 
-
       ConnectKeyHooks();
+
+      this.connectionTimer = new System.Timers.Timer(CONNECTION_TIMER_INTERVAL)
+      {
+        AutoReset = true,
+        Enabled = true
+      };
+      this.connectionTimer.Elapsed += ConnectionTimer_Elapsed;
     }
 
-    private int keyHookPlayPauseId = -1;
-    private int keyHookSkipNextId = -1;
-    private int keyHookSkipPrevId = -1;
+    private static KeyHookWrapper.KeyHookInfo ConvertShortcutToKeyHookInfo(Settings.KeyShortcut shortcut)
+    {
+      KeyHookWrapper.KeyHookInfo ret = new(
+        shortcut.Alt,
+        shortcut.Control,
+        shortcut.Shift,
+        shortcut.Key);
+      return ret;
+    }
+
+    private void ConnectionTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+      try
+      {
+        sim.Open();
+        this.connectionTimer!.Stop();
+        this.connectionTimer = null;
+
+        this.refreshTimer = new System.Timers.Timer(REFRESH_TIMER_INTERVAL)
+        {
+          AutoReset = true,
+          Enabled = true
+        };
+        this.refreshTimer.Elapsed += RefreshTimer_Elapsed;
+        this.logHandler?.Invoke(LogLevel.INFO, "Connected to FS2020, starting updates");
+      }
+      catch (Exception ex)
+      {
+        this.logHandler?.Invoke(LogLevel.WARNING, "Failed to connect to FS2020, will try it again in a few seconds...");
+        this.logHandler?.Invoke(LogLevel.WARNING, "Fail reason: " + ex.GetFullMessage());
+      }
+    }
+
     private void ConnectKeyHooks()
     {
       Settings.KeyShortcut s = null;
@@ -284,14 +454,18 @@ namespace ChecklistModule
       }
     }
 
-    private static KeyHookWrapper.KeyHookInfo ConvertShortcutToKeyHookInfo(Settings.KeyShortcut shortcut)
+    private void RefreshTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-      KeyHookWrapper.KeyHookInfo ret = new(
-        shortcut.Alt,
-        shortcut.Control,
-        shortcut.Shift,
-        shortcut.Key);
-      return ret;
+      this.sim.Update();
+      if (this.sim.SimData.IsSimPaused) return;
+
+      if (playback.IsWaitingForNextChecklist == false) return;
+      CheckList checkList = playback.GetCurrentChecklist();
+      bool shouldPlay = autoplayEvaluator.EvaluateIfShouldPlay(checkList, sim.SimData);
+      if (shouldPlay)
+      {
+        this.playback.TogglePlay();
+      }
     }
   }
 }

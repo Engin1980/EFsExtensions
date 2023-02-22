@@ -16,7 +16,7 @@
     </item>
     <item>
       <call type="speech" value="Emergency Light Switch"/>
-      <confirmation type="file" value="on"/>
+      <confirmation type="speech" value="on"/>
     </item>
     <item>
       <call type="speech" value="Standby Flight Display Switch"/>

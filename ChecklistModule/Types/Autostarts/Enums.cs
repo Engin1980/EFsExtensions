@@ -25,6 +25,6 @@ namespace ChecklistModule.Types.Autostarts
     GS,
     IAS,
     Bank,
-    Delay
+    ParkingBrake
   }
 }
