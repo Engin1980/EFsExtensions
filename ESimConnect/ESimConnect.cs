@@ -289,11 +289,36 @@ namespace ESimConnect
       {
         if (simConnect != null)
         {
-          simConnect.ReceiveMessage();
+          try
+          {
+            simConnect.ReceiveMessage();
+          }
+          catch (Exception ex)
+          {
+            if (ex is System.Runtime.InteropServices.COMException && ex.Message == "0xC00000B0")
+            {
+              //FS2020 was exited
+              ResolveExitedFS2020();
+            }
+            else
+            {
+              throw new InternalException("Failed to invoke SimConnect.ReceiveMessage().", ex);
+            }
+          }
           handled = true;
         }
       }
       return (IntPtr)0;
+    }
+
+    private void ResolveExitedFS2020()
+    {
+      if (this.simConnect != null)
+      {
+        this.simConnect.Dispose();
+        this.simConnect = null;
+      }
+      this.Disconnected?.Invoke(this);
     }
 
     private static void EnsureFieldHasCorrectType(FieldInfo field, SIMCONNECT_DATATYPE simType)
