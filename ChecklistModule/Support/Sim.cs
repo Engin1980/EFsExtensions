@@ -66,13 +66,38 @@ namespace ChecklistModule.Support
 
   public class SimData
   {
+    public enum ECameraState
+    {
+      Cockpit = 2,
+      ExternalOrChase = 3,
+      Drone = 4,
+      FixedOnPlane = 5,
+      Environment = 6,
+      SixDoF = 7,
+      Gameplay = 8,
+      Showcase = 9,
+      DroneAircraft = 10,
+      Waiting = 11,
+      WorldMap = 12,
+      HangarTC = 13,
+      HangarCustom = 14,
+      MenuRTC = 15,
+      InGameRTC = 16,
+      Replay = 17,
+      DroneTopDown = 18,
+      Hangar = 21,
+      Ground = 24,
+      FollowTrafficAircraft = 25
+    }
+
     public static SimData Empty
     {
       get => new()
       {
         Altitude = 1,
         IsSimPaused = true,
-        ParkingBrake = true
+        ParkingBrake = true,
+        CameraState = ECameraState.Waiting
       };
     }
 
@@ -90,6 +115,8 @@ namespace ChecklistModule.Support
 
     public bool ParkingBrake { get; private set; }
 
+    public ECameraState CameraState { get; private set; }
+
     public SimData(SimStruct ss)
     {
       this.Altitude = ss.altitude;
@@ -99,7 +126,10 @@ namespace ChecklistModule.Support
       this.GroundSpeed = ss.groundSpeed;
       this.IsSimPaused = ss.isSimPaused != 0;
       this.ParkingBrake = ss.parkingBrake != 0;
+      this.CameraState = (ECameraState)ss.cameraState;
     }
+
+    public bool IsProbablyOutOfTheSim { get => (int)this.CameraState <= 6; }
 
     private SimData() { }
   }
@@ -107,46 +137,28 @@ namespace ChecklistModule.Support
   [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
   public struct SimStruct
   {
-    [DataDefinition(
-      SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE,
-      SimUnits.Length.FOOT,
-      SIMCONNECT_DATATYPE.INT32)]
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE, SimUnits.Length.FOOT)]
     public int altitude;
 
-    [DataDefinition(
-      SimVars.Aircraft.Miscelaneous.PLANE_BANK_DEGREES,
-      SimUnits.Angle.DEGREE,
-      SIMCONNECT_DATATYPE.INT32)]
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_BANK_DEGREES, SimUnits.Angle.DEGREE)]
     public double bankAngle;
 
-    [DataDefinition(
-     SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND,
-     SimUnits.Length.FOOT,
-     SIMCONNECT_DATATYPE.INT32)]
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND, SimUnits.Length.FOOT)]
     public int height;
 
-    [DataDefinition(
-      SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED,
-      SimUnits.Speed.KNOT,
-      SIMCONNECT_DATATYPE.INT32)]
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED, SimUnits.Speed.KNOT)]
     public int indicatedSpeed;
 
-    [DataDefinition(
-      SimVars.Aircraft.Miscelaneous.GROUND_VELOCITY,
-      SimUnits.Speed.KNOT,
-      SIMCONNECT_DATATYPE.INT32)]
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.GROUND_VELOCITY, SimUnits.Speed.KNOT)]
     public int groundSpeed;
 
-    [DataDefinition(
-      SimVars.Miscellaneous.SIM_DISABLED,
-      null,
-      SIMCONNECT_DATATYPE.INT32)]
+    [DataDefinition("CAMERA STATE")]
+    public int cameraState;
+
+    [DataDefinition(SimVars.Miscellaneous.SIM_DISABLED)]
     public int isSimPaused;
 
-    [DataDefinition(
-      SimVars.Aircraft.BrakesAndLandingGear.BRAKE_PARKING_POSITION,
-      null,
-      SIMCONNECT_DATATYPE.INT32)]
+    [DataDefinition(SimVars.Aircraft.BrakesAndLandingGear.BRAKE_PARKING_POSITION)]
     public int parkingBrake;
   }
 }

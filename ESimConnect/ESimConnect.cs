@@ -1,5 +1,6 @@
 using Microsoft.FlightSimulator.SimConnect;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -12,46 +13,6 @@ namespace ESimConnect
 {
   public class ESimConnect : IDisposable
   {
-    public class ESimConnectDataReceivedEventArgs
-    {
-      public object Data { get; set; }
-
-      public int? RequestId { get; set; }
-
-      public ESimConnectDataReceivedEventArgs(int? requestId, object data)
-      {
-        RequestId = requestId;
-        Data = data ?? throw new ArgumentNullException(nameof(data));
-      }
-    }
-
-    private class RegisteredType
-    {
-      public uint Id { get; set; }
-
-      public Type Type { get; set; }
-
-      public RegisteredType(uint id, Type type)
-      {
-        Id = id;
-        Type = type ?? throw new ArgumentNullException(nameof(type));
-      }
-    }
-
-    private enum EEnum
-    {
-      Unused = 0
-    }
-
-    public delegate void ESimConnectDataReceived(ESimConnect sender, ESimConnectDataReceivedEventArgs e);
-    public delegate void ESimConnectDelegate(ESimConnect sender);
-    public delegate void ESimConnectExceptionDelegate(ESimConnect sender, SIMCONNECT_EXCEPTION ex);
-
-    public event ESimConnectDelegate? Connected;
-    public event ESimConnectDataReceived? DataReceived;
-    public event ESimConnectDelegate? Disconnected;
-    public event ESimConnectExceptionDelegate? ThrowsException;
-
     /// <summary>
     /// Defines client-defined datum ID. The default is zero
     /// </summary>
@@ -64,13 +25,73 @@ namespace ESimConnect
     /// Predefined windows handler id to recognize requests from Simconnect. For more see API docs.
     /// </summary>
     private const int WM_USER_SIMCONNECT = 0x0402;
+
+    private readonly static Dictionary<Type, SIMCONNECT_DATATYPE> typeMapping;
+
+    private readonly static Dictionary<int, SIMCONNECT_DATATYPE> typeStringMapping;
+
     private readonly List<RegisteredType> registeredTypes = new();
+
     private readonly HashSet<IntPtr> registeredWindowsQueueHandles = new();
+
     private readonly Dictionary<int, int> requestIds = new();
+
     private int nextRequestId = 1;
+
     private SimConnect? simConnect;
-    private IntPtr windowHandle;
+
     private Window window;
+
+    private IntPtr windowHandle;
+
+    static ESimConnect()
+    {
+      typeMapping = new(){
+        {typeof(int) , SIMCONNECT_DATATYPE.INT32},
+        {typeof(long) , SIMCONNECT_DATATYPE.INT64},
+        {typeof(float) , SIMCONNECT_DATATYPE.FLOAT32},
+        {typeof(double) , SIMCONNECT_DATATYPE.FLOAT64 }
+      };
+      typeStringMapping = new Dictionary<int, SIMCONNECT_DATATYPE>()
+      {
+        {8, SIMCONNECT_DATATYPE.STRING8},
+        {32, SIMCONNECT_DATATYPE.STRING32 },
+        {64, SIMCONNECT_DATATYPE.STRING64 },
+        {128, SIMCONNECT_DATATYPE.STRING128 },
+        {256, SIMCONNECT_DATATYPE.STRING256 },
+        {260, SIMCONNECT_DATATYPE.STRING260 } };
+    }
+
+    public ESimConnect()
+    {
+      Application.Current.Dispatcher.Invoke(() =>
+      {
+        this.window = new Window();
+        var wih = new WindowInteropHelper(window);
+        wih.EnsureHandle();
+        this.windowHandle = new WindowInteropHelper(this.window).Handle;
+      });
+    }
+
+    public delegate void ESimConnectDataReceived(ESimConnect sender, ESimConnectDataReceivedEventArgs e);
+
+    public delegate void ESimConnectDelegate(ESimConnect sender);
+
+    public delegate void ESimConnectExceptionDelegate(ESimConnect sender, SIMCONNECT_EXCEPTION ex);
+
+    public event ESimConnectDelegate? Connected;
+
+    public event ESimConnectDataReceived? DataReceived;
+
+    public event ESimConnectDelegate? Disconnected;
+
+    public event ESimConnectExceptionDelegate? ThrowsException;
+
+    private enum EEnum
+    {
+      Unused = 0
+    }
+
     public bool IsOpened { get => this.simConnect != null; }
 
     public static void EnsureDllFilesAvailable()
@@ -86,17 +107,6 @@ namespace ESimConnect
 
       if (System.IO.File.Exists(secondFile) == false)
         throw new ESimConnectException($"The required dll file '{secondFile}' not found.");
-    }
-
-    public ESimConnect()
-    {
-      Application.Current.Dispatcher.Invoke(() =>
-      {
-        this.window = new Window();
-        var wih = new WindowInteropHelper(window);
-        wih.EnsureHandle();
-        this.windowHandle = new WindowInteropHelper(this.window).Handle;
-      });
     }
 
     public void Close()
@@ -134,6 +144,7 @@ namespace ESimConnect
         this.simConnect.OnRecvQuit += SimConnect_OnRecvQuit;
         this.simConnect.OnRecvException += SimConnect_OnRecvException;
         this.simConnect.OnRecvSimobjectDataBytype += SimConnect_OnRecvSimobjectDataBytype;
+        this.simConnect.OnRecvSimobjectData += SimConnect_OnRecvSimobjectData;
       }
       catch (Exception ex)
       {
@@ -141,18 +152,15 @@ namespace ESimConnect
       }
     }
 
-    public void UnregisterType<T>()
+    private void SimConnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
     {
-      if (this.simConnect == null) throw new NotConnectedException();
+      int iRequest = (int)data.dwRequestID;
+      object ret = data.dwData[0];
 
-      Type t = typeof(T);
-      RegisteredType? rt = this.registeredTypes.FirstOrDefault(q => q.Type == t);
-      if (rt == null)
-        throw new InvalidRequestException($"Unable to unregister type '{t.Name}' as it has not been registered yet.");
+      int? userRequestId = requestIds.ContainsKey(iRequest) ? requestIds[iRequest] : null;
 
-      uint typeId = rt.Id;
-      EEnum eTypeId = (EEnum)typeId;
-      this.simConnect.ClearDataDefinition(eTypeId);
+      ESimConnectDataReceivedEventArgs e = new(userRequestId, ret);
+      this.DataReceived?.Invoke(this, e);
     }
 
     public void RegisterType<T>(uint typeId) where T : struct
@@ -166,19 +174,26 @@ namespace ESimConnect
       EnsureTypeHasRequiredAttribute(t);
       var fields = t.GetFields();
 
-      foreach (var field in fields)
+      var fieldInfos = fields
+        .OrderBy(f => Marshal.OffsetOf(t, f.Name).ToInt32())
+        .Select(q => new { Field = q, Attribute = GetDataDefinitionAttributeOrThrowException(q) })
+        .Select(q => new
+        {
+          q.Field,
+          q.Attribute.Name,
+          q.Attribute.Unit,
+          Type = ResolveAttributeType(q.Field, q.Attribute)
+        })
+        .ToList();
+
+      fieldInfos.ForEach(q => EnsureFieldHasCorrectType(q.Field, q.Type));
+
+      foreach (var fieldInfo in fieldInfos)
       {
-        DataDefinitionAttribute att = field.GetCustomAttribute<DataDefinitionAttribute>() ??
-          throw new InvalidRequestException($"Field '{field.Name}' has not the required '{nameof(DataDefinitionAttribute)}' attribute.");
-        EnsureFieldHasCorrectType(field, att);
-      }
-      foreach (var field in fields.OrderBy(f => Marshal.OffsetOf(t, f.Name).ToInt32()))
-      {
-        DataDefinitionAttribute att = field.GetCustomAttribute<DataDefinitionAttribute>()!;
         try
         {
           simConnect.AddToDataDefinition(eTypeId,
-            att.Name, att.Unit, att.Type,
+            fieldInfo.Name, fieldInfo.Unit, fieldInfo.Type,
             epsilon, SimConnect.SIMCONNECT_UNUSED);
         }
         catch (Exception ex)
@@ -223,6 +238,49 @@ namespace ESimConnect
       this.simConnect.RequestDataOnSimObjectType(eRequestId, eDefineId, radius, simObjectType);
     }
 
+    public void RequestDataRepeatedly<T>(
+      int? customRequestId, SIMCONNECT_PERIOD period, bool sendOnlyOnChange = true, uint radius = 0)
+    {
+      if (this.simConnect == null) throw new NotConnectedException();
+
+      Type t = typeof(T);
+      RegisteredType rt = registeredTypes.FirstOrDefault(q => q.Type == t) ??
+        throw new InvalidRequestException($"Type '{t.Name}' has not been registered.");
+
+      int thisRequestId;
+      lock (this)
+      {
+        thisRequestId = nextRequestId++;
+      }
+      if (customRequestId != null)
+      {
+        requestIds[thisRequestId] = customRequestId.Value;
+      }
+
+      SIMCONNECT_DATA_REQUEST_FLAG flag = sendOnlyOnChange
+        ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
+        : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
+
+      EEnum eRequestId = (EEnum)thisRequestId;
+      EEnum eDefineId = (EEnum)rt.Id;
+      this.simConnect.RequestDataOnSimObject(eRequestId, eDefineId, SimConnect.SIMCONNECT_OBJECT_ID_USER, period,
+        flag, 0, 0, 0);
+    }
+
+    public void UnregisterType<T>()
+    {
+      if (this.simConnect == null) throw new NotConnectedException();
+
+      Type t = typeof(T);
+      RegisteredType? rt = this.registeredTypes.FirstOrDefault(q => q.Type == t);
+      if (rt == null)
+        throw new InvalidRequestException($"Unable to unregister type '{t.Name}' as it has not been registered yet.");
+
+      uint typeId = rt.Id;
+      EEnum eTypeId = (EEnum)typeId;
+      this.simConnect.ClearDataDefinition(eTypeId);
+    }
+
     protected IntPtr DefWndProc(IntPtr _hwnd, int msg, IntPtr _wParam, IntPtr _lParam, ref bool handled)
     {
       handled = false;
@@ -238,10 +296,9 @@ namespace ESimConnect
       return (IntPtr)0;
     }
 
-    private static void EnsureFieldHasCorrectType(FieldInfo field, DataDefinitionAttribute att)
+    private static void EnsureFieldHasCorrectType(FieldInfo field, SIMCONNECT_DATATYPE simType)
     {
       var fieldType = field.FieldType;
-      var simType = att.Type;
       if (fieldType == typeof(string))
       {
         if (simType != SIMCONNECT_DATATYPE.STRING8
@@ -281,6 +338,9 @@ namespace ESimConnect
             $"the '[MarshalAs(UnmanagedType.ByValTStr, SizeConst = XXX)]' " +
             $"SizeConst must match (provided value is {marshalAsAttribute.SizeConst}).");
       }
+      else if (typeMapping.ContainsKey(field.FieldType) && typeMapping[field.FieldType] != simType)
+        throw new InvalidRequestException($"The field '{field.Name}' has declared type '{field.FieldType}' but " +
+          $"requested sim-type is '{simType}' and should be '{typeMapping[field.FieldType]}'.");
     }
 
     private static void EnsureTypeHasRequiredAttribute(Type t)
@@ -307,6 +367,15 @@ namespace ESimConnect
       return ret;
     }
 
+    private DataDefinitionAttribute GetDataDefinitionAttributeOrThrowException(FieldInfo field)
+    {
+      DataDefinitionAttribute ret = field.GetCustomAttribute<DataDefinitionAttribute>()
+        ?? throw new InvalidRequestException($"Field '{field.Name}' has not the " +
+        $"required '{nameof(DataDefinitionAttribute)}' attribute.");
+
+      return ret;
+    }
+
     private void RegisterWindowsQueueHandle()
     {
       if (registeredWindowsQueueHandles.Contains(this.windowHandle)) return;
@@ -315,6 +384,35 @@ namespace ESimConnect
       lHwndSource.AddHook(new HwndSourceHook(DefWndProc));
 
       this.registeredWindowsQueueHandles.Add(this.windowHandle);
+    }
+
+    private SIMCONNECT_DATATYPE ResolveAttributeType(FieldInfo field, DataDefinitionAttribute att)
+    {
+      SIMCONNECT_DATATYPE ret;
+
+      if (att.Type != SimType.UNSPECIFIED)
+        ret = att.TypeAsSimConnectDataType;
+      else if (typeMapping.ContainsKey(field.FieldType))
+        ret = typeMapping[field.FieldType];
+      else if (field.FieldType == typeof(string))
+      {
+        var marshalAsAttribute = field.GetCustomAttribute<MarshalAsAttribute>() ??
+          throw new InvalidRequestException($"The field '{field.Name}' is of type string, but " +
+          $"it has not custom type defined and also [MarshalAsAttribute] is missing to " +
+          $"resolve the correct string length.");
+        if (typeStringMapping.TryGetValue(marshalAsAttribute.SizeConst, out ret) == false)
+          throw new InvalidRequestException($"The field '{field.Name}' is of type string," +
+            $"but its [MarshallAsAttribute].SizeConst doest not match predefined " +
+            $"string sizes (8/32/64/128/256/260).");
+      }
+      else
+      {
+        throw new InvalidRequestException($"The field '{field.Name}' has defined type " +
+          $"'{field.FieldType}', which has not predefined mapping to SIMCONNECT_DATATYPE. " +
+          $"you must define the 'type' parameter in [{nameof(DataDefinitionAttribute)}] attribute.");
+      }
+
+      return ret;
     }
 
     private void SimConnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
@@ -342,6 +440,32 @@ namespace ESimConnect
 
       ESimConnectDataReceivedEventArgs e = new(userRequestId, ret);
       this.DataReceived?.Invoke(this, e);
+    }
+
+    public class ESimConnectDataReceivedEventArgs
+    {
+      public ESimConnectDataReceivedEventArgs(int? requestId, object data)
+      {
+        RequestId = requestId;
+        Data = data ?? throw new ArgumentNullException(nameof(data));
+      }
+
+      public object Data { get; set; }
+
+      public int? RequestId { get; set; }
+    }
+
+    private class RegisteredType
+    {
+      public RegisteredType(uint id, Type type)
+      {
+        Id = id;
+        Type = type ?? throw new ArgumentNullException(nameof(type));
+      }
+
+      public uint Id { get; set; }
+
+      public Type Type { get; set; }
     }
   }
 }

@@ -1233,8 +1233,6 @@ namespace ESimConnect
       public const string AI_TRAFFIC_TOAIRPORT = "AI TRAFFIC TOAIRPORT";
       public const string AI_TRAFFIC_ETD = "AI TRAFFIC ETD";
       public const string AI_TRAFFIC_ETA = "AI TRAFFIC ETA";
-
-
     }
 
   }

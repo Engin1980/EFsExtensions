@@ -27,38 +27,38 @@ namespace ESimConnectWpfTest
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct OtherDataStruct
     {
-      [DataDefinition(
-        SimVars.Aircraft.Miscelaneous.TITLE,
-        type: SIMCONNECT_DATATYPE.STRING256)]
+      [DataDefinition("CAMERA STATE")]
+      public int cameraState;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.TITLE)]
       [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
       public string title;
 
-      [DataDefinition(
-        SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED,
-        SimUnits.Speed.KNOT,
-        SIMCONNECT_DATATYPE.INT32)]
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED, SimUnits.Speed.KNOT)]
       public int speed;
 
-      [DataDefinition(
-        SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE,
-        SimUnits.Length.FOOT,
-        SIMCONNECT_DATATYPE.INT32)]
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE, SimUnits.Length.FOOT)]
       public int altitude;
 
-      [DataDefinition(
-        SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND,
-        SimUnits.Length.FOOT,
-        SIMCONNECT_DATATYPE.INT64)]
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE, SimUnits.Length.FOOT)]
+      public double altitude2;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND, SimUnits.Length.FOOT)]
       public int height;
 
-      [DataDefinition(
-        SimVars.Aircraft.Miscelaneous.PLANE_BANK_DEGREES,
-        SimUnits.Angle.DEGREE,
-        SIMCONNECT_DATATYPE.INT64)]
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND, SimUnits.Length.FOOT)]
+      public double height2;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND, SimUnits.Length.METER, SimType.INT32)]
+      public int height3;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_BANK_DEGREES, SimUnits.Angle.DEGREE, SimType.INT32)]
       public int bank;
 
-      [DataDefinition(SimVars.Miscellaneous.SIM_DISABLED,
-        type: SIMCONNECT_DATATYPE.INT32)]
+      [DataDefinition(SimVars.Aircraft.BrakesAndLandingGear.BRAKE_PARKING_POSITION, type: SimType.INT32)]
+      public int parkBrake;
+
+      [DataDefinition(SimVars.Miscellaneous.SIM_DISABLED, type: SimType.INT32)]
       public int simDisabled;
     };
 
@@ -103,7 +103,8 @@ namespace ESimConnectWpfTest
     private void Update()
     {
       Log("Requesting Update");
-      this.simCon.RequestData<OtherDataStruct>();
+      //this.simCon.RequestData<OtherDataStruct>();
+      this.simCon.RequestDataRepeatedly<OtherDataStruct>(null, SIMCONNECT_PERIOD.SECOND);
       Log("Requested Update");
     }
 
