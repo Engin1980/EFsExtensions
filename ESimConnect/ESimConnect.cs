@@ -13,6 +13,51 @@ namespace ESimConnect
 {
   public class ESimConnect : IDisposable
   {
+    public class ESimConnectDataReceivedEventArgs
+    {
+      public object Data { get; set; }
+
+      public int? RequestId { get; set; }
+
+      public ESimConnectDataReceivedEventArgs(int? requestId, object data)
+      {
+        RequestId = requestId;
+        Data = data ?? throw new ArgumentNullException(nameof(data));
+      }
+    }
+
+    private class RegisteredType
+    {
+      public uint Id { get; set; }
+
+      public Type Type { get; set; }
+
+      public RegisteredType(uint id, Type type)
+      {
+        Id = id;
+        Type = type ?? throw new ArgumentNullException(nameof(type));
+      }
+    }
+
+    private enum EEnum
+    {
+      Unused = 0
+    }
+
+    public delegate void ESimConnectDataReceived(ESimConnect sender, ESimConnectDataReceivedEventArgs e);
+
+    public delegate void ESimConnectDelegate(ESimConnect sender);
+
+    public delegate void ESimConnectExceptionDelegate(ESimConnect sender, SIMCONNECT_EXCEPTION ex);
+
+    public event ESimConnectDelegate? Connected;
+
+    public event ESimConnectDataReceived? DataReceived;
+
+    public event ESimConnectDelegate? Disconnected;
+
+    public event ESimConnectExceptionDelegate? ThrowsException;
+
     /// <summary>
     /// Defines client-defined datum ID. The default is zero
     /// </summary>
@@ -44,6 +89,8 @@ namespace ESimConnect
 
     private IntPtr windowHandle;
 
+    public bool IsOpened { get => this.simConnect != null; }
+
     static ESimConnect()
     {
       typeMapping = new(){
@@ -72,28 +119,6 @@ namespace ESimConnect
         this.windowHandle = new WindowInteropHelper(this.window).Handle;
       });
     }
-
-    public delegate void ESimConnectDataReceived(ESimConnect sender, ESimConnectDataReceivedEventArgs e);
-
-    public delegate void ESimConnectDelegate(ESimConnect sender);
-
-    public delegate void ESimConnectExceptionDelegate(ESimConnect sender, SIMCONNECT_EXCEPTION ex);
-
-    public event ESimConnectDelegate? Connected;
-
-    public event ESimConnectDataReceived? DataReceived;
-
-    public event ESimConnectDelegate? Disconnected;
-
-    public event ESimConnectExceptionDelegate? ThrowsException;
-
-    private enum EEnum
-    {
-      Unused = 0
-    }
-
-    public bool IsOpened { get => this.simConnect != null; }
-
     public static void EnsureDllFilesAvailable()
     {
       string path = System.Reflection.Assembly.GetExecutingAssembly().Location;
@@ -150,17 +175,6 @@ namespace ESimConnect
       {
         throw new InternalException("Unable to open connection to FS2020.", ex);
       }
-    }
-
-    private void SimConnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
-    {
-      int iRequest = (int)data.dwRequestID;
-      object ret = data.dwData[0];
-
-      int? userRequestId = requestIds.ContainsKey(iRequest) ? requestIds[iRequest] : null;
-
-      ESimConnectDataReceivedEventArgs e = new(userRequestId, ret);
-      this.DataReceived?.Invoke(this, e);
     }
 
     public void RegisterType<T>(uint typeId) where T : struct
@@ -239,9 +253,13 @@ namespace ESimConnect
     }
 
     public void RequestDataRepeatedly<T>(
-      int? customRequestId, SIMCONNECT_PERIOD period, bool sendOnlyOnChange = true, uint radius = 0)
+      int? customRequestId, SIMCONNECT_PERIOD period, bool sendOnlyOnChange = true, 
+      int initialDelayFrames = 0, int skipBetweenFrames = 0, int numberOfReturnedFrames = 0)
     {
       if (this.simConnect == null) throw new NotConnectedException();
+      if (initialDelayFrames < 0) initialDelayFrames = 0;
+      if (skipBetweenFrames < 0) skipBetweenFrames = 0;
+      if (numberOfReturnedFrames < 0) numberOfReturnedFrames = 0;
 
       Type t = typeof(T);
       RegisteredType rt = registeredTypes.FirstOrDefault(q => q.Type == t) ??
@@ -264,7 +282,7 @@ namespace ESimConnect
       EEnum eRequestId = (EEnum)thisRequestId;
       EEnum eDefineId = (EEnum)rt.Id;
       this.simConnect.RequestDataOnSimObject(eRequestId, eDefineId, SimConnect.SIMCONNECT_OBJECT_ID_USER, period,
-        flag, 0, 0, 0);
+        flag, (uint) initialDelayFrames, (uint) skipBetweenFrames, (uint) numberOfReturnedFrames);
     }
 
     public void UnregisterType<T>()
@@ -431,7 +449,7 @@ namespace ESimConnect
       this.Disconnected?.Invoke(this);
     }
 
-    private void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
+    private void SimConnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
     {
       int iRequest = (int)data.dwRequestID;
       object ret = data.dwData[0];
@@ -441,31 +459,15 @@ namespace ESimConnect
       ESimConnectDataReceivedEventArgs e = new(userRequestId, ret);
       this.DataReceived?.Invoke(this, e);
     }
-
-    public class ESimConnectDataReceivedEventArgs
+    private void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
     {
-      public ESimConnectDataReceivedEventArgs(int? requestId, object data)
-      {
-        RequestId = requestId;
-        Data = data ?? throw new ArgumentNullException(nameof(data));
-      }
+      int iRequest = (int)data.dwRequestID;
+      object ret = data.dwData[0];
 
-      public object Data { get; set; }
+      int? userRequestId = requestIds.ContainsKey(iRequest) ? requestIds[iRequest] : null;
 
-      public int? RequestId { get; set; }
-    }
-
-    private class RegisteredType
-    {
-      public RegisteredType(uint id, Type type)
-      {
-        Id = id;
-        Type = type ?? throw new ArgumentNullException(nameof(type));
-      }
-
-      public uint Id { get; set; }
-
-      public Type Type { get; set; }
+      ESimConnectDataReceivedEventArgs e = new(userRequestId, ret);
+      this.DataReceived?.Invoke(this, e);
     }
   }
 }

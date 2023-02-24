@@ -93,6 +93,7 @@
       <xsd:enumeration value="gs"/>
       <xsd:enumeration value="ias" />
       <xsd:enumeration value="bank" />
+      <xsd:enumeration value="parkingBrake" />
     </xsd:restriction>
   </xsd:simpleType>
 

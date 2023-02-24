@@ -62,7 +62,7 @@ namespace ESimConnectWpfTest
       public int simDisabled;
     };
 
-    private ESimConnect.ESimConnect simCon = new();
+    private ESimConnect.ESimConnect simCon;
 
     public MainWindow()
     {
@@ -73,6 +73,7 @@ namespace ESimConnectWpfTest
     private void Window_Initialized(object sender, EventArgs e)
     {
       ESimConnect.ESimConnect.EnsureDllFilesAvailable();
+      this.simCon = new();
 
       lstProperties.ItemsSource = properties;
     }

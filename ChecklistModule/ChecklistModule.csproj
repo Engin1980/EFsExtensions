@@ -23,4 +23,13 @@
     </Reference>
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Xmls\a320.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Xmls\cj4.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
