@@ -20,12 +20,5 @@ namespace ChlaotModuleBase
       return ret;
     }
 
-    public static void SetOrApply<TKey, TValue>(this Dictionary<TKey, TValue> dict, TKey key, TValue value, Func<TValue, TValue> updater) where TKey : notnull
-    {
-      if (dict.ContainsKey(key))
-        dict[key] = updater(dict[key]);
-      else
-        dict[key] = value;
-    }
   }
 }

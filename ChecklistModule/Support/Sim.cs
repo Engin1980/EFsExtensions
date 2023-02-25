@@ -102,23 +102,22 @@ namespace ChecklistModule.Support
     }
 
     public int Altitude { get; private set; }
-
     public double BankAngle { get; private set; }
-
     public int GroundSpeed { get; private set; }
-
     public int Height { get; private set; }
-
     public int IndicatedSpeed { get; private set; }
-
     public bool IsSimPaused { get; private set; }
-
     public bool ParkingBrake { get; private set; }
+    public int VerticalSpeed { get; set; }
+    public bool[] EngineCombustion { get; set; } = new bool[4];
 
     public ECameraState CameraState { get; private set; }
 
+    public string Callsign { get; set; }
+
     public SimData(SimStruct ss)
     {
+      this.Callsign = ss.callsign;
       this.Altitude = ss.altitude;
       this.BankAngle = ss.bankAngle;
       this.Height = ss.height;
@@ -127,6 +126,11 @@ namespace ChecklistModule.Support
       this.IsSimPaused = ss.isSimPaused != 0;
       this.ParkingBrake = ss.parkingBrake != 0;
       this.CameraState = (ECameraState)ss.cameraState;
+      this.VerticalSpeed = ss.verticalSpeed;
+      this.EngineCombustion[0] = ss.engineOneCombustion != 0;
+      this.EngineCombustion[1] = ss.engineTwoCombustion != 0;
+      this.EngineCombustion[2] = ss.engineThreeCombustion != 0;
+      this.EngineCombustion[3] = ss.engineFourCombustion != 0;
     }
 
     public bool IsProbablyOutOfTheSim { get => (int)this.CameraState <= 6; }
@@ -137,6 +141,10 @@ namespace ChecklistModule.Support
   [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
   public struct SimStruct
   {
+    [DataDefinition(SimVars.Aircraft.RadioAndNavigation.ATC_ID)]
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+    public string callsign;
+
     [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE, SimUnits.Length.FOOT)]
     public int altitude;
 
@@ -154,6 +162,18 @@ namespace ChecklistModule.Support
 
     [DataDefinition("CAMERA STATE")]
     public int cameraState;
+
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.VERTICAL_SPEED, SimUnits.Length.FOOT)]
+    public int verticalSpeed;
+
+    [DataDefinition(SimVars.Aircraft.Engine.ENG_COMBUSTION__index + "1")]
+    public int engineOneCombustion;
+    [DataDefinition(SimVars.Aircraft.Engine.ENG_COMBUSTION__index + "2")]
+    public int engineTwoCombustion;
+    [DataDefinition(SimVars.Aircraft.Engine.ENG_COMBUSTION__index + "3")]
+    public int engineThreeCombustion;
+    [DataDefinition(SimVars.Aircraft.Engine.ENG_COMBUSTION__index + "4")]
+    public int engineFourCombustion;
 
     [DataDefinition(SimVars.Miscellaneous.SIM_DISABLED)]
     public int isSimPaused;

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,9 +31,28 @@ namespace Chlaot
 
     public void LogToConsole(LogLevel level, string message)
     {
-      txtConsole.AppendText("\n");
-      txtConsole.AppendText(level + ":: " + message);
-      txtConsole.ScrollToEnd();
+      if (Thread.CurrentThread != Application.Current.Dispatcher.Thread)
+        Application.Current.Dispatcher.Invoke(new Action(() => { this.LogToConsole(level, message); }));
+      else
+      {
+        if (level != LogLevel.VERBOSE)
+        {
+          txtConsole.AppendText("\n");
+          txtConsole.AppendText(level + ":: " + message);
+          txtConsole.ScrollToEnd();
+        }
+        try
+        {
+          System.IO.File.AppendAllText("log.txt",
+            $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}  {level} :: {message}\n");
+        }
+        catch
+        {
+          txtConsole.AppendText("\n");
+          txtConsole.AppendText(LogLevel.WARNING + ":: Failed to write message to log file.");
+          txtConsole.ScrollToEnd();
+        }
+      }
     }
 
     private void lstModules_SelectionChanged(object sender, SelectionChangedEventArgs e)

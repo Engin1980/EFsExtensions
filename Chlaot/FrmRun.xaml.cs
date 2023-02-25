@@ -45,9 +45,23 @@ namespace Chlaot
         Application.Current.Dispatcher.Invoke(new Action(() => { this.LogToConsole(level, message); }));
       else
       {
-        txtConsole.AppendText("\n");
-        txtConsole.AppendText(level + ":: " + message);
-        txtConsole.ScrollToEnd();
+        if (level != LogLevel.VERBOSE)
+        {
+          txtConsole.AppendText("\n");
+          txtConsole.AppendText(level + ":: " + message);
+          txtConsole.ScrollToEnd();
+        }
+        try
+        {
+          System.IO.File.AppendAllText("log.txt",
+            $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}  {level} :: {message}\n");
+        }
+        catch
+        {
+          txtConsole.AppendText("\n");
+          txtConsole.AppendText(LogLevel.WARNING + ":: Failed to write message to log file.");
+          txtConsole.ScrollToEnd();
+        }
       }
     }
 
@@ -60,6 +74,14 @@ namespace Chlaot
       if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
 
       this.Context.RunModules();
+    }
+
+    private void Window_Closed(object sender, EventArgs e)
+    {
+      foreach (var module in Context.Modules)
+      {
+        module.Stop();
+      }
     }
   }
 }

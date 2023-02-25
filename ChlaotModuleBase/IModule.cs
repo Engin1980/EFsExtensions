@@ -17,7 +17,9 @@ namespace Eng.Chlaot.ChlaotModuleBase
     public void SetUp(LogHandler logHandler);
 
     public void Init();
-    void Run();
+    public void Run();
+
+    public void Stop();
 
     public Control InitControl { get; }
     public Control RunControl { get; }

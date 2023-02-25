@@ -8,7 +8,7 @@ namespace ESimConnectWpfTest
 {
   internal class PropertyInfo
   {
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
     public object? Value { get; set; }
   }
 }

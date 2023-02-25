@@ -65,28 +65,32 @@
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Content="Is Sim Paused" />
         <Label Grid.Row="0" Grid.Column="1" Content="{Binding IsSimPaused}" />
 
-        <Label Grid.Row="1" Grid.Column="0" Content="Parking Brake Set" />
-        <Label Grid.Row="1" Grid.Column="1" Content="{Binding ParkingBrake}" />
+        <Label Grid.Row="1" Grid.Column="0" Content="Callsign" />
+        <Label Grid.Row="1" Grid.Column="1" Content="{Binding Callsign}" />
 
-        <Label Grid.Row="2" Grid.Column="0" Content="Altitude (ft)" />
-        <Label Grid.Row="2" Grid.Column="1" Content="{Binding Altitude}" />
+        <Label Grid.Row="2" Grid.Column="0" Content="Parking Brake Set" />
+        <Label Grid.Row="2" Grid.Column="1" Content="{Binding ParkingBrake}" />
 
-        <Label Grid.Row="3" Grid.Column="0" Content="Height (ft)" />
-        <Label Grid.Row="3" Grid.Column="1" Content="{Binding Height}" />
+        <Label Grid.Row="3" Grid.Column="0" Content="Altitude (ft)" />
+        <Label Grid.Row="3" Grid.Column="1" Content="{Binding Altitude}" />
 
-        <Label Grid.Row="4" Grid.Column="0" Content="Bank Angle (deg)" />
-        <Label Grid.Row="4" Grid.Column="1" Content="{Binding BankAngle}" />
+        <Label Grid.Row="4" Grid.Column="0" Content="Height (ft)" />
+        <Label Grid.Row="4" Grid.Column="1" Content="{Binding Height}" />
 
-        <Label Grid.Row="5" Grid.Column="0" Content="Indicated Speed (kts)" />
-        <Label Grid.Row="5" Grid.Column="1" Content="{Binding IndicatedSpeed}" />
+        <Label Grid.Row="5" Grid.Column="0" Content="Bank Angle (deg)" />
+        <Label Grid.Row="5" Grid.Column="1" Content="{Binding BankAngle}" />
 
-        <Label Grid.Row="6" Grid.Column="0" Content="Ground Speed (kts)" />
-        <Label Grid.Row="6" Grid.Column="1" Content="{Binding GroundSpeed}" />
+        <Label Grid.Row="6" Grid.Column="0" Content="Indicated Speed (kts)" />
+        <Label Grid.Row="6" Grid.Column="1" Content="{Binding IndicatedSpeed}" />
+
+        <Label Grid.Row="7" Grid.Column="0" Content="Ground Speed (kts)" />
+        <Label Grid.Row="7" Grid.Column="1" Content="{Binding GroundSpeed}" />
       </Grid>
     </TabItem>
   </TabControl>

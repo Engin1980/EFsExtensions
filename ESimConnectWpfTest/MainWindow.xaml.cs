@@ -72,7 +72,6 @@ namespace ESimConnectWpfTest
     private BindingList<PropertyInfo> properties = new();
     private void Window_Initialized(object sender, EventArgs e)
     {
-      ESimConnect.ESimConnect.EnsureDllFilesAvailable();
       this.simCon = new();
 
       lstProperties.ItemsSource = properties;
@@ -105,7 +104,8 @@ namespace ESimConnectWpfTest
     {
       Log("Requesting Update");
       //this.simCon.RequestData<OtherDataStruct>();
-      this.simCon.RequestDataRepeatedly<OtherDataStruct>(null, SIMCONNECT_PERIOD.SECOND);
+      //this.simCon.RequestDataRepeatedly<OtherDataStruct>(null, SIMCONNECT_PERIOD.SECOND);
+      this.simCon.RegisterEvent(11, SimEvents._4sec);
       Log("Requested Update");
     }
 
@@ -130,6 +130,7 @@ namespace ESimConnectWpfTest
         simCon.Connected += SimCon_Connected;
         simCon.DataReceived += SimCon_DataReceived;
         simCon.ThrowsException += SimCon_ThrowsException;
+        simCon.EventInvoked += SimCon_EventInvoked;
         Log("Events registered");
       }
       catch (Exception ex)
@@ -149,6 +150,11 @@ namespace ESimConnectWpfTest
         Log("Failed to register the type.", ex);
         return;
       }
+    }
+
+    private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)
+    {
+      Log("SimConnect-internal Event raised with request " + e.RequestId + " and value " + e.Value);
     }
 
     private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, SIMCONNECT_EXCEPTION ex)

@@ -21,6 +21,19 @@ namespace ChecklistModule
   {
     public class AutoplayChecklistEvaluator
     {
+      private void Log(string message)
+      {
+        try
+        {
+          System.IO.File.AppendAllText("innerlog.txt",
+            $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} :: {message}\n");
+        }
+        catch (Exception ex)
+        {
+          throw new ApplicationException("Unable to write to inner log.", ex);
+        }
+      }
+
       private readonly Dictionary<AutostartDelay, int> historyCounter = new();
       private CheckList? prevList = null;
       private SimData simData;
@@ -28,6 +41,8 @@ namespace ChecklistModule
       {
         this.simData = simData;
         if (this.simData.IsSimPaused) return false;
+
+        Log($"Evaluation started for {checkList.Id}");
 
         if (prevList != checkList)
         {
@@ -39,6 +54,7 @@ namespace ChecklistModule
           ? Evaluate(checkList.MetaInfo.Autostart)
           : false;
 
+        Log($"Evaluation finished for {checkList.Id} as = {ret}");
         return ret;
       }
 
@@ -72,6 +88,7 @@ namespace ChecklistModule
           _ => throw new NotImplementedException(),
         };
 
+        Log($"Eval {condition.DisplayString} = {ret} (datas = {string.Join(";", subs)})");
         return ret;
       }
 
@@ -80,9 +97,15 @@ namespace ChecklistModule
         bool tmp = Evaluate(delay.Item);
         if (tmp)
         {
-          historyCounter.SetOrApply(delay, 1, q => q = 1);
+          if (historyCounter.ContainsKey(delay))
+            historyCounter[delay]++;
+          else
+            historyCounter[delay] = 1;
         }
         bool ret = historyCounter[delay] >= delay.Seconds;
+
+        Log($"Eval {delay.DisplayString} = {ret} (delay = {historyCounter[delay]})");
+
         return ret;
       }
 
@@ -98,6 +121,8 @@ namespace ChecklistModule
           AutostartPropertyName.Height => sd.Height,
           AutostartPropertyName.Bank => sd.BankAngle,
           AutostartPropertyName.ParkingBrake => sd.ParkingBrake ? 1 : 0,
+          AutostartPropertyName.VerticalSpeed => sd.VerticalSpeed,
+          AutostartPropertyName.EngineOneStarted => sd.EngineCombustion[0] ? 1 : 0,
           _ => throw new NotImplementedException()
         };
 
@@ -108,6 +133,7 @@ namespace ChecklistModule
           _ => throw new NotImplementedException()
         };
 
+        Log($"Eval {property.DisplayString} = {ret} (actual = {actual})");
         return ret;
       }
     }
@@ -466,6 +492,12 @@ namespace ChecklistModule
       {
         this.playback.TogglePlay();
       }
+    }
+
+    internal void Stop()
+    {
+      if (this.sim != null)
+        this.sim.Close();
     }
   }
 }

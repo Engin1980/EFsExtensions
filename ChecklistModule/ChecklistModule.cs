@@ -66,5 +66,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       this.initContext = null;
       this.initContext = null;
     }
+
+    public void Stop()
+    {
+      this.runContext.Stop();
+    }
   }
 }

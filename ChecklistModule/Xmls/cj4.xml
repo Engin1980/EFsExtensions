@@ -11,6 +11,14 @@
   </meta>
   <checklist id="beforeStart" callSpeech="Before Start-up">
     <item>
+      <call type="speech" value="Sim toolkit started"/>
+      <confirmation type="speech" value="checked"/>
+    </item>
+    <item>
+      <call type="speech" value="Navigraph started"/>
+      <confirmation type="speech" value="checked"/>
+    </item>
+    <item>
       <call type="speech" value="Battery Switch"/>
       <confirmation type="speech" value="on"/>
     </item>
@@ -57,7 +65,12 @@
     </item>
     <metaInfo>
       <autostart>
-        <property name="parkingBrake" direction="below" value="1"/>
+        <and>
+          <property name="engineOneStarted" direction="above" value="0"/>
+          <for seconds="3">
+            <property name="parkingBrake" direction="below" value="1"/>
+          </for>
+        </and>
       </autostart>
     </metaInfo>
     <nextChecklistId />
@@ -124,14 +137,14 @@
     </metaInfo>
     <nextChecklistId/>
   </checklist>
-  <checklist id="approach" callSpeech="Approach">
+  <checklist id="descend" callSpeech="Descend">
     <item>
-      <call type="speech" value="Approach" />
-      <confirmation type="speech" value="Set" />
+      <call type="speech" value="Arrival"/>
+      <confirmation type="speech" value="Set"/>
     </item>
     <item>
-      <call type="speech" value="Flaps" />
-      <confirmation type="speech" value="Set" />
+      <call type="speech" value="Arrival and approach"/>
+      <confirmation type="speech" value="Set"/>
     </item>
     <item>
       <call type="speech" value="Decision height" />
@@ -139,6 +152,19 @@
     </item>
     <item>
       <call type="speech" value="Reference speeds" />
+      <confirmation type="speech" value="Set" />
+    </item>
+    <metaInfo>
+      <autostart>
+        <for seconds="60">
+          <property name="verticalSpeed" direction="below" value="-1800"/>
+        </for>
+      </autostart>
+    </metaInfo>
+  </checklist>
+  <checklist id="approach" callSpeech="Approach">
+    <item>
+      <call type="speech" value="Flaps" />
       <confirmation type="speech" value="Set" />
     </item>
     <item>
@@ -153,7 +179,7 @@
       <autostart>
         <and>
           <property name="ias" direction="below" value="200"/>
-          <property name="height" direction="below" value="3000"/>
+          <property name="height" direction="below" value="10000"/>
         </and>
       </autostart>
     </metaInfo>
@@ -172,6 +198,14 @@
       <call type="speech" value="Landing Clearance" />
       <confirmation type="speech" value="Obtained" />
     </item>
+    <metaInfo>
+      <autostart>
+        <and>
+          <property name="ias" direction="below" value="200"/>
+          <property name="height" direction="below" value="1000"/>
+        </and>
+      </autostart>
+    </metaInfo>
     <nextChecklistId id="vacated" />
   </checklist>
   <checklist id="goAround" callSpeech="Go Around">

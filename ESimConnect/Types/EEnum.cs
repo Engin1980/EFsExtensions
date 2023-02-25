@@ -4,13 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase
+namespace ESimConnect.Types
 {
-  public enum LogLevel
+  internal enum EEnum
   {
-    VERBOSE,
-    INFO,
-    WARNING,
-    ERROR
+    Unused = 0
   }
 }
