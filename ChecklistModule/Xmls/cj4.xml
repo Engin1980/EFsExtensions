@@ -66,9 +66,10 @@
     <metaInfo>
       <autostart>
         <and>
-          <property name="engineOneStarted" direction="above" value="0"/>
+          <property name="pushbackTugConnected" direction="above" value="0" />
+          <property name="engineStarted" nameIndex="1" direction="above" value="0"/>
           <for seconds="3">
-            <property name="parkingBrake" direction="below" value="1"/>
+            <property name="parkingBrakeSet" direction="below" value="1"/>
           </for>
         </and>
       </autostart>
