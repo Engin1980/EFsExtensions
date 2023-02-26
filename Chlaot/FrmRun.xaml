@@ -6,13 +6,13 @@
         xmlns:local="clr-namespace:Chlaot"
         xmlns:converters="clr-namespace:Chlaot.Converters"
         mc:Ignorable="d"
-        Title="FrmRun" Height="450" Width="800" Loaded="Window_Loaded" Closed="Window_Closed">
+        Title="FrmRun" Height="600" Width="800" Loaded="Window_Loaded" Closed="Window_Closed">
   <Window.Resources>
     <converters:BoolToRedGreenConverter x:Key="BoolToRedGreenConverter" />
   </Window.Resources>
   <DockPanel>
     <TextBox x:Name="txtConsole"  DockPanel.Dock="Bottom" FontSize="12"
-      Height="100" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" />
+      Height="200" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" />
     <DockPanel>
       <ListView x:Name="lstModules" DockPanel.Dock="left" ItemsSource="{Binding Modules}" SelectionChanged="lstModules_SelectionChanged"  >
         <ListView.ItemTemplate>
