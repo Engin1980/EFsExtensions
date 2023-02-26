@@ -208,6 +208,26 @@ namespace ChecklistModule.Support
       get => base.GetProperty<int>(nameof(VerticalSpeed))!;
       set => base.UpdateProperty(nameof(VerticalSpeed), value);
     }
+
+    public bool IsPushbackTugConnected
+    {
+      get => base.GetProperty<bool>(nameof(IsPushbackTugConnected))!;
+      set => base.UpdateProperty(nameof(IsPushbackTugConnected), value);
+    }
+
+    public double Acceleration
+    {
+      get => base.GetProperty<double>(nameof(Acceleration))!;
+      set => base.UpdateProperty(nameof(Acceleration), value);
+    }
+
+
+    public bool IsTugConnected
+    {
+      get => base.GetProperty<bool>(nameof(IsTugConnected))!;
+      set => base.UpdateProperty(nameof(IsTugConnected), value);
+    }
+
     private SimData() { }
 
     public void Update(CommonDataStruct ss)
@@ -219,6 +239,7 @@ namespace ChecklistModule.Support
       this.IndicatedSpeed = ss.indicatedSpeed;
       this.GroundSpeed = ss.groundSpeed;
       this.VerticalSpeed = ss.verticalSpeed;
+      this.Acceleration = ss.accelerationBodyZ;
     }
 
     public void Update(RareDataStruct s)
@@ -228,6 +249,7 @@ namespace ChecklistModule.Support
       this.EngineCombustion[1] = s.engineTwoCombustion != 0;
       this.EngineCombustion[2] = s.engineThreeCombustion != 0;
       this.EngineCombustion[3] = s.engineFourCombustion != 0;
+      this.IsPushbackTugConnected = s.isPushbackTugConnected != 0;
     }
   }
 
@@ -255,6 +277,9 @@ namespace ChecklistModule.Support
 
     [DataDefinition(SimVars.Aircraft.Miscelaneous.VERTICAL_SPEED, SimUnits.Length.FOOT)]
     public int verticalSpeed;
+
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.ACCELERATION_BODY_Z, SimUnits.Acceleration.FEET_PER_SECOND_SQUARED)]
+    public double accelerationBodyZ;
   }
 
   [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
@@ -270,5 +295,7 @@ namespace ChecklistModule.Support
     public int engineFourCombustion;
     [DataDefinition(SimVars.Aircraft.BrakesAndLandingGear.BRAKE_PARKING_POSITION)]
     public int parkingBrake;
+    [DataDefinition(SimVars.Services.PUSHBACK_ATTACHED)]
+    public int isPushbackTugConnected;
   }
 }

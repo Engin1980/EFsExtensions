@@ -24,43 +24,6 @@ namespace ESimConnectWpfTest
   /// </summary>
   public partial class MainWindow : Window
   {
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-    public struct OtherDataStruct
-    {
-      [DataDefinition("CAMERA STATE")]
-      public int cameraState;
-
-      [DataDefinition(SimVars.Aircraft.Miscelaneous.TITLE)]
-      [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
-      public string title;
-
-      [DataDefinition(SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED, SimUnits.Speed.KNOT)]
-      public int speed;
-
-      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE, SimUnits.Length.FOOT)]
-      public int altitude;
-
-      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE, SimUnits.Length.FOOT)]
-      public double altitude2;
-
-      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND, SimUnits.Length.FOOT)]
-      public int height;
-
-      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND, SimUnits.Length.FOOT)]
-      public double height2;
-
-      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND, SimUnits.Length.METER, SimType.INT32)]
-      public int height3;
-
-      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_BANK_DEGREES, SimUnits.Angle.DEGREE, SimType.INT32)]
-      public int bank;
-
-      [DataDefinition(SimVars.Aircraft.BrakesAndLandingGear.BRAKE_PARKING_POSITION, type: SimType.INT32)]
-      public int parkBrake;
-
-      [DataDefinition(SimVars.Miscellaneous.SIM_DISABLED, type: SimType.INT32)]
-      public int simDisabled;
-    };
 
     private ESimConnect.ESimConnect simCon;
 
@@ -103,9 +66,9 @@ namespace ESimConnectWpfTest
     private void Update()
     {
       Log("Requesting Update");
-      //this.simCon.RequestData<OtherDataStruct>();
-      //this.simCon.RequestDataRepeatedly<OtherDataStruct>(null, SIMCONNECT_PERIOD.SECOND);
-      this.simCon.RegisterSystemEvent(SimEvents.System._4sec);
+      this.simCon.RequestData<DataStruct>();
+      this.simCon.RequestDataRepeatedly<DataStruct>(null, SIMCONNECT_PERIOD.SECOND);
+      //this.simCon.RegisterSystemEvent(SimEvents.System._4sec);
       Log("Requested Update");
     }
 
@@ -142,7 +105,7 @@ namespace ESimConnectWpfTest
       Log("Registering type");
       try
       {
-        simCon.RegisterType<OtherDataStruct>();
+        simCon.RegisterType<DataStruct>();
         Log("Type registered.");
       }
       catch (Exception ex)
@@ -226,6 +189,11 @@ namespace ESimConnectWpfTest
     {
       txtLog.AppendText("\n" + text);
       txtLog.ScrollToEnd();
+    }
+
+    private void Window_Closed(object sender, EventArgs e)
+    {
+      simCon.Close();
     }
   }
 }

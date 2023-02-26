@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ESimConnectWpfTest"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800" Initialized="Window_Initialized">
+        Title="MainWindow" Height="450" Width="800" Initialized="Window_Initialized" Closed="Window_Closed">
   <DockPanel>
     <TextBox DockPanel.Dock="Bottom" x:Name="txtLog" Height="100" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" />
     <Button x:Name="btnUpdate" DockPanel.Dock="Top" Content="Connect" Padding="8" Click="btnUpdate_Click" />

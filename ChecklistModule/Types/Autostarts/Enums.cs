@@ -25,8 +25,10 @@ namespace ChecklistModule.Types.Autostarts
     GS,
     IAS,
     Bank,
-    ParkingBrake,
-    EngineOneStarted,
-    VerticalSpeed
+    parkingBrakeSet,
+    pushbackTugConnected,
+    EngineStarted,
+    VerticalSpeed,
+    Acceleration
   }
 }

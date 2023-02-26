@@ -74,9 +74,10 @@
   </xsd:complexType>
 
   <xsd:complexType name="autostartProperty">
-    <xsd:attribute name="name" type="autostartPropertyName"/>
-    <xsd:attribute name="direction" type="autostartPropertyDirection" />
-    <xsd:attribute name="value" type="xsd:integer"/>
+    <xsd:attribute name="name" type="autostartPropertyName" use="required"/>
+    <xsd:attribute name="direction" type="autostartPropertyDirection" use="required" />
+    <xsd:attribute name="value" type="xsd:integer" use="required"/>
+    <xsd:attribute name="nameIndex" type="xsd:integer" use="optional" />
   </xsd:complexType>
 
   <xsd:simpleType name="autostartPropertyDirection">
@@ -93,7 +94,9 @@
       <xsd:enumeration value="gs"/>
       <xsd:enumeration value="ias" />
       <xsd:enumeration value="bank" />
-      <xsd:enumeration value="parkingBrake" />
+      <xsd:enumeration value="parkingBrakeSet" />
+      <xsd:enumeration value="pushbackTugConnected" />
+      <xsd:enumeration value="engineStarted" />
     </xsd:restriction>
   </xsd:simpleType>
 

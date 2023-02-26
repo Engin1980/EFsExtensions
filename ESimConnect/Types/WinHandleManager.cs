@@ -64,13 +64,34 @@ namespace ESimConnect.Types
             }
             else
             {
-              throw new InternalException("Failed to invoke SimConnect.ReceiveMessage().", ex);
+              WriteExceptionToFile(ex);
+              Exception newException = new InternalException("Failed to invoke SimConnect.ReceiveMessage().", ex);
+              TryInvokExceptionInMainThread(newException);
             }
           }
           handled = true;
         }
       }
       return (IntPtr)0;
+    }
+
+    private void TryInvokExceptionInMainThread(Exception newException)
+    {
+      Application.Current.Dispatcher.Invoke(() => throw newException);
+    }
+
+    private void WriteExceptionToFile(Exception ex)
+    {
+      List<string> tmp = new();
+      while (ex != null)
+      {
+        tmp.Add(ex.Message);
+        tmp.Add(ex.StackTrace);
+        ex = ex.InnerException!;
+      }
+      string ret = string.Join("\n", tmp);
+
+      System.IO.File.WriteAllText("error.txt", ret);
     }
 
     public void Release()

@@ -7,6 +7,7 @@ using Eng.Chlaot.ChlaotModuleBase;
 using Microsoft.VisualBasic.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Printing;
 using System.Reflection;
@@ -121,9 +122,11 @@ namespace ChecklistModule
           AutostartPropertyName.GS => sd.GroundSpeed,
           AutostartPropertyName.Height => sd.Height,
           AutostartPropertyName.Bank => sd.BankAngle,
-          AutostartPropertyName.ParkingBrake => sd.ParkingBrakeSet ? 1 : 0,
+          AutostartPropertyName.parkingBrakeSet => sd.ParkingBrakeSet ? 1 : 0,
           AutostartPropertyName.VerticalSpeed => sd.VerticalSpeed,
-          AutostartPropertyName.EngineOneStarted => sd.EngineCombustion[0] ? 1 : 0,
+          AutostartPropertyName.pushbackTugConnected => sd.IsPushbackTugConnected ? 1 : 0,
+          AutostartPropertyName.Acceleration => sd.Acceleration,
+          AutostartPropertyName.EngineStarted => ResolveEngineStarted(property, sd),
           _ => throw new NotImplementedException()
         };
 
@@ -135,6 +138,14 @@ namespace ChecklistModule
         };
 
         Log($"Eval {property.DisplayString} = {ret} (actual = {actual})");
+        return ret;
+      }
+
+      private int ResolveEngineStarted(AutostartProperty property, SimData sd)
+      {
+        Trace.Assert(property.Name == AutostartPropertyName.EngineStarted);
+        int index = property.NameIndex - 1;
+        int ret = sd.EngineCombustion[index] ? 1 : 0;
         return ret;
       }
     }
