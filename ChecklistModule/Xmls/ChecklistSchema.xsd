@@ -97,6 +97,7 @@
       <xsd:enumeration value="parkingBrakeSet" />
       <xsd:enumeration value="pushbackTugConnected" />
       <xsd:enumeration value="engineStarted" />
+      <xsd:enumeration value="verticalSpeed" />
     </xsd:restriction>
   </xsd:simpleType>
 

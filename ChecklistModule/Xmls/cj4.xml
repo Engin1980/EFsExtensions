@@ -46,6 +46,10 @@
       <call type="speech" value="Climate Control"/>
       <confirmation type="speech" value="Off"/>
     </item>
+    <item>
+      <call type="speech" value="Beacon Light"/>
+      <confirmation type="speech" value="On"/>
+    </item>
     <metaInfo>
     </metaInfo>
     <nextChecklistId />
@@ -66,7 +70,7 @@
     <metaInfo>
       <autostart>
         <and>
-          <property name="pushbackTugConnected" direction="above" value="0" />
+          <property name="pushbackTugConnected" direction="below" value="1" />
           <property name="engineStarted" nameIndex="1" direction="above" value="0"/>
           <property name="engineStarted" nameIndex="2" direction="above" value="0"/>
           <for seconds="3">
@@ -131,10 +135,10 @@
     </item>
     <metaInfo>
       <autostart>
-        <or>
+        <and>
           <property name="height" direction="above" value="1500"/>
-          <property name="ias" direction="above" value="200"/>
-        </or>
+          <property name="ias" direction="above" value="180"/>
+        </and>
       </autostart>
     </metaInfo>
     <nextChecklistId/>
@@ -163,6 +167,7 @@
         </for>
       </autostart>
     </metaInfo>
+    <nextChecklistId/>
   </checklist>
   <checklist id="approach" callSpeech="Approach">
     <item>
