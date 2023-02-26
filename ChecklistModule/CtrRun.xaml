@@ -67,6 +67,8 @@
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Content="Is Sim Paused" />
@@ -110,6 +112,10 @@
             </ItemsControl>
           </Label.Content>
         </Label>
+        <Label Grid.Row="9" Grid.Column="0" Content="Acceleration" />
+        <Label Grid.Row="9" Grid.Column="1" Content="{Binding Acceleration}" />
+        <Label Grid.Row="10" Grid.Column="0" Content="Tug connected" />
+        <Label Grid.Row="10" Grid.Column="1" Content="{Binding PushbackTugConnected}" />
       </Grid>
     </TabItem>
   </TabControl>

@@ -209,10 +209,10 @@ namespace ChecklistModule.Support
       set => base.UpdateProperty(nameof(VerticalSpeed), value);
     }
 
-    public bool IsPushbackTugConnected
+    public bool PushbackTugConnected
     {
-      get => base.GetProperty<bool>(nameof(IsPushbackTugConnected))!;
-      set => base.UpdateProperty(nameof(IsPushbackTugConnected), value);
+      get => base.GetProperty<bool>(nameof(PushbackTugConnected))!;
+      set => base.UpdateProperty(nameof(PushbackTugConnected), value);
     }
 
     public double Acceleration
@@ -249,7 +249,7 @@ namespace ChecklistModule.Support
       this.EngineCombustion[1] = s.engineTwoCombustion != 0;
       this.EngineCombustion[2] = s.engineThreeCombustion != 0;
       this.EngineCombustion[3] = s.engineFourCombustion != 0;
-      this.IsPushbackTugConnected = s.isPushbackTugConnected != 0;
+      this.PushbackTugConnected = s.pushbackTugConnected != 0;
     }
   }
 
@@ -296,6 +296,6 @@ namespace ChecklistModule.Support
     [DataDefinition(SimVars.Aircraft.BrakesAndLandingGear.BRAKE_PARKING_POSITION)]
     public int parkingBrake;
     [DataDefinition(SimVars.Services.PUSHBACK_ATTACHED)]
-    public int isPushbackTugConnected;
+    public int pushbackTugConnected;
   }
 }

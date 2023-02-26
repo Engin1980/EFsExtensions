@@ -39,8 +39,11 @@ namespace ChecklistModule
       private readonly Dictionary<AutostartDelay, int> historyCounter = new();
       private CheckList? prevList = null;
       private SimData simData;
+      private bool isEvaluating = false;
       public bool EvaluateIfShouldPlay(CheckList checkList, SimData simData)
       {
+        if (isEvaluating) throw new ApplicationException("started twice");
+        else isEvaluating = true;
         this.simData = simData;
         if (this.simData.IsSimPaused) return false;
 
@@ -57,6 +60,7 @@ namespace ChecklistModule
           : false;
 
         Log($"Evaluation finished for {checkList.Id} as = {ret}");
+        isEvaluating = false;
         return ret;
       }
 
@@ -96,15 +100,19 @@ namespace ChecklistModule
 
       private bool EvaluateDelay(AutostartDelay delay)
       {
-        bool tmp = Evaluate(delay.Item);
-        if (tmp)
+        bool ret;
+        lock (this)
         {
-          if (historyCounter.ContainsKey(delay))
-            historyCounter[delay]++;
-          else
-            historyCounter[delay] = 1;
+          bool tmp = Evaluate(delay.Item);
+          if (tmp)
+          {
+            if (historyCounter.ContainsKey(delay))
+              historyCounter[delay]++;
+            else
+              historyCounter[delay] = 1;
+          }
+          ret = historyCounter[delay] >= delay.Seconds;
         }
-        bool ret = historyCounter[delay] >= delay.Seconds;
 
         Log($"Eval {delay.DisplayString} = {ret} (delay = {historyCounter[delay]})");
 
@@ -124,7 +132,7 @@ namespace ChecklistModule
           AutostartPropertyName.Bank => sd.BankAngle,
           AutostartPropertyName.parkingBrakeSet => sd.ParkingBrakeSet ? 1 : 0,
           AutostartPropertyName.VerticalSpeed => sd.VerticalSpeed,
-          AutostartPropertyName.pushbackTugConnected => sd.IsPushbackTugConnected ? 1 : 0,
+          AutostartPropertyName.pushbackTugConnected => sd.PushbackTugConnected ? 1 : 0,
           AutostartPropertyName.Acceleration => sd.Acceleration,
           AutostartPropertyName.EngineStarted => ResolveEngineStarted(property, sd),
           _ => throw new NotImplementedException()

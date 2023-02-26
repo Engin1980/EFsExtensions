@@ -68,6 +68,7 @@
         <and>
           <property name="pushbackTugConnected" direction="above" value="0" />
           <property name="engineStarted" nameIndex="1" direction="above" value="0"/>
+          <property name="engineStarted" nameIndex="2" direction="above" value="0"/>
           <for seconds="3">
             <property name="parkingBrakeSet" direction="below" value="1"/>
           </for>
