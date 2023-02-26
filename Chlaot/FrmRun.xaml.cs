@@ -82,6 +82,7 @@ namespace Chlaot
       {
         module.Stop();
       }
+      Application.Current.Shutdown();
     }
   }
 }

@@ -19,6 +19,8 @@ namespace ESimConnect.Types
 
     private Window? window = null;
     private IntPtr windowHandle = IntPtr.Zero;
+    private HwndSource? hwndSource = null;
+    private HwndSourceHook? hook = null;
     private SimConnect? _SimConnect = null;
     public SimConnect? SimConnect { get => _SimConnect; set => _SimConnect = value; }
 
@@ -38,8 +40,9 @@ namespace ESimConnect.Types
     public void Acquire()
     {
       CreateWindow();
-      HwndSource lHwndSource = HwndSource.FromHwnd(this.windowHandle);
-      lHwndSource.AddHook(new HwndSourceHook(DefWndProc));
+      this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
+      this.hook = new HwndSourceHook(DefWndProc);
+      this.hwndSource.AddHook(this.hook);
     }
 
 
@@ -49,7 +52,7 @@ namespace ESimConnect.Types
 
       if (msg == WM_USER_SIMCONNECT)
       {
-        if (this._SimConnect != null)
+        if (this._SimConnect != null && this.hwndSource != null)
         {
           try
           {
@@ -96,6 +99,13 @@ namespace ESimConnect.Types
 
     public void Release()
     {
+      if (this.hwndSource != null)
+      {
+        this.hwndSource.RemoveHook(this.hook);
+        this.hook = null;
+        this.hwndSource = null;
+      }
+
       if (this.window != null)
       {
         this.window.Close();

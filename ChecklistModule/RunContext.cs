@@ -55,7 +55,7 @@ namespace ChecklistModule
           prevList = checkList;
         }
 
-        bool ret = checkList.MetaInfo.Autostart != null
+        bool ret = checkList.MetaInfo?.Autostart != null
           ? Evaluate(checkList.MetaInfo.Autostart)
           : false;
 
@@ -101,18 +101,18 @@ namespace ChecklistModule
       private bool EvaluateDelay(AutostartDelay delay)
       {
         bool ret;
-        lock (this)
+        bool tmp = Evaluate(delay.Item);
+        if (tmp)
         {
-          bool tmp = Evaluate(delay.Item);
-          if (tmp)
-          {
-            if (historyCounter.ContainsKey(delay))
-              historyCounter[delay]++;
-            else
-              historyCounter[delay] = 1;
-          }
-          ret = historyCounter[delay] >= delay.Seconds;
-        }
+          if (historyCounter.ContainsKey(delay))
+            historyCounter[delay]++;
+          else
+            historyCounter[delay] = 1;
+        } 
+        else
+          historyCounter[delay] = 0;
+
+        ret = historyCounter[delay] >= delay.Seconds;
 
         Log($"Eval {delay.DisplayString} = {ret} (delay = {historyCounter[delay]})");
 

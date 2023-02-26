@@ -83,12 +83,12 @@ namespace ESimConnect
         this.simConnect.Dispose();
         this.simConnect = null;
       }
+      this.winHandleManager.Dispose();
     }
 
     public void Dispose()
     {
       Close();
-      this.winHandleManager.Dispose();
     }
 
     public void Open()
@@ -211,8 +211,8 @@ namespace ESimConnect
       if (numberOfReturnedFrames < 0) numberOfReturnedFrames = 0;
 
       SIMCONNECT_DATA_REQUEST_FLAG flag = sendOnlyOnChange
-        ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
-        : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
+        ? SIMCONNECT_DATA_REQUEST_FLAG.CHANGED
+        : SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT;
 
       EEnum eTypeId =  typeManager.GetIdAsEnum(typeof(T));
       EEnum eRequestId = IdProvider.GetNextAsEnum();
