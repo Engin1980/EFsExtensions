@@ -67,21 +67,21 @@ namespace ChecklistModule.Support
       simcon.RequestDataRepeatedly<RareDataStruct>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
 
       Log(LogLevel.VERBOSE, "Simconnect - attaching to events");
-      //simcon.RegisterSystemEvent(SimEvents.System.Pause);
-      //simcon.RegisterSystemEvent(SimEvents.System._1sec);
+      simcon.RegisterSystemEvent(SimEvents.System.Pause);
+      simcon.RegisterSystemEvent(SimEvents.System._1sec);
 
       Log(LogLevel.VERBOSE, "Simconnect connection ready");
     }
 
     private void Simcon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
     {
-      Log(LogLevel.INFO, $"FS2020 sim data '{e.RequestId}' obtained");
-      if (e.RequestId == COMMON_DATA_STRUCT_ID)
+      Log(LogLevel.INFO, $"FS2020 sim data '{e.RequestId}' of type '{e.Type.Name}' obtained");
+      if (e.Type == typeof(CommonDataStruct))
       {
         CommonDataStruct s = (CommonDataStruct)e.Data;
         this.SimData.Update(s);
       }
-      else if (e.RequestId == RARE_DATA_STRUCT_ID)
+      else if (e.Type == typeof(RareDataStruct))
       {
         RareDataStruct s = (RareDataStruct)e.Data;
         this.SimData.Update(s);

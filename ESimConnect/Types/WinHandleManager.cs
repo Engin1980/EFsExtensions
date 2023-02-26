@@ -37,10 +37,7 @@ namespace ESimConnect.Types
 
     public void Acquire()
     {
-      System.IO.File.AppendAllText("log_wi.txt", "Acquirea");
       CreateWindow();
-      System.IO.File.AppendAllText("log_wi.txt", "Acquireb");
-
       HwndSource lHwndSource = HwndSource.FromHwnd(this.windowHandle);
       lHwndSource.AddHook(new HwndSourceHook(DefWndProc));
     }
@@ -48,22 +45,15 @@ namespace ESimConnect.Types
 
     protected IntPtr DefWndProc(IntPtr _hwnd, int msg, IntPtr _wParam, IntPtr _lParam, ref bool handled)
     {
-      System.IO.File.AppendAllText("log_wi.txt", "DefWndProc");
-
       handled = false;
 
       if (msg == WM_USER_SIMCONNECT)
       {
         if (this._SimConnect != null)
         {
-          System.IO.File.AppendAllText("log_wi.txt", "DefWndProc a");
-
           try
           {
-            System.IO.File.AppendAllText("log_wi.txt", "DefWndProc b");
-
             this._SimConnect.ReceiveMessage();
-            System.IO.File.AppendAllText("log_wi.txt", "DefWndProc c");
 
           }
           catch (Exception ex)

@@ -71,6 +71,11 @@ namespace ESimConnect
       winHandleManager.FsExitDetected += (() => ResolveExitedFS2020());
     }
 
+    public static void SetLogHandler(Action<string> logHandler)
+    {
+      Logger.LogHandler = logHandler;
+    }
+
     public void Close()
     {
       if (this.simConnect != null)
@@ -205,32 +210,23 @@ namespace ESimConnect
       if (skipBetweenFrames < 0) skipBetweenFrames = 0;
       if (numberOfReturnedFrames < 0) numberOfReturnedFrames = 0;
 
-      System.IO.File.AppendAllText("logo.txt", "a");
-
       SIMCONNECT_DATA_REQUEST_FLAG flag = sendOnlyOnChange
         ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
         : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
 
-      System.IO.File.AppendAllText("logo.txt", "b");
       EEnum eTypeId =  typeManager.GetIdAsEnum(typeof(T));
       EEnum eRequestId = IdProvider.GetNextAsEnum();
-
-      System.IO.File.AppendAllText("logo.txt", "c");
+      
       try
       {
-        System.IO.File.AppendAllText("logo.txt", "d");
         this.simConnect.RequestDataOnSimObject(eRequestId, eTypeId, SimConnect.SIMCONNECT_OBJECT_ID_USER, period,
           flag, (uint)initialDelayFrames, (uint)skipBetweenFrames, (uint)numberOfReturnedFrames);
-        System.IO.File.AppendAllText("logo.txt", "e");
         this.requestIdManager.Register(customRequestId, typeof(T), eRequestId);
-        System.IO.File.AppendAllText("logo.txt", "F");
       }
       catch (Exception ex)
       {
-        System.IO.File.AppendAllText("logo.txt", "g");
         throw new InternalException($"Failed to invoke 'RequestDataOnSimObject(...)'.", ex);
       }
-      System.IO.File.AppendAllText("logo.txt", "i");
     }
 
     public void UnregisterType<T>()
@@ -262,40 +258,27 @@ namespace ESimConnect
 
     private void SimConnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
     {
-      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvException");
-
       SIMCONNECT_EXCEPTION ex = (SIMCONNECT_EXCEPTION)data.dwException;
       ThrowsException?.Invoke(this, ex);
     }
     private void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {
-      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvOpen");
-
       this.Connected?.Invoke(this);
     }
     private void SimConnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
     {
-      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvQuit");
-
       this.Disconnected?.Invoke(this);
     }
     private void SimConnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
     {
-      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvSimobjectData\n");
-
       EEnum iRequest = (EEnum)data.dwRequestID;
-      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvSimobjectData" + iRequest + "\n");
       object ret = data.dwData[0];
-      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvSimobjectData a" + iRequest + "\n");
       requestIdManager.Recall(iRequest, out Type type, out int? userRequestId);
-      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvSimobjectData b" + iRequest + "\n");
       ESimConnectDataReceivedEventArgs e = new(userRequestId, type, ret);
-      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvSimobjectData c" + iRequest + "\n");
       this.DataReceived?.Invoke(this, e);
     }
     private void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
     {
-      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvSimobjectDataBytype");
       EEnum iRequest = (EEnum)data.dwRequestID;
       requestIdManager.Recall(iRequest, out Type type, out int? userRequestId);
       object ret = data.dwData[0];
@@ -306,8 +289,7 @@ namespace ESimConnect
 
     private void SimConnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data)
     {
-      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvEvent");
-      EEnum iRequest = (EEnum)data.dwID;
+      EEnum iRequest = (EEnum)data.uEventID;
       string @event = eventManager.GetEvent(iRequest);
       uint value = data.dwData;
 

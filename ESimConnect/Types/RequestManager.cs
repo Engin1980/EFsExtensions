@@ -41,7 +41,6 @@ namespace ESimConnect.Types
     public void Recall(EEnum requestId, out Type type, out int? customId)
     {
       RData rd = inner.Single(q => q.requestId == requestId);
-      inner.Remove(rd);
       type = rd.type;
       customId = rd.customId;
     }
