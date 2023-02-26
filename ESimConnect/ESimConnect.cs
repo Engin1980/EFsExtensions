@@ -193,7 +193,7 @@ namespace ESimConnect
           int? customRequestId = null, uint radius = 0,
       SIMCONNECT_SIMOBJECT_TYPE simObjectType = SIMCONNECT_SIMOBJECT_TYPE.USER)
     {
-      Logger.LogMethodStart(new object[] { customRequestId, radius, simObjectType });
+      Logger.LogMethodStart(new object?[] { customRequestId, radius, simObjectType });
       if (this.simConnect == null) throw new NotConnectedException();
 
       EEnum eTypeId = typeManager.GetIdAsEnum(typeof(T));
@@ -207,7 +207,7 @@ namespace ESimConnect
       int? customRequestId, SIMCONNECT_PERIOD period, bool sendOnlyOnChange = true,
       int initialDelayFrames = 0, int skipBetweenFrames = 0, int numberOfReturnedFrames = 0)
     {
-      Logger.LogMethodStart(new object[] {
+      Logger.LogMethodStart(new object?[] {
         customRequestId, period, sendOnlyOnChange, initialDelayFrames,
         skipBetweenFrames, numberOfReturnedFrames });
       if (this.simConnect == null) throw new NotConnectedException();

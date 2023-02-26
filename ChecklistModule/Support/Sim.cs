@@ -20,10 +20,13 @@ namespace ChecklistModule.Support
     private readonly LogHandler logHandler;
     private ESimConnect.ESimConnect simcon;
     public SimData SimData { get; set; } = SimData.Empty;
-    public Sim(LogHandler logHandler)
+    public Sim(LogHandler logHandler, bool enableSimConnectLogToFile)
     {
       this.logHandler = logHandler;
-      ESimConnect.ESimConnect.SetLogHandler(s => System.IO.File.AppendAllText("esimcon.log.txt", s));
+      if (enableSimConnectLogToFile)
+        ESimConnect.ESimConnect.SetLogHandler(s => System.IO.File.AppendAllText("esimcon.log.txt", s));
+      else
+        ESimConnect.ESimConnect.SetLogHandler(s => { });
     }
 
     public void Close()

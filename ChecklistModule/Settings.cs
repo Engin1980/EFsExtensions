@@ -12,7 +12,7 @@ using System.Xml.Serialization;
 
 namespace ChecklistModule
 {
-  public class Settings
+  public class Settings : NotifyPropertyChangedBase
   {
     public class SynthetizerSettings : NotifyPropertyChangedBase
     {
@@ -109,6 +109,32 @@ namespace ChecklistModule
       SkipToNext = new KeyShortcut(true, true, false, Key.X),
       SkipToPrevious = new KeyShortcut(true, true, true, Key.X)
     };
+
+    public bool ReadConfirmations
+    {
+      get => base.GetProperty<bool>(nameof(ReadConfirmations))!;
+      set => base.UpdateProperty(nameof(ReadConfirmations), value);
+    }
+
+    public bool UseAutoplay
+    {
+      get => base.GetProperty<bool>(nameof(UseAutoplay))!;
+      set => base.UpdateProperty(nameof(UseAutoplay), value);
+    }
+
+
+    public bool VerboseAutostartEvaluation
+    {
+      get => base.GetProperty<bool>(nameof(VerboseAutostartEvaluation))!;
+      set => base.UpdateProperty(nameof(VerboseAutostartEvaluation), value);
+    }
+
+    public bool LogSimConnectToFile
+    {
+      get => base.GetProperty<bool>(nameof(LogSimConnectToFile))!;
+      set => base.UpdateProperty(nameof(LogSimConnectToFile), value);
+    }
+
     private const string FILE_NAME = "checklist-module-settings.xml";
     public static Settings Load()
     {

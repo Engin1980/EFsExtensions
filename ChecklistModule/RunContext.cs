@@ -23,12 +23,19 @@ namespace ChecklistModule
   {
     public class AutoplayChecklistEvaluator
     {
+      public AutoplayChecklistEvaluator(RunContext parent)
+      {
+        this.parent = parent;
+        this.simData = parent.sim.SimData;
+      }
       private void Log(string message)
       {
+        if (parent.settings.VerboseAutostartEvaluation)
+          this.parent.Log(LogLevel.INFO, message);
         try
         {
           System.IO.File.AppendAllText("innerlog.txt",
-            $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")} :: {message}\n");
+            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} :: {message}\n");
         }
         catch (Exception ex)
         {
@@ -38,10 +45,13 @@ namespace ChecklistModule
 
       private readonly Dictionary<AutostartDelay, int> historyCounter = new();
       private CheckList? prevList = null;
+      private bool autoplaySuppressed = false;
       private SimData simData;
       private bool isEvaluating = false;
-      public bool EvaluateIfShouldPlay(CheckList checkList, SimData simData)
+      private readonly RunContext parent;
+      public bool EvaluateIfShouldPlay(CheckList checkList)
       {
+
         if (isEvaluating) throw new ApplicationException("started twice");
         else isEvaluating = true;
         this.simData = simData;
@@ -51,15 +61,18 @@ namespace ChecklistModule
 
         if (prevList != checkList)
         {
+          this.autoplaySuppressed = false;
           historyCounter.Clear();
           prevList = checkList;
         }
 
-        bool ret = checkList.MetaInfo?.Autostart != null
-          ? Evaluate(checkList.MetaInfo.Autostart)
-          : false;
+        bool ret;
+        if (this.autoplaySuppressed)
+          ret = false;
+        else 
+          ret = checkList.MetaInfo?.Autostart != null && Evaluate(checkList.MetaInfo.Autostart);
 
-        Log($"Evaluation finished for {checkList.Id} as = {ret}");
+        Log($"Evaluation finished for {checkList.Id} as={ret}, autoplaySupressed={autoplaySuppressed}");
         isEvaluating = false;
         return ret;
       }
@@ -108,7 +121,7 @@ namespace ChecklistModule
             historyCounter[delay]++;
           else
             historyCounter[delay] = 1;
-        } 
+        }
         else
           historyCounter[delay] = 0;
 
@@ -155,6 +168,11 @@ namespace ChecklistModule
         int index = property.NameIndex - 1;
         int ret = sd.EngineCombustion[index] ? 1 : 0;
         return ret;
+      }
+
+      internal void SuppressAutoplayForCurrentChecklist()
+      {
+        this.autoplaySuppressed = true;
       }
     }
     public class PlaybackManager
@@ -287,6 +305,12 @@ namespace ChecklistModule
           {
             ret = currentList.Items[currentItemIndex].CheckItem.Call.Bytes;
             isCallPlayed = true;
+
+            if (!this.parent.settings.ReadConfirmations)
+            {
+              currentItemIndex++;
+              isCallPlayed = false;
+            }
           }
           else
           {
@@ -311,9 +335,8 @@ namespace ChecklistModule
       }
     }
 
-    private const int CONNECTION_TIMER_INTERVAL = 2000;
-
-    private const int REFRESH_TIMER_INTERVAL = 1000;
+    private const int INITIAL_CONNECTION_TIMER_INTERVAL = 2000;
+    private const int REPEATED_CONNECTION_TIMER_INTERVAL = 10000;
 
     private readonly AutoplayChecklistEvaluator autoplayEvaluator;
 
@@ -380,10 +403,10 @@ namespace ChecklistModule
         .ToList();
 
       this.playback = new PlaybackManager(this);
-      this.sim = new(logHandler ?? EmptyLogHandler);
+      this.sim = new(logHandler ?? EmptyLogHandler, settings.LogSimConnectToFile);
       this.sim.SimSecondElapsed += Sim_SimSecondElapsed;
       this.SimData = this.sim.SimData;
-      this.autoplayEvaluator = new();
+      this.autoplayEvaluator = new(this);
     }
 
     private void Sim_SimSecondElapsed()
@@ -392,9 +415,11 @@ namespace ChecklistModule
 
       if (playback.IsWaitingForNextChecklist == false) return;
       CheckList checkList = playback.GetCurrentChecklist();
-      bool shouldPlay = autoplayEvaluator.EvaluateIfShouldPlay(checkList, sim.SimData);
+      bool shouldPlay = this.settings.UseAutoplay 
+        && autoplayEvaluator.EvaluateIfShouldPlay(checkList);
       if (shouldPlay)
       {
+        autoplayEvaluator.SuppressAutoplayForCurrentChecklist();
         this.playback.TogglePlay();
       }
     }
@@ -411,7 +436,7 @@ namespace ChecklistModule
       ConnectKeyHooks();
 
       logHandler?.Invoke(LogLevel.VERBOSE, "Starting connection timer");
-      this.connectionTimer = new System.Timers.Timer(CONNECTION_TIMER_INTERVAL)
+      this.connectionTimer = new System.Timers.Timer(INITIAL_CONNECTION_TIMER_INTERVAL)
       {
         AutoReset = true,
         Enabled = true
@@ -433,6 +458,8 @@ namespace ChecklistModule
 
     private void ConnectionTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
+      if (this.connectionTimer!.Interval == INITIAL_CONNECTION_TIMER_INTERVAL)
+        this.connectionTimer!.Interval = REPEATED_CONNECTION_TIMER_INTERVAL;
       try
       {
         Log(LogLevel.VERBOSE, "Opening connection");
@@ -518,20 +545,6 @@ namespace ChecklistModule
         throw new ApplicationException($"Unknown hook id '{hookId}'.");
       }
     }
-
-    //private void RefreshTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
-    //{
-    //  this.sim.Update();
-    //  if (this.sim.SimData.IsSimPaused) return;
-
-    //  if (playback.IsWaitingForNextChecklist == false) return;
-    //  CheckList checkList = playback.GetCurrentChecklist();
-    //  bool shouldPlay = autoplayEvaluator.EvaluateIfShouldPlay(checkList, sim.SimData);
-    //  if (shouldPlay)
-    //  {
-    //    this.playback.TogglePlay();
-    //  }
-    //}
 
     private void Log(LogLevel level, string message)
     {
