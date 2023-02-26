@@ -17,14 +17,13 @@ namespace ChecklistModule.Support
     public delegate void SimSecondElapsedDelegate();
     public event SimSecondElapsedDelegate? SimSecondElapsed;
 
-    private const int COMMON_DATA_STRUCT_ID = 12345;
-    private const int RARE_DATA_STRUCT_ID = 12346;
     private readonly LogHandler logHandler;
     private ESimConnect.ESimConnect simcon;
     public SimData SimData { get; set; } = SimData.Empty;
     public Sim(LogHandler logHandler)
     {
       this.logHandler = logHandler;
+      ESimConnect.ESimConnect.SetLogHandler(s => System.IO.File.AppendAllText("esimcon.log.txt", s));
     }
 
     public void Close()

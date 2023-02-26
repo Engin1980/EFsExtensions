@@ -12,6 +12,9 @@ namespace ESimConnect.Types
 {
   public class WinHandleManager : IDisposable
   {
+    public delegate void ExceptionRaisedDelegate(Exception ex);
+    public event ExceptionRaisedDelegate? ExceptionRaised;
+
     /// <summary>
     /// Predefined windows handler id to recognize requests from Simconnect. For more see API docs.
     /// </summary>
@@ -39,10 +42,12 @@ namespace ESimConnect.Types
 
     public void Acquire()
     {
+      Logger.LogMethodStart();
       CreateWindow();
       this.hwndSource = HwndSource.FromHwnd(this.windowHandle);
       this.hook = new HwndSourceHook(DefWndProc);
       this.hwndSource.AddHook(this.hook);
+      Logger.LogMethodEnd();
     }
 
 
@@ -54,6 +59,7 @@ namespace ESimConnect.Types
       {
         if (this._SimConnect != null && this.hwndSource != null)
         {
+          Logger.Log("DefWndProc", this);
           try
           {
             this._SimConnect.ReceiveMessage();
@@ -67,9 +73,11 @@ namespace ESimConnect.Types
             }
             else
             {
-              WriteExceptionToFile(ex);
-              Exception newException = new InternalException("Failed to invoke SimConnect.ReceiveMessage().", ex);
-              TryInvokExceptionInMainThread(newException);
+              string s = ExpandExceptionString(ex);
+              //System.IO.File.WriteAllText("error.txt", s); //TODO remove when not used
+              Logger.Log("DefWndProc EXCEPTION " + s, this);
+
+              this.ExceptionRaised?.Invoke(ex);
             }
           }
           handled = true;
@@ -80,21 +88,22 @@ namespace ESimConnect.Types
 
     private void TryInvokExceptionInMainThread(Exception newException)
     {
+      //TODO remove if not used
       Application.Current.Dispatcher.Invoke(() => throw newException);
     }
 
-    private void WriteExceptionToFile(Exception ex)
+    private string ExpandExceptionString(Exception ex)
     {
       List<string> tmp = new();
       while (ex != null)
       {
         tmp.Add(ex.Message);
-        tmp.Add(ex.StackTrace);
+        tmp.Add("\n\t");
+        tmp.Add(ex.StackTrace ?? "");
         ex = ex.InnerException!;
       }
-      string ret = string.Join("\n", tmp);
-
-      System.IO.File.WriteAllText("error.txt", ret);
+      string ret = string.Join("\n\n", tmp);
+      return ret;
     }
 
     public void Release()

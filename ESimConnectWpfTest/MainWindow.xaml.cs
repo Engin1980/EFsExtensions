@@ -24,12 +24,12 @@ namespace ESimConnectWpfTest
   /// </summary>
   public partial class MainWindow : Window
   {
-
     private ESimConnect.ESimConnect simCon;
 
     public MainWindow()
     {
       InitializeComponent();
+      ESimConnect.ESimConnect.SetLogHandler(s => System.IO.File.AppendAllText("esimcon.log.txt", s));
     }
 
     private BindingList<PropertyInfo> properties = new();

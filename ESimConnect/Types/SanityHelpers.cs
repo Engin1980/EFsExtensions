@@ -14,6 +14,35 @@ namespace ESimConnect.Types
     private readonly static Dictionary<Type, SIMCONNECT_DATATYPE> typeMapping;
     private readonly static Dictionary<int, SIMCONNECT_DATATYPE> typeStringMapping;
 
+    public class FieldMapInfo
+    {
+      public FieldInfo Field { get; set; }
+      public string Name { get; set; }
+      public string? Unit { get; set; }
+      public SIMCONNECT_DATATYPE Type { get; set; }
+    }
+
+    public static List<SanityHelpers.FieldMapInfo> CheckAndDecodeFieldMappings(Type t)
+    {
+      SanityHelpers.EnsureTypeHasRequiredAttribute(t);
+      var fields = t.GetFields();
+
+      var fieldInfos = fields
+        .OrderBy(f => Marshal.OffsetOf(t, f.Name).ToInt32())
+        .Select(q => new { Field = q, Attribute = SanityHelpers.GetDataDefinitionAttributeOrThrowException(q) })
+        .Select(q => new SanityHelpers.FieldMapInfo
+        {
+          Field = q.Field,
+          Name = q.Attribute.Name,
+          Unit = q.Attribute.Unit,
+          Type = SanityHelpers.ResolveAttributeType(q.Field, q.Attribute)
+        })
+        .ToList();
+
+      fieldInfos.ForEach(q => SanityHelpers.EnsureFieldHasCorrectType(q.Field, q.Type));
+      return fieldInfos;
+    }
+
     static SanityHelpers()
     {
       typeMapping = new(){
