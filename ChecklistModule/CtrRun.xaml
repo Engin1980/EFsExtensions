@@ -66,6 +66,7 @@
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Content="Is Sim Paused" />
@@ -75,7 +76,7 @@
         <Label Grid.Row="1" Grid.Column="1" Content="{Binding Callsign}" />
 
         <Label Grid.Row="2" Grid.Column="0" Content="Parking Brake Set" />
-        <Label Grid.Row="2" Grid.Column="1" Content="{Binding ParkingBrake}" />
+        <Label Grid.Row="2" Grid.Column="1" Content="{Binding ParkingBrakeSet}" />
 
         <Label Grid.Row="3" Grid.Column="0" Content="Altitude (ft)" />
         <Label Grid.Row="3" Grid.Column="1" Content="{Binding Altitude}" />
@@ -91,6 +92,24 @@
 
         <Label Grid.Row="7" Grid.Column="0" Content="Ground Speed (kts)" />
         <Label Grid.Row="7" Grid.Column="1" Content="{Binding GroundSpeed}" />
+
+        <Label Grid.Row="8" Grid.Column="0" Content="Engines started" />
+        <Label Grid.Row="8" Grid.Column="1">
+          <Label.Content>
+            <ItemsControl ItemsSource="{Binding EngineCombustion}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Label Content="{Binding }" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </Label.Content>
+        </Label>
       </Grid>
     </TabItem>
   </TabControl>

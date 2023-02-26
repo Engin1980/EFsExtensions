@@ -1,8 +1,10 @@
 ﻿using ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase;
 using ESimConnect;
 using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -12,9 +14,11 @@ namespace ChecklistModule.Support
 {
   public class Sim
   {
-    public delegate void SimDataUpdatedDelegate();
-    public event SimDataUpdatedDelegate? SimDataUpdated;
+    public delegate void SimSecondElapsedDelegate();
+    public event SimSecondElapsedDelegate? SimSecondElapsed;
 
+    private const int COMMON_DATA_STRUCT_ID = 12345;
+    private const int RARE_DATA_STRUCT_ID = 12346;
     private readonly LogHandler logHandler;
     private ESimConnect.ESimConnect simcon;
     public SimData SimData { get; set; } = SimData.Empty;
@@ -29,18 +33,21 @@ namespace ChecklistModule.Support
       simcon.Dispose();
       simcon = null;
     }
-
     public void Open()
     {
       if (simcon != null) throw new ApplicationException("SimCon is expected to be null here.");
 
-      logHandler?.Invoke(Eng.Chlaot.ChlaotModuleBase.LogLevel.INFO, "Connecting to FS2020");
+      Log(LogLevel.INFO, "Connecting to FS2020");
       try
       {
+        Log(LogLevel.VERBOSE, "Creating simconnect instance");
         var tmp = new ESimConnect.ESimConnect();
+        Log(LogLevel.VERBOSE, "Connecting simconnect handlers");
         tmp.DataReceived += Simcon_DataReceived;
+        tmp.EventInvoked += Simcon_EventInvoked;
+        Log(LogLevel.VERBOSE, "Opening simconnect");
         tmp.Open();
-        tmp.RegisterType<SimStruct>(12345);
+        Log(LogLevel.VERBOSE, "Simconnect ready");
         simcon = tmp;
       }
       catch (Exception ex)
@@ -49,22 +56,59 @@ namespace ChecklistModule.Support
       }
     }
 
-    public void Update()
+    public void Start()
     {
-      logHandler?.Invoke(Eng.Chlaot.ChlaotModuleBase.LogLevel.INFO, "FS2020 sim data requested");
-      simcon.RequestData<SimStruct>();
+      Log(LogLevel.VERBOSE, "Simconnect - registering structs");
+      simcon.RegisterType<CommonDataStruct>();
+      simcon.RegisterType<RareDataStruct>();
+
+      Log(LogLevel.VERBOSE, "Simconnect - requesting structs");
+      simcon.RequestDataRepeatedly<CommonDataStruct>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
+      simcon.RequestDataRepeatedly<RareDataStruct>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
+
+      Log(LogLevel.VERBOSE, "Simconnect - attaching to events");
+      //simcon.RegisterSystemEvent(SimEvents.System.Pause);
+      //simcon.RegisterSystemEvent(SimEvents.System._1sec);
+
+      Log(LogLevel.VERBOSE, "Simconnect connection ready");
     }
 
     private void Simcon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
     {
-      logHandler?.Invoke(Eng.Chlaot.ChlaotModuleBase.LogLevel.INFO, "FS2020 sim data obtained");
-      SimStruct ss = (SimStruct)e.Data;
-      this.SimData = new SimData(ss);
-      this.SimDataUpdated?.Invoke();
+      Log(LogLevel.INFO, $"FS2020 sim data '{e.RequestId}' obtained");
+      if (e.RequestId == COMMON_DATA_STRUCT_ID)
+      {
+        CommonDataStruct s = (CommonDataStruct)e.Data;
+        this.SimData.Update(s);
+      }
+      else if (e.RequestId == RARE_DATA_STRUCT_ID)
+      {
+        RareDataStruct s = (RareDataStruct)e.Data;
+        this.SimData.Update(s);
+      }
+    }
+
+    private void Simcon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)
+    {
+      Log(LogLevel.VERBOSE, "Simcon event");
+      if (e.Event == SimEvents.System.Pause)
+      {
+        bool isPaused = e.Value != 0;
+        this.SimData.IsSimPaused = isPaused;
+      }
+      else if (e.Event == SimEvents.System._1sec)
+      {
+        this.SimSecondElapsed?.Invoke();
+      }
+    }
+
+    private void Log(LogLevel level, string message)
+    {
+      this.logHandler?.Invoke(level, "[SimCon] :: " + message);
     }
   }
 
-  public class SimData
+  public class SimData : NotifyPropertyChangedBase
   {
     public enum ECameraState
     {
@@ -92,30 +136,81 @@ namespace ChecklistModule.Support
 
     public static SimData Empty
     {
-      get => new()
+      get
       {
-        Altitude = 1,
-        IsSimPaused = true,
-        ParkingBrake = true,
-        CameraState = ECameraState.Waiting
-      };
+        SimData ret = new SimData()
+        {
+          IsSimPaused = true,
+          EngineCombustion = new()
+        };
+        for (int i = 0; i < 4; i++)
+        {
+          ret.EngineCombustion.Add(false);
+        }
+        return ret;
+      }
     }
 
-    public int Altitude { get; private set; }
-    public double BankAngle { get; private set; }
-    public int GroundSpeed { get; private set; }
-    public int Height { get; private set; }
-    public int IndicatedSpeed { get; private set; }
-    public bool IsSimPaused { get; private set; }
-    public bool ParkingBrake { get; private set; }
-    public int VerticalSpeed { get; set; }
-    public bool[] EngineCombustion { get; set; } = new bool[4];
+    public int Altitude
+    {
+      get => base.GetProperty<int>(nameof(Altitude))!;
+      set => base.UpdateProperty(nameof(Altitude), value);
+    }
 
-    public ECameraState CameraState { get; private set; }
+    public double BankAngle
+    {
+      get => base.GetProperty<double>(nameof(BankAngle))!;
+      set => base.UpdateProperty(nameof(BankAngle), value);
+    }
 
-    public string Callsign { get; set; }
+    public string Callsign
+    {
+      get => base.GetProperty<string>(nameof(Callsign))!;
+      set => base.UpdateProperty(nameof(Callsign), value);
+    }
 
-    public SimData(SimStruct ss)
+    public ObservableCollection<bool> EngineCombustion
+    {
+      get => base.GetProperty<ObservableCollection<bool>>(nameof(EngineCombustion))!;
+      set => base.UpdateProperty(nameof(EngineCombustion), value);
+    }
+
+    public int GroundSpeed
+    {
+      get => base.GetProperty<int>(nameof(GroundSpeed))!;
+      set => base.UpdateProperty(nameof(GroundSpeed), value);
+    }
+
+    public int Height
+    {
+      get => base.GetProperty<int>(nameof(Height))!;
+      set => base.UpdateProperty(nameof(Height), value);
+    }
+
+    public int IndicatedSpeed
+    {
+      get => base.GetProperty<int>(nameof(IndicatedSpeed))!;
+      set => base.UpdateProperty(nameof(IndicatedSpeed), value);
+    }
+
+    public bool IsSimPaused
+    {
+      get => base.GetProperty<bool>(nameof(IsSimPaused))!;
+      set => base.UpdateProperty(nameof(IsSimPaused), value);
+    }
+    public bool ParkingBrakeSet
+    {
+      get => base.GetProperty<bool>(nameof(ParkingBrakeSet))!;
+      set => base.UpdateProperty(nameof(ParkingBrakeSet), value);
+    }
+    public int VerticalSpeed
+    {
+      get => base.GetProperty<int>(nameof(VerticalSpeed))!;
+      set => base.UpdateProperty(nameof(VerticalSpeed), value);
+    }
+    private SimData() { }
+
+    public void Update(CommonDataStruct ss)
     {
       this.Callsign = ss.callsign;
       this.Altitude = ss.altitude;
@@ -123,23 +218,21 @@ namespace ChecklistModule.Support
       this.Height = ss.height;
       this.IndicatedSpeed = ss.indicatedSpeed;
       this.GroundSpeed = ss.groundSpeed;
-      this.IsSimPaused = ss.isSimPaused != 0;
-      this.ParkingBrake = ss.parkingBrake != 0;
-      this.CameraState = (ECameraState)ss.cameraState;
       this.VerticalSpeed = ss.verticalSpeed;
-      this.EngineCombustion[0] = ss.engineOneCombustion != 0;
-      this.EngineCombustion[1] = ss.engineTwoCombustion != 0;
-      this.EngineCombustion[2] = ss.engineThreeCombustion != 0;
-      this.EngineCombustion[3] = ss.engineFourCombustion != 0;
     }
 
-    public bool IsProbablyOutOfTheSim { get => (int)this.CameraState <= 6; }
-
-    private SimData() { }
+    public void Update(RareDataStruct s)
+    {
+      this.ParkingBrakeSet = s.parkingBrake != 0;
+      this.EngineCombustion[0] = s.engineOneCombustion != 0;
+      this.EngineCombustion[1] = s.engineTwoCombustion != 0;
+      this.EngineCombustion[2] = s.engineThreeCombustion != 0;
+      this.EngineCombustion[3] = s.engineFourCombustion != 0;
+    }
   }
 
   [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
-  public struct SimStruct
+  public struct CommonDataStruct
   {
     [DataDefinition(SimVars.Aircraft.RadioAndNavigation.ATC_ID)]
     [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
@@ -160,12 +253,13 @@ namespace ChecklistModule.Support
     [DataDefinition(SimVars.Aircraft.Miscelaneous.GROUND_VELOCITY, SimUnits.Speed.KNOT)]
     public int groundSpeed;
 
-    [DataDefinition("CAMERA STATE")]
-    public int cameraState;
-
     [DataDefinition(SimVars.Aircraft.Miscelaneous.VERTICAL_SPEED, SimUnits.Length.FOOT)]
     public int verticalSpeed;
+  }
 
+  [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+  public struct RareDataStruct
+  {
     [DataDefinition(SimVars.Aircraft.Engine.ENG_COMBUSTION__index + "1")]
     public int engineOneCombustion;
     [DataDefinition(SimVars.Aircraft.Engine.ENG_COMBUSTION__index + "2")]
@@ -174,10 +268,6 @@ namespace ChecklistModule.Support
     public int engineThreeCombustion;
     [DataDefinition(SimVars.Aircraft.Engine.ENG_COMBUSTION__index + "4")]
     public int engineFourCombustion;
-
-    [DataDefinition(SimVars.Miscellaneous.SIM_DISABLED)]
-    public int isSimPaused;
-
     [DataDefinition(SimVars.Aircraft.BrakesAndLandingGear.BRAKE_PARKING_POSITION)]
     public int parkingBrake;
   }

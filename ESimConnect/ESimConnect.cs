@@ -17,24 +17,25 @@ namespace ESimConnect
     public class ESimConnectDataReceivedEventArgs
     {
       public object Data { get; set; }
-
       public int? RequestId { get; set; }
+      public Type Type { get; set; }
 
-      public ESimConnectDataReceivedEventArgs(int? requestId, object data)
+      public ESimConnectDataReceivedEventArgs(int? requestId, Type type, object data)
       {
-        RequestId = requestId;
-        Data = data ?? throw new ArgumentNullException(nameof(data));
+        this.RequestId = requestId;
+        this.Type = type ?? throw new ArgumentNullException(nameof(type));
+        this.Data = data ?? throw new ArgumentNullException(nameof(data));
       }
     }
     public class ESimConnectEventInvokedEventArgs
     {
-      public ESimConnectEventInvokedEventArgs(int? requestId, uint value)
+      public ESimConnectEventInvokedEventArgs(string @event, uint value)
       {
-        RequestId = requestId;
+        Event = @event;
         Value = value;
       }
 
-      public int? RequestId { get; set; }
+      public string Event { get; set; }
       public uint Value { get; set; }
 
     }
@@ -57,9 +58,10 @@ namespace ESimConnect
 
     public event ESimConnectExceptionDelegate? ThrowsException;
     #endregion
-    private readonly RegisteredTypeManager typeManager = new();
+    private readonly TypeManager typeManager = new();
+    private readonly Types.EventManager eventManager = new();
     private readonly WinHandleManager winHandleManager = new();
-    private readonly RequestIdManager requestIdManager = new();
+    private readonly RequestManager requestIdManager = new();
     private SimConnect? simConnect;
     public bool IsOpened { get => this.simConnect != null; }
 
@@ -116,15 +118,15 @@ namespace ESimConnect
       }
     }
 
-    public void RegisterEvent(int eventId, string eventName)
+    public void RegisterSystemEvent(string eventName)
     {
       if (this.simConnect == null) throw new NotConnectedException();
 
-      EEnum eRequestId = RequestIdProvider.GetNextEnum();
+      EEnum eRequestId = IdProvider.GetNextAsEnum();
       try
       {
         this.simConnect.SubscribeToSystemEvent(eRequestId, eventName);
-        requestIdManager.Register(eventId, eRequestId);
+        this.eventManager.Register(eRequestId, eventName);
       }
       catch (Exception ex)
       {
@@ -132,14 +134,15 @@ namespace ESimConnect
       }
     }
 
-    public void RegisterType<T>(int typeId) where T : struct
+    public void RegisterType<T>() where T : struct
     {
       if (this.simConnect == null) throw new NotConnectedException();
 
-      EEnum eTypeId = (EEnum)typeId;
+      EEnum eTypeId = IdProvider.GetNextAsEnum();
       int epsilon = 0;
 
       Type t = typeof(T);
+      //TODO refactor to method:
       SanityHelpers.EnsureTypeHasRequiredAttribute(t);
       var fields = t.GetFields();
 
@@ -173,25 +176,24 @@ namespace ESimConnect
       try
       {
         this.simConnect.RegisterDataDefineStruct<T>(eTypeId);
-        this.typeManager.Register(typeId, t);
+        this.typeManager.Register((int)eTypeId, t);
       }
       catch (Exception ex)
       {
         throw new InternalException("Failed to invoke 'simConnect.RegisterDataDefineStruct<T>(...)'.", ex);
       }
     }
+
     public void RequestData<T>(
           int? customRequestId = null, uint radius = 0,
       SIMCONNECT_SIMOBJECT_TYPE simObjectType = SIMCONNECT_SIMOBJECT_TYPE.USER)
     {
       if (this.simConnect == null) throw new NotConnectedException();
 
-      Type t = typeof(T);
-      int typeId = typeManager.GetId(t);
-
-      EEnum eRequestId = RequestIdProvider.GetNextEnum();
-      EEnum eDefineId = (EEnum)typeId;
-      this.simConnect.RequestDataOnSimObjectType(eRequestId, eDefineId, radius, simObjectType);
+      EEnum eTypeId = typeManager.GetIdAsEnum(typeof(T));
+      EEnum eRequestId = IdProvider.GetNextAsEnum();
+      this.simConnect.RequestDataOnSimObjectType(eRequestId, eTypeId, radius, simObjectType);
+      requestIdManager.Register(customRequestId, typeof(T), eRequestId);
     }
 
     public void RequestDataRepeatedly<T>(
@@ -203,36 +205,46 @@ namespace ESimConnect
       if (skipBetweenFrames < 0) skipBetweenFrames = 0;
       if (numberOfReturnedFrames < 0) numberOfReturnedFrames = 0;
 
+      System.IO.File.AppendAllText("logo.txt", "a");
+
       SIMCONNECT_DATA_REQUEST_FLAG flag = sendOnlyOnChange
         ? SIMCONNECT_DATA_REQUEST_FLAG.DEFAULT
         : SIMCONNECT_DATA_REQUEST_FLAG.CHANGED;
 
-      EEnum eDefineId = typeManager.GetEnumId(typeof(T));
-      EEnum eRequestId = RequestIdProvider.GetNextEnum();
-      
+      System.IO.File.AppendAllText("logo.txt", "b");
+      EEnum eTypeId =  typeManager.GetIdAsEnum(typeof(T));
+      EEnum eRequestId = IdProvider.GetNextAsEnum();
 
+      System.IO.File.AppendAllText("logo.txt", "c");
       try
       {
-        this.simConnect.RequestDataOnSimObject(eRequestId, eDefineId, SimConnect.SIMCONNECT_OBJECT_ID_USER, period,
+        System.IO.File.AppendAllText("logo.txt", "d");
+        this.simConnect.RequestDataOnSimObject(eRequestId, eTypeId, SimConnect.SIMCONNECT_OBJECT_ID_USER, period,
           flag, (uint)initialDelayFrames, (uint)skipBetweenFrames, (uint)numberOfReturnedFrames);
-        this.requestIdManager.Register(customRequestId, eRequestId);
+        System.IO.File.AppendAllText("logo.txt", "e");
+        this.requestIdManager.Register(customRequestId, typeof(T), eRequestId);
+        System.IO.File.AppendAllText("logo.txt", "F");
       }
       catch (Exception ex)
       {
+        System.IO.File.AppendAllText("logo.txt", "g");
         throw new InternalException($"Failed to invoke 'RequestDataOnSimObject(...)'.", ex);
       }
+      System.IO.File.AppendAllText("logo.txt", "i");
     }
 
     public void UnregisterType<T>()
     {
       if (this.simConnect == null) throw new NotConnectedException();
 
-      EEnum eTypeId = typeManager.GetEnumId(typeof(T));
+      EEnum eTypeId = typeManager.GetIdAsEnum(typeof(T));
 
-      try { 
-      this.simConnect.ClearDataDefinition(eTypeId);
+      try
+      {
+        this.simConnect.ClearDataDefinition(eTypeId);
         this.typeManager.Unregister(typeof(T));
-      } catch (Exception ex)
+      }
+      catch (Exception ex)
       {
         throw new InternalException($"Failed to unregister type {typeof(T).Name}.", ex);
       }
@@ -250,44 +262,56 @@ namespace ESimConnect
 
     private void SimConnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
     {
+      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvException");
+
       SIMCONNECT_EXCEPTION ex = (SIMCONNECT_EXCEPTION)data.dwException;
       ThrowsException?.Invoke(this, ex);
     }
     private void SimConnect_OnRecvOpen(SimConnect sender, SIMCONNECT_RECV_OPEN data)
     {
+      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvOpen");
+
       this.Connected?.Invoke(this);
     }
     private void SimConnect_OnRecvQuit(SimConnect sender, SIMCONNECT_RECV data)
     {
+      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvQuit");
+
       this.Disconnected?.Invoke(this);
     }
     private void SimConnect_OnRecvSimobjectData(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA data)
     {
+      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvSimobjectData\n");
+
       EEnum iRequest = (EEnum)data.dwRequestID;
+      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvSimobjectData" + iRequest + "\n");
       object ret = data.dwData[0];
-
-      int? userRequestId = requestIdManager.Recall(iRequest);
-
-      ESimConnectDataReceivedEventArgs e = new(userRequestId, ret);
+      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvSimobjectData a" + iRequest + "\n");
+      requestIdManager.Recall(iRequest, out Type type, out int? userRequestId);
+      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvSimobjectData b" + iRequest + "\n");
+      ESimConnectDataReceivedEventArgs e = new(userRequestId, type, ret);
+      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvSimobjectData c" + iRequest + "\n");
       this.DataReceived?.Invoke(this, e);
     }
     private void SimConnect_OnRecvSimobjectDataBytype(SimConnect sender, SIMCONNECT_RECV_SIMOBJECT_DATA_BYTYPE data)
     {
+      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvSimobjectDataBytype");
       EEnum iRequest = (EEnum)data.dwRequestID;
-      int? userRequestId = requestIdManager.Recall(iRequest);
+      requestIdManager.Recall(iRequest, out Type type, out int? userRequestId);
       object ret = data.dwData[0];
 
-      ESimConnectDataReceivedEventArgs e = new(userRequestId, ret);
+      ESimConnectDataReceivedEventArgs e = new(userRequestId, type, ret);
       this.DataReceived?.Invoke(this, e);
     }
 
     private void SimConnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data)
     {
+      System.IO.File.AppendAllText("logo.txt", "SimConnect_OnRecvEvent");
       EEnum iRequest = (EEnum)data.dwID;
-      int? userRequestId = requestIdManager.Recall(iRequest);
+      string @event = eventManager.GetEvent(iRequest);
       uint value = data.dwData;
 
-      ESimConnectEventInvokedEventArgs e = new(userRequestId, value);
+      ESimConnectEventInvokedEventArgs e = new(@event, value);
       this.EventInvoked?.Invoke(this, e);
     }
   }

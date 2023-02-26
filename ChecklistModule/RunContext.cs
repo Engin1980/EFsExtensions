@@ -4,6 +4,7 @@ using ChecklistModule.Types.Autostarts;
 using ChecklistModule.Types.RunViews;
 using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase;
+using Microsoft.VisualBasic.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -120,7 +121,7 @@ namespace ChecklistModule
           AutostartPropertyName.GS => sd.GroundSpeed,
           AutostartPropertyName.Height => sd.Height,
           AutostartPropertyName.Bank => sd.BankAngle,
-          AutostartPropertyName.ParkingBrake => sd.ParkingBrake ? 1 : 0,
+          AutostartPropertyName.ParkingBrake => sd.ParkingBrakeSet ? 1 : 0,
           AutostartPropertyName.VerticalSpeed => sd.VerticalSpeed,
           AutostartPropertyName.EngineOneStarted => sd.EngineCombustion[0] ? 1 : 0,
           _ => throw new NotImplementedException()
@@ -291,7 +292,7 @@ namespace ChecklistModule
       }
     }
 
-    private const int CONNECTION_TIMER_INTERVAL = 10000;
+    private const int CONNECTION_TIMER_INTERVAL = 2000;
 
     private const int REFRESH_TIMER_INTERVAL = 1000;
 
@@ -337,6 +338,7 @@ namespace ChecklistModule
       get => base.GetProperty<CheckSet>(nameof(CheckSet))!;
       set => base.UpdateProperty(nameof(CheckSet), value);
     }
+
     public RunContext(InitContext initContext, LogHandler logHandler)
     {
       this.CheckSet = initContext.ChecklistSet;
@@ -360,29 +362,44 @@ namespace ChecklistModule
 
       this.playback = new PlaybackManager(this);
       this.sim = new(logHandler ?? EmptyLogHandler);
-      this.sim.SimDataUpdated += Sim_SimDataUpdated;
+      this.sim.SimSecondElapsed += Sim_SimSecondElapsed;
       this.SimData = this.sim.SimData;
       this.autoplayEvaluator = new();
     }
 
-    private void Sim_SimDataUpdated()
+    private void Sim_SimSecondElapsed()
     {
-      this.SimData = sim.SimData;
+      if (this.sim.SimData.IsSimPaused) return;
+
+      if (playback.IsWaitingForNextChecklist == false) return;
+      CheckList checkList = playback.GetCurrentChecklist();
+      bool shouldPlay = autoplayEvaluator.EvaluateIfShouldPlay(checkList, sim.SimData);
+      if (shouldPlay)
+      {
+        this.playback.TogglePlay();
+      }
     }
 
     internal void Run(KeyHookWrapper keyHookWrapper)
     {
-      this.keyHookWrapper = keyHookWrapper ?? throw new ArgumentNullException(nameof(keyHookWrapper));
+      logHandler?.Invoke(LogLevel.VERBOSE, "Run");
+
+      logHandler?.Invoke(LogLevel.VERBOSE, "Resetting playback");
       playback.Reset();
 
+      logHandler?.Invoke(LogLevel.VERBOSE, "Adding key hooks");
+      this.keyHookWrapper = keyHookWrapper ?? throw new ArgumentNullException(nameof(keyHookWrapper));
       ConnectKeyHooks();
 
+      logHandler?.Invoke(LogLevel.VERBOSE, "Starting connection timer");
       this.connectionTimer = new System.Timers.Timer(CONNECTION_TIMER_INTERVAL)
       {
         AutoReset = true,
         Enabled = true
       };
       this.connectionTimer.Elapsed += ConnectionTimer_Elapsed;
+
+      logHandler?.Invoke(LogLevel.VERBOSE, "Run done");
     }
 
     private static KeyHookWrapper.KeyHookInfo ConvertShortcutToKeyHookInfo(Settings.KeyShortcut shortcut)
@@ -399,22 +416,25 @@ namespace ChecklistModule
     {
       try
       {
+        Log(LogLevel.VERBOSE, "Opening connection");
         sim.Open();
+        Log(LogLevel.VERBOSE, "Opening connection - done");
         this.connectionTimer!.Stop();
         this.connectionTimer = null;
 
-        this.refreshTimer = new System.Timers.Timer(REFRESH_TIMER_INTERVAL)
-        {
-          AutoReset = true,
-          Enabled = true
-        };
-        this.refreshTimer.Elapsed += RefreshTimer_Elapsed;
-        this.logHandler?.Invoke(LogLevel.INFO, "Connected to FS2020, starting updates");
+        //this.refreshTimer = new System.Timers.Timer(REFRESH_TIMER_INTERVAL)
+        //{
+        //  AutoReset = true,
+        //  Enabled = true
+        //};
+        //this.refreshTimer.Elapsed += RefreshTimer_Elapsed;
+        this.sim.Start();
+        Log(LogLevel.INFO, "Connected to FS2020, starting updates");
       }
       catch (Exception ex)
       {
-        this.logHandler?.Invoke(LogLevel.WARNING, "Failed to connect to FS2020, will try it again in a few seconds...");
-        this.logHandler?.Invoke(LogLevel.WARNING, "Fail reason: " + ex.GetFullMessage());
+        Log(LogLevel.WARNING, "Failed to connect to FS2020, will try it again in a few seconds...");
+        Log(LogLevel.WARNING, "Fail reason: " + ex.GetFullMessage());
       }
     }
 
@@ -480,18 +500,23 @@ namespace ChecklistModule
       }
     }
 
-    private void RefreshTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
-    {
-      this.sim.Update();
-      if (this.sim.SimData.IsSimPaused) return;
+    //private void RefreshTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    //{
+    //  this.sim.Update();
+    //  if (this.sim.SimData.IsSimPaused) return;
 
-      if (playback.IsWaitingForNextChecklist == false) return;
-      CheckList checkList = playback.GetCurrentChecklist();
-      bool shouldPlay = autoplayEvaluator.EvaluateIfShouldPlay(checkList, sim.SimData);
-      if (shouldPlay)
-      {
-        this.playback.TogglePlay();
-      }
+    //  if (playback.IsWaitingForNextChecklist == false) return;
+    //  CheckList checkList = playback.GetCurrentChecklist();
+    //  bool shouldPlay = autoplayEvaluator.EvaluateIfShouldPlay(checkList, sim.SimData);
+    //  if (shouldPlay)
+    //  {
+    //    this.playback.TogglePlay();
+    //  }
+    //}
+
+    private void Log(LogLevel level, string message)
+    {
+      logHandler?.Invoke(level, "[RunContext] :: " + message);
     }
 
     internal void Stop()

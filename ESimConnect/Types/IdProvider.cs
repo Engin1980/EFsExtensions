@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ESimConnect.Types
 {
-  internal static class RequestIdProvider
+  internal static class IdProvider
   {
     private static int nextRequestId = 1;
     private static readonly object lck = new();
@@ -20,6 +20,6 @@ namespace ESimConnect.Types
       }
       return ret;
     }
-    internal static EEnum GetNextEnum() => (EEnum)GetNext();
+    internal static EEnum GetNextAsEnum() => (EEnum)GetNext();
   }
 }

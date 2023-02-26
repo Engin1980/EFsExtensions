@@ -105,7 +105,7 @@ namespace ESimConnectWpfTest
       Log("Requesting Update");
       //this.simCon.RequestData<OtherDataStruct>();
       //this.simCon.RequestDataRepeatedly<OtherDataStruct>(null, SIMCONNECT_PERIOD.SECOND);
-      this.simCon.RegisterEvent(11, SimEvents._4sec);
+      this.simCon.RegisterSystemEvent(SimEvents.System._4sec);
       Log("Requested Update");
     }
 
@@ -142,7 +142,7 @@ namespace ESimConnectWpfTest
       Log("Registering type");
       try
       {
-        simCon.RegisterType<OtherDataStruct>(1);
+        simCon.RegisterType<OtherDataStruct>();
         Log("Type registered.");
       }
       catch (Exception ex)
@@ -154,7 +154,7 @@ namespace ESimConnectWpfTest
 
     private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)
     {
-      Log("SimConnect-internal Event raised with request " + e.RequestId + " and value " + e.Value);
+      Log("SimConnect-internal Event raised with request " + e.Event + " and value " + e.Value);
     }
 
     private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, SIMCONNECT_EXCEPTION ex)
