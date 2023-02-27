@@ -50,6 +50,10 @@
       <call type="speech" value="Beacon Light"/>
       <confirmation type="speech" value="On"/>
     </item>
+    <item>
+      <call type="speech" value="Throttles"/>
+      <confirmation type="speech" value="Idle"/>
+    </item>
     <metaInfo>
     </metaInfo>
     <nextChecklistId />

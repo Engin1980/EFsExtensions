@@ -17,4 +17,10 @@
     <ProjectReference Include="..\ChlaotModuleBase\ChlaotModuleBase.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="NAudioCore">
+      <HintPath>..\Libs\NAudioCore.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

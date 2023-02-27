@@ -30,11 +30,30 @@ namespace ChecklistModule
         set => base.UpdateProperty(nameof(Rate), Math.Max(Math.Min(value, 10), -10));
       }
 
+
+      public int StartTrimMiliseconds
+      {
+        get => base.GetProperty<int>(nameof(StartTrimMiliseconds))!;
+        set => base.UpdateProperty(nameof(StartTrimMiliseconds), Math.Max(value, 0));
+      }
+
+
+      public int EndTrimMiliseconds
+      {
+        get => base.GetProperty<int>(nameof(EndTrimMiliseconds))!;
+        set => base.UpdateProperty(nameof(EndTrimMiliseconds), Math.Max(value, 0));
+      }
+
+      public TimeSpan StartTrimMilisecondsTimeSpan { get => TimeSpan.FromMilliseconds(StartTrimMiliseconds); }
+      public TimeSpan EndTrimMilisecondsTimeSpan { get => TimeSpan.FromMilliseconds(EndTrimMiliseconds); }
+
       public SynthetizerSettings()
       {
         this.AvailableVoices = new SpeechSynthesizer().GetInstalledVoices().Select(q => q.VoiceInfo.Name).ToArray();
         this.Voice = this.AvailableVoices.FirstOrDefault() ?? "";
         this.Rate = 0;
+        this.StartTrimMiliseconds = 0;
+        this.EndTrimMiliseconds = 750;
       }
     }
 

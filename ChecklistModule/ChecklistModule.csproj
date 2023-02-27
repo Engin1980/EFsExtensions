@@ -22,6 +22,10 @@
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
       <HintPath>..\Libs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
+    <Reference Include="NAudioCore">
+      <HintPath>..\Libs\NAudioCore.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

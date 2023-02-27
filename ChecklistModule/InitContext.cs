@@ -139,7 +139,7 @@ namespace ChecklistModule
     private void InitializeSoundStreamsForChecklist(
       CheckList checklist,
       Dictionary<string, byte[]> generatedSounds,
-      Synthetizer synthetizer, 
+      Synthetizer synthetizer,
       string relativePath)
     {
       if (checklist.MetaInfo?.CustomEntrySpeech != null)
@@ -150,11 +150,15 @@ namespace ChecklistModule
       checklist.EntrySpeechBytes =
         checklist.MetaInfo?.CustomEntrySpeech != null
         ? checklist.MetaInfo.CustomEntrySpeech.Bytes
-        : synthetizer.Generate($"{checklist.CallSpeech} checklist");
+        : synthetizer.Generate($"{checklist.CallSpeech} checklist",
+        this.Settings.Synthetizer.StartTrimMilisecondsTimeSpan,
+        this.Settings.Synthetizer.EndTrimMilisecondsTimeSpan);
       checklist.ExitSpeechBytes =
         checklist.MetaInfo?.CustomExitSpeech != null
         ? checklist.MetaInfo.CustomExitSpeech.Bytes
-        : synthetizer.Generate($"{checklist.CallSpeech} checklist completed");
+        : synthetizer.Generate($"{checklist.CallSpeech} checklist completed",
+        this.Settings.Synthetizer.StartTrimMilisecondsTimeSpan,
+        this.Settings.Synthetizer.EndTrimMilisecondsTimeSpan);
     }
 
     private void InitializeSoundStreamsForItems(
@@ -180,7 +184,9 @@ namespace ChecklistModule
             checkDefinition.Bytes = generatedSounds[checkDefinition.Value];
           else
           {
-            checkDefinition.Bytes = synthetizer.Generate(checkDefinition.Value);
+            checkDefinition.Bytes = synthetizer.Generate(checkDefinition.Value,
+              this.Settings.Synthetizer.StartTrimMilisecondsTimeSpan,
+              this.Settings.Synthetizer.EndTrimMilisecondsTimeSpan);
             generatedSounds[checkDefinition.Value] = checkDefinition.Bytes;
           }
         }

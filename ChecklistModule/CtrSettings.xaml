@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChecklistModule"
         mc:Ignorable="d"
-        Title="CtrSettings" Height="450" Width="800" Closed="Window_Closed">
+        Title="CtrSettings" Height="508" Width="800" Closed="Window_Closed">
   <StackPanel>
     <GroupBox Header="Synthetizer" DataContext="{Binding Synthetizer}" Margin="8">
       <Grid>
@@ -17,14 +17,20 @@
           <RowDefinition />
           <RowDefinition />
           <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
         </Grid.RowDefinitions>
         <Label Content="Voice" Grid.Row="0" Grid.Column="0" />
         <ComboBox Grid.Row="0" Grid.Column="1"  Margin="2"
                   SelectedItem="{Binding Voice}" ItemsSource="{Binding AvailableVoices}" />
         <Label Content="Rate" Grid.Row="1" Grid.Column="0" />
         <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Rate}" Margin="2" />
-        <Button x:Name="btnTestSynthetizer" Grid.Row="2" Grid.Column="1"  Margin="2"
+        <Button x:Name="btnTestSynthetizer" Grid.Row="4" Grid.Column="1"  Margin="2"
                 Content="Test synthetizer" Click="btnTestSynthetizer_Click" />
+        <Label Content="Trim beginning (miliseconds)" Grid.Row="2" Grid.Column="0" />
+        <TextBox Text="{Binding StartTrimMiliseconds}" Grid.Row="2" Grid.Column="1" Margin="2"/>
+        <Label Content="Trim end (miliseconds)" Grid.Row="3" Grid.Column="0" />
+        <TextBox Text="{Binding EndTrimMiliseconds}" Grid.Row="3" Grid.Column="1" Margin="2"/>
       </Grid>
     </GroupBox>
     <GroupBox Header="Key shortcuts" DataContext="{Binding Shortcuts}" Margin="8">
@@ -77,7 +83,7 @@
         <CheckBox IsChecked="{Binding ReadConfirmations}" Grid.Row ="0" Grid.Column="1"
                   Margin="0 8 0 0 "/>
         <Label Content="Use Autoplay" Grid.Row="1" Grid.Column="0" />
-        <CheckBox IsChecked="{Binding ReadConfirmations}" Grid.Row ="1" Grid.Column="1"
+        <CheckBox IsChecked="{Binding UseAutoplay}" Grid.Row ="1" Grid.Column="1"
                   Margin="0 8 0 0 "/>
         <Label Content="Verbose Autoplay Info" Grid.Row="2" Grid.Column="0" />
         <CheckBox IsChecked="{Binding VerboseAutostartEvaluation}" Grid.Row ="2" Grid.Column="1"

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChecklistModule.Support;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Speech.Synthesis;
@@ -37,15 +38,17 @@ namespace ChecklistModule
       btnTestSynthetizer.IsEnabled = false;
       try
       {
-        SpeechSynthesizer ss = new SpeechSynthesizer();
-        ss.SelectVoice(settings.Synthetizer.Voice);
-        ss.Rate = settings.Synthetizer.Rate;
+        Synthetizer s = new Synthetizer(settings.Synthetizer.Voice, settings.Synthetizer.Rate);
+        var a = s.Generate("Landing lights", settings.Synthetizer.StartTrimMilisecondsTimeSpan, settings.Synthetizer.EndTrimMilisecondsTimeSpan);
+        var b = s.Generate("On", settings.Synthetizer.StartTrimMilisecondsTimeSpan, settings.Synthetizer.EndTrimMilisecondsTimeSpan);
 
-        ss.Speak("Landing lights - on");
+        Player p = new Player();
+        p.PlayAsync(a);
+        p.PlayAsync(b);
       }
       catch (Exception ex)
       {
-
+        throw new ApplicationException("Failed to generate or play.", ex);
       }
       finally
       {
