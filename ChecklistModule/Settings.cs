@@ -158,7 +158,7 @@ namespace ChecklistModule
       {
         using FileStream fs = new(FILE_NAME, FileMode.Open);
         XmlSerializer ser = new(typeof(Settings));
-        ret = (Settings)ser.Deserialize(fs);
+        ret = (Settings)ser.Deserialize(fs)!;
       }
       catch (Exception ex)
       {

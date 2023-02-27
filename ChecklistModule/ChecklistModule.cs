@@ -21,7 +21,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     private InitContext initContext;
     private RunContext runContext;
-    private LogHandler logHandler;
+    private LogHandler? logHandler;
     private Settings settings;
 
     public string Name => "Check-lists";

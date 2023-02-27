@@ -206,6 +206,10 @@
       <confirmation type="speech" value="Full" />
     </item>
     <item>
+      <call type="speech" value="Speed brake" />
+      <confirmation type="speech" value="None" />
+    </item>
+    <item>
       <call type="speech" value="Landing Clearance" />
       <confirmation type="speech" value="Obtained" />
     </item>

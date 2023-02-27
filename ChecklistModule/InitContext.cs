@@ -16,7 +16,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using ChlaotModuleBase;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Policy;
 
@@ -42,6 +41,7 @@ namespace ChecklistModule
       this.logHandler = logHandler ?? EmptyLogHandler;
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
     }
+
     internal void LoadFile(string xmlFile)
     {
       CheckSet tmp;
