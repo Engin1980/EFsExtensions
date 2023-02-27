@@ -46,16 +46,14 @@ namespace ChecklistModule
       private readonly Dictionary<AutostartDelay, int> historyCounter = new();
       private CheckList? prevList = null;
       private bool autoplaySuppressed = false;
-      private SimData simData;
+      private readonly SimData simData;
       private bool isEvaluating = false;
+      private readonly object lck = new();
       private readonly RunContext parent;
       public bool EvaluateIfShouldPlay(CheckList checkList)
       {
-
-        if (isEvaluating) throw new ApplicationException("started twice");
-        else isEvaluating = true;
-        this.simData = simData;
         if (this.simData.IsSimPaused) return false;
+        if (Monitor.TryEnter(lck) == false) return false;
 
         Log($"Evaluation started for {checkList.Id}");
 
@@ -69,11 +67,13 @@ namespace ChecklistModule
         bool ret;
         if (this.autoplaySuppressed)
           ret = false;
-        else 
+        else
           ret = checkList.MetaInfo?.Autostart != null && Evaluate(checkList.MetaInfo.Autostart);
 
+        ret = true;
         Log($"Evaluation finished for {checkList.Id} as={ret}, autoplaySupressed={autoplaySuppressed}");
-        isEvaluating = false;
+
+        Monitor.Exit(lck);
         return ret;
       }
 
@@ -184,7 +184,6 @@ namespace ChecklistModule
       private bool isEntryPlayed = false;
       private bool isPlaying = false;
       private CheckListView? previousList;
-      private Task? runPlayTask = null;
       public bool IsWaitingForNextChecklist { get => currentItemIndex == 0 && isEntryPlayed == false; }
 
       public PlaybackManager(RunContext parent)
@@ -206,8 +205,6 @@ namespace ChecklistModule
         lock (this)
         {
           this.isPlaying = true;
-          if (this.runPlayTask != null) return;
-
           byte[] playData = ResolveAndMarkNexPlayBytes(out bool stopPlaying);
           InternalPlayer player = new(playData);
           player.PlaybackFinished += Player_PlaybackFinished;
@@ -415,7 +412,7 @@ namespace ChecklistModule
 
       if (playback.IsWaitingForNextChecklist == false) return;
       CheckList checkList = playback.GetCurrentChecklist();
-      bool shouldPlay = this.settings.UseAutoplay 
+      bool shouldPlay = this.settings.UseAutoplay
         && autoplayEvaluator.EvaluateIfShouldPlay(checkList);
       if (shouldPlay)
       {
@@ -468,12 +465,6 @@ namespace ChecklistModule
         this.connectionTimer!.Stop();
         this.connectionTimer = null;
 
-        //this.refreshTimer = new System.Timers.Timer(REFRESH_TIMER_INTERVAL)
-        //{
-        //  AutoReset = true,
-        //  Enabled = true
-        //};
-        //this.refreshTimer.Elapsed += RefreshTimer_Elapsed;
         this.sim.Start();
         Log(LogLevel.INFO, "Connected to FS2020, starting updates");
       }

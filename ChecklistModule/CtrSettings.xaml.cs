@@ -21,7 +21,7 @@ namespace ChecklistModule
   /// </summary>
   public partial class CtrSettings : Window
   {
-    private Settings settings;
+    private readonly Settings settings;
     public CtrSettings()
     {
       InitializeComponent();
