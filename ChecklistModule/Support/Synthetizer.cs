@@ -20,7 +20,7 @@ namespace ChecklistModule.Support
         float bpms;
 
         inStream.Position = 0;
-        using (WaveFileReader wf = new WaveFileReader(inStream))
+        using (WaveFileReader wf = new(inStream))
         {
           wavLength = wf.TotalTime;
           bpms = wf.WaveFormat.AverageBytesPerSecond / 1000f;
@@ -37,13 +37,9 @@ namespace ChecklistModule.Support
           int endPos = (int)(Math.Round(wavLength.TotalMilliseconds * bpms) - Math.Round(trimEnd.TotalMilliseconds * bpms));
 
           inStream.Position = 0;
-          using (WaveFileReader reader = new WaveFileReader(inStream))
-          {
-            using (WaveFileWriter writer = new WaveFileWriter(outStream, reader.WaveFormat))
-            {
-              TrimWavFile(reader, writer, startPos, endPos);
-            }
-          }
+          using WaveFileReader reader = new(inStream);
+          using WaveFileWriter writer = new(outStream, reader.WaveFormat);
+          TrimWavFile(reader, writer, startPos, endPos);
         }
       }
       private static void TrimWavFile(WaveFileReader reader, WaveFileWriter writer, int startPos, int endPos)
@@ -69,7 +65,7 @@ namespace ChecklistModule.Support
       }
     }
 
-    private SpeechSynthesizer synthetizer;
+    private readonly SpeechSynthesizer synthetizer;
 
     public Synthetizer(string voice, int rate)
     {

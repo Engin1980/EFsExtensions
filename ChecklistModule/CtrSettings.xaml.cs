@@ -1,6 +1,7 @@
 ﻿using ChecklistModule.Support;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Speech.Synthesis;
 using System.Text;
@@ -33,16 +34,17 @@ namespace ChecklistModule
       this.DataContext = settings;
     }
 
+    [SuppressMessage("", "IDE1006")]
     private void btnTestSynthetizer_Click(object sender, RoutedEventArgs e)
     {
       btnTestSynthetizer.IsEnabled = false;
       try
       {
-        Synthetizer s = new Synthetizer(settings.Synthetizer.Voice, settings.Synthetizer.Rate);
+        Synthetizer s = new(settings.Synthetizer.Voice, settings.Synthetizer.Rate);
         var a = s.Generate("Landing lights", settings.Synthetizer.StartTrimMilisecondsTimeSpan, settings.Synthetizer.EndTrimMilisecondsTimeSpan);
         var b = s.Generate("On", settings.Synthetizer.StartTrimMilisecondsTimeSpan, settings.Synthetizer.EndTrimMilisecondsTimeSpan);
 
-        Player p = new Player();
+        Player p = new();
         p.PlayAsync(a);
         p.PlayAsync(b);
       }

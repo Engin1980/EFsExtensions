@@ -14,51 +14,36 @@ namespace ChecklistModule
 {
   public class Settings : NotifyPropertyChangedBase
   {
-    public class SynthetizerSettings : NotifyPropertyChangedBase
-    {
-      [XmlIgnore]
-      public string[] AvailableVoices { get; set; }
-      public string Voice
-      {
-        get => base.GetProperty<string>(nameof(Voice))!;
-        set => base.UpdateProperty(nameof(Voice), value);
-      }
-
-      public int Rate
-      {
-        get => base.GetProperty<int>(nameof(Rate))!;
-        set => base.UpdateProperty(nameof(Rate), Math.Max(Math.Min(value, 10), -10));
-      }
-
-
-      public int StartTrimMiliseconds
-      {
-        get => base.GetProperty<int>(nameof(StartTrimMiliseconds))!;
-        set => base.UpdateProperty(nameof(StartTrimMiliseconds), Math.Max(value, 0));
-      }
-
-
-      public int EndTrimMiliseconds
-      {
-        get => base.GetProperty<int>(nameof(EndTrimMiliseconds))!;
-        set => base.UpdateProperty(nameof(EndTrimMiliseconds), Math.Max(value, 0));
-      }
-
-      public TimeSpan StartTrimMilisecondsTimeSpan { get => TimeSpan.FromMilliseconds(StartTrimMiliseconds); }
-      public TimeSpan EndTrimMilisecondsTimeSpan { get => TimeSpan.FromMilliseconds(EndTrimMiliseconds); }
-
-      public SynthetizerSettings()
-      {
-        this.AvailableVoices = new SpeechSynthesizer().GetInstalledVoices().Select(q => q.VoiceInfo.Name).ToArray();
-        this.Voice = this.AvailableVoices.FirstOrDefault() ?? "";
-        this.Rate = 0;
-        this.StartTrimMiliseconds = 0;
-        this.EndTrimMiliseconds = 750;
-      }
-    }
-
     public class KeyShortcut : NotifyPropertyChangedBase
     {
+      [XmlIgnore]
+      [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822")]
+      public List<Key> AllKeys => Enum.GetValues(typeof(Key)).Cast<Key>().ToList();
+
+      public bool Alt
+      {
+        get => base.GetProperty<bool>(nameof(Alt))!;
+        set => base.UpdateProperty(nameof(Alt), value);
+      }
+
+      public bool Control
+      {
+        get => base.GetProperty<bool>(nameof(Control))!;
+        set => base.UpdateProperty(nameof(Control), value);
+      }
+
+      public Key Key
+      {
+        get => base.GetProperty<Key>(nameof(Key))!;
+        set => base.UpdateProperty(nameof(Key), value);
+      }
+
+      public bool Shift
+      {
+        get => base.GetProperty<bool>(nameof(Shift))!;
+        set => base.UpdateProperty(nameof(Shift), value);
+      }
+
       public KeyShortcut()
       {
         this.Alt = false;
@@ -74,34 +59,6 @@ namespace ChecklistModule
         Shift = shift;
         Key = key;
       }
-
-      public bool Alt
-      {
-        get => base.GetProperty<bool>(nameof(Alt))!;
-        set => base.UpdateProperty(nameof(Alt), value);
-      }
-
-      public bool Control
-      {
-        get => base.GetProperty<bool>(nameof(Control))!;
-        set => base.UpdateProperty(nameof(Control), value);
-      }
-
-      public bool Shift
-      {
-        get => base.GetProperty<bool>(nameof(Shift))!;
-        set => base.UpdateProperty(nameof(Shift), value);
-      }
-
-      public Key Key
-      {
-        get => base.GetProperty<Key>(nameof(Key))!;
-        set => base.UpdateProperty(nameof(Key), value);
-      }
-
-      [XmlIgnore]
-      public List<Key> AllKeys => Enum.GetValues(typeof(Key)).Cast<Key>().ToList();
-
       public override string ToString()
       {
         List<string> tmp = new();
@@ -121,13 +78,52 @@ namespace ChecklistModule
       public KeyShortcut SkipToPrevious { get; set; } = new();
     }
 
-    public SynthetizerSettings Synthetizer { get; set; } = new();
-    public KeyShortcuts Shortcuts { get; set; } = new()
+    public class SynthetizerSettings : NotifyPropertyChangedBase
     {
-      PlayPause = new KeyShortcut(true, false, false, Key.X),
-      SkipToNext = new KeyShortcut(true, true, false, Key.X),
-      SkipToPrevious = new KeyShortcut(true, true, true, Key.X)
-    };
+      [XmlIgnore]
+      public string[] AvailableVoices { get; set; }
+      public int EndTrimMiliseconds
+      {
+        get => base.GetProperty<int>(nameof(EndTrimMiliseconds))!;
+        set => base.UpdateProperty(nameof(EndTrimMiliseconds), Math.Max(value, 0));
+      }
+
+      public TimeSpan EndTrimMilisecondsTimeSpan { get => TimeSpan.FromMilliseconds(EndTrimMiliseconds); }
+
+      public int Rate
+      {
+        get => base.GetProperty<int>(nameof(Rate))!;
+        set => base.UpdateProperty(nameof(Rate), Math.Max(Math.Min(value, 10), -10));
+      }
+
+      public int StartTrimMiliseconds
+      {
+        get => base.GetProperty<int>(nameof(StartTrimMiliseconds))!;
+        set => base.UpdateProperty(nameof(StartTrimMiliseconds), Math.Max(value, 0));
+      }
+
+      public TimeSpan StartTrimMilisecondsTimeSpan { get => TimeSpan.FromMilliseconds(StartTrimMiliseconds); }
+
+      public string Voice
+      {
+        get => base.GetProperty<string>(nameof(Voice))!;
+        set => base.UpdateProperty(nameof(Voice), value);
+      }
+      public SynthetizerSettings()
+      {
+        this.AvailableVoices = new SpeechSynthesizer().GetInstalledVoices().Select(q => q.VoiceInfo.Name).ToArray();
+        this.Voice = this.AvailableVoices.FirstOrDefault() ?? "";
+        this.Rate = 0;
+        this.StartTrimMiliseconds = 0;
+        this.EndTrimMiliseconds = 750;
+      }
+    }
+    private const string FILE_NAME = "checklist-module-settings.xml";
+    public bool LogSimConnectToFile
+    {
+      get => base.GetProperty<bool>(nameof(LogSimConnectToFile))!;
+      set => base.UpdateProperty(nameof(LogSimConnectToFile), value);
+    }
 
     public bool ReadConfirmations
     {
@@ -135,6 +131,14 @@ namespace ChecklistModule
       set => base.UpdateProperty(nameof(ReadConfirmations), value);
     }
 
+    public KeyShortcuts Shortcuts { get; set; } = new()
+    {
+      PlayPause = new KeyShortcut(true, false, false, Key.X),
+      SkipToNext = new KeyShortcut(true, true, false, Key.X),
+      SkipToPrevious = new KeyShortcut(true, true, true, Key.X)
+    };
+
+    public SynthetizerSettings Synthetizer { get; set; } = new();
     public bool UseAutoplay
     {
       get => base.GetProperty<bool>(nameof(UseAutoplay))!;
@@ -147,24 +151,14 @@ namespace ChecklistModule
       get => base.GetProperty<bool>(nameof(VerboseAutostartEvaluation))!;
       set => base.UpdateProperty(nameof(VerboseAutostartEvaluation), value);
     }
-
-    public bool LogSimConnectToFile
-    {
-      get => base.GetProperty<bool>(nameof(LogSimConnectToFile))!;
-      set => base.UpdateProperty(nameof(LogSimConnectToFile), value);
-    }
-
-    private const string FILE_NAME = "checklist-module-settings.xml";
     public static Settings Load()
     {
       Settings ret;
       try
       {
-        using (FileStream fs = new(FILE_NAME, FileMode.Open))
-        {
-          XmlSerializer ser = new XmlSerializer(typeof(Settings));
-          ret = (Settings)ser.Deserialize(fs);
-        }
+        using FileStream fs = new(FILE_NAME, FileMode.Open);
+        XmlSerializer ser = new(typeof(Settings));
+        ret = (Settings)ser.Deserialize(fs);
       }
       catch (Exception ex)
       {
@@ -177,8 +171,8 @@ namespace ChecklistModule
     {
       try
       {
-        string file = System.IO.Path.GetTempFileName();
-        using (FileStream fs = new FileStream(file, FileMode.Truncate))
+        string file = Path.GetTempFileName();
+        using (FileStream fs = new(file, FileMode.Truncate))
         {
           XmlSerializer ser = new(typeof(Settings));
           ser.Serialize(fs, this);

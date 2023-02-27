@@ -28,21 +28,20 @@ namespace ChecklistModule
     private readonly Action<bool> setIsReadyFlagAction;
     public static LogHandler EmptyLogHandler { get => (l, m) => { }; }
 
-    public InitContext(Settings settings, LogHandler logHandler, Action<bool> setIsReadyFlagAction)
-    {
-      Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-      this.logHandler = logHandler ?? EmptyLogHandler;
-      this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
-    }
-
-    public Settings Settings { get; private set; }
-
     public CheckSet ChecklistSet
     {
       get => base.GetProperty<CheckSet>(nameof(ChecklistSet))!;
       set => base.UpdateProperty(nameof(ChecklistSet), value);
     }
 
+    public Settings Settings { get; private set; }
+
+    public InitContext(Settings settings, LogHandler logHandler, Action<bool> setIsReadyFlagAction)
+    {
+      Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+      this.logHandler = logHandler ?? EmptyLogHandler;
+      this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
+    }
     internal void LoadFile(string xmlFile)
     {
       CheckSet tmp;
@@ -107,7 +106,89 @@ namespace ChecklistModule
 
     }
 
-    private void CheckSanity(CheckSet tmp)
+    private static void BindNextChecklists(CheckSet tmp)
+    {
+      for (int i = 0; i < tmp.Checklists.Count; i++)
+      {
+        var checklist = tmp.Checklists[i];
+        if (checklist.NextChecklistId is null)
+        {
+          if (i < tmp.Checklists.Count - 1) checklist.NextChecklist = tmp.Checklists[i + 1];
+        }
+        else
+          checklist.NextChecklist = tmp.Checklists.Single(q => q.Id == checklist.NextChecklistId);
+      }
+    }
+
+    private static EXml<CheckSet> CreateDeserializer()
+    {
+      EXml<CheckSet> ret = new();
+
+      var oed = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(CheckDefinition))
+        .WithIgnoredProperty(nameof(CheckDefinition.Bytes));
+      ret.Context.ElementDeserializers.Insert(0, oed);
+
+      oed = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(CheckSet))
+        .WithCustomPropertyDeserialization(
+          nameof(CheckSet.Checklists),
+          (e, t, f, c) =>
+          {
+            var deser = c.ResolveElementDeserializer(typeof(List<CheckList>));
+            var items = e.LElements("checklist")
+              .Select(q => SafeUtils.Deserialize(q, typeof(CheckList), deser, c))
+              .Cast<CheckList>()
+              .ToList();
+            SafeUtils.SetPropertyValue(f, t, items);
+          });
+      ret.Context.ElementDeserializers.Insert(0, oed);
+
+      oed = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(CheckList))
+        .WithIgnoredProperty(nameof(CheckList.EntrySpeechBytes))
+        .WithIgnoredProperty(nameof(CheckList.ExitSpeechBytes))
+        .WithCustomPropertyDeserialization(
+        nameof(CheckList.Items),
+        (e, t, p, c) =>
+        {
+          var deser = c.ResolveElementDeserializer(typeof(List<CheckItem>));
+          var items = e.LElements("item")
+          .Select(q => SafeUtils.Deserialize(q, typeof(CheckItem), deser, c))
+          .Cast<CheckItem>()
+          .ToList();
+          SafeUtils.SetPropertyValue(p, t, items);
+        })
+        .WithCustomPropertyDeserialization(
+        nameof(CheckList.NextChecklistId),
+        (e, t, p, c) =>
+        {
+          string? val = e.LElementOrNull("nextChecklistId")?.Attribute("id")?.Value;
+          SafeUtils.SetPropertyValue(p, t, val);
+        });
+      ret.Context.ElementDeserializers.Insert(0, oed);
+
+      oed = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(CheckSet))
+      .WithCustomPropertyDeserialization(
+        "Checklists",
+        (e, t, f, c) =>
+        {
+          var deser = c.ResolveElementDeserializer(typeof(CheckList));
+          var val = e.LElements("checklist")
+          .Select(q => SafeUtils.Deserialize(q, typeof(CheckList), deser, c))
+          .Cast<CheckList>()
+          .ToList();
+          SafeUtils.SetPropertyValue(f, t, val);
+        });
+      ret.Context.ElementDeserializers.Insert(0, oed);
+
+      ret.Context.ElementDeserializers.Insert(0, new AutostartDeserializer());
+
+      return ret;
+    }
+
+    private static void CheckSanity(CheckSet tmp)
     {
       // check no duplicit
       var ids = tmp.Checklists.Select(q => q.Id);
@@ -118,7 +199,6 @@ namespace ChecklistModule
         throw new ApplicationException("There are repeated checklist id definitions: " + string.Join(", ", exc));
       }
     }
-
     private void InitializeSoundStreams(CheckSet checkSet, string relativePath)
     {
       Synthetizer synthetizer = new(Settings.Synthetizer.Voice, Settings.Synthetizer.Rate); //Synthetizer.CreateDefault();
@@ -194,88 +274,6 @@ namespace ChecklistModule
         {
           throw new EXmlException($"Unable to generated sound for speech '{checkDefinition.Value}'.", ex);
         }
-    }
-
-    private void BindNextChecklists(CheckSet tmp)
-    {
-      for (int i = 0; i < tmp.Checklists.Count; i++)
-      {
-        var checklist = tmp.Checklists[i];
-        if (checklist.NextChecklistId is null)
-        {
-          if (i < tmp.Checklists.Count - 1) checklist.NextChecklist = tmp.Checklists[i + 1];
-        }
-        else
-          checklist.NextChecklist = tmp.Checklists.Single(q => q.Id == checklist.NextChecklistId);
-      }
-    }
-
-    private EXml<CheckSet> CreateDeserializer()
-    {
-      EXml<CheckSet> ret = new EXml<CheckSet>();
-
-      var oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(CheckDefinition))
-        .WithIgnoredProperty(nameof(CheckDefinition.Bytes));
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(CheckSet))
-        .WithCustomPropertyDeserialization(
-          nameof(CheckSet.Checklists),
-          (e, t, f, c) =>
-          {
-            var deser = c.ResolveElementDeserializer(typeof(List<CheckList>));
-            var items = e.LElements("checklist")
-              .Select(q => SafeUtils.Deserialize(q, typeof(CheckList), deser, c))
-              .Cast<CheckList>()
-              .ToList();
-            SafeUtils.SetPropertyValue(f, t, items);
-          });
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(CheckList))
-        .WithIgnoredProperty(nameof(CheckList.EntrySpeechBytes))
-        .WithIgnoredProperty(nameof(CheckList.ExitSpeechBytes))
-        .WithCustomPropertyDeserialization(
-        nameof(CheckList.Items),
-        (e, t, p, c) =>
-        {
-          var deser = c.ResolveElementDeserializer(typeof(List<CheckItem>));
-          var items = e.LElements("item")
-          .Select(q => SafeUtils.Deserialize(q, typeof(CheckItem), deser, c))
-          .Cast<CheckItem>()
-          .ToList();
-          SafeUtils.SetPropertyValue(p, t, items);
-        })
-        .WithCustomPropertyDeserialization(
-        nameof(CheckList.NextChecklistId),
-        (e, t, p, c) =>
-        {
-          string? val = e.LElementOrNull("nextChecklistId")?.Attribute("id")?.Value;
-          SafeUtils.SetPropertyValue(p, t, val);
-        });
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(CheckSet))
-      .WithCustomPropertyDeserialization(
-        "Checklists",
-        (e, t, f, c) =>
-        {
-          var deser = c.ResolveElementDeserializer(typeof(CheckList));
-          var val = e.LElements("checklist")
-          .Select(q => SafeUtils.Deserialize(q, typeof(CheckList), deser, c))
-          .Cast<CheckList>()
-          .ToList();
-          SafeUtils.SetPropertyValue(f, t, val);
-        });
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      ret.Context.ElementDeserializers.Insert(0, new AutostartDeserializer());
-
-      return ret;
     }
   }
 }

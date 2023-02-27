@@ -1,6 +1,7 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -44,7 +45,7 @@ namespace Chlaot
         try
         {
           System.IO.File.AppendAllText("log.txt",
-            $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}  {level} :: {message}\n");
+            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss}  {level} :: {message}\n");
         }
         catch
         {
@@ -55,25 +56,21 @@ namespace Chlaot
       }
     }
 
+    [SuppressMessage("", "IDE1006")]
+    private void btnRun_Click(object sender, RoutedEventArgs e)
+    {
+      FrmRun frmRun = new(Context);
+      this.Close();
+      frmRun.Show();
+    }
+
+    [SuppressMessage("", "IDE1006")]
     private void lstModules_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
       IModule module = lstModules.SelectedItem as IModule;
       pnlContent.Children.Clear();
       pnlContent.Children.Add(module.InitControl);
     }
-
-    private void btnRun_Click(object sender, RoutedEventArgs e)
-    {
-      FrmRun frmRun = new FrmRun(Context);
-      this.Close();
-      frmRun.Show();
-    }
-
-    private void Window_Loaded(object sender, RoutedEventArgs e)
-    {
-
-    }
-
     private void Window_Initialized(object sender, EventArgs e)
     {
       this.Context = new Context();
@@ -84,6 +81,11 @@ namespace Chlaot
       if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
 
       this.Context.InitModules();
+    }
+
+    private void Window_Loaded(object sender, RoutedEventArgs e)
+    {
+
     }
   }
 }

@@ -8,6 +8,7 @@ using Microsoft.VisualBasic.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Printing;
 using System.Reflection;
@@ -23,33 +24,23 @@ namespace ChecklistModule
   {
     public class AutoplayChecklistEvaluator
     {
+      private readonly Dictionary<AutostartDelay, int> historyCounter = new();
+
+      private readonly object lck = new();
+
+      private readonly RunContext parent;
+
+      private readonly SimData simData;
+
+      private bool autoplaySuppressed = false;
+
+      private CheckList? prevList = null;
+
       public AutoplayChecklistEvaluator(RunContext parent)
       {
         this.parent = parent;
         this.simData = parent.sim.SimData;
       }
-      private void Log(string message)
-      {
-        if (parent.settings.VerboseAutostartEvaluation)
-          this.parent.Log(LogLevel.INFO, message);
-        try
-        {
-          System.IO.File.AppendAllText("innerlog.txt",
-            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} :: {message}\n");
-        }
-        catch (Exception ex)
-        {
-          throw new ApplicationException("Unable to write to inner log.", ex);
-        }
-      }
-
-      private readonly Dictionary<AutostartDelay, int> historyCounter = new();
-      private CheckList? prevList = null;
-      private bool autoplaySuppressed = false;
-      private readonly SimData simData;
-      private bool isEvaluating = false;
-      private readonly object lck = new();
-      private readonly RunContext parent;
       public bool EvaluateIfShouldPlay(CheckList checkList)
       {
         if (this.simData.IsSimPaused) return false;
@@ -70,30 +61,33 @@ namespace ChecklistModule
         else
           ret = checkList.MetaInfo?.Autostart != null && Evaluate(checkList.MetaInfo.Autostart);
 
-        ret = true;
         Log($"Evaluation finished for {checkList.Id} as={ret}, autoplaySupressed={autoplaySuppressed}");
-
         Monitor.Exit(lck);
+        return ret;
+      }
+
+      internal void SuppressAutoplayForCurrentChecklist()
+      {
+        this.autoplaySuppressed = true;
+      }
+
+      private static int ResolveEngineStarted(AutostartProperty property, SimData sd)
+      {
+        Trace.Assert(property.Name == AutostartPropertyName.EngineStarted);
+        int index = property.NameIndex - 1;
+        int ret = sd.EngineCombustion[index] ? 1 : 0;
         return ret;
       }
 
       private bool Evaluate(IAutostart autostart)
       {
-        bool ret;
-        switch (autostart)
+        var ret = autostart switch
         {
-          case AutostartCondition condition:
-            ret = EvaluateCondition(condition);
-            break;
-          case AutostartDelay delay:
-            ret = EvaluateDelay(delay);
-            break;
-          case AutostartProperty property:
-            ret = EvaluateProperty(property);
-            break;
-          default:
-            throw new NotImplementedException();
-        }
+          AutostartCondition condition => EvaluateCondition(condition),
+          AutostartDelay delay => EvaluateDelay(delay),
+          AutostartProperty property => EvaluateProperty(property),
+          _ => throw new NotImplementedException(),
+        };
         return ret;
       }
 
@@ -162,17 +156,19 @@ namespace ChecklistModule
         return ret;
       }
 
-      private int ResolveEngineStarted(AutostartProperty property, SimData sd)
+      private void Log(string message)
       {
-        Trace.Assert(property.Name == AutostartPropertyName.EngineStarted);
-        int index = property.NameIndex - 1;
-        int ret = sd.EngineCombustion[index] ? 1 : 0;
-        return ret;
-      }
-
-      internal void SuppressAutoplayForCurrentChecklist()
-      {
-        this.autoplaySuppressed = true;
+        if (parent.settings.VerboseAutostartEvaluation)
+          this.parent.Log(LogLevel.INFO, message);
+        try
+        {
+          System.IO.File.AppendAllText("innerlog.txt",
+            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} :: {message}\n");
+        }
+        catch (Exception ex)
+        {
+          throw new ApplicationException("Unable to write to inner log.", ex);
+        }
       }
     }
     public class PlaybackManager
@@ -355,15 +351,6 @@ namespace ChecklistModule
 
     private KeyHookWrapper? keyHookWrapper;
 
-    private System.Timers.Timer? refreshTimer = null;
-
-
-    public SimData SimData
-    {
-      get => base.GetProperty<SimData>(nameof(SimData))!;
-      set => base.UpdateProperty(nameof(SimData), value);
-    }
-
     public static LogHandler EmptyLogHandler { get => (l, m) => { }; }
 
     public List<CheckListView> CheckListViews
@@ -378,6 +365,11 @@ namespace ChecklistModule
       set => base.UpdateProperty(nameof(CheckSet), value);
     }
 
+    public SimData SimData
+    {
+      get => base.GetProperty<SimData>(nameof(SimData))!;
+      set => base.UpdateProperty(nameof(SimData), value);
+    }
     public RunContext(InitContext initContext, LogHandler logHandler)
     {
       this.CheckSet = initContext.ChecklistSet;
@@ -406,21 +398,6 @@ namespace ChecklistModule
       this.autoplayEvaluator = new(this);
     }
 
-    private void Sim_SimSecondElapsed()
-    {
-      if (this.sim.SimData.IsSimPaused) return;
-
-      if (playback.IsWaitingForNextChecklist == false) return;
-      CheckList checkList = playback.GetCurrentChecklist();
-      bool shouldPlay = this.settings.UseAutoplay
-        && autoplayEvaluator.EvaluateIfShouldPlay(checkList);
-      if (shouldPlay)
-      {
-        autoplayEvaluator.SuppressAutoplayForCurrentChecklist();
-        this.playback.TogglePlay();
-      }
-    }
-
     internal void Run(KeyHookWrapper keyHookWrapper)
     {
       logHandler?.Invoke(LogLevel.VERBOSE, "Run");
@@ -441,6 +418,11 @@ namespace ChecklistModule
       this.connectionTimer.Elapsed += ConnectionTimer_Elapsed;
 
       logHandler?.Invoke(LogLevel.VERBOSE, "Run done");
+    }
+
+    internal void Stop()
+    {
+      this.sim?.Close();
     }
 
     private static KeyHookWrapper.KeyHookInfo ConvertShortcutToKeyHookInfo(Settings.KeyShortcut shortcut)
@@ -517,6 +499,7 @@ namespace ChecklistModule
       this.keyHookWrapper.KeyHookInvoked += keyHookWrapper_KeyHookInvoked;
     }
 
+    [SuppressMessage("", "IDE1006")]
     private void keyHookWrapper_KeyHookInvoked(int hookId, KeyHookWrapper.KeyHookInfo keyHookInfo)
     {
       if (hookId == this.keyHookPlayPauseId)
@@ -542,10 +525,19 @@ namespace ChecklistModule
       logHandler?.Invoke(level, "[RunContext] :: " + message);
     }
 
-    internal void Stop()
+    private void Sim_SimSecondElapsed()
     {
-      if (this.sim != null)
-        this.sim.Close();
+      if (this.sim.SimData.IsSimPaused) return;
+
+      if (playback.IsWaitingForNextChecklist == false) return;
+      CheckList checkList = playback.GetCurrentChecklist();
+      bool shouldPlay = this.settings.UseAutoplay
+        && autoplayEvaluator.EvaluateIfShouldPlay(checkList);
+      if (shouldPlay)
+      {
+        autoplayEvaluator.SuppressAutoplayForCurrentChecklist();
+        this.playback.TogglePlay();
+      }
     }
   }
 }
