@@ -12,10 +12,11 @@ namespace Chlaot
 {
   public class Context
   {
+    public delegate void ContextLogHandler(LogLevel level, string message);
     public BindingList<IModule> Modules { get; private set; } = new BindingList<IModule>();
-    private LogHandler? LogHandler { get; set; }
+    private ContextLogHandler LogHandler { get; set; } = (l, m) => { };
 
-    internal void SetLogHandler(LogHandler logHandler)
+    internal void SetLogHandler(ContextLogHandler logHandler)
     {
       this.LogHandler = logHandler;
     }
@@ -29,11 +30,17 @@ namespace Chlaot
       module = new Eng.Chlaot.Modules.ChecklistModule.ChecklistModule();
       TryAddModule(module);
 
+      LogHandler?.Invoke(LogLevel.INFO, "Loading copilot module...");
+      module = new Eng.Chlaot.Modules.CopilotModule.CopilotModule();
+      TryAddModule(module);
+
 
       LogHandler?.Invoke(LogLevel.INFO, "Setting up modules...");
       Modules.ToList().ForEach(q => q.SetUp(
-        (level, message) => this.LogHandler?.Invoke(level, $"[{module.Name}] {message}")
-        ));
+        new ModuleSetUpInfo()
+        {
+          LogHandler = (level, message) => this.LogHandler?.Invoke(level, $"[{module.Name}] {message}")
+        }));
 
       LogHandler?.Invoke(LogLevel.INFO, "Modules loaded & set up.");
     }

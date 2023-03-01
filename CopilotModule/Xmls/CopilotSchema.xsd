@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema id="Schema"
+            targetNamespace="http://tempuri.org/Schema.xsd"
+            elementFormDefault="qualified"
+            xmlns="http://tempuri.org/Schema.xsd"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:metadata="http://tempuri.org/metaData.xsd"
+            xmlns:stateChecking="http://tempuri.org/stateCheck.xsd"
+            xmlns:speech="http://tempuri.org/speech.xsd"
+            >
+
+  <xsd:import namespace="http://tempuri.org/stateCheck.xsd"
+           schemaLocation="StateCheckSchema.xsd"/>
+  <xsd:import namespace="http://tempuri.org/metaData.xsd"
+           schemaLocation="MetaDataSchema.xsd"/>
+  <xsd:import namespace="http://tempuri.org/speech.xsd"
+              schemaLocation="Speech.xsd" />
+
+  <xsd:element name="copilotSet">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="metaInfo" minOccurs="1" maxOccurs="1" type="metadata:metaInfo"/>
+        <xsd:element name="speechDefinition" minOccurs="1" maxOccurs="unbounded" type="speechDefinition"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="speechDefinition">
+    <xsd:sequence>
+      <xsd:element name="speech" minOccurs="1" maxOccurs="unbounded" type="speech:speech"/>
+      <xsd:element name="when" minOccurs="1" maxOccurs="1" type="stateChecking:stateCheckConditionTop" />
+      <xsd:element name="variable" minOccurs="0" maxOccurs="unbounded" type="variableInfo" />
+    </xsd:sequence>
+    <xsd:attribute name="title" type="nonemptyString" use="required"/>
+    <xsd:attribute name="reactivateIn" type="xsd:integer" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="variableInfo">
+    <xsd:attribute name="name" type="nonemptyString" use="required" />
+    <xsd:attribute name="defaultValue" type="xsd:int" use="optional" />
+    <xsd:attribute name="info" type="xsd:string" use="optional" />
+  </xsd:complexType>
+
+  <xsd:simpleType name="nonemptyString">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value=".+"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

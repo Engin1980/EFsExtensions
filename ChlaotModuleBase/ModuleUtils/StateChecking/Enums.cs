@@ -4,22 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChecklistModule.Types.Autostarts
+namespace ChlaotModuleBase.ModuleUtils.StateChecking
 {
-  public enum AutostartConditionOperator
+  public enum StateCheckConditionOperator
   {
     And,
     Or
   }
 
-  public enum AutostartPropertyDirection
+  public enum StateCheckPropertyDirection
   {
     Above,
     Below,
+    Exactly,
     Passing
   }
 
-  public enum AutostartPropertyName
+  public enum StateCheckPropertyName
   {
     Altitude,
     Height,

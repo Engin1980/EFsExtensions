@@ -12,11 +12,13 @@ namespace EXmlLib
     {
       Context.ElementDeserializers.Add(new EnumDeserializer());
       Context.ElementDeserializers.Add(new NumberDeserializer());
+      Context.ElementDeserializers.Add(new NullableNumberDeserializer());
       Context.ElementDeserializers.Add(new StringDeserializer());
       Context.ElementDeserializers.Add(new ObjectElementDeserializer());
 
       Context.AttributeDeserializers.Add(new EnumDeserializer());
       Context.AttributeDeserializers.Add(new NumberDeserializer());
+      Context.AttributeDeserializers.Add(new NullableNumberDeserializer());
       Context.AttributeDeserializers.Add(new StringDeserializer());
     }
 

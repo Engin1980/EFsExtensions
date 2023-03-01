@@ -9,30 +9,19 @@
 
   <ItemGroup>
     <PackageReference Include="System.Speech" Version="7.0.0" />
-    <PackageReference Include="WindowsAPICodePack" Version="7.0.2" />
+    <PackageReference Include="WindowsAPICodePack" Version="7.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\ChlaotModuleBase\ChlaotModuleBase.csproj" />
-    <ProjectReference Include="..\ESimConnect\ESimConnect.csproj" />
     <ProjectReference Include="..\EXmlLib\EXmlLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Microsoft.FlightSimulator.SimConnect">
-      <HintPath>..\Libs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
-    </Reference>
-    <Reference Include="NAudioCore">
-      <HintPath>..\Libs\NAudioCore.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Xmls\a320.checklist.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Update="Xmls\CopilotSchema.xsd">
+      <SubType>Designer</SubType>
     </None>
-    <None Update="Xmls\cj4.checklist.xml">
+    <None Update="Xmls\ifrCommon.copilot.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

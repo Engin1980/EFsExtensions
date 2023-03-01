@@ -15,6 +15,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ChecklistModule\ChecklistModule.csproj" />
     <ProjectReference Include="..\ChlaotModuleBase\ChlaotModuleBase.csproj" />
+    <ProjectReference Include="..\CopilotModule\CopilotModule.csproj" />
   </ItemGroup>
 
   <ItemGroup>

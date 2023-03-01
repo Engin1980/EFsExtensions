@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase
+namespace ChlaotModuleBase
 {
-  public interface IModuleProcessor
+  public class ModuleSetUpInfo
   {
+    public LogHandler LogHandler { get; set; }
   }
 }

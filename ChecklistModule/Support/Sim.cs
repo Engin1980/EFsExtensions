@@ -22,7 +22,7 @@ namespace ChecklistModule.Support
     public SimData SimData { get; set; } = SimData.Empty;
     public Sim(LogHandler logHandler, bool enableSimConnectLogToFile)
     {
-      this.logHandler = logHandler;
+      this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
       if (enableSimConnectLogToFile)
         ESimConnect.ESimConnect.SetLogHandler(s => System.IO.File.AppendAllText("esimcon.log.txt", s));
       else

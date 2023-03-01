@@ -21,12 +21,11 @@ using System.Security.Policy;
 
 namespace ChecklistModule
 {
-  public class InitContext : NotifyPropertyChangedBase, IModuleProcessor
+  public class InitContext : NotifyPropertyChangedBase
   {
     private readonly LogHandler logHandler;
     private readonly Action<bool> setIsReadyFlagAction;
-    public static LogHandler EmptyLogHandler { get => (l, m) => { }; }
-
+    
     public CheckSet ChecklistSet
     {
       get => base.GetProperty<CheckSet>(nameof(ChecklistSet))!;
@@ -38,7 +37,7 @@ namespace ChecklistModule
     public InitContext(Settings settings, LogHandler logHandler, Action<bool> setIsReadyFlagAction)
     {
       Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-      this.logHandler = logHandler ?? EmptyLogHandler;
+      this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
     }
 
@@ -50,7 +49,7 @@ namespace ChecklistModule
 
       try
       {
-        logHandler?.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
+        logHandler.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
           doc = XDocument.Load(xmlFile);
@@ -62,7 +61,7 @@ namespace ChecklistModule
           throw new ApplicationException("Unable to read/deserialize checklist-set from '{xmlFile}'. Invalid file content?", ex);
         }
 
-        logHandler?.Invoke(LogLevel.INFO, $"Checking sanity");
+        logHandler.Invoke(LogLevel.INFO, $"Checking sanity");
         try
         {
           CheckSanity(tmp);
@@ -72,7 +71,7 @@ namespace ChecklistModule
           throw new ApplicationException("Error loading checklist.", ex);
         }
 
-        logHandler?.Invoke(LogLevel.INFO, $"Binding checklist references");
+        logHandler.Invoke(LogLevel.INFO, $"Binding checklist references");
         try
         {
           BindNextChecklists(tmp);
@@ -82,7 +81,7 @@ namespace ChecklistModule
           throw new ApplicationException("Error binding checklist references.", ex);
         }
 
-        logHandler?.Invoke(LogLevel.INFO, $"Loading/generating sounds");
+        logHandler.Invoke(LogLevel.INFO, $"Loading/generating sounds");
         try
         {
           InitializeSoundStreams(tmp, System.IO.Path.GetDirectoryName(xmlFile)!);
@@ -94,13 +93,13 @@ namespace ChecklistModule
 
         this.ChecklistSet = tmp;
         this.setIsReadyFlagAction(true);
-        logHandler?.Invoke(LogLevel.INFO, $"Checklist file '{xmlFile}' successfully loaded.");
+        logHandler.Invoke(LogLevel.INFO, $"Checklist file '{xmlFile}' successfully loaded.");
 
       }
       catch (Exception ex)
       {
         this.setIsReadyFlagAction(false);
-        logHandler?.Invoke(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage());
+        logHandler.Invoke(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage());
       }
 
 
@@ -135,7 +134,7 @@ namespace ChecklistModule
           nameof(CheckSet.Checklists),
           (e, t, f, c) =>
           {
-            var deser = c.ResolveElementDeserializer(typeof(List<CheckList>));
+            var deser = c.ResolveElementDeserializer(typeof(CheckList));
             var items = e.LElements("checklist")
               .Select(q => SafeUtils.Deserialize(q, typeof(CheckList), deser, c))
               .Cast<CheckList>()
@@ -152,7 +151,7 @@ namespace ChecklistModule
         nameof(CheckList.Items),
         (e, t, p, c) =>
         {
-          var deser = c.ResolveElementDeserializer(typeof(List<CheckItem>));
+          var deser = c.ResolveElementDeserializer(typeof(CheckItem));
           var items = e.LElements("item")
           .Select(q => SafeUtils.Deserialize(q, typeof(CheckItem), deser, c))
           .Cast<CheckItem>()

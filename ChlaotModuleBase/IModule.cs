@@ -14,7 +14,7 @@ namespace Eng.Chlaot.ChlaotModuleBase
   {
     public bool IsReady { get; }
 
-    public void SetUp(LogHandler logHandler);
+    public void SetUp(ModuleSetUpInfo setUpInfo);
 
     public void Init();
     public void Run();

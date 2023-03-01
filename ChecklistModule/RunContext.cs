@@ -137,9 +137,9 @@ namespace ChecklistModule
           AutostartPropertyName.GS => sd.GroundSpeed,
           AutostartPropertyName.Height => sd.Height,
           AutostartPropertyName.Bank => sd.BankAngle,
-          AutostartPropertyName.parkingBrakeSet => sd.ParkingBrakeSet ? 1 : 0,
+          AutostartPropertyName.ParkingBrakeSet => sd.ParkingBrakeSet ? 1 : 0,
           AutostartPropertyName.VerticalSpeed => sd.VerticalSpeed,
-          AutostartPropertyName.pushbackTugConnected => sd.PushbackTugConnected ? 1 : 0,
+          AutostartPropertyName.PushbackTugConnected => sd.PushbackTugConnected ? 1 : 0,
           AutostartPropertyName.Acceleration => sd.Acceleration,
           AutostartPropertyName.EngineStarted => ResolveEngineStarted(property, sd),
           _ => throw new NotImplementedException()
@@ -351,8 +351,6 @@ namespace ChecklistModule
 
     private KeyHookWrapper? keyHookWrapper;
 
-    public static LogHandler EmptyLogHandler { get => (l, m) => { }; }
-
     public List<CheckListView> CheckListViews
     {
       get => base.GetProperty<List<CheckListView>>(nameof(CheckListViews))!;
@@ -374,7 +372,7 @@ namespace ChecklistModule
     {
       this.CheckSet = initContext.ChecklistSet;
       this.settings = initContext.Settings;
-      this.logHandler = logHandler ?? EmptyLogHandler;
+      this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
 
       this.CheckListViews = CheckSet.Checklists
         .Select(q => new CheckListView()
@@ -392,7 +390,7 @@ namespace ChecklistModule
         .ToList();
 
       this.playback = new PlaybackManager(this);
-      this.sim = new(logHandler ?? EmptyLogHandler, settings.LogSimConnectToFile);
+      this.sim = new(logHandler, settings.LogSimConnectToFile);
       this.sim.SimSecondElapsed += Sim_SimSecondElapsed;
       this.SimData = this.sim.SimData;
       this.autoplayEvaluator = new(this);
