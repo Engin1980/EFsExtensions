@@ -1,5 +1,8 @@
-﻿using System;
+﻿using ChlaotModuleBase.ModuleUtils.Playing;
+using ChlaotModuleBase.ModuleUtils.Synthetization;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,17 +22,44 @@ namespace CopilotModule
   /// </summary>
   public partial class CtrSettings : Window
   {
-    public Settings Settings { get; private set; }
+    private readonly Settings settings;
 
     public CtrSettings()
     {
       InitializeComponent();
-      Settings = new Settings();
     }
 
-    public CtrSettings(Settings settings) : base()
+    public CtrSettings(Settings settings) : this()
     {
-      this.Settings = settings;
+      this.settings = settings ?? throw new ArgumentNullException(nameof(settings));
+      this.DataContext = settings;
+    }
+
+    [SuppressMessage("", "IDE1006")]
+    private void btnTestSynthetizer_Click(object sender, RoutedEventArgs e)
+    {
+      btnTestSynthetizer.IsEnabled = false;
+      try
+      {
+        Synthetizer s = new(settings.Synthetizer);
+        var a = s.Generate("Transition level");
+
+        Player p = new();
+        p.PlayAsync(a);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Failed to generate or play.", ex);
+      }
+      finally
+      {
+        btnTestSynthetizer.IsEnabled = true;
+      }
+    }
+
+    private void Window_Closed(object sender, EventArgs e)
+    {
+      this.settings.Save();
     }
   }
 }

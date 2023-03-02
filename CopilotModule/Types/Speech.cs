@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -26,8 +27,7 @@ namespace CopilotModule.Types
       List<string> ret = new();
       if (Type == SpeechType.Speech)
       {
-        string varRegex = @"\{(.+)\}";
-        Regex regex = new Regex(varRegex);
+        Regex regex = new Regex(VARIABLE_NAME_REGEX);
         Match m = regex.Match(Value);
         while (m.Success)
         {
@@ -37,11 +37,25 @@ namespace CopilotModule.Types
       }
       return ret;
     }
-
+    private const string VARIABLE_NAME_REGEX = @"\{(.+)\}";
     internal string GetEvaluatedValue(List<Variable> variables)
     {
-      string ret;
-      ret = here implement; Regex; replace;
+      if (Type != SpeechType.Speech)
+        throw new ApplicationException("Not possible to call this function on non-speech-type speech.");
+      string ret = this.Value;
+
+      string me(Match m)
+      {
+        var varName = m.Groups[1].Value;
+        var varVal = variables.FirstOrDefault(q => q.Name == varName)
+          ?? throw new ApplicationException($"Unable to replace variable {varName}. Variable not found.");
+        string ret = " " + varVal.Value.ToString() + " ";
+        return ret;
+      }
+
+      Regex regex = new(VARIABLE_NAME_REGEX);
+      ret = regex.Replace(ret, me);
+
       return ret;
     }
   }
