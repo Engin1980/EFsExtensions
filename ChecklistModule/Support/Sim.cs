@@ -112,6 +112,8 @@ namespace ChecklistModule.Support
 
   public class SimData : NotifyPropertyChangedBase
   {
+    private const int SECONDS_PER_MINUTE = 60;
+
     public enum ECameraState
     {
       Cockpit = 2,
@@ -240,7 +242,7 @@ namespace ChecklistModule.Support
       this.Height = ss.height;
       this.IndicatedSpeed = ss.indicatedSpeed;
       this.GroundSpeed = ss.groundSpeed;
-      this.VerticalSpeed = ss.verticalSpeed;
+      this.VerticalSpeed = ss.verticalSpeed * SECONDS_PER_MINUTE;
       this.Acceleration = ss.accelerationBodyZ;
     }
 

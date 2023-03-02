@@ -18,14 +18,14 @@ namespace ESimConnectWpfTest
     [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 256)]
     public string title;
 
-    [DataDefinition(SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED, SimUnits.Speed.KNOT)]
-    public int speed;
+    //[DataDefinition(SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED, SimUnits.Speed.KNOT)]
+    //public int speed;
 
-    [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE, SimUnits.Length.FOOT)]
-    public int altitude;
+    //[DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE, SimUnits.Length.FOOT)]
+    //public int altitude;
 
-    [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_BANK_DEGREES, SimUnits.Angle.DEGREE, SimType.INT32)]
-    public int bank;
+    //[DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_BANK_DEGREES, SimUnits.Angle.DEGREE, SimType.INT32)]
+    //public int bank;
 
     [DataDefinition(SimVars.Aircraft.Miscelaneous.VELOCITY_BODY_Z, SimUnits.Acceleration.FEET_PER_SECOND_SQUARED)]
     public double velocityBodyZ;
@@ -38,6 +38,15 @@ namespace ESimConnectWpfTest
 
     [DataDefinition(SimVars.Aircraft.Miscelaneous.ACCELERATION_BODY_Z, SimUnits.Acceleration.FEET_PER_SECOND_SQUARED)]
     public double accelerationBodyZ;
+
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.VERTICAL_SPEED)]
+    public double verticalSpeedA;
+
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.VERTICAL_SPEED, SimUnits.Length.FOOT)]
+    public double verticalSpeedB;
+
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.VERTICAL_SPEED, SimUnits.Acceleration.FEET_PER_SECOND_SQUARED)]
+    public double verticalSpeedC;
   };
 
 }
