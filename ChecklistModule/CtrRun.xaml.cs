@@ -28,6 +28,7 @@ namespace ChecklistModule
     public CtrRun()
     {
       InitializeComponent();
+      this.context = null!;
     }
 
     public CtrRun(RunContext context) : this()

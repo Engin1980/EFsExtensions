@@ -24,12 +24,14 @@ namespace CopilotModule
   /// </summary>
   public partial class CtrInit : UserControl
   {
-    private InitContext context;
     private readonly Player player;
+    private InitContext context;
+    private string recentXmlFile = "";
 
     public CtrInit()
     {
       InitializeComponent();
+      this.context = null!;
       this.player = new Player();
     }
 
@@ -39,12 +41,19 @@ namespace CopilotModule
       this.DataContext = context;
     }
 
-    private void btnSettings_Click(object sender, RoutedEventArgs e)
+    private static CommonFileDialogFilter CreateCommonFileDialogFilter(string title, string extension)
     {
-      new CtrSettings(context.Settings).ShowDialog();
+      CommonFileDialogFilter cfdf = new CommonFileDialogFilter(title, extension);
+      Type t = cfdf.GetType();
+      var fieldInfo = t.GetField("_extensions",
+        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+        ?? throw new ApplicationException("Field with name '_extensions' not found; reflection error.");
+      System.Collections.ObjectModel.Collection<string?> col =
+        (System.Collections.ObjectModel.Collection<string?>)fieldInfo.GetValue(cfdf)!;
+      col.Clear();
+      col.Add(extension);
+      return cfdf;
     }
-
-    private string recentXmlFile;
 
     private void btnLoadChecklistFile_Click(object sender, RoutedEventArgs e)
     {
@@ -59,25 +68,16 @@ namespace CopilotModule
       dialog.Filters.Add(CreateCommonFileDialogFilter("Copilot files", "copilot.xml"));
       dialog.Filters.Add(CreateCommonFileDialogFilter("XML files", "xml"));
       dialog.Filters.Add(CreateCommonFileDialogFilter("All files", "*"));
-      if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
-      recentXmlFile = dialog.FileName;
+      if (dialog.ShowDialog() != CommonFileDialogResult.Ok || dialog.FileName == null) return;
 
+      recentXmlFile = dialog.FileName;
       this.context.LoadFile(recentXmlFile);
     }
 
-    private CommonFileDialogFilter CreateCommonFileDialogFilter(string title, string extension)
+    private void btnSettings_Click(object sender, RoutedEventArgs e)
     {
-      CommonFileDialogFilter cfdf = new CommonFileDialogFilter(title, extension);
-      Type t = cfdf.GetType();
-      var fieldInfo = t.GetField("_extensions",
-        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-      System.Collections.ObjectModel.Collection<string?> col =
-        (System.Collections.ObjectModel.Collection<string?>)fieldInfo.GetValue(cfdf)!;
-      col.Clear();
-      col.Add(extension);
-      return cfdf;
+      new CtrSettings(context.Settings).ShowDialog();
     }
-
     private void pnlSpeech_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
       StackPanel panel = (StackPanel)sender;

@@ -1,6 +1,5 @@
 ﻿using ChecklistModule.Support;
 using ChecklistModule.Types;
-using ChecklistModule.Types.Autostarts;
 using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase;
 using EXmlLib;
@@ -19,6 +18,7 @@ using System.Xml.Serialization;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Policy;
 using ChlaotModuleBase.ModuleUtils.Synthetization;
+using ChlaotModuleBase.ModuleUtils.StateChecking;
 
 namespace ChecklistModule
 {
@@ -183,7 +183,7 @@ namespace ChecklistModule
         });
       ret.Context.ElementDeserializers.Insert(0, oed);
 
-      ret.Context.ElementDeserializers.Insert(0, new AutostartDeserializer());
+      ret.Context.ElementDeserializers.Insert(0, new StateCheckDeserializer());
 
       return ret;
     }

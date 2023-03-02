@@ -1,8 +1,9 @@
 ﻿using ChecklistModule.Support;
 using ChecklistModule.Types;
-using ChecklistModule.Types.Autostarts;
 using ChecklistModule.Types.RunViews;
 using ChlaotModuleBase;
+using ChlaotModuleBase.ModuleUtils.StateChecking;
+using ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
 using Eng.Chlaot.ChlaotModuleBase;
 using Microsoft.VisualBasic.Logging;
 using System;
@@ -24,34 +25,31 @@ namespace ChecklistModule
   {
     public class AutoplayChecklistEvaluator
     {
-      private readonly Dictionary<AutostartDelay, int> historyCounter = new();
-
+      private readonly StateCheckEvaluator evaluator;
       private readonly object lck = new();
-
       private readonly RunContext parent;
-
-      private readonly SimData simData;
-
       private bool autoplaySuppressed = false;
-
       private CheckList? prevList = null;
+
+      public SimData SimData => this.parent.simConManager.SimData;
 
       public AutoplayChecklistEvaluator(RunContext parent)
       {
         this.parent = parent;
-        this.simData = parent.sim.SimData;
+        this.evaluator = new StateCheckEvaluator(this.parent.simConManager.SimData, this.parent.logHandler);
       }
+
       public bool EvaluateIfShouldPlay(CheckList checkList)
       {
-        if (this.simData.IsSimPaused) return false;
+        if (this.SimData.IsSimPaused) return false;
         if (Monitor.TryEnter(lck) == false) return false;
 
-        Log($"Evaluation started for {checkList.Id}");
+        this.parent.logHandler.Invoke(LogLevel.VERBOSE, $"Evaluation started for {checkList.Id}");
 
         if (prevList != checkList)
         {
+          this.evaluator.Reset();
           this.autoplaySuppressed = false;
-          historyCounter.Clear();
           prevList = checkList;
         }
 
@@ -59,9 +57,10 @@ namespace ChecklistModule
         if (this.autoplaySuppressed)
           ret = false;
         else
-          ret = checkList.MetaInfo?.Autostart != null && Evaluate(checkList.MetaInfo.Autostart);
+          ret = checkList.MetaInfo?.Autostart != null && this.evaluator.Evaluate(checkList.MetaInfo.Autostart);
 
-        Log($"Evaluation finished for {checkList.Id} as={ret}, autoplaySupressed={autoplaySuppressed}");
+        this.parent.logHandler.Invoke(LogLevel.VERBOSE,
+          $"Evaluation finished for {checkList.Id} as={ret}, autoplaySupressed={autoplaySuppressed}");
         Monitor.Exit(lck);
         return ret;
       }
@@ -69,106 +68,6 @@ namespace ChecklistModule
       internal void SuppressAutoplayForCurrentChecklist()
       {
         this.autoplaySuppressed = true;
-      }
-
-      private static int ResolveEngineStarted(AutostartProperty property, SimData sd)
-      {
-        Trace.Assert(property.Name == AutostartPropertyName.EngineStarted);
-        int index = property.NameIndex - 1;
-        int ret = sd.EngineCombustion[index] ? 1 : 0;
-        return ret;
-      }
-
-      private bool Evaluate(IAutostart autostart)
-      {
-        var ret = autostart switch
-        {
-          AutostartCondition condition => EvaluateCondition(condition),
-          AutostartDelay delay => EvaluateDelay(delay),
-          AutostartProperty property => EvaluateProperty(property),
-          _ => throw new NotImplementedException(),
-        };
-        return ret;
-      }
-
-      private bool EvaluateCondition(AutostartCondition condition)
-      {
-        List<bool> subs = condition.Items.Select(q => Evaluate(q)).ToList();
-        var ret = condition.Operator switch
-        {
-          AutostartConditionOperator.Or => subs.Any(q => q),
-          AutostartConditionOperator.And => subs.All(q => q),
-          _ => throw new NotImplementedException(),
-        };
-
-        Log($"Eval {condition.DisplayString} = {ret} (datas = {string.Join(";", subs)})");
-        return ret;
-      }
-
-      private bool EvaluateDelay(AutostartDelay delay)
-      {
-        bool ret;
-        bool tmp = Evaluate(delay.Item);
-        if (tmp)
-        {
-          if (historyCounter.ContainsKey(delay))
-            historyCounter[delay]++;
-          else
-            historyCounter[delay] = 1;
-        }
-        else
-          historyCounter[delay] = 0;
-
-        ret = historyCounter[delay] >= delay.Seconds;
-
-        Log($"Eval {delay.DisplayString} = {ret} (delay = {historyCounter[delay]})");
-
-        return ret;
-      }
-
-      private bool EvaluateProperty(AutostartProperty property)
-      {
-        SimData sd = this.simData ?? throw new ApplicationException("Not expecting simData to be null here.");
-        double expected = property.Value;
-        double actual = property.Name switch
-        {
-          AutostartPropertyName.Altitude => sd.Altitude,
-          AutostartPropertyName.IAS => sd.IndicatedSpeed,
-          AutostartPropertyName.GS => sd.GroundSpeed,
-          AutostartPropertyName.Height => sd.Height,
-          AutostartPropertyName.Bank => sd.BankAngle,
-          AutostartPropertyName.ParkingBrakeSet => sd.ParkingBrakeSet ? 1 : 0,
-          AutostartPropertyName.VerticalSpeed => sd.VerticalSpeed,
-          AutostartPropertyName.PushbackTugConnected => sd.PushbackTugConnected ? 1 : 0,
-          AutostartPropertyName.Acceleration => sd.Acceleration,
-          AutostartPropertyName.EngineStarted => ResolveEngineStarted(property, sd),
-          _ => throw new NotImplementedException()
-        };
-
-        bool ret = property.Direction switch
-        {
-          AutostartPropertyDirection.Above => actual > expected,
-          AutostartPropertyDirection.Below => actual < expected,
-          _ => throw new NotImplementedException()
-        };
-
-        Log($"Eval {property.DisplayString} = {ret} (actual = {actual})");
-        return ret;
-      }
-
-      private void Log(string message)
-      {
-        if (parent.settings.VerboseAutostartEvaluation)
-          this.parent.Log(LogLevel.INFO, message);
-        try
-        {
-          System.IO.File.AppendAllText("innerlog.txt",
-            $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} :: {message}\n");
-        }
-        catch (Exception ex)
-        {
-          throw new ApplicationException("Unable to write to inner log.", ex);
-        }
       }
     }
     public class PlaybackManager
@@ -185,6 +84,7 @@ namespace ChecklistModule
       public PlaybackManager(RunContext parent)
       {
         this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
+        this.currentList = parent.CheckListViews.First();
       }
 
       public CheckList GetCurrentChecklist() => currentList.CheckList;
@@ -339,14 +239,12 @@ namespace ChecklistModule
 
     private readonly Settings settings;
 
-    private readonly Sim sim;
+    private readonly SimConManager simConManager;
 
     private System.Timers.Timer? connectionTimer = null;
 
     private int keyHookPlayPauseId = -1;
-
     private int keyHookSkipNextId = -1;
-
     private int keyHookSkipPrevId = -1;
 
     private KeyHookWrapper? keyHookWrapper;
@@ -363,11 +261,8 @@ namespace ChecklistModule
       set => base.UpdateProperty(nameof(CheckSet), value);
     }
 
-    public SimData SimData
-    {
-      get => base.GetProperty<SimData>(nameof(SimData))!;
-      set => base.UpdateProperty(nameof(SimData), value);
-    }
+    public SimData SimData => this.simConManager.SimData;
+
     public RunContext(InitContext initContext, LogHandler logHandler)
     {
       this.CheckSet = initContext.ChecklistSet;
@@ -390,10 +285,9 @@ namespace ChecklistModule
         .ToList();
 
       this.playback = new PlaybackManager(this);
-      this.sim = new(logHandler, settings.LogSimConnectToFile);
-      this.sim.SimSecondElapsed += Sim_SimSecondElapsed;
-      this.SimData = this.sim.SimData;
-      this.autoplayEvaluator = new(this);
+      this.simConManager = new(logHandler, null);
+      this.simConManager.SimSecondElapsed += Sim_SimSecondElapsed;
+      this.autoplayEvaluator = new AutoplayChecklistEvaluator(this);
     }
 
     internal void Run(KeyHookWrapper keyHookWrapper)
@@ -420,7 +314,7 @@ namespace ChecklistModule
 
     internal void Stop()
     {
-      this.sim?.Close();
+      this.simConManager.Close();
     }
 
     private static KeyHookWrapper.KeyHookInfo ConvertShortcutToKeyHookInfo(Settings.KeyShortcut shortcut)
@@ -440,12 +334,12 @@ namespace ChecklistModule
       try
       {
         Log(LogLevel.VERBOSE, "Opening connection");
-        sim.Open();
+        this.simConManager.Open();
         Log(LogLevel.VERBOSE, "Opening connection - done");
         this.connectionTimer!.Stop();
         this.connectionTimer = null;
 
-        this.sim.Start();
+        this.simConManager.Start();
         Log(LogLevel.INFO, "Connected to FS2020, starting updates");
       }
       catch (Exception ex)
@@ -457,7 +351,7 @@ namespace ChecklistModule
 
     private void ConnectKeyHooks()
     {
-      Settings.KeyShortcut s = null;
+      Settings.KeyShortcut s = null!;
 
       if (keyHookWrapper == null) throw new ApplicationException("KeyHookWrapper not set.");
 
@@ -525,12 +419,12 @@ namespace ChecklistModule
 
     private void Sim_SimSecondElapsed()
     {
-      if (this.sim.SimData.IsSimPaused) return;
+      if (this.SimData.IsSimPaused) return;
 
       if (playback.IsWaitingForNextChecklist == false) return;
       CheckList checkList = playback.GetCurrentChecklist();
       bool shouldPlay = this.settings.UseAutoplay
-        && autoplayEvaluator.EvaluateIfShouldPlay(checkList);
+        && this.autoplayEvaluator.EvaluateIfShouldPlay(checkList);
       if (shouldPlay)
       {
         autoplayEvaluator.SuppressAutoplayForCurrentChecklist();

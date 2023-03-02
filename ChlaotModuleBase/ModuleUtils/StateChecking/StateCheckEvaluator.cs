@@ -112,6 +112,11 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
       return ret;
     }
 
+    public void Reset()
+    {
+      this.historyCounter.Clear();
+    }
+
     private void Log(string message)
     {
       logHandler?.Invoke(LogLevel.INFO, message);

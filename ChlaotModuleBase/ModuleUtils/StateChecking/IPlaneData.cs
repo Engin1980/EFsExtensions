@@ -9,14 +9,14 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
   public interface IPlaneData
   {
     bool[] EngineCombustion { get; }
-    double Altitude { get; }
-    double GroundSpeed { get; }
+    int Altitude { get; }
+    int GroundSpeed { get; }
     double BankAngle { get; }
     int VerticalSpeed { get; }
     bool PushbackTugConnected { get; }
-    int Acceleration { get; }
-    double IndicatedSpeed { get; }
-    double Height { get; }
+    double Acceleration { get; }
+    int IndicatedSpeed { get; }
+    int Height { get; }
     bool ParkingBrakeSet { get; }
   }
 }

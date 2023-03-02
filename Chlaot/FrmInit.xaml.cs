@@ -28,6 +28,7 @@ namespace Chlaot
     public FrmInit()
     {
       InitializeComponent();
+      this.Context = null!;
     }
 
     public void LogToConsole(LogLevel level, string message)
@@ -67,7 +68,7 @@ namespace Chlaot
     [SuppressMessage("", "IDE1006")]
     private void lstModules_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-      IModule module = lstModules.SelectedItem as IModule;
+      IModule module = (IModule)lstModules.SelectedItem;
       pnlContent.Children.Clear();
       pnlContent.Children.Add(module.InitControl);
     }

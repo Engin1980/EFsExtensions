@@ -12,20 +12,24 @@ namespace Eng.Chlaot.Modules.CopilotModule
 {
   public class CopilotModule : NotifyPropertyChangedBase, IModule
   {
-    public bool IsReady { get; private set; }
+    public bool IsReady
+    {
+      get => base.GetProperty<bool>(nameof(IsReady))!;
+      private set => base.UpdateProperty(nameof(IsReady), value);
+    }
 
-    private Control _InitControl;
-    public Control InitControl => this._InitControl;
+    private Control? _InitControl;
+    public Control InitControl => _InitControl ?? throw new ApplicationException("Control not provided.");
 
-    private Control _RunControl;
-    public Control RunControl => this._RunControl;
+    private Control? _RunControl;
+    public Control RunControl => _RunControl ?? throw new ApplicationException("Control not provided.");
 
     public string Name => "Copilot";
     private LogHandler? parentLogHandler;
     private readonly LogHandler logHandler;
-    private InitContext initContext;
-    private RunContext runContext;
-    private Settings settings;
+    private InitContext? initContext;
+    private RunContext? runContext;
+    private Settings? settings;
 
     public CopilotModule()
     {
@@ -35,13 +39,13 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     public void Init()
     {
-      this.initContext = new InitContext(this.settings, logHandler, q => this.IsReady = q);
+      this.initContext = new InitContext(this.settings!, logHandler, q => this.IsReady = q);
       this._InitControl = new CtrInit(this.initContext);
     }
 
     public void Run()
     {
-      this.runContext = new RunContext();
+      this.runContext = new RunContext(this.initContext!, this.logHandler);
       this._RunControl = new CtrRun(this.runContext);
 
       this.initContext = null;
@@ -67,7 +71,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     public void Stop()
     {
-      throw new NotImplementedException();
+      this.runContext?.Stop();
     }
   }
 }

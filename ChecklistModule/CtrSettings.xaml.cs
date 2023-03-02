@@ -27,6 +27,7 @@ namespace ChecklistModule
     public CtrSettings()
     {
       InitializeComponent();
+      this.settings = null!;
     }
 
     public CtrSettings(Settings settings) : this()

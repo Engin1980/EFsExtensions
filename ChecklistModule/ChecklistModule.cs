@@ -4,6 +4,7 @@ using Eng.Chlaot.ChlaotModuleBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -13,18 +14,18 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 {
   public class ChecklistModule : NotifyPropertyChangedBase, IModule
   {
-    private Control _InitControl;
-    public Control InitControl => _InitControl;
+    private Control? _InitControl;
+    public Control InitControl => _InitControl ?? throw new ApplicationException("Control not provided.");
 
-    private Control _RunControl;
-    public Control RunControl => _RunControl;
+    private Control? _RunControl;
+    public Control RunControl => _RunControl ?? throw new ApplicationException("Control not provided.");
 
-    private InitContext initContext;
-    private RunContext runContext;
+    private InitContext? initContext;
+    private RunContext? runContext;
     private LogHandler? parentLogHandler;
     private readonly LogHandler logHandler;
 
-    private Settings settings;
+    private Settings? settings;
 
     public string Name => "Check-lists";
 
@@ -58,22 +59,22 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     public void Init()
     {
-      this.initContext = new InitContext(this.settings, logHandler, q => this.IsReady = q);
+      this.initContext = new InitContext(this.settings!, logHandler, q => this.IsReady = q);
       this._InitControl = new CtrInit(this.initContext);
     }
 
     public void Run()
     {
-      this.runContext = new(this.initContext, logHandler);
+      this.runContext = new(this.initContext!, logHandler);
       this._RunControl = new CtrRun(this.runContext);
 
       this.initContext = null;
-      this.initContext = null;
+      this._InitControl = null;
     }
 
     public void Stop()
     {
-      this.runContext.Stop();
+      this.runContext?.Stop();
     }
   }
 }

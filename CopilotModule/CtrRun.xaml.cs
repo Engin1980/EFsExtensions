@@ -26,6 +26,7 @@ namespace CopilotModule
     public CtrRun()
     {
       InitializeComponent();
+      this.runContext = null!;
     }
 
     public CtrRun(RunContext runContext)

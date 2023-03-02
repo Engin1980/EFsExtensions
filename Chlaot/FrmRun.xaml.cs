@@ -21,20 +21,22 @@ namespace Chlaot
   /// </summary>
   public partial class FrmRun : Window
   {
-    private Context Context { get; set; }
+    private readonly Context context;
     public FrmRun()
     {
       InitializeComponent();
+      this.context = null!;
     }
 
     public FrmRun(Context context) : this()
     {
-      this.Context = context;
+      this.context = context;
+      this.DataContext = context;
     }
 
     private void lstModules_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-      IModule module = lstModules.SelectedItem as IModule;
+      IModule module = (IModule)lstModules.SelectedItem;
       pnlContent.Children.Clear();
       pnlContent.Children.Add(module.RunControl);
     }
@@ -67,18 +69,18 @@ namespace Chlaot
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-      this.Context.SetLogHandler((l, m) => LogToConsole(l, m));
-      this.Context.RemoveUnreadyModules();
+      this.context.SetLogHandler((l, m) => LogToConsole(l, m));
+      this.context.RemoveUnreadyModules();
 
-      this.DataContext = this.Context;
+      this.DataContext = this.context;
       if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
 
-      this.Context.RunModules();
+      this.context.RunModules();
     }
 
     private void Window_Closed(object sender, EventArgs e)
     {
-      foreach (var module in Context.Modules)
+      foreach (var module in context.Modules)
       {
         module.Stop();
       }

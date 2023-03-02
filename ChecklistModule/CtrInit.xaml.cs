@@ -26,10 +26,13 @@ namespace ChecklistModule
   {
     private readonly InitContext context;
     private readonly Player player;
+    private string recentXmlFile = "";
 
     public CtrInit()
     {
       InitializeComponent();
+      this.context = null!;
+      this.player = null!;
     }
 
     public CtrInit(InitContext context) : this()
@@ -39,7 +42,20 @@ namespace ChecklistModule
       this.DataContext = context;
     }
 
-    private string recentXmlFile;
+    private static CommonFileDialogFilter CreateCommonFileDialogFilter(string title, string extension)
+    {
+      CommonFileDialogFilter cfdf = new CommonFileDialogFilter(title, extension);
+      Type t = cfdf.GetType();
+      var fieldInfo = t.GetField("_extensions",
+        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
+        ?? throw new ApplicationException("Field with name '_extensions' not found; reflection error.");
+      System.Collections.ObjectModel.Collection<string?> col =
+        (System.Collections.ObjectModel.Collection<string?>)fieldInfo.GetValue(cfdf)!;
+      col.Clear();
+      col.Add(extension);
+      return cfdf;
+    }
+
     private void btnLoadChecklistFile_Click(object sender, RoutedEventArgs e)
     {
       var dialog = new CommonOpenFileDialog()
@@ -59,19 +75,10 @@ namespace ChecklistModule
       this.context.LoadFile(recentXmlFile);
     }
 
-    private CommonFileDialogFilter CreateCommonFileDialogFilter(string title, string extension)
+    private void btnSettings_Click(object sender, RoutedEventArgs e)
     {
-      CommonFileDialogFilter cfdf = new CommonFileDialogFilter(title, extension);
-      Type t = cfdf.GetType();
-      var fieldInfo = t.GetField("_extensions",
-        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic);
-      System.Collections.ObjectModel.Collection<string?> col =
-        (System.Collections.ObjectModel.Collection<string?>)fieldInfo.GetValue(cfdf)!;
-      col.Clear();
-      col.Add(extension);
-      return cfdf;
+      new CtrSettings(context.Settings).ShowDialog();
     }
-
     private void lblChecklist_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
       Label lbl = (Label)sender;
@@ -88,11 +95,6 @@ namespace ChecklistModule
       this.player.ClearQueue();
       this.player.PlayAsync(checkItem.Call.Bytes);
       this.player.PlayAsync(checkItem.Confirmation.Bytes);
-    }
-
-    private void btnSettings_Click(object sender, RoutedEventArgs e)
-    {
-      new CtrSettings(context.Settings).ShowDialog();
     }
   }
 }

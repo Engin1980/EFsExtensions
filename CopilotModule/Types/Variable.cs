@@ -14,8 +14,10 @@ namespace CopilotModule.Types
       get => base.GetProperty<double>(nameof(Value))!;
       set => base.UpdateProperty(nameof(Value), value);
     }
+#pragma warning disable CS8618
     public string Name { get; set; }
     public double DefaultValue { get; set; } = 0;
     public string? Info { get; set; }
+#pragma warning restore CS8618
   }
 }

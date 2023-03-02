@@ -4,6 +4,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
@@ -11,10 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ESimConnect\ESimConnect.csproj" />
     <ProjectReference Include="..\EXmlLib\EXmlLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Microsoft.FlightSimulator.SimConnect">
+      <HintPath>..\Libs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+    </Reference>
     <Reference Include="NAudioCore">
       <HintPath>..\Libs\NAudioCore.dll</HintPath>
     </Reference>

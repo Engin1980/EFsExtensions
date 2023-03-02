@@ -10,6 +10,7 @@ namespace ChecklistModule.Types
 {
   public class CheckList
   {
+#pragma warning disable CS8618
     public string Id { get; set; }
     public string CallSpeech { get; set; }
     public List<CheckItem> Items { get; set; }
@@ -18,5 +19,6 @@ namespace ChecklistModule.Types
     public CheckListMetaInfo MetaInfo { get; set; }
     public byte[] EntrySpeechBytes { get; set; } //xml-ignored
     public byte[] ExitSpeechBytes { get; set; } // xml-ignored
+#pragma warning restore CS8618
   }
 }

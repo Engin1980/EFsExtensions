@@ -17,27 +17,13 @@ namespace CopilotModule.Types
       File
     }
 
+    private const string VARIABLE_NAME_REGEX = @"\{(.+)\}";
+#pragma warning disable CS8618
+    public byte[] Bytes { get; set; }
     public SpeechType Type { get; set; }
     public string Value { get; set; }
+#pragma warning restore CS8618
 
-    public byte[] Bytes { get; set; }
-
-    internal List<string> GetUsedVariables()
-    {
-      List<string> ret = new();
-      if (Type == SpeechType.Speech)
-      {
-        Regex regex = new Regex(VARIABLE_NAME_REGEX);
-        Match m = regex.Match(Value);
-        while (m.Success)
-        {
-          ret.Add(m.Groups[1].Value);
-          m = m.NextMatch();
-        }
-      }
-      return ret;
-    }
-    private const string VARIABLE_NAME_REGEX = @"\{(.+)\}";
     internal string GetEvaluatedValue(List<Variable> variables)
     {
       if (Type != SpeechType.Speech)
@@ -56,6 +42,22 @@ namespace CopilotModule.Types
       Regex regex = new(VARIABLE_NAME_REGEX);
       ret = regex.Replace(ret, me);
 
+      return ret;
+    }
+
+    internal List<string> GetUsedVariables()
+    {
+      List<string> ret = new();
+      if (Type == SpeechType.Speech)
+      {
+        Regex regex = new Regex(VARIABLE_NAME_REGEX);
+        Match m = regex.Match(Value);
+        while (m.Success)
+        {
+          ret.Add(m.Groups[1].Value);
+          m = m.NextMatch();
+        }
+      }
       return ret;
     }
   }

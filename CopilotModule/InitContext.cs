@@ -21,7 +21,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
-  internal class InitContext : NotifyPropertyChangedBase
+  public class InitContext : NotifyPropertyChangedBase
   {
     private readonly LogHandler logHandler;
     private readonly Action<bool> setIsReadyFlagAction;
@@ -150,7 +150,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
     private List<string> ExtractVariablesFromStateChecks(SpeechDefinition sd)
     {
       List<string> ret = new();
-      string regexPattern = @"\{(.+)\}";
       Stack<IStateCheckItem> stack = new();
 
       stack.Push(sd.When);
@@ -199,6 +198,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
               .ToList();
             SafeUtils.SetPropertyValue(f, t, items);
           });
+      ret.Context.ElementDeserializers.Insert(0, oed);
+
+      oed = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(Speech))
+        .WithIgnoredProperty(nameof(Speech.Bytes));
       ret.Context.ElementDeserializers.Insert(0, oed);
 
       ret.Context.ElementDeserializers.Insert(0, new StateCheckDeserializer());
