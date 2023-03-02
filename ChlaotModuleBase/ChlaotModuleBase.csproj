@@ -7,7 +7,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Speech" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\EXmlLib\EXmlLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="NAudioCore">
+      <HintPath>..\Libs\NAudioCore.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

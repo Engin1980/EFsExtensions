@@ -1,5 +1,6 @@
 ﻿using ChlaotModuleBase;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
+using ChlaotModuleBase.ModuleUtils.Synthetization;
 using CopilotModule;
 using CopilotModule.Support;
 using CopilotModule.Types;
@@ -16,6 +17,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
@@ -36,24 +38,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
       get => base.GetProperty<CopilotSet>(nameof(Set))!;
       set => base.UpdateProperty(nameof(Set), value);
     }
-
-    //private void BuildTreeStructure()
-    //{
-    //  BindingList<TreeNode> tree = new();
-    //  foreach (var sd in Set.SpeechDefinitions)
-    //  {
-    //    TreeNode sdNode = new TreeNode(sd.Title);
-    //    sdNode.Items.Add(new TreeNode($"{sd.Speech.Value} ({sd.Speech.Type})"));
-    //    sdNode.Items.Add(new TreeNode($"{sd.When.DisplayString}"));
-    //    TreeNode varNode = new TreeNode($"Variables {sd.Variables.Count}");
-    //    foreach (var variable in sd.Variables)
-    //    {
-    //      varNode.Items.Add(new TreeNode($"{variable.Name} = (default) {variable.DefaultValue}"));
-    //    }
-    //  }
-
-    //  this.SetTreeStructure = tree;
-    //}
 
     internal Settings Settings { get; private set; }
 
@@ -149,6 +133,17 @@ namespace Eng.Chlaot.Modules.CopilotModule
             Info = "(not provided)"
           }));
         sd.Variables.ForEach(q => q.Value = q.DefaultValue);
+        sd.Variables.ForEach(q => q.PropertyChanged += Variable_PropertyChanged);
+      }
+    }
+
+    private void Variable_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+      Variable variable = (Variable)sender!;
+      SpeechDefinition sd = Set.SpeechDefinitions.Single(q => q.Variables.Contains(variable));
+      if (sd.Speech.Type == Speech.SpeechType.Speech && sd.Speech.GetUsedVariables().Any(q => q == variable.Name))
+      {
+        BuildSpeech(sd, new(), new Synthetizer(this.Settings.Synthetizer), "");
       }
     }
 
@@ -211,21 +206,53 @@ namespace Eng.Chlaot.Modules.CopilotModule
       return ret;
     }
 
-    private void InitializeSoundStreams(CopilotSet checkSet, string relativePath)
+    private void InitializeSoundStreams(CopilotSet set, string relativePath)
     {
-      //Synthetizer synthetizer = new(Settings.Synthetizer.Voice, Settings.Synthetizer.Rate); //Synthetizer.CreateDefault();
-      //Dictionary<string, byte[]> generatedSounds = new();
-      //foreach (var checklist in checkSet.Checklists)
-      //{
-      //  // TODO correct load meta data and checklist entry/exit speeches
-      //  InitializeSoundStreamsForChecklist(checklist, generatedSounds, synthetizer, relativePath);
+      Synthetizer synthetizer = new(Settings.Synthetizer);
+      Dictionary<string, byte[]> generatedSounds = new();
+      foreach (var sd in set.SpeechDefinitions)
+      {
+        BuildSpeech(sd, generatedSounds, synthetizer, relativePath);
+      }
+    }
 
-      //  foreach (var item in checklist.Items)
-      //  {
-      //    InitializeSoundStreamsForItems(item.Call, generatedSounds, synthetizer, relativePath);
-      //    InitializeSoundStreamsForItems(item.Confirmation, generatedSounds, synthetizer, relativePath);
-      //  }
-      //}
+    private void BuildSpeech(
+      SpeechDefinition speechDefinition,
+      Dictionary<string, byte[]> generatedSounds,
+      Synthetizer synthetizer,
+      string relativePath)
+    {
+      Speech speech = speechDefinition.Speech;
+      if (speech.Type == Speech.SpeechType.File)
+        try
+        {
+          speech.Bytes = System.IO.File.ReadAllBytes(
+            System.IO.Path.Combine(relativePath, speech.Value));
+        }
+        catch (Exception ex)
+        {
+          throw new EXmlException($"Unable to load sound file '{speech.Value}'.", ex);
+        }
+      else if (speech.Type == Speech.SpeechType.Speech)
+      {
+        string txt = speech.GetEvaluatedValue(speechDefinition.Variables);
+        try
+        {
+          if (generatedSounds.ContainsKey(txt))
+            speech.Bytes = generatedSounds[txt];
+          else
+          {
+            speech.Bytes = synthetizer.Generate(txt);
+            generatedSounds[txt] = speech.Bytes;
+          }
+        }
+        catch (Exception ex)
+        {
+          throw new EXmlException($"Unable to generated sound for speech '{speech.Value}'.", ex);
+        }
+      }
+      else
+        throw new NotImplementedException($"Unknown type {speech.Type}.");
     }
   }
 }

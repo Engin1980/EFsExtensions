@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace CopilotModule.Types
 {
@@ -18,17 +19,29 @@ namespace CopilotModule.Types
     public SpeechType Type { get; set; }
     public string Value { get; set; }
 
+    public byte[] Bytes { get; set; }
+
     internal List<string> GetUsedVariables()
     {
       List<string> ret = new();
-      string varRegex = @"\{(.+)\}";
-      Regex regex = new Regex(varRegex);
-      Match m = regex.Match(Value);
-      while (m.Success)
+      if (Type == SpeechType.Speech)
       {
-        ret.Add(m.Groups[1].Value);
-        m = m.NextMatch();
+        string varRegex = @"\{(.+)\}";
+        Regex regex = new Regex(varRegex);
+        Match m = regex.Match(Value);
+        while (m.Success)
+        {
+          ret.Add(m.Groups[1].Value);
+          m = m.NextMatch();
+        }
       }
+      return ret;
+    }
+
+    internal string GetEvaluatedValue(List<Variable> variables)
+    {
+      string ret;
+      ret = here implement; Regex; replace;
       return ret;
     }
   }

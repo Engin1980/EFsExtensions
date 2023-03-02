@@ -8,9 +8,9 @@ using System.Speech.Synthesis;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChecklistModule.Support
+namespace ChlaotModuleBase.ModuleUtils.Synthetization
 {
-  internal class Synthetizer
+  public class Synthetizer
   {
     private static class WavFileTrimmer
     {
@@ -25,7 +25,7 @@ namespace ChecklistModule.Support
           wavLength = wf.TotalTime;
           bpms = wf.WaveFormat.AverageBytesPerSecond / 1000f;
         }
-        
+
         if (trimStart + trimEnd > wavLength)
         {
           inStream.Position = 0;
@@ -66,25 +66,30 @@ namespace ChecklistModule.Support
     }
 
     private readonly SpeechSynthesizer synthetizer;
-
-    public Synthetizer(string voice, int rate)
+    private readonly TimeSpan trimStart;
+    private readonly TimeSpan trimEnd;
+    public Synthetizer(SynthetizerSettings s)
     {
       this.synthetizer = new SpeechSynthesizer();
-      this.synthetizer.SelectVoice(voice);
-      this.synthetizer.Rate = rate;
+      this.synthetizer.SelectVoice(s.Voice);
+      this.synthetizer.Rate = s.Rate;
+      this.trimStart = s.StartTrimMilisecondsTimeSpan;
+      this.trimEnd = s.EndTrimMilisecondsTimeSpan;
     }
 
     private Synthetizer()
     {
       this.synthetizer = new();
+      this.trimStart = TimeSpan.Zero;
+      this.trimEnd = TimeSpan.Zero;
     }
 
-    internal static Synthetizer CreateDefault()
+    public static Synthetizer CreateDefault()
     {
       return new Synthetizer();
     }
 
-    internal byte[] Generate(string value, TimeSpan trimStart, TimeSpan trimEnd)
+    public byte[] Generate(string value)
     {
       MemoryStream tmp = new();
       this.synthetizer.SetOutputToWaveStream(tmp);

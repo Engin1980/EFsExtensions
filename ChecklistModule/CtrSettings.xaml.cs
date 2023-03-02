@@ -1,4 +1,5 @@
 ﻿using ChecklistModule.Support;
+using ChlaotModuleBase.ModuleUtils.Synthetization;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -40,9 +41,9 @@ namespace ChecklistModule
       btnTestSynthetizer.IsEnabled = false;
       try
       {
-        Synthetizer s = new(settings.Synthetizer.Voice, settings.Synthetizer.Rate);
-        var a = s.Generate("Landing lights", settings.Synthetizer.StartTrimMilisecondsTimeSpan, settings.Synthetizer.EndTrimMilisecondsTimeSpan);
-        var b = s.Generate("On", settings.Synthetizer.StartTrimMilisecondsTimeSpan, settings.Synthetizer.EndTrimMilisecondsTimeSpan);
+        Synthetizer s = new(settings.Synthetizer);
+        var a = s.Generate("Landing lights");
+        var b = s.Generate("On");
 
         Player p = new();
         p.PlayAsync(a);

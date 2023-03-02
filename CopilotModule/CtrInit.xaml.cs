@@ -1,4 +1,6 @@
-﻿using Eng.Chlaot.Modules.CopilotModule;
+﻿using ChlaotModuleBase.ModuleUtils.Playing;
+using CopilotModule.Types;
+using Eng.Chlaot.Modules.CopilotModule;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -23,10 +25,12 @@ namespace CopilotModule
   public partial class CtrInit : UserControl
   {
     private InitContext context;
+    private readonly Player player;
 
     public CtrInit()
     {
       InitializeComponent();
+      this.player = new Player();
     }
 
     internal CtrInit(InitContext initContext) : this()
@@ -72,6 +76,14 @@ namespace CopilotModule
       col.Clear();
       col.Add(extension);
       return cfdf;
+    }
+
+    private void pnlSpeech_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
+    {
+      StackPanel panel = (StackPanel)sender;
+      SpeechDefinition sd = (SpeechDefinition)panel.Tag;
+      this.player.ClearQueue();
+      this.player.PlayAsync(sd.Speech.Bytes);
     }
   }
 }

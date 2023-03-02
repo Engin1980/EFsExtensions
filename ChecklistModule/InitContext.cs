@@ -18,6 +18,7 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Policy;
+using ChlaotModuleBase.ModuleUtils.Synthetization;
 
 namespace ChecklistModule
 {
@@ -25,7 +26,7 @@ namespace ChecklistModule
   {
     private readonly LogHandler logHandler;
     private readonly Action<bool> setIsReadyFlagAction;
-    
+
     public CheckSet ChecklistSet
     {
       get => base.GetProperty<CheckSet>(nameof(ChecklistSet))!;
@@ -200,7 +201,7 @@ namespace ChecklistModule
     }
     private void InitializeSoundStreams(CheckSet checkSet, string relativePath)
     {
-      Synthetizer synthetizer = new(Settings.Synthetizer.Voice, Settings.Synthetizer.Rate); //Synthetizer.CreateDefault();
+      Synthetizer synthetizer = new(Settings.Synthetizer);
       Dictionary<string, byte[]> generatedSounds = new();
       foreach (var checklist in checkSet.Checklists)
       {
@@ -229,15 +230,11 @@ namespace ChecklistModule
       checklist.EntrySpeechBytes =
         checklist.MetaInfo?.CustomEntrySpeech != null
         ? checklist.MetaInfo.CustomEntrySpeech.Bytes
-        : synthetizer.Generate($"{checklist.CallSpeech} checklist",
-        this.Settings.Synthetizer.StartTrimMilisecondsTimeSpan,
-        this.Settings.Synthetizer.EndTrimMilisecondsTimeSpan);
+        : synthetizer.Generate($"{checklist.CallSpeech} checklist");
       checklist.ExitSpeechBytes =
         checklist.MetaInfo?.CustomExitSpeech != null
         ? checklist.MetaInfo.CustomExitSpeech.Bytes
-        : synthetizer.Generate($"{checklist.CallSpeech} checklist completed",
-        this.Settings.Synthetizer.StartTrimMilisecondsTimeSpan,
-        this.Settings.Synthetizer.EndTrimMilisecondsTimeSpan);
+        : synthetizer.Generate($"{checklist.CallSpeech} checklist completed");
     }
 
     private void InitializeSoundStreamsForItems(
@@ -263,9 +260,7 @@ namespace ChecklistModule
             checkDefinition.Bytes = generatedSounds[checkDefinition.Value];
           else
           {
-            checkDefinition.Bytes = synthetizer.Generate(checkDefinition.Value,
-              this.Settings.Synthetizer.StartTrimMilisecondsTimeSpan,
-              this.Settings.Synthetizer.EndTrimMilisecondsTimeSpan);
+            checkDefinition.Bytes = synthetizer.Generate(checkDefinition.Value);
             generatedSounds[checkDefinition.Value] = checkDefinition.Bytes;
           }
         }
@@ -273,6 +268,8 @@ namespace ChecklistModule
         {
           throw new EXmlException($"Unable to generated sound for speech '{checkDefinition.Value}'.", ex);
         }
+      else
+        throw new NotImplementedException($"Unknown type {checkDefinition.Type}.");
     }
   }
 }

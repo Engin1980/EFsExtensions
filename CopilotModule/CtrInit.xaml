@@ -63,7 +63,7 @@
             </ListView.Template>
             <ListView.ItemTemplate>
               <DataTemplate>
-                <StackPanel>
+                <StackPanel x:Name="pnlSpeech" MouseRightButtonDown="pnlSpeech_MouseRightButtonDown" Tag="{Binding}" >
                   <Label Content="{Binding Title}" />
                   <Label Margin="32 0 0 0">
                     <Label.Content>
