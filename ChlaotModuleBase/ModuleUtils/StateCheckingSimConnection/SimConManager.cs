@@ -7,6 +7,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+using System.Runtime.CompilerServices;
 
 namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
 {
@@ -17,6 +19,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
 
     private readonly LogHandler logHandler;
     private ESimConnect.ESimConnect? _SimCon = null;
+    private bool isStarted = false;
     public ESimConnect.ESimConnect SimCon => this._SimCon ?? throw new ApplicationException("SimConManager not opened().");
 
     public SimData SimData { get; } = new();
@@ -64,6 +67,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
 
     public void Start()
     {
+      if (isStarted) return;
       Log(LogLevel.VERBOSE, "Simconnect - registering structs");
       SimCon.RegisterType<CommonDataStruct>();
       SimCon.RegisterType<RareDataStruct>();
@@ -77,6 +81,8 @@ namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
       SimCon.RegisterSystemEvent(SimEvents.System._1sec);
 
       Log(LogLevel.VERBOSE, "Simconnect connection ready");
+
+      isStarted = true;
     }
 
     private void Simcon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)

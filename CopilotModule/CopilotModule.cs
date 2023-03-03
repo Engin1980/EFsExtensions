@@ -47,6 +47,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
     {
       this.runContext = new RunContext(this.initContext!, this.logHandler);
       this._RunControl = new CtrRun(this.runContext);
+      this.runContext.Run();
 
       this.initContext = null;
       this._InitControl = null;
