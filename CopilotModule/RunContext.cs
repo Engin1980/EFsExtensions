@@ -1,4 +1,5 @@
 ﻿using ChlaotModuleBase;
+using ChlaotModuleBase.ModuleUtils.Playing;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
 using CopilotModule;
@@ -16,6 +17,9 @@ namespace Eng.Chlaot.Modules.CopilotModule
 {
   public class RunContext
   {
+    private const int INITIAL_CONNECTION_TIMER_INTERVAL = 1500;
+    private const int REPEATED_CONNECTION_TIMER_INTERVAL = 10500;
+
     public class SpeechDefinitionInfo : NotifyPropertyChangedBase
     {
       public SpeechDefinitionInfo(SpeechDefinition speechDefinition)
@@ -26,13 +30,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
       public SpeechDefinition SpeechDefinition { get; set; }
 
-
       public bool IsActive
       {
         get => base.GetProperty<bool>(nameof(IsActive))!;
         set => base.UpdateProperty(nameof(IsActive), value);
       }
-
 
       public DateTime? ReactivationDateTime
       {
@@ -45,19 +47,22 @@ namespace Eng.Chlaot.Modules.CopilotModule
       }
     }
     public CopilotSet Set { get; private set; }
-    public BindingList<SpeechDefinitionInfo> Infos = new BindingList<SpeechDefinitionInfo>();
-    private StateCheckEvaluator evaluator;
-    private Settings settings;
-    private LogHandler logHandler;
-    private SimConManager simConManager;
+    public BindingList<SpeechDefinitionInfo> Infos { get; set; } = new();
+    private readonly StateCheckEvaluator evaluator;
+    private readonly Settings settings;
+    private readonly LogHandler logHandler;
+    private readonly SimConManager simConManager;
+    private System.Timers.Timer? connectionTimer = null;
+
+
     public RunContext(InitContext initContext, LogHandler logHandler)
     {
       this.Set = initContext.Set;
       this.settings = initContext.Settings;
       this.logHandler = logHandler;
-      this.simConManager = new SimConManager(this.logHandler, "copilot_simcon_log.txt");
+      this.simConManager = new(this.logHandler, "copilot_simcon_log.txt");
       this.simConManager.SimSecondElapsed += SimConManager_SimSecondElapsed;
-      this.evaluator = new StateCheckEvaluator(this.simConManager.SimData, logHandler);
+      this.evaluator = new(this.simConManager.SimData, logHandler);
 
       this.Set.SpeechDefinitions.ForEach(q => Infos.Add(new SpeechDefinitionInfo(q)));
     }
@@ -81,10 +86,12 @@ namespace Eng.Chlaot.Modules.CopilotModule
     private void EvaluateActives(IEnumerable<SpeechDefinitionInfo> readys)
     {
       // play one one at once
-      SpeechDefinitionInfo? active = readys.FirstOrDefault(q => this.evaluator.Evaluate(q.SpeechDefinition.When));
+      SpeechDefinitionInfo? active = readys
+        .FirstOrDefault(q => this.evaluator.Evaluate(q.SpeechDefinition.When));
       if (active != null)
       {
-        finish here
+        Player player = new(active.SpeechDefinition.Speech.Bytes);
+        player.PlayAsync();
       }
     }
 
@@ -104,12 +111,44 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     internal void Stop()
     {
-      throw new NotImplementedException();
+      this.simConManager.SimSecondElapsed -= SimConManager_SimSecondElapsed;
+      Log(LogLevel.INFO, "Stopped");
     }
 
     internal void Run()
     {
+      Log(LogLevel.INFO, "Run");
+      this.simConManager.SimSecondElapsed += SimConManager_SimSecondElapsed;
 
+      logHandler?.Invoke(LogLevel.VERBOSE, "Starting connection timer");
+      this.connectionTimer = new System.Timers.Timer(INITIAL_CONNECTION_TIMER_INTERVAL)
+      {
+        AutoReset = true,
+        Enabled = true
+      };
+      this.connectionTimer.Elapsed += ConnectionTimer_Elapsed;
+    }
+
+    private void ConnectionTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+      if (this.connectionTimer!.Interval == INITIAL_CONNECTION_TIMER_INTERVAL)
+        this.connectionTimer!.Interval = REPEATED_CONNECTION_TIMER_INTERVAL;
+      try
+      {
+        Log(LogLevel.VERBOSE, "Opening connection");
+        this.simConManager.Open();
+        Log(LogLevel.VERBOSE, "Opening connection - done");
+        this.connectionTimer!.Stop();
+        this.connectionTimer = null;
+
+        this.simConManager.Start();
+        Log(LogLevel.INFO, "Connected to FS2020, starting updates");
+      }
+      catch (Exception ex)
+      {
+        Log(LogLevel.WARNING, "Failed to connect to FS2020, will try it again in a few seconds...");
+        Log(LogLevel.WARNING, "Fail reason: " + ex.GetFullMessage());
+      }
     }
   }
 }

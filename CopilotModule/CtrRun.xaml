@@ -6,7 +6,64 @@
              xmlns:local="clr-namespace:Eng.Chlaot.Modules.CopilotModule"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+  <DockPanel DataContext="{Binding}">
+    <TabControl>
+      <TabItem Header="Speeches">
+        <ListView ItemsSource="{Binding Infos}"
+                    ItemContainerStyle="{StaticResource ListViewAlternatingStyle}" AlternationCount="2">
+          <ListView.Template>
+            <ControlTemplate>
+              <ScrollViewer>
+                <ItemsPresenter></ItemsPresenter>
+              </ScrollViewer>
+            </ControlTemplate>
+          </ListView.Template>
+          <ListView.ItemTemplate>
+            <DataTemplate>
+              <StackPanel x:Name="pnlSpeech" >
+                <Label Content="{Binding SpeechDefinition.Title}" />
+                <Label >
+                  <TextBlock Margin="8 0 0 0" FontSize="10" Text="{Binding SpeechDefinition.When.DisplayString}" />
+                </Label>
+              </StackPanel>
+            </DataTemplate>
+          </ListView.ItemTemplate>
+        </ListView>
+      </TabItem>
+      <TabItem Header="Variables">
+        <ListView ItemsSource="{Binding SpeechDefinitions}"
+                    ItemContainerStyle="{StaticResource ListViewAlternatingStyle}" AlternationCount="2">
+          <ListView.Template>
+            <ControlTemplate>
+              <ScrollViewer>
+                <ItemsPresenter></ItemsPresenter>
+              </ScrollViewer>
+            </ControlTemplate>
+          </ListView.Template>
+          <ListView.ItemTemplate>
+            <DataTemplate>
+              <StackPanel Visibility="{Binding Variables.Count, Converter={StaticResource Int2VisibilityConverter}}">
+                <Label Content="{Binding Title}" />
+                <ItemsControl ItemsSource="{Binding Variables}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Margin="32 0 0 0" Orientation="Horizontal" ToolTip="{Binding Info}">
+                        <TextBlock Text="{}{" />
+                        <TextBlock Text="{Binding Name}" />
+                        <TextBlock Text="} = " />
+                        <TextBox TextAlignment="Right" Margin="0" Text="{Binding Value}" Width="50" />
+                        <TextBlock Text=" ( default = " />
+                        <TextBlock Text="{Binding DefaultValue}" />
+                        <TextBlock Text=")" />
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </StackPanel>
+            </DataTemplate>
+          </ListView.ItemTemplate>
+        </ListView>
+      </TabItem>
+    </TabControl>
+  </DockPanel>
 </UserControl>

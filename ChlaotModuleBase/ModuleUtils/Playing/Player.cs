@@ -1,63 +1,36 @@
-﻿using System;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
+using System.Media;
+using System.Threading.Tasks;
 
 namespace ChlaotModuleBase.ModuleUtils.Playing
 {
-  public partial class Player
+  public class Player
   {
-    private readonly PlayQueue queue = new();
-    private bool isPlaying = false;
+    public delegate void PlayerDelegate(Player sender);
 
-    public Player()
+    public event PlayerDelegate? PlaybackFinished;
+
+    public event PlayerDelegate? PlaybackStarted;
+
+    public readonly int length;
+    private readonly SoundPlayer soundPlayer;
+    public Player(byte[] bytes)
     {
-      queue.NewItemInserted += Queue_NewItemInserted;
+      MemoryStream stream = new(bytes);
+      this.soundPlayer = new SoundPlayer(stream);
+      this.length = bytes.Length;
+    }
+    public void Play()
+    {
+      PlaybackStarted?.Invoke(this);
+      this.soundPlayer.PlaySync();
+      PlaybackFinished?.Invoke(this);
     }
 
-    public void ClearQueue()
+    public void PlayAsync()
     {
-      this.queue.Clear();
-    }
-
-    public void PlayAsync(byte[] bytes)
-    {
-      InternalPlayer ip = new(bytes);
-      this.queue.Enqueue(ip);
-    }
-
-    private void Ip_PlaybackFinished(InternalPlayer sender)
-    {
-      lock (queue)
-      {
-        isPlaying = false;
-        PlayNext();
-      }
-    }
-
-    private void PlayNext()
-    {
-      lock (queue)
-      {
-        if (isPlaying)
-        {
-          return;
-        }
-
-        InternalPlayer? ip = queue.TryDequeue();
-        if (ip != null)
-        {
-          ip.PlaybackFinished += Ip_PlaybackFinished;
-          isPlaying = true;
-          ip.PlayAsync();
-        }
-        else
-        {
-        }
-      }
-    }
-    private void Queue_NewItemInserted()
-    {
-      PlayNext();
+      Task t = new(this.Play);
+      t.Start();
     }
   }
 }

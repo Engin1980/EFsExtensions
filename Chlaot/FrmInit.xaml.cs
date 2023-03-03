@@ -23,12 +23,11 @@ namespace Chlaot
   /// </summary>
   public partial class FrmInit : Window
   {
-    public Context Context { get; set; }
+    private readonly Context context = new Context();
 
     public FrmInit()
     {
       InitializeComponent();
-      this.Context = null!;
     }
 
     public void LogToConsole(LogLevel level, string message)
@@ -60,7 +59,7 @@ namespace Chlaot
     [SuppressMessage("", "IDE1006")]
     private void btnRun_Click(object sender, RoutedEventArgs e)
     {
-      FrmRun frmRun = new(Context);
+      FrmRun frmRun = new(this.context);
       this.Close();
       frmRun.Show();
     }
@@ -72,21 +71,16 @@ namespace Chlaot
       pnlContent.Children.Clear();
       pnlContent.Children.Add(module.InitControl);
     }
+
     private void Window_Initialized(object sender, EventArgs e)
     {
-      this.Context = new Context();
-      this.Context.SetLogHandler((l, m) => this.LogToConsole(l, m));
-      this.Context.SetUpModules();
+      this.context.SetLogHandler((l, m) => this.LogToConsole(l, m));
+      this.context.SetUpModules();
 
-      this.DataContext = this.Context;
+      this.DataContext = this.context;
       if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
 
-      this.Context.InitModules();
-    }
-
-    private void Window_Loaded(object sender, RoutedEventArgs e)
-    {
-
+      this.context.InitModules();
     }
   }
 }

@@ -30,7 +30,7 @@ namespace Chlaot
 
     public FrmRun(Context context) : this()
     {
-      this.context = context;
+      this.context = context ??  throw new ArgumentNullException(nameof(context));
       this.DataContext = context;
     }
 
@@ -73,9 +73,10 @@ namespace Chlaot
       this.context.RemoveUnreadyModules();
 
       this.DataContext = this.context;
-      if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
 
       this.context.RunModules();
+
+      if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
     }
 
     private void Window_Closed(object sender, EventArgs e)

@@ -20,7 +20,6 @@ namespace ChlaotModuleBase
       if (propertyValues.ContainsKey(propertyName))
       {
         object? val = propertyValues[propertyName];
-        Trace.Assert(val == null || val is T?);
         ret = (T?)val;
       }
       else

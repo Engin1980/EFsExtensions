@@ -1,5 +1,4 @@
-﻿using ChecklistModule.Support;
-using ChecklistModule.Types;
+﻿using ChecklistModule.Types;
 using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase;
 using EXmlLib;

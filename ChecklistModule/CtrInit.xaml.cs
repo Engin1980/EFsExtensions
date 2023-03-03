@@ -1,5 +1,5 @@
-using ChecklistModule.Support;
 using ChecklistModule.Types;
+using ChlaotModuleBase.ModuleUtils.Playing;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -25,19 +25,19 @@ namespace ChecklistModule
   public partial class CtrInit : UserControl
   {
     private readonly InitContext context;
-    private readonly Player player;
+    private readonly AutoPlaybackManager autoPlaybackManager;
     private string recentXmlFile = "";
 
     public CtrInit()
     {
       InitializeComponent();
       this.context = null!;
-      this.player = null!;
+      this.autoPlaybackManager = null!;
     }
 
     public CtrInit(InitContext context) : this()
     {
-      this.player = new();
+      this.autoPlaybackManager = new();
       this.context = context;
       this.DataContext = context;
     }
@@ -83,18 +83,18 @@ namespace ChecklistModule
     {
       Label lbl = (Label)sender;
       CheckList checkList = (CheckList)lbl.Tag;
-      this.player.ClearQueue();
-      this.player.PlayAsync(checkList.EntrySpeechBytes);
-      this.player.PlayAsync(checkList.ExitSpeechBytes);
+      this.autoPlaybackManager.ClearQueue();
+      this.autoPlaybackManager.Enqueue(checkList.EntrySpeechBytes);
+      this.autoPlaybackManager.Enqueue(checkList.ExitSpeechBytes);
     }
 
     private void lblItem_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
       Label lbl = (Label)sender;
       CheckItem checkItem = (CheckItem)lbl.Tag;
-      this.player.ClearQueue();
-      this.player.PlayAsync(checkItem.Call.Bytes);
-      this.player.PlayAsync(checkItem.Confirmation.Bytes);
+      this.autoPlaybackManager.ClearQueue();
+      this.autoPlaybackManager.Enqueue(checkItem.Call.Bytes);
+      this.autoPlaybackManager.Enqueue(checkItem.Confirmation.Bytes);
     }
   }
 }

@@ -23,6 +23,7 @@ namespace CopilotModule
   public partial class CtrSettings : Window
   {
     private readonly Settings settings;
+    private readonly AutoPlaybackManager autoPlaybackManager = new AutoPlaybackManager();
 
     public CtrSettings()
     {
@@ -45,8 +46,7 @@ namespace CopilotModule
         Synthetizer s = new(settings.Synthetizer);
         var a = s.Generate("Transition level");
 
-        Player p = new();
-        p.PlayAsync(a);
+        autoPlaybackManager.Enqueue(a);
       }
       catch (Exception ex)
       {

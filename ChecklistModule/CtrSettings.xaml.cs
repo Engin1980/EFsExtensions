@@ -1,4 +1,4 @@
-﻿using ChecklistModule.Support;
+﻿using ChlaotModuleBase.ModuleUtils.Playing;
 using ChlaotModuleBase.ModuleUtils.Synthetization;
 using System;
 using System.Collections.Generic;
@@ -24,6 +24,7 @@ namespace ChecklistModule
   public partial class CtrSettings : Window
   {
     private readonly Settings settings;
+    private readonly AutoPlaybackManager autoPlaybackManager = new AutoPlaybackManager();
     public CtrSettings()
     {
       InitializeComponent();
@@ -46,9 +47,8 @@ namespace ChecklistModule
         var a = s.Generate("Landing lights");
         var b = s.Generate("On");
 
-        Player p = new();
-        p.PlayAsync(a);
-        p.PlayAsync(b);
+        autoPlaybackManager.Enqueue(a);
+        autoPlaybackManager.Enqueue(b);
       }
       catch (Exception ex)
       {

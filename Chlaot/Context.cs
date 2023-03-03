@@ -39,7 +39,7 @@ namespace Chlaot
       Modules.ToList().ForEach(q => q.SetUp(
         new ModuleSetUpInfo()
         {
-          LogHandler = (level, message) => this.LogHandler?.Invoke(level, $"[{module.Name}] {message}")
+          LogHandler = (level, message) => this.LogHandler?.Invoke(level, $"[{q.Name}] {message}")
         }));
 
       LogHandler?.Invoke(LogLevel.INFO, "Modules loaded & set up.");

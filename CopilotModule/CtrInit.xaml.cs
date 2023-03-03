@@ -24,15 +24,14 @@ namespace CopilotModule
   /// </summary>
   public partial class CtrInit : UserControl
   {
-    private readonly Player player;
     private InitContext context;
     private string recentXmlFile = "";
+    private readonly AutoPlaybackManager autoPlaybackManager = new();
 
     public CtrInit()
     {
       InitializeComponent();
       this.context = null!;
-      this.player = new Player();
     }
 
     internal CtrInit(InitContext initContext) : this()
@@ -82,8 +81,7 @@ namespace CopilotModule
     {
       StackPanel panel = (StackPanel)sender;
       SpeechDefinition sd = (SpeechDefinition)panel.Tag;
-      this.player.ClearQueue();
-      this.player.PlayAsync(sd.Speech.Bytes);
+      autoPlaybackManager.Enqueue(sd.Speech.Bytes);
     }
   }
 }

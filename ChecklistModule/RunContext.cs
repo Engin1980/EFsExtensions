@@ -1,7 +1,8 @@
-﻿using ChecklistModule.Support;
-using ChecklistModule.Types;
+﻿using ChecklistModule.Types;
 using ChecklistModule.Types.RunViews;
 using ChlaotModuleBase;
+using ChlaotModuleBase.ModuleUtils.KeyHooking;
+using ChlaotModuleBase.ModuleUtils.Playing;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
 using Eng.Chlaot.ChlaotModuleBase;
@@ -102,7 +103,7 @@ namespace ChecklistModule
         {
           this.isPlaying = true;
           byte[] playData = ResolveAndMarkNexPlayBytes(out bool stopPlaying);
-          InternalPlayer player = new(playData);
+          Player player = new(playData);
           player.PlaybackFinished += Player_PlaybackFinished;
           player.PlayAsync();
           if (stopPlaying) this.isPlaying = false;
@@ -172,7 +173,7 @@ namespace ChecklistModule
         if (currentItemIndex < currentList.Items.Count)
           currentList.Items[currentItemIndex].State = RunState.Current;
       }
-      private void Player_PlaybackFinished(InternalPlayer sender)
+      private void Player_PlaybackFinished(Player sender)
       {
         lock (this)
         {
@@ -292,7 +293,7 @@ namespace ChecklistModule
 
     internal void Run(KeyHookWrapper keyHookWrapper)
     {
-      logHandler?.Invoke(LogLevel.VERBOSE, "Run");
+      logHandler?.Invoke(LogLevel.INFO, "Run");
 
       logHandler?.Invoke(LogLevel.VERBOSE, "Resetting playback");
       playback.Reset();

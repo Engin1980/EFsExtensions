@@ -22,6 +22,7 @@
     <when>
       <cs:property name="ias" direction="exactly" expression="{speed}" randomize="+-5" sensitivity="+-10%" />
     </when>
+    <variable name="speed" defaultValue="60" info="Speed in kts" />
   </speechDefinition>
   <speechDefinition title="Positive rate" reactivateIn="-1">
     <speech type="speech" value="Positive rate" />
@@ -42,6 +43,7 @@
         <cs:property name="altitude" direction="passing" expression="{transition_altitude}" randomize="+-3" />
       </cs:and>
     </when>
+    <variable name="transition_altitude" defaultValue="5000" info="Transition altitude" />
   </speechDefinition>
   <speechDefinition title="Transition Level" reactivateIn="10">
     <speech type="speech" value="Transition level" />
@@ -51,6 +53,7 @@
         <cs:property name="altitude" direction="passing" expression="{transition_level}" randomize="+-3" />
       </cs:and>
     </when>
+    <variable name="transition_level" defaultValue="5000" info="Transition level" />
   </speechDefinition>
   <speechDefinition title="FL100 pass" reactivateIn="0">
     <speech type="speech" value="Passing ten thousand feet" />
@@ -58,6 +61,33 @@
       <cs:and>
         <cs:property name="altitude" direction="passing" expression="10000" randomize="+-10" />
       </cs:and>
+    </when>
+  </speechDefinition>
+  <speechDefinition title="v1" reactivateIn="10">
+    <speech type="speech" value="V One" />
+    <when>
+      <and>
+        <cs:property name="ias" direction="passing" expression="{v1}" />
+        <cs:property name="acceleration" direction="above" value="1" />
+      </and>
+    </when>
+  </speechDefinition>
+  <speechDefinition title="v1" reactivateIn="10">
+    <speech type="speech" value="V Rotate" />
+    <when>
+      <and>
+        <cs:property name="ias" direction="passing" expression="{vr}" />
+        <cs:property name="acceleration" direction="above" value="1" />
+      </and>
+    </when>
+  </speechDefinition>
+  <speechDefinition title="v2" reactivateIn="10">
+    <speech type="speech" value="V Two" />
+    <when>
+      <and>
+        <cs:property name="ias" direction="passing" expression="{v2}" />
+        <cs:property name="acceleration" direction="above" value="1" />
+      </and>
     </when>
   </speechDefinition>
 </copilotSet>

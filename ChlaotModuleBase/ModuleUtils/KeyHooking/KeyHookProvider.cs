@@ -12,7 +12,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 
-namespace ChecklistModule.Support
+namespace ChlaotModuleBase.ModuleUtils.KeyHooking
 {
   public class KeyHookWrapper : IDisposable
   {

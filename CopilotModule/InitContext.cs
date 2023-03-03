@@ -2,7 +2,6 @@
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using ChlaotModuleBase.ModuleUtils.Synthetization;
 using CopilotModule;
-using CopilotModule.Support;
 using CopilotModule.Types;
 using Eng.Chlaot.ChlaotModuleBase;
 using EXmlLib;
@@ -25,13 +24,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
   {
     private readonly LogHandler logHandler;
     private readonly Action<bool> setIsReadyFlagAction;
-
-
-    public BindingList<TreeNode> SetTreeStructure
-    {
-      get => base.GetProperty<BindingList<TreeNode>>(nameof(SetTreeStructure))!;
-      set => base.UpdateProperty(nameof(SetTreeStructure), value);
-    }
 
     public CopilotSet Set
     {
@@ -99,7 +91,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         }
 
         this.Set = tmp;
-        this.setIsReadyFlagAction(true);
+        UpdateReadyFlag();
         logHandler.Invoke(LogLevel.INFO, $"Copilot set file '{xmlFile}' successfully loaded.");
 
       }
@@ -108,6 +100,12 @@ namespace Eng.Chlaot.Modules.CopilotModule
         this.setIsReadyFlagAction(false);
         logHandler.Invoke(LogLevel.ERROR, $"Failed to load copilot set from '{xmlFile}'." + ex.GetFullMessage());
       }
+    }
+
+    private void UpdateReadyFlag()
+    {
+      bool ready = this.Set.SpeechDefinitions.SelectMany(q => q.Variables).All(q => q.HasValue);
+      this.setIsReadyFlagAction(ready);
     }
 
     private void AnalyseForUsedVariables(CopilotSet set)
@@ -129,7 +127,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
           .ForEach(q => sd.Variables.Add(new Variable()
           {
             Name = q,
-            DefaultValue = 0,
+            DefaultValue = null,
             Info = "(not provided)"
           }));
         sd.Variables.ForEach(q => q.Value = q.DefaultValue);
@@ -145,6 +143,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
       {
         BuildSpeech(sd, new(), new Synthetizer(this.Settings.Synthetizer), "");
       }
+      UpdateReadyFlag();
     }
 
     private List<string> ExtractVariablesFromStateChecks(SpeechDefinition sd)

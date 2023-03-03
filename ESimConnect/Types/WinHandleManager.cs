@@ -108,19 +108,24 @@ namespace ESimConnect.Types
 
     public void Release()
     {
-      if (this.hwndSource != null)
+      Application.Current.Dispatcher.Invoke(() =>
       {
-        this.hwndSource.RemoveHook(this.hook);
-        this.hook = null;
-        this.hwndSource = null;
-      }
+        if (this.hwndSource != null)
+        {
+          this.hwndSource.RemoveHook(this.hook);
+          this.hook = null;
+          this.hwndSource = null;
+        }
 
-      if (this.window != null)
-      {
-        this.window.Close();
-        this.window = null;
-      }
-      this.windowHandle = IntPtr.Zero;
+        if (this.window != null)
+        {
+          this.window.Close();
+          this.window = null;
+        }
+        this.windowHandle = IntPtr.Zero;
+      });
+      while (this.windowHandle != IntPtr.Zero)
+        System.Threading.Thread.Sleep(50);
     }
 
     private void CreateWindow()

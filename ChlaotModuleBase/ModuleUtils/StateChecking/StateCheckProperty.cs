@@ -28,7 +28,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
     {
       get
       {
-        if (Expression[0] == '{')
+        if (Expression != null && Expression.Length > 0 && Expression[0] == '{')
           return Expression[1..^1];
         else
           return null;
