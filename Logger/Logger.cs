@@ -48,6 +48,7 @@ namespace ELogging
         customSenderNames[sender] = customSenderName;
       void handler(LogLevel e, string m) => ProcessMessage(e, sender, m);
       senders[sender] = handler;
+
       return handler;
     }
 
@@ -61,7 +62,7 @@ namespace ELogging
 
     public static int RegisterLogAction(Action<LogItem> action, List<LogRule> rules, object? owner = null)
     {
-      ActionInfo ai = new ActionInfo(action, rules, owner);
+      ActionInfo ai = new(action, rules, owner);
       actions.Add(ai);
       return ai.Id;
     }
@@ -97,7 +98,7 @@ namespace ELogging
         if (rule == null) continue;
         if (rule.IsLogLevelMatch(level) == false) continue;
 
-        LogItem item = new LogItem(sender, senderName, level, message);
+        LogItem item = new(sender, senderName, level, message);
         actionInfo.Action.Invoke(item);
       }
     }

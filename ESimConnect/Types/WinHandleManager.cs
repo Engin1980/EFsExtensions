@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Printing;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -74,9 +75,8 @@ namespace ESimConnect.Types
             else
             {
               string s = ExpandExceptionString(ex);
-              //System.IO.File.WriteAllText("error.txt", s); //TODO remove when not used
-              Logger.Log("DefWndProc EXCEPTION " + s, this);
-
+              System.IO.File.WriteAllText("error.txt", s); //TODO remove when not used
+              ELogging.Logger.Log(this, ELogging.LogLevel.ERROR, "DefWndProc EXCEPTION " + s);
               this.ExceptionRaised?.Invoke(ex);
             }
           }

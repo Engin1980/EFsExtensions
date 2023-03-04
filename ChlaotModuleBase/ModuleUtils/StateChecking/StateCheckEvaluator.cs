@@ -23,12 +23,8 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
       Below
     }
 
-    private static Random random = new();
-    private Dictionary<StateCheckProperty, double> randomizedValue = new();
-    private Dictionary<StateCheckProperty, double> sensitivityValue = new();
     private readonly Dictionary<StateCheckDelay, int> historyCounter = new();
     private readonly Dictionary<StateCheckProperty, EPassingState> passingPropertiesStates = new();
-    //private readonly Dictionary<string, double> variables = new();
     private readonly IPlaneData planeData;
     private readonly NewLogHandler logHandler;
 
@@ -49,6 +45,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
 
     public bool Evaluate(IStateCheckItem autostart)
     {
+      logHandler.Invoke(LogLevel.INFO, $"Top-Level evaluation of {autostart.DisplayString} started 2.");
       if (autostart == null) throw new ArgumentNullException(nameof(autostart));
       var ret = autostart switch
       {
@@ -57,6 +54,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
         StateCheckProperty property => EvaluateProperty(property),
         _ => throw new NotImplementedException(),
       };
+      logHandler.Invoke(LogLevel.INFO, $"Top-Level evaluation of {autostart.DisplayString} resulted in {ret}.");
       return ret;
     }
 
@@ -151,7 +149,6 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
         default:
           throw new NotImplementedException($"Unknown property direction '{property.Direction}'.");
       }
-
       return ret;
     }
 

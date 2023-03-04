@@ -63,15 +63,15 @@ namespace Eng.Chlaot.Modules.CopilotModule
       this.settings = initContext.Settings;
       this.logHandler = Logger.RegisterSender(this, "[Copilot.RunContext]");
       this.simConManager = new();
-      this.simConManager.SimSecondElapsed += SimConManager_SimSecondElapsed;
       this.evaluator = new(this.simConManager.SimData);
 
       this.Set.SpeechDefinitions.ForEach(q => Infos.Add(new SpeechDefinitionInfo(q)));
     }
 
     private void SimConManager_SimSecondElapsed()
-    {
+    {      
       if (this.simConManager.SimData.IsSimPaused) return;
+      this.logHandler.Invoke(LogLevel.VERBOSE, "SimSecondElapsed (non-paused)");
 
       EvaluateForSpeeches();
     }
@@ -79,9 +79,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
     private void EvaluateForSpeeches()
     {
       var readys = this.Infos.Where(q => q.IsActive);
+      this.logHandler.Invoke(LogLevel.VERBOSE, $"Evaluating {readys.Count()} readys");
       EvaluateActives(readys);
 
       var waits = this.Infos.Where(q => !q.IsActive);
+      this.logHandler.Invoke(LogLevel.VERBOSE, $"Evaluating {waits.Count()} waits");
       EvaluateInactives(waits);
     }
 
@@ -94,6 +96,13 @@ namespace Eng.Chlaot.Modules.CopilotModule
       {
         Player player = new(active.SpeechDefinition.Speech.Bytes);
         player.PlayAsync();
+
+        var rai = active.SpeechDefinition.ReactivateIn;
+        active.ReactivationDateTime = rai == null || rai.Value < 0
+            ? DateTime.Now.AddDays(365)
+            : DateTime.Now.AddSeconds(active.SpeechDefinition.ReactivateIn!.Value);
+        this.logHandler.Invoke(LogLevel.VERBOSE,
+          $"Activated speech {active.SpeechDefinition.Title}, reactivation at {active.ReactivationDateTime}");
       }
     }
 

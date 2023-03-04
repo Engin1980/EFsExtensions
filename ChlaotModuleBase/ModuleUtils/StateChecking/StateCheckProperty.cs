@@ -79,6 +79,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
       }
       set
       {
+        Logger.Log(this, LogLevel.WARNING, $"Somebody is trying to set value of {this.DisplayName}: {_Value} => {value}.");
         if (this._Value != value)
         {
           this._Value = value;
@@ -122,13 +123,13 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
     {
       if (Value == null)
         throw new ApplicationException(
-          $"Cannot adjust sensitivity/randomize-value if pure {nameof(Value)} is null.");
+          $"Cannot adjust sensitivity/randomize-value if pure {nameof(Value)} of {DisplayName} is null.");
       if (Randomize == null)
         throw new ApplicationException(
-          $"Cannot adjust sensitivity/random-value if pure {nameof(Randomize)} is null.");
+          $"Cannot adjust sensitivity/random-value if pure {nameof(Randomize)} is {DisplayName} null.");
       if (Sensitivity == null)
         throw new ApplicationException(
-          $"Cannot adjust sensitivity/random-value if pure {nameof(Sensitivity)} is null.");
+          $"Cannot adjust sensitivity/random-value if pure {nameof(Sensitivity)} is {DisplayName} null.");
 
       // randomization
       (double lower, double upper, bool isPerc) = ExpandRangeString(this.Randomize);

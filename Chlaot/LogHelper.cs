@@ -57,8 +57,9 @@ namespace Chlaot
 
       List<LogRule> rules = new()
       {
-        new LogRule("Playing\\.AutoPlaybackManager",false,false,true,true),
-        new LogRule("Playing\\.Player",false,false,true,true),
+        //new LogRule("Playing\\.AutoPlaybackManager",false,false,true,true),
+        new LogRule("Playing\\.Player",false,true,true,true),
+        new LogRule("SimConManager",false,true,true,true),
         new LogRule(".*", false, true, true, true)
       };
 
