@@ -29,5 +29,7 @@ namespace CopilotModule.Types
     public double? DefaultValue { get; set; } = null;
     public string? Info { get; set; }
 #pragma warning restore CS8618
+    public SpeechDefinition? Parent { get; set; }
+
   }
 }

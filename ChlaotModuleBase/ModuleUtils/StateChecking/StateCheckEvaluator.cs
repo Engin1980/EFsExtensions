@@ -1,12 +1,17 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Printing;
+using System.Speech.Synthesis.TtsEngine;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Media.TextFormatting;
 
 namespace ChlaotModuleBase.ModuleUtils.StateChecking
 {
@@ -18,8 +23,12 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
       Below
     }
 
+    private static Random random = new();
+    private Dictionary<StateCheckProperty, double> randomizedValue = new();
+    private Dictionary<StateCheckProperty, double> sensitivityValue = new();
     private readonly Dictionary<StateCheckDelay, int> historyCounter = new();
     private readonly Dictionary<StateCheckProperty, EPassingState> passingPropertiesStates = new();
+    //private readonly Dictionary<string, double> variables = new();
     private readonly IPlaneData planeData;
     private readonly NewLogHandler logHandler;
 
@@ -27,6 +36,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
     {
       this.planeData = planeData;
       this.logHandler = Logger.RegisterSender(this);
+      this.logHandler.Invoke(LogLevel.INFO, "Created");
     }
 
     private int ResolveEngineStarted(StateCheckProperty property)
@@ -39,6 +49,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
 
     public bool Evaluate(IStateCheckItem autostart)
     {
+      if (autostart == null) throw new ArgumentNullException(nameof(autostart));
       var ret = autostart switch
       {
         StateCheckCondition condition => EvaluateCondition(condition),
@@ -59,7 +70,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
         _ => throw new NotImplementedException(),
       };
 
-      Log($"Eval {condition.DisplayString} = {ret} (datas = {string.Join(";", subs)})");
+      Log(condition, $"op (a, b, ..)", $"{condition.Operator} ({string.Join(",", subs)})", ret);
       return ret;
     }
 
@@ -78,15 +89,13 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
         historyCounter[delay] = 0;
 
       ret = historyCounter[delay] >= delay.Seconds;
-
-      Log($"Eval {delay.DisplayString} = {ret} (delay = {historyCounter[delay]})");
-
+      Log(delay, $"current / target /= inner", $"{historyCounter[delay]} / {delay.Seconds} /= {tmp}", ret);
       return ret;
     }
 
     private bool EvaluateProperty(StateCheckProperty property)
     {
-      double expected = property.GetValue();
+      double expected = property.RandomizedValue;
       double actual = property.Name switch
       {
         StateCheckPropertyName.Altitude => planeData.Altitude,
@@ -102,25 +111,59 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
         _ => throw new NotImplementedException()
       };
 
-      bool ret = property.Direction switch
+      bool ret;
+      switch (property.Direction)
       {
-        StateCheckPropertyDirection.Above => actual > expected,
-        StateCheckPropertyDirection.Below => actual < expected,
-        _ => throw new NotImplementedException()
-      };
+        case StateCheckPropertyDirection.Above:
+          ret = actual > expected;
+          Log(property, "actual > expected", $"{actual} > {expected}", ret);
+          break;
+        case StateCheckPropertyDirection.Below:
+          ret = actual < expected;
+          Log(property, "actual < expected", $"{actual} < {expected}", ret);
+          break;
+        case StateCheckPropertyDirection.Exactly:
+          double epsilon = property.SensitivityEpsilon;
+          ret = Math.Abs(actual - expected) < epsilon;
+          Log(property, "Math.Abs(actual - expected) < epsilon", $"Math.Abs({actual} - {expected}) < {epsilon}", ret);
+          break;
+        case StateCheckPropertyDirection.Passing:
+          EPassingState nowState = actual > expected ? EPassingState.Above : EPassingState.Below;
+          if (passingPropertiesStates.ContainsKey(property) == false)
+          {
+            ret = false;
+            passingPropertiesStates[property] = nowState;
+            Log(property, "//new// actual (vs) expected", $"//new// {actual} {nowState} {expected}", ret);
+          }
+          else
+          {
+            EPassingState befState = passingPropertiesStates[property];
+            if (nowState == befState)
+              ret = false;
+            else
+            {
+              passingPropertiesStates[property] = nowState;
+              ret = true;
+            }
+            Log(property, "//bef:// actual (vs) expected", $"//{befState}// {actual} {nowState} {expected}", ret);
+          }
+          break;
+        default:
+          throw new NotImplementedException($"Unknown property direction '{property.Direction}'.");
+      }
 
-      Log($"Eval {property.DisplayString} = {ret} (actual = {actual})");
       return ret;
+    }
+
+    private void Log(IStateCheckItem property, string expl, string data, bool ret)
+    {
+      this.logHandler.Invoke(LogLevel.INFO, $"EVAL {property.DisplayString} \t {expl} \t {data} \t {ret}");
     }
 
     public void Reset()
     {
       this.historyCounter.Clear();
-    }
-
-    private void Log(string message)
-    {
-      logHandler.Invoke(LogLevel.INFO, message);
+      this.passingPropertiesStates.Clear();
     }
   }
 }

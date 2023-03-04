@@ -319,9 +319,9 @@ namespace ChecklistModule
       this.simConManager.Close();
     }
 
-    private static KeyHookWrapper.KeyHookInfo ConvertShortcutToKeyHookInfo(Settings.KeyShortcut shortcut)
+    private static KeyHookInfo ConvertShortcutToKeyHookInfo(Settings.KeyShortcut shortcut)
     {
-      KeyHookWrapper.KeyHookInfo ret = new(
+      KeyHookInfo ret = new(
         shortcut.Alt,
         shortcut.Control,
         shortcut.Shift,
@@ -394,7 +394,7 @@ namespace ChecklistModule
     }
 
     [SuppressMessage("", "IDE1006")]
-    private void keyHookWrapper_KeyHookInvoked(int hookId, KeyHookWrapper.KeyHookInfo keyHookInfo)
+    private void keyHookWrapper_KeyHookInvoked(int hookId, KeyHookInfo keyHookInfo)
     {
       if (hookId == this.keyHookPlayPauseId)
       {

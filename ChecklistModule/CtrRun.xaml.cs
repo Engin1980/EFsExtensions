@@ -36,8 +36,7 @@ namespace ChecklistModule
       this.context = context;
       this.DataContext = context;
 
-      Window window = Window.GetWindow(this);
-      var keyHookWrapper = new KeyHookWrapper(window);
+      var keyHookWrapper = new KeyHookWrapper();
       this.context.Run(keyHookWrapper);
     }
   }

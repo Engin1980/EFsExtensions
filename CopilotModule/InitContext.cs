@@ -12,9 +12,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using static System.Net.Mime.MediaTypeNames;
@@ -61,15 +63,15 @@ namespace Eng.Chlaot.Modules.CopilotModule
           throw new ApplicationException("Unable to read/deserialize copilot-set from '{xmlFile}'. Invalid file content?", ex);
         }
 
-        //logHandler.Invoke(LogLevel.INFO, $"Checking sanity");
-        //try
-        //{
-        //  CheckSanity(tmp);
-        //}
-        //catch (Exception ex)
-        //{
-        //  throw new ApplicationException("Error loading checklist.", ex);
-        //}
+        logHandler.Invoke(LogLevel.INFO, $"Checking sanity");
+        try
+        {
+          CheckSanity(tmp);
+        }
+        catch (Exception ex)
+        {
+          throw new ApplicationException("Error loading checklist.", ex);
+        }
 
         logHandler.Invoke(LogLevel.INFO, $"Analysing variables");
         try
@@ -103,6 +105,32 @@ namespace Eng.Chlaot.Modules.CopilotModule
       }
     }
 
+    private void CheckSanity(CopilotSet tmp)
+    {
+      Stack<IStateCheckItem> stck = new();
+      void checkStateCheckItem(IStateCheckItem sti)
+      {
+        stck.Push(sti);
+        if (sti is StateCheckCondition stc)
+          stc.Items.ForEach(q => checkStateCheckItem(q));
+        else if (sti is StateCheckDelay std)
+          checkStateCheckItem(std.Item);
+        else if (sti is StateCheckProperty stp)
+        {
+          if (stp.Expression == null)
+          {
+            this.logHandler.Invoke(LogLevel.ERROR, $"Expression of checked property {stp.DisplayName} not set." +
+              $"Location: {string.Join(" ==> ", stck.Reverse().ToList().Select(q => q.DisplayString))}");
+          }
+        }
+        else
+          throw new ApplicationException($"Unsupported type of '{nameof(IStateCheckItem)}'.");
+        stck.Pop();
+      }
+
+      tmp.SpeechDefinitions.ForEach(q => checkStateCheckItem(q.When));
+    }
+
     private void UpdateReadyFlag()
     {
       bool ready = this.Set.SpeechDefinitions.SelectMany(q => q.Variables).All(q => q.HasValue);
@@ -113,6 +141,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
     {
       foreach (var sd in set.SpeechDefinitions)
       {
+        sd.Variables.ForEach(q => q.Parent = sd);
+
         sd.Speech.GetUsedVariables()
           .Except(sd.Variables.Select(q => q.Name))
           .ToList()
@@ -120,16 +150,20 @@ namespace Eng.Chlaot.Modules.CopilotModule
           {
             Name = q,
             DefaultValue = 0,
-            Info = "(not provided)"
+            Info = "(not provided)",
+            Parent = sd
           }));
 
-        ExtractVariablesFromStateChecks(sd).Except(sd.Variables.Select(q => q.Name))
+        ExtractVariablePairsFromStateChecks(sd)
+          .Select(q => q.Item1)
+          .Except(sd.Variables.Select(q => q.Name))
           .ToList()
           .ForEach(q => sd.Variables.Add(new Variable()
           {
             Name = q,
             DefaultValue = null,
-            Info = "(not provided)"
+            Info = "(not provided)",
+            Parent = sd
           }));
         sd.Variables.ForEach(q => q.Value = q.DefaultValue);
         sd.Variables.ForEach(q => q.PropertyChanged += Variable_PropertyChanged);
@@ -139,17 +173,25 @@ namespace Eng.Chlaot.Modules.CopilotModule
     private void Variable_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
       Variable variable = (Variable)sender!;
-      SpeechDefinition sd = Set.SpeechDefinitions.Single(q => q.Variables.Contains(variable));
-      if (sd.Speech.Type == Speech.SpeechType.Speech && sd.Speech.GetUsedVariables().Any(q => q == variable.Name))
+      SpeechDefinition sd = variable.Parent
+        ?? throw new ApplicationException($"Variable '{variable.Name}' not paired with its parent."); ;
+      if (sd.Speech.Type == Speech.SpeechType.Speech
+        && sd.Speech.GetUsedVariables().Any(q => q == variable.Name))
       {
         BuildSpeech(sd, new(), new Synthetizer(this.Settings.Synthetizer), "");
       }
+
+      ExtractVariablePairsFromStateChecks(sd)
+        .Where(q => q.Item1 == variable.Name)
+        .ToList()
+        .ForEach(q => q.Item2.Value = variable.Value);
+
       UpdateReadyFlag();
     }
 
-    private List<string> ExtractVariablesFromStateChecks(SpeechDefinition sd)
+    private static List<(string, StateCheckProperty)> ExtractVariablePairsFromStateChecks(SpeechDefinition sd)
     {
-      List<string> ret = new();
+      List<(string, StateCheckProperty)> ret = new();
       Stack<IStateCheckItem> stack = new();
 
       stack.Push(sd.When);
@@ -161,7 +203,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         else if (sci is StateCheckDelay scid)
           stack.Push(scid.Item);
         else if ((sci is StateCheckProperty scip) && scip.VariableName != null)
-          ret.Add(scip.VariableName);
+          ret.Add((scip.VariableName, scip));
       }
       return ret;
     }

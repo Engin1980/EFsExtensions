@@ -68,7 +68,7 @@
     <when>
       <and>
         <cs:property name="ias" direction="passing" expression="{v1}" />
-        <cs:property name="acceleration" direction="above" value="1" />
+        <cs:property name="acceleration" direction="above" expression="1" />
       </and>
     </when>
   </speechDefinition>
@@ -77,7 +77,7 @@
     <when>
       <and>
         <cs:property name="ias" direction="passing" expression="{vr}" />
-        <cs:property name="acceleration" direction="above" value="1" />
+        <cs:property name="acceleration" direction="above" expression="1" />
       </and>
     </when>
   </speechDefinition>
@@ -86,7 +86,7 @@
     <when>
       <and>
         <cs:property name="ias" direction="passing" expression="{v2}" />
-        <cs:property name="acceleration" direction="above" value="1" />
+        <cs:property name="acceleration" direction="above" expression="1" />
       </and>
     </when>
   </speechDefinition>
