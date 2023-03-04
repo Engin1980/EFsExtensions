@@ -1,4 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
+﻿using ELogging;
+using Eng.Chlaot.ChlaotModuleBase;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ChlaotModuleBase.ModuleUtils.StateChecking
 {
-  public class StateCheckEvaluator
+  public class StateCheckEvaluator : LogIdAble
   {
     private enum EPassingState
     {
@@ -19,13 +20,13 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
 
     private readonly Dictionary<StateCheckDelay, int> historyCounter = new();
     private readonly Dictionary<StateCheckProperty, EPassingState> passingPropertiesStates = new();
-    private IPlaneData planeData;
-    private LogHandler? logHandler;
+    private readonly IPlaneData planeData;
+    private readonly NewLogHandler logHandler;
 
-    public StateCheckEvaluator(IPlaneData planeData, LogHandler? logHandler = null)
+    public StateCheckEvaluator(IPlaneData planeData)
     {
       this.planeData = planeData;
-      this.logHandler = logHandler;
+      this.logHandler = Logger.RegisterSender(this);
     }
 
     private int ResolveEngineStarted(StateCheckProperty property)
@@ -119,7 +120,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
 
     private void Log(string message)
     {
-      logHandler?.Invoke(LogLevel.INFO, message);
+      logHandler.Invoke(LogLevel.INFO, message);
     }
   }
 }

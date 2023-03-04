@@ -63,7 +63,7 @@ namespace ESimConnect
     }
 
     internal static void LogMethodStart(
-      object?[]? parameters = null, 
+      object?[]? parameters = null,
       [CallerMemberName] string methodName = "injectedMemberName",
       [CallerFilePath] string sourceFilePath = "injectedFilePath",
       [CallerLineNumber] int sourceLineNumber = 0
@@ -88,7 +88,7 @@ namespace ESimConnect
 
     private static void LogInternal(string msg)
     {
-      LogHandler?.Invoke(msg);
+      LogHandler?.Invoke(msg + "\n");
     }
 
     internal static void LogException(Exception ex,

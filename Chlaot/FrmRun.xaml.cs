@@ -1,4 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
+﻿using ELogging;
+using Eng.Chlaot.ChlaotModuleBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,7 +31,7 @@ namespace Chlaot
 
     public FrmRun(Context context) : this()
     {
-      this.context = context ??  throw new ArgumentNullException(nameof(context));
+      this.context = context ?? throw new ArgumentNullException(nameof(context));
       this.DataContext = context;
     }
 
@@ -41,46 +42,18 @@ namespace Chlaot
       pnlContent.Children.Add(module.RunControl);
     }
 
-    private void LogToConsole(LogLevel level, string message)
-    {
-      if (Thread.CurrentThread != Application.Current.Dispatcher.Thread)
-        Application.Current.Dispatcher.Invoke(new Action(() => { this.LogToConsole(level, message); }));
-      else
-      {
-        if (level != LogLevel.VERBOSE)
-        {
-          txtConsole.AppendText("\n");
-          txtConsole.AppendText(level + ":: " + message);
-          txtConsole.ScrollToEnd();
-        }
-        try
-        {
-          System.IO.File.AppendAllText("log.txt",
-            $"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}  {level} :: {message}\n");
-        }
-        catch
-        {
-          txtConsole.AppendText("\n");
-          txtConsole.AppendText(LogLevel.WARNING + ":: Failed to write message to log file.");
-          txtConsole.ScrollToEnd();
-        }
-      }
-    }
-
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-      this.context.SetLogHandler((l, m) => LogToConsole(l, m));
+      LogHelper.RegisterWindowLogListener(this, this.txtConsole);
       this.context.RemoveUnreadyModules();
-
       this.DataContext = this.context;
-
       this.context.RunModules();
-
       if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
     }
 
     private void Window_Closed(object sender, EventArgs e)
     {
+      Logger.UnregisterLogAction(this);
       foreach (var module in context.Modules)
       {
         module.Stop();

@@ -3,6 +3,7 @@ using ChlaotModuleBase.ModuleUtils.StateChecking;
 using ChlaotModuleBase.ModuleUtils.Synthetization;
 using CopilotModule;
 using CopilotModule.Types;
+using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using EXmlLib;
 using EXmlLib.Deserializers;
@@ -22,7 +23,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 {
   public class InitContext : NotifyPropertyChangedBase
   {
-    private readonly LogHandler logHandler;
+    private readonly NewLogHandler logHandler;
     private readonly Action<bool> setIsReadyFlagAction;
 
     public CopilotSet Set
@@ -33,10 +34,10 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     internal Settings Settings { get; private set; }
 
-    internal InitContext(Settings settings, LogHandler logHandler, Action<bool> setIsReadyFlagAction)
+    internal InitContext(Settings settings, Action<bool> setIsReadyFlagAction)
     {
       Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-      this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
+      this.logHandler = Logger.RegisterSender(this, "[Copilot.InitContext]");
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
     }
 

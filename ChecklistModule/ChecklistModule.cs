@@ -1,5 +1,6 @@
 ﻿using ChecklistModule;
 using ChlaotModuleBase;
+using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using System;
 using System.Collections.Generic;
@@ -22,8 +23,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     private InitContext? initContext;
     private RunContext? runContext;
-    private LogHandler? parentLogHandler;
-    private readonly LogHandler logHandler;
+    private readonly NewLogHandler logHandler;
 
     private Settings? settings;
 
@@ -38,13 +38,12 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     public ChecklistModule()
     {
       this.IsReady = false;
-      this.logHandler = (l, m) => parentLogHandler?.Invoke(l, m);
+      this.logHandler = Logger.RegisterSender(this);
     }
 
 
     public void SetUp(ModuleSetUpInfo setUpInfo)
     {
-      this.parentLogHandler = setUpInfo.LogHandler;
       try
       {
         settings = Settings.Load();
@@ -59,13 +58,13 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     public void Init()
     {
-      this.initContext = new InitContext(this.settings!, logHandler, q => this.IsReady = q);
+      this.initContext = new InitContext(this.settings!, q => this.IsReady = q);
       this._InitControl = new CtrInit(this.initContext);
     }
 
     public void Run()
     {
-      this.runContext = new(this.initContext!, logHandler);
+      this.runContext = new(this.initContext!);
       this._RunControl = new CtrRun(this.runContext);
 
       this.initContext = null;

@@ -1,4 +1,5 @@
 ﻿using ChlaotModuleBase;
+using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.Modules.ChecklistModule;
 using System;
@@ -12,51 +13,47 @@ namespace Chlaot
 {
   public class Context
   {
-    public delegate void ContextLogHandler(LogLevel level, string message);
     public BindingList<IModule> Modules { get; private set; } = new BindingList<IModule>();
-    private ContextLogHandler LogHandler { get; set; } = (l, m) => { };
+    private readonly NewLogHandler logHandler;
 
-    internal void SetLogHandler(ContextLogHandler logHandler)
+    public Context()
     {
-      this.LogHandler = logHandler;
+      this.logHandler = Logger.RegisterSender(this);
     }
 
     internal void SetUpModules()
     {
-      LogHandler?.Invoke(LogLevel.INFO, "Loading modules...");
+      logHandler.Invoke(LogLevel.INFO, "Loading modules...");
       IModule module;
 
-      LogHandler?.Invoke(LogLevel.INFO, "Loading check-list module...");
+      logHandler.Invoke(LogLevel.INFO, "Loading check-list module...");
       module = new Eng.Chlaot.Modules.ChecklistModule.ChecklistModule();
       TryAddModule(module);
 
-      LogHandler?.Invoke(LogLevel.INFO, "Loading copilot module...");
+      logHandler.Invoke(LogLevel.INFO, "Loading copilot module...");
       module = new Eng.Chlaot.Modules.CopilotModule.CopilotModule();
       TryAddModule(module);
 
 
-      LogHandler?.Invoke(LogLevel.INFO, "Setting up modules...");
+      logHandler.Invoke(LogLevel.INFO, "Setting up modules...");
       Modules.ToList().ForEach(q => q.SetUp(
-        new ModuleSetUpInfo()
-        {
-          LogHandler = (level, message) => this.LogHandler?.Invoke(level, $"[{q.Name}] {message}")
-        }));
+        new ModuleSetUpInfo()));
 
-      LogHandler?.Invoke(LogLevel.INFO, "Modules loaded & set up.");
+      logHandler.Invoke(LogLevel.INFO, "Modules loaded & set up.");
     }
 
     internal void InitModules()
     {
-      LogHandler?.Invoke(LogLevel.INFO, "Initializing modules");
+      logHandler.Invoke(LogLevel.INFO, "Initializing modules");
       Modules.ToList().ForEach(q => q.Init());
-      LogHandler?.Invoke(LogLevel.INFO, "Modules initialized");
+      logHandler.Invoke(LogLevel.INFO, "Modules initialized");
     }
 
     private void TryAddModule(IModule module)
     {
       if (this.Modules.Any(q => q.Name == module.Name))
       {
-        LogHandler?.Invoke(LogLevel.ERROR, $"Unable to add '{module.Name}' module. Module with this name already exists.");
+        logHandler.Invoke(LogLevel.ERROR, $"Unable to add '{module.Name}' module. Module with this name already exists.");
       }
       else
         Modules.Add(module);
@@ -64,9 +61,9 @@ namespace Chlaot
 
     internal void RunModules()
     {
-      LogHandler?.Invoke(LogLevel.INFO, "Starting modules");
+      logHandler.Invoke(LogLevel.INFO, "Starting modules");
       Modules.ToList().ForEach(q => q.Run());
-      LogHandler?.Invoke(LogLevel.INFO, "Modules running");
+      logHandler.Invoke(LogLevel.INFO, "Modules running");
     }
 
     internal void RemoveUnreadyModules()
@@ -74,7 +71,7 @@ namespace Chlaot
       var modules = Modules.Where(q => !q.IsReady).ToList();
       foreach (var module in modules)
       {
-        LogHandler?.Invoke(LogLevel.INFO, $"Module '{module.Name}' removed as it is not-ready.");
+        logHandler.Invoke(LogLevel.INFO, $"Module '{module.Name}' removed as it is not-ready.");
         Modules.Remove(module);
       }
     }

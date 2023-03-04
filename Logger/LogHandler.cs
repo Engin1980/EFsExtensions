@@ -4,13 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase
+namespace ELogging
 {
-  public enum LogLevel
-  {
-    VERBOSE,
-    INFO,
-    WARNING,
-    ERROR
-  }
+  public delegate void NewLogHandler(LogLevel level, string message);
 }

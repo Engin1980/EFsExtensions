@@ -5,6 +5,7 @@ using ChlaotModuleBase.ModuleUtils.KeyHooking;
 using ChlaotModuleBase.ModuleUtils.Playing;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
+using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using Microsoft.VisualBasic.Logging;
 using System;
@@ -37,7 +38,7 @@ namespace ChecklistModule
       public AutoplayChecklistEvaluator(RunContext parent)
       {
         this.parent = parent;
-        this.evaluator = new StateCheckEvaluator(this.parent.simConManager.SimData, this.parent.logHandler);
+        this.evaluator = new StateCheckEvaluator(this.parent.simConManager.SimData);
       }
 
       public bool EvaluateIfShouldPlay(CheckList checkList)
@@ -234,7 +235,7 @@ namespace ChecklistModule
 
     private readonly AutoplayChecklistEvaluator autoplayEvaluator;
 
-    private readonly LogHandler logHandler;
+    private readonly NewLogHandler logHandler;
 
     private readonly PlaybackManager playback;
 
@@ -264,11 +265,11 @@ namespace ChecklistModule
 
     public SimData SimData => this.simConManager.SimData;
 
-    public RunContext(InitContext initContext, LogHandler logHandler)
+    public RunContext(InitContext initContext)
     {
       this.CheckSet = initContext.ChecklistSet;
       this.settings = initContext.Settings;
-      this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
+      this.logHandler = Logger.RegisterSender(this, "[CheckList.RunContext]");
 
       this.CheckListViews = CheckSet.Checklists
         .Select(q => new CheckListView()
@@ -286,7 +287,7 @@ namespace ChecklistModule
         .ToList();
 
       this.playback = new PlaybackManager(this);
-      this.simConManager = new(logHandler, null);
+      this.simConManager = new();
       this.simConManager.SimSecondElapsed += Sim_SimSecondElapsed;
       this.autoplayEvaluator = new AutoplayChecklistEvaluator(this);
     }
@@ -415,7 +416,7 @@ namespace ChecklistModule
 
     private void Log(LogLevel level, string message)
     {
-      logHandler?.Invoke(level, "[RunContext] :: " + message);
+      logHandler.Invoke(level, message);
     }
 
     private void Sim_SimSecondElapsed()

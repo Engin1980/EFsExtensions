@@ -1,5 +1,6 @@
 ﻿using ChlaotModuleBase;
 using CopilotModule;
+using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using System;
 using System.Collections.Generic;
@@ -25,8 +26,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
     public Control RunControl => _RunControl ?? throw new ApplicationException("Control not provided.");
 
     public string Name => "Copilot";
-    private LogHandler? parentLogHandler;
-    private readonly LogHandler logHandler;
+    private readonly NewLogHandler logHandler;
     private InitContext? initContext;
     private RunContext? runContext;
     private Settings? settings;
@@ -34,18 +34,18 @@ namespace Eng.Chlaot.Modules.CopilotModule
     public CopilotModule()
     {
       this.IsReady = false;
-      this.logHandler = (l, m) => parentLogHandler?.Invoke(l, m);
+      this.logHandler = Logger.RegisterSender(this);
     }
 
     public void Init()
     {
-      this.initContext = new InitContext(this.settings!, logHandler, q => this.IsReady = q);
+      this.initContext = new InitContext(this.settings!, q => this.IsReady = q);
       this._InitControl = new CtrInit(this.initContext);
     }
 
     public void Run()
     {
-      this.runContext = new RunContext(this.initContext!, this.logHandler);
+      this.runContext = new RunContext(this.initContext!);
       this._RunControl = new CtrRun(this.runContext);
       this.runContext.Run();
 
@@ -55,8 +55,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     public void SetUp(ModuleSetUpInfo setUpInfo)
     {
-      this.parentLogHandler = setUpInfo.LogHandler;
-      this.parentLogHandler = setUpInfo.LogHandler;
       try
       {
         settings = Settings.Load();

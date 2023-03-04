@@ -4,6 +4,7 @@ using ChlaotModuleBase.ModuleUtils.StateChecking;
 using ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
 using CopilotModule;
 using CopilotModule.Types;
+using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using System;
 using System.Collections.Generic;
@@ -47,22 +48,23 @@ namespace Eng.Chlaot.Modules.CopilotModule
       }
     }
     public CopilotSet Set { get; private set; }
+    public SimData SimData => this.simConManager.SimData;
     public BindingList<SpeechDefinitionInfo> Infos { get; set; } = new();
     private readonly StateCheckEvaluator evaluator;
     private readonly Settings settings;
-    private readonly LogHandler logHandler;
+    private readonly NewLogHandler logHandler;
     private readonly SimConManager simConManager;
     private System.Timers.Timer? connectionTimer = null;
 
 
-    public RunContext(InitContext initContext, LogHandler logHandler)
+    public RunContext(InitContext initContext)
     {
       this.Set = initContext.Set;
       this.settings = initContext.Settings;
-      this.logHandler = logHandler;
-      this.simConManager = new(this.logHandler, "copilot_simcon_log.txt");
+      this.logHandler = Logger.RegisterSender(this, "[Copilot.RunContext]");
+      this.simConManager = new();
       this.simConManager.SimSecondElapsed += SimConManager_SimSecondElapsed;
-      this.evaluator = new(this.simConManager.SimData, logHandler);
+      this.evaluator = new(this.simConManager.SimData);
 
       this.Set.SpeechDefinitions.ForEach(q => Infos.Add(new SpeechDefinitionInfo(q)));
     }
@@ -106,7 +108,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private void Log(LogLevel level, string message)
     {
-      logHandler?.Invoke(level, "[RunContext] :: " + message);
+      logHandler.Invoke(level, "[RunContext] :: " + message);
     }
 
     internal void Stop()
@@ -120,7 +122,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
       Log(LogLevel.INFO, "Run");
       this.simConManager.SimSecondElapsed += SimConManager_SimSecondElapsed;
 
-      logHandler?.Invoke(LogLevel.VERBOSE, "Starting connection timer");
+      logHandler.Invoke(LogLevel.VERBOSE, "Starting connection timer");
       this.connectionTimer = new System.Timers.Timer(INITIAL_CONNECTION_TIMER_INTERVAL)
       {
         AutoReset = true,

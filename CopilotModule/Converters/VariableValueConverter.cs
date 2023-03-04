@@ -30,9 +30,11 @@ namespace CopilotModule.Converters
       if (string.IsNullOrWhiteSpace(s))
         ret = null;
       else
-        try { 
-        ret = double.Parse(s);
-        } catch
+        try
+        {
+          ret = double.Parse(s);
+        }
+        catch
         {
           return DependencyProperty.UnsetValue;
         }

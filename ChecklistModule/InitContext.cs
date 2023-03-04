@@ -18,12 +18,13 @@ using System.Reflection.Metadata.Ecma335;
 using System.Security.Policy;
 using ChlaotModuleBase.ModuleUtils.Synthetization;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
+using ELogging;
 
 namespace ChecklistModule
 {
   public class InitContext : NotifyPropertyChangedBase
   {
-    private readonly LogHandler logHandler;
+    private readonly NewLogHandler logHandler;
     private readonly Action<bool> setIsReadyFlagAction;
 
     public CheckSet ChecklistSet
@@ -34,10 +35,10 @@ namespace ChecklistModule
 
     public Settings Settings { get; private set; }
 
-    public InitContext(Settings settings, LogHandler logHandler, Action<bool> setIsReadyFlagAction)
+    public InitContext(Settings settings, Action<bool> setIsReadyFlagAction)
     {
       Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-      this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
+      this.logHandler = Logger.RegisterSender(this, "[Checklist.InitContext]");
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
     }
 

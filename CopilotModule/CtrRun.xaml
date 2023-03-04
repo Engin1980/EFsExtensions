@@ -64,6 +64,73 @@
           </ListView.ItemTemplate>
         </ListView>
       </TabItem>
+      <TabItem Header="Sim Data">
+        <Grid DataContext="{Binding SimData}">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <Label Grid.Row="0" Grid.Column="0" Content="Is Sim Paused" />
+          <Label Grid.Row="0" Grid.Column="1" Content="{Binding IsSimPaused}" />
+
+          <Label Grid.Row="1" Grid.Column="0" Content="Callsign" />
+          <Label Grid.Row="1" Grid.Column="1" Content="{Binding Callsign}" />
+
+          <Label Grid.Row="2" Grid.Column="0" Content="Parking Brake Set" />
+          <Label Grid.Row="2" Grid.Column="1" Content="{Binding ParkingBrakeSet}" />
+
+          <Label Grid.Row="3" Grid.Column="0" Content="Altitude (ft)" />
+          <Label Grid.Row="3" Grid.Column="1" Content="{Binding Altitude}" />
+
+          <Label Grid.Row="4" Grid.Column="0" Content="Height (ft)" />
+          <Label Grid.Row="4" Grid.Column="1" Content="{Binding Height}" />
+
+          <Label Grid.Row="5" Grid.Column="0" Content="Bank Angle (deg)" />
+          <Label Grid.Row="5" Grid.Column="1" Content="{Binding BankAngle}" />
+
+          <Label Grid.Row="6" Grid.Column="0" Content="Indicated Speed (kts)" />
+          <Label Grid.Row="6" Grid.Column="1" Content="{Binding IndicatedSpeed}" />
+
+          <Label Grid.Row="7" Grid.Column="0" Content="Ground Speed (kts)" />
+          <Label Grid.Row="7" Grid.Column="1" Content="{Binding GroundSpeed}" />
+
+          <Label Grid.Row="8" Grid.Column="0" Content="Engines started" />
+          <Label Grid.Row="8" Grid.Column="1">
+            <Label.Content>
+              <ItemsControl ItemsSource="{Binding EngineCombustion}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"/>
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <Label Content="{Binding }" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </Label.Content>
+          </Label>
+          <Label Grid.Row="9" Grid.Column="0" Content="Acceleration" />
+          <Label Grid.Row="9" Grid.Column="1" Content="{Binding Acceleration}" />
+          <Label Grid.Row="10" Grid.Column="0" Content="Tug connected" />
+          <Label Grid.Row="10" Grid.Column="1" Content="{Binding PushbackTugConnected}" />
+        </Grid>
+      </TabItem>
     </TabControl>
   </DockPanel>
 </UserControl>

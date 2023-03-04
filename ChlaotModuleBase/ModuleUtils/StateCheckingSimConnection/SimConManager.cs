@@ -9,27 +9,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Runtime.CompilerServices;
+using ELogging;
 
 namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
 {
-  public class SimConManager
+  public class SimConManager : LogIdAble
   {
     public delegate void SimSecondElapsedDelegate();
     public event SimSecondElapsedDelegate? SimSecondElapsed;
 
-    private readonly LogHandler logHandler;
+    private readonly NewLogHandler logHandler;
     private ESimConnect.ESimConnect? _SimCon = null;
     private bool isStarted = false;
     public ESimConnect.ESimConnect SimCon => this._SimCon ?? throw new ApplicationException("SimConManager not opened().");
 
     public SimData SimData { get; } = new();
-    public SimConManager(LogHandler logHandler, string? logFileNameIfEnabled = null)
+    public SimConManager()
     {
-      this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
-      if (logFileNameIfEnabled is not null)
-        ESimConnect.ESimConnect.SetLogHandler(s => System.IO.File.AppendAllText(logFileNameIfEnabled, s));
-      else
-        ESimConnect.ESimConnect.SetLogHandler(s => { });
+      this.logHandler = Logger.RegisterSender(this);
     }
 
     public void Close()
@@ -116,7 +113,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
 
     private void Log(LogLevel level, string message)
     {
-      this.logHandler?.Invoke(level, "[SimConManager] :: " + message);
+      this.logHandler.Invoke(level, message);
     }
   }
 }

@@ -67,11 +67,6 @@ namespace ESimConnect
       Logger.LogMethodEnd();
     }
 
-    public static void SetLogHandler(Action<string> logHandler)
-    {
-      Logger.LogHandler = logHandler;
-    }
-
     public void Close()
     {
       Logger.LogMethodStart();
