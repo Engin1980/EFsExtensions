@@ -25,7 +25,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{6DE45974-2
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CopilotModule", "CopilotModule\CopilotModule.csproj", "{5C2968BA-C202-433D-991F-D3EB49D8C8EA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ELogging", "Logger\ELogging.csproj", "{B3A9ED8D-95CD-4BA9-9E3E-E09FCAA4D54A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ELogging", "Logger\ELogging.csproj", "{B3A9ED8D-95CD-4BA9-9E3E-E09FCAA4D54A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AffinityModule", "AffinityModule\AffinityModule.csproj", "{55673CEE-5EAB-46EB-9890-C8F06325C550}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,10 @@ Global
 		{B3A9ED8D-95CD-4BA9-9E3E-E09FCAA4D54A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3A9ED8D-95CD-4BA9-9E3E-E09FCAA4D54A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B3A9ED8D-95CD-4BA9-9E3E-E09FCAA4D54A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55673CEE-5EAB-46EB-9890-C8F06325C550}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55673CEE-5EAB-46EB-9890-C8F06325C550}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55673CEE-5EAB-46EB-9890-C8F06325C550}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55673CEE-5EAB-46EB-9890-C8F06325C550}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -72,6 +78,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{F18366E2-5AB2-43C7-8640-4DF4A22A209D} = {50476E83-616C-4626-99B3-011038C60496}
 		{5C2968BA-C202-433D-991F-D3EB49D8C8EA} = {50476E83-616C-4626-99B3-011038C60496}
+		{55673CEE-5EAB-46EB-9890-C8F06325C550} = {50476E83-616C-4626-99B3-011038C60496}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {635265FD-4132-4AE6-BFE3-2E4C9A812E0B}
