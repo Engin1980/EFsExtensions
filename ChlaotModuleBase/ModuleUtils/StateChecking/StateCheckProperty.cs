@@ -122,19 +122,22 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
     {
       if (Value == null)
         throw new ApplicationException(
-          $"Cannot adjust sensitivity/randomize-value if pure {nameof(Value)} of {DisplayName} is null.");
+          $"Cannot adjust sensitivity/randomize-value. " +
+          $"${nameof(StateCheckProperty)}.{nameof(Value)} is null ({DisplayName}).");
       if (Randomize == null)
         throw new ApplicationException(
-          $"Cannot adjust sensitivity/random-value if pure {nameof(Randomize)} is {DisplayName} null.");
+          $"Cannot adjust sensitivity/randomize-value. " +
+          $"${nameof(StateCheckProperty)}.{nameof(Randomize)} is null ({DisplayName}).");
       if (Sensitivity == null)
         throw new ApplicationException(
-          $"Cannot adjust sensitivity/random-value if pure {nameof(Sensitivity)} is {DisplayName} null.");
+          $"Cannot adjust sensitivity/randomize-value. " +
+          $"${nameof(StateCheckProperty)}.{nameof(Sensitivity)} is null ({DisplayName}).");
 
       // randomization
       (double lower, double upper, bool isPerc) = ExpandRangeString(this.Randomize);
       double shift = random.NextDouble() * (upper - lower) + lower;
       if (isPerc)
-        randomizedValue = Value.Value * (1 + shift/100d);
+        randomizedValue = Value.Value * (1 + shift / 100d);
       else
         randomizedValue = Value.Value + shift;
       Logger.Log(this, LogLevel.VERBOSE,

@@ -13,14 +13,22 @@
   <speechDefinition title="Deceleration announcement (80)kts" reactivateIn="10">
     <speech type="speech" value="{speed} knots" />
     <when>
-      <cs:property name="ias" direction="exactly" expression="{speed}" randomize="+-5" />
+      <and>
+        <cs:property name="ias" direction="exactly" expression="{speed}" randomize="+-5" />
+        <cs:property name="height" direction="below" expression="5" />
+        <cs:property name="acceleration" direction="below" expression="0" />
+      </and>
     </when>
     <variable name="speed" defaultValue="80" info="Speed in kts" />
   </speechDefinition>
   <speechDefinition title="Deceleration announcement (60)kts" reactivateIn="10">
     <speech type="speech" value="{speed} knots" />
     <when>
-      <cs:property name="ias" direction="exactly" expression="{speed}" randomize="+-5" sensitivity="+-10%" />
+      <and>
+        <cs:property name="ias" direction="exactly" expression="{speed}" randomize="+-5" sensitivity="+-10%" />
+        <cs:property name="height" direction="below" expression="5" />
+        <cs:property name="acceleration" direction="below" expression="0" />
+      </and>
     </when>
     <variable name="speed" defaultValue="60" info="Speed in kts" />
   </speechDefinition>
@@ -55,7 +63,7 @@
     </when>
     <variable name="transition_level" defaultValue="5000" info="Transition level" />
   </speechDefinition>
-  <speechDefinition title="FL100 pass" reactivateIn="0">
+  <speechDefinition title="FL100 pass" reactivateIn="30">
     <speech type="speech" value="Passing ten thousand feet" />
     <when>
       <cs:and>
