@@ -9,7 +9,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
   public class StateCheckProperty : IStateCheckItem
   {
     public const string EXPRESSION_REGEX = "(^\\{[a-zA-Z][a-zA-Z0-9\\-_]*\\}$)|(^[+-]?\\d+\\.?\\d*$)";
-    public const string RANGE_STRING_REGEX = "([+-]){0,2}(\\d+\\.?\\d*)(\\%?)";
+    public const string RANGE_STRING_REGEX = "([+-]{0,2})(\\d+\\.?\\d*)(\\%?)";
 
     private static readonly Random random = new();
     private double randomizedValue = double.NaN;
@@ -79,7 +79,6 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
       }
       set
       {
-        Logger.Log(this, LogLevel.WARNING, $"Somebody is trying to set value of {this.DisplayName}: {_Value} => {value}.");
         if (this._Value != value)
         {
           this._Value = value;
@@ -135,7 +134,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
       (double lower, double upper, bool isPerc) = ExpandRangeString(this.Randomize);
       double shift = random.NextDouble() * (upper - lower) + lower;
       if (isPerc)
-        randomizedValue = Value.Value * (1 + shift);
+        randomizedValue = Value.Value * (1 + shift/100d);
       else
         randomizedValue = Value.Value + shift;
       Logger.Log(this, LogLevel.VERBOSE,
@@ -144,7 +143,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
 
       // sensitivity
       (lower, upper, isPerc) = ExpandRangeString(this.Sensitivity);
-      if (lower != upper)
+      if (-lower != upper)
         throw new ApplicationException($"Different lower/upper sensitivity ({lower} vs {upper}) value not supported.");
       if (isPerc)
         sensitivityEpsilon = randomizedValue * upper / 100d;

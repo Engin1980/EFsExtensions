@@ -133,7 +133,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private void UpdateReadyFlag()
     {
-      bool ready = this.Set.SpeechDefinitions.SelectMany(q => q.Variables).All(q => q.HasValue);
+      bool ready = this.Set != null && this.Set.SpeechDefinitions.SelectMany(q => q.Variables).All(q => q.HasValue);
       this.setIsReadyFlagAction(ready);
     }
 
@@ -165,8 +165,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
             Info = "(not provided)",
             Parent = sd
           }));
-        sd.Variables.ForEach(q => q.Value = q.DefaultValue);
         sd.Variables.ForEach(q => q.PropertyChanged += Variable_PropertyChanged);
+        sd.Variables.ForEach(q => q.Value = q.DefaultValue);
       }
     }
 
