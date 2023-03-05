@@ -1,0 +1,124 @@
+﻿using ELogging;
+using System;
+using System.Collections.Generic;
+using System.IO.IsolatedStorage;
+using System.Linq;
+using System.Reflection.Metadata;
+using System.Security.AccessControl;
+using System.Security.Policy;
+using System.Text;
+using System.Threading.Tasks;
+using System.Timers;
+
+namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection.Mock
+{
+  public class SimConManagerMock : ISimConManager
+  {
+    public SimData SimData { get; private set; } = new();
+    private readonly NewLogHandler logHandler;
+    private List<Action> actions = new List<Action>();
+    private Timer? timer = null;
+    public static SimConManagerMock CreateTakeOff()
+    {
+      SimConManagerMock mck = new();
+      mck.SimData = new SimData()
+      {
+        Acceleration = 0,
+        BankAngle = 0,
+        Altitude = 500,
+        Callsign = "TEST 001",
+        GroundSpeed = 0,
+        EngineCombustion = new bool[] { true, true, false, false },
+        Height = 0,
+        IndicatedSpeed = 0,
+        IsSimPaused = true,
+        IsTugConnected = false,
+        ParkingBrakeSet = true,
+        PushbackTugConnected = false,
+        VerticalSpeed = 0
+      };
+
+      for (int i = 0; i < 3; i++)
+        mck.actions.Add(() => { });
+      mck.actions.Add(() => mck.SimData.IsSimPaused = false);
+
+      for (int i = 0; i < 3; i++)
+        mck.actions.Add(() => { });
+      mck.actions.Add(() => mck.SimData.ParkingBrakeSet = false);
+
+      for (int i = 0; i < 3; i++)
+        mck.actions.Add(() => { });
+      mck.actions.Add(() => mck.SimData.Acceleration = 5);
+      for (int i = 0; i < 28; i++)
+      {
+        int tmp = i * 5;
+        mck.actions.Add(() =>
+        {
+          mck.SimData.IndicatedSpeed = tmp;
+          mck.SimData.GroundSpeed = tmp;
+        });
+      }
+      mck.actions.Add(() => mck.SimData.Acceleration = 0);
+
+      mck.actions.Add(() => mck.SimData.VerticalSpeed = 950);
+      for (int i = 0; i < 10; i++)
+      {
+        int tmp = i * 16;
+        mck.actions.Add(() =>
+        {
+          mck.SimData.Altitude = tmp;
+          mck.SimData.Height = tmp + 500;
+        });
+      }
+
+      mck.actions.Add(() => mck.SimData.VerticalSpeed = 10000);
+      for (int i = 0; i < 100; i++)
+      {
+        int tmp = i * 200;
+        mck.actions.Add(() =>
+        {
+          mck.SimData.Altitude = tmp;
+          mck.SimData.Height = tmp + 500;
+        });
+      }
+      mck.actions.Add(() => mck.SimData.VerticalSpeed = 0);
+
+      return mck;
+    }
+
+    public event ISimConManager.SimSecondElapsedDelegate? SimSecondElapsed;
+
+    public SimConManagerMock()
+    {
+      this.logHandler = Logger.RegisterSender(this);
+    }
+
+    public void Close()
+    {
+      timer?.Stop();
+      timer = null;
+    }
+
+    public void Open()
+    {
+    }
+
+    private void timer_Elapsed(object? sender, ElapsedEventArgs e)
+    {
+      Action? a = actions.FirstOrDefault();
+      if (a != null)
+      {
+        actions.Remove(a);
+        a.Invoke();
+      }
+      this.SimSecondElapsed?.Invoke();
+    }
+
+    public void Start()
+    {
+      timer = new Timer(1000);
+      timer.Elapsed += timer_Elapsed;
+      timer.Enabled = true;
+    }
+  }
+}

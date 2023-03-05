@@ -13,15 +13,13 @@ using ELogging;
 
 namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
 {
-  public class SimConManager : LogIdAble
+  public class SimConManager : LogIdAble, ISimConManager
   {
-    public delegate void SimSecondElapsedDelegate();
-    public event SimSecondElapsedDelegate? SimSecondElapsed;
+    public event ISimConManager.SimSecondElapsedDelegate? SimSecondElapsed;
 
     private readonly NewLogHandler logHandler;
-    private ESimConnect.ESimConnect? _SimCon = null;
+    private ESimConnect.ESimConnect? simCon = null;
     private bool isStarted = false;
-    public ESimConnect.ESimConnect SimCon => this._SimCon ?? throw new ApplicationException("SimConManager not opened().");
 
     public SimData SimData { get; } = new();
     public SimConManager()
@@ -31,20 +29,20 @@ namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
 
     public void Close()
     {
-      if (_SimCon != null)
+      if (simCon != null)
       {
-        this._SimCon.Close();
-        this._SimCon.Dispose();
-        this._SimCon = null;
+        this.simCon.Close();
+        this.simCon.Dispose();
+        this.simCon = null;
       }
     }
 
     public void Open()
     {
-      if (_SimCon != null) return;
+      if (simCon != null) return;
 
       Log(LogLevel.INFO, "Connecting to FS2020");
-      ESimConnect.ESimConnect tmp = new ESimConnect.ESimConnect();
+      ESimConnect.ESimConnect tmp = new();
       try
       {
         Log(LogLevel.VERBOSE, "Connecting simconnect handlers");
@@ -53,7 +51,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
         Log(LogLevel.VERBOSE, "Opening simconnect");
         tmp.Open();
         Log(LogLevel.VERBOSE, "Simconnect ready");
-        this._SimCon = tmp;
+        this.simCon = tmp;
       }
       catch (Exception ex)
       {
@@ -64,18 +62,20 @@ namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
 
     public void Start()
     {
+      if (simCon == null) throw new ApplicationException("SimConManager not opened().");
+
       if (isStarted) return;
       Log(LogLevel.VERBOSE, "Simconnect - registering structs");
-      SimCon.RegisterType<CommonDataStruct>();
-      SimCon.RegisterType<RareDataStruct>();
+      simCon.RegisterType<CommonDataStruct>();
+      simCon.RegisterType<RareDataStruct>();
 
       Log(LogLevel.VERBOSE, "Simconnect - requesting structs");
-      SimCon.RequestDataRepeatedly<CommonDataStruct>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
-      SimCon.RequestDataRepeatedly<RareDataStruct>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
+      simCon.RequestDataRepeatedly<CommonDataStruct>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
+      simCon.RequestDataRepeatedly<RareDataStruct>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
 
       Log(LogLevel.VERBOSE, "Simconnect - attaching to events");
-      SimCon.RegisterSystemEvent(SimEvents.System.Pause);
-      SimCon.RegisterSystemEvent(SimEvents.System._1sec);
+      simCon.RegisterSystemEvent(SimEvents.System.Pause);
+      simCon.RegisterSystemEvent(SimEvents.System._1sec);
 
       Log(LogLevel.VERBOSE, "Simconnect connection ready");
 

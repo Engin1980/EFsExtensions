@@ -2,6 +2,7 @@
 using ChlaotModuleBase.ModuleUtils.Playing;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
+using ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection.Mock;
 using CopilotModule;
 using CopilotModule.Types;
 using ELogging;
@@ -53,16 +54,19 @@ namespace Eng.Chlaot.Modules.CopilotModule
     private readonly StateCheckEvaluator evaluator;
     private readonly Settings settings;
     private readonly NewLogHandler logHandler;
-    private readonly SimConManager simConManager;
+    private readonly ISimConManager simConManager;
     private System.Timers.Timer? connectionTimer = null;
-
 
     public RunContext(InitContext initContext)
     {
       this.Set = initContext.Set;
       this.settings = initContext.Settings;
       this.logHandler = Logger.RegisterSender(this, "[Copilot.RunContext]");
-      this.simConManager = new();
+#if USE_MOCK
+      this.simConManager = SimConManagerMock.CreateTakeOff();
+#else
+      this.simConManager = new SimConManager();
+#endif
       this.evaluator = new(this.simConManager.SimData);
 
       this.Set.SpeechDefinitions.ForEach(q => Infos.Add(new SpeechDefinitionInfo(q)));

@@ -120,12 +120,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
           if (stp.Expression == null)
             throw new ApplicationException($"Expression of checked property {stp.DisplayName} not set." +
               $"Location: {string.Join(" ==> ", stck.Reverse().ToList().Select(q => q.DisplayString))}");
-          
-          if (stp.Value == null)
-          {
-            throw new ApplicationException($"Value of checked property {stp.DisplayName} not set." +
-              $"Location: {string.Join(" ==> ", stck.Reverse().ToList().Select(q => q.DisplayString))}");
-          }
         }
         else
           throw new ApplicationException($"Unsupported type of '{nameof(IStateCheckItem)}'.");

@@ -5,6 +5,7 @@ using ChlaotModuleBase.ModuleUtils.KeyHooking;
 using ChlaotModuleBase.ModuleUtils.Playing;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
+using ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection.Mock;
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using Microsoft.VisualBasic.Logging;
@@ -241,7 +242,7 @@ namespace ChecklistModule
 
     private readonly Settings settings;
 
-    private readonly SimConManager simConManager;
+    private readonly ISimConManager simConManager;
 
     private System.Timers.Timer? connectionTimer = null;
 
@@ -287,7 +288,11 @@ namespace ChecklistModule
         .ToList();
 
       this.playback = new PlaybackManager(this);
-      this.simConManager = new();
+#if USE_MOCK
+      this.simConManager = SimConManagerMock.CreateTakeOff();
+#else
+      this.simConManager = new SimConManager();
+#endif
       this.simConManager.SimSecondElapsed += Sim_SimSecondElapsed;
       this.autoplayEvaluator = new AutoplayChecklistEvaluator(this);
     }

@@ -34,6 +34,7 @@ namespace Chlaot
 
       List<LogRule> rules = new()
       {
+        new LogRule("StateCheckEvaluator",false,false,true,true),
         new LogRule(".*", true,true,true,true)
       };
       Logger.RegisterLogAction(process, rules);
@@ -60,6 +61,7 @@ namespace Chlaot
         //new LogRule("Playing\\.AutoPlaybackManager",false,false,true,true),
         new LogRule("Playing\\.Player",false,true,true,true),
         new LogRule("SimConManager",false,true,true,true),
+        new LogRule("StateCheckEvaluator",false,false,true,true),
         new LogRule(".*", false, true, true, true)
       };
 
