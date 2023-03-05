@@ -69,10 +69,12 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
     {
       get
       {
-        EnsureExpressionIsValid();
         double? ret;
         if (this._Value is null)
+        {
+          EnsureExpressionIsValid();
           ret = double.TryParse(this.Expression, out double tmp) ? tmp : null;
+        }
         else
           ret = this._Value;
         return ret;
@@ -147,7 +149,11 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
       // sensitivity
       (lower, upper, isPerc) = ExpandRangeString(this.Sensitivity);
       if (-lower != upper)
-        throw new ApplicationException($"Different lower/upper sensitivity ({lower} vs {upper}) value not supported.");
+      {
+        Logger.Log(this, LogLevel.WARNING,
+          $"Different lower/upper sensitivity ({lower} vs {upper}) value not supported. The higher abs value is used");
+        upper = Math.Max(Math.Abs(lower), Math.Abs(upper));
+      }
       if (isPerc)
         sensitivityEpsilon = randomizedValue * upper / 100d;
       else

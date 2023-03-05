@@ -198,6 +198,35 @@ namespace ChecklistModule
       {
         throw new ApplicationException("There are repeated checklist id definitions: " + string.Join(", ", exc));
       }
+
+
+      // all property conditions has values
+      Stack<IStateCheckItem> stck = new();
+      void checkStateCheckItem(IStateCheckItem sti)
+      {
+        stck.Push(sti);
+        if (sti is StateCheckCondition stc)
+          stc.Items.ForEach(q => checkStateCheckItem(q));
+        else if (sti is StateCheckDelay std)
+          checkStateCheckItem(std.Item);
+        else if (sti is StateCheckProperty stp)
+        {
+          if (stp.Value == null)
+          {
+            throw new ApplicationException($"Value of checked property {stp.DisplayName} not set." +
+              $"Location: {string.Join(" ==> ", stck.Reverse().ToList().Select(q => q.DisplayString))}");
+          }
+        }
+        else
+          throw new ApplicationException($"Unsupported type of '{nameof(IStateCheckItem)}'.");
+        stck.Pop();
+      }
+
+      tmp.Checklists
+        .Where(q => q.MetaInfo != null)
+        .Where(q => q.MetaInfo.Autostart != null)
+        .ToList()
+        .ForEach(q => checkStateCheckItem(q.MetaInfo.Autostart));
     }
     private void InitializeSoundStreams(CheckSet checkSet, string relativePath)
     {

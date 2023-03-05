@@ -118,8 +118,12 @@ namespace Eng.Chlaot.Modules.CopilotModule
         else if (sti is StateCheckProperty stp)
         {
           if (stp.Expression == null)
+            throw new ApplicationException($"Expression of checked property {stp.DisplayName} not set." +
+              $"Location: {string.Join(" ==> ", stck.Reverse().ToList().Select(q => q.DisplayString))}");
+          
+          if (stp.Value == null)
           {
-            this.logHandler.Invoke(LogLevel.ERROR, $"Expression of checked property {stp.DisplayName} not set." +
+            throw new ApplicationException($"Value of checked property {stp.DisplayName} not set." +
               $"Location: {string.Join(" ==> ", stck.Reverse().ToList().Select(q => q.DisplayString))}");
           }
         }
