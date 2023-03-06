@@ -1,5 +1,6 @@
 using ChecklistModule.Types;
 using ChlaotModuleBase.ModuleUtils.Playing;
+using ChlaotModuleBase.ModuleUtils.Storable;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -42,20 +43,6 @@ namespace ChecklistModule
       this.DataContext = context;
     }
 
-    private static CommonFileDialogFilter CreateCommonFileDialogFilter(string title, string extension)
-    {
-      CommonFileDialogFilter cfdf = new CommonFileDialogFilter(title, extension);
-      Type t = cfdf.GetType();
-      var fieldInfo = t.GetField("_extensions",
-        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-        ?? throw new ApplicationException("Field with name '_extensions' not found; reflection error.");
-      System.Collections.ObjectModel.Collection<string?> col =
-        (System.Collections.ObjectModel.Collection<string?>)fieldInfo.GetValue(cfdf)!;
-      col.Clear();
-      col.Add(extension);
-      return cfdf;
-    }
-
     private void btnLoadChecklistFile_Click(object sender, RoutedEventArgs e)
     {
       var dialog = new CommonOpenFileDialog()
@@ -66,9 +53,9 @@ namespace ChecklistModule
         Multiselect = false,
         Title = "Select XML file with checklist data..."
       };
-      dialog.Filters.Add(CreateCommonFileDialogFilter("Checklist files", "checklist.xml"));
-      dialog.Filters.Add(CreateCommonFileDialogFilter("XML files", "xml"));
-      dialog.Filters.Add(CreateCommonFileDialogFilter("All files", "*"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("Checklist files", "checklist.xml"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("XML files", "xml"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("All files", "*"));
       if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
       recentXmlFile = dialog.FileName;
 

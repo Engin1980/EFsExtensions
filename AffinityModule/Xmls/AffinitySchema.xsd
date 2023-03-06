@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema id="Schema"
+            targetNamespace="http://tempuri.org/Schema.xsd"
+            elementFormDefault="qualified"
+            xmlns="http://tempuri.org/Schema.xsd"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:metadata="http://tempuri.org/metaData.xsd"
+            >
+
+  <xsd:import namespace="http://tempuri.org/metaData.xsd"
+           schemaLocation="MetaDataSchema.xsd"/>
+
+  <xsd:element name="affinityRuleBase">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="metaInfo" minOccurs="1" maxOccurs="1" type="metadata:metaInfo"/>
+        <xsd:element name="rule" minOccurs="1" maxOccurs="unbounded" type="affinityRule"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="affinityRule">
+    <xsd:attribute name="title" type="nonemptyString" use="optional"/>
+    <xsd:attribute name="regex" type="nonemptyString" use="required" />
+    <xsd:attribute name="roll" type="rollRegex" use="required" />
+  </xsd:complexType>
+
+  <xsd:simpleType name="rollRegex">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="^((\d+)(-(\d+))?)(,(\d+)(-(\d+))?)*$"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="nonemptyString">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value=".+"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>

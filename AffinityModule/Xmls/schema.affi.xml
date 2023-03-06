@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<affinityRuleBase
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://tempuri.org/Schema.xsd"
+  xmlns:metaData="http://tempuri.org/metaData.xsd"
+  xsi:noNamespaceSchemaLocation="AffinitySchema.xsd">
+  <metaInfo>
+    <metaData:label>Simple Affinity Schema</metaData:label>
+    <metaData:author>Marek Vajgl</metaData:author>
+    <metaData:description>
+      FS2020 uses mostly 4-5, only sometimes about 6 threads. 
+      This division is created for =&gt;12 cores CPU.
+    </metaData:description>
+  </metaInfo>
+  <rule title="FS2020" regex="FlightSimulator.exe" roll="0-5" />
+  <rule title="Other" regex=".+" roll="6-64" />
+</affinityRuleBase>

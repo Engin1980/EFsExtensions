@@ -1,6 +1,8 @@
 using ChlaotModuleBase;
+using ChlaotModuleBase.ModuleUtils.Storable;
 using ELogging;
 using Eng.Chlaot.Modules.AffinityModule;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +27,8 @@ namespace AffinityModule
   {
     public readonly NewLogHandler logHandler;
     public readonly Context context;
+    private string recentXmlFile = "";
+
     public CtrInit()
     {
       InitializeComponent();
@@ -39,19 +43,24 @@ namespace AffinityModule
       this.DataContext = context;
     }
 
-    private void btnAddRule_Click(object sender, RoutedEventArgs e)
-    {
-      context.Settings.Rules.AddNew();
-    }
-
-    private void btnSave_Click(object sender, RoutedEventArgs e)
-    {
-      this.context.SaveSettings();
-    }
 
     private void btnLoad_Click(object sender, RoutedEventArgs e)
     {
-      this.context.LoadSettings();
+      var dialog = new CommonOpenFileDialog()
+      {
+        AddToMostRecentlyUsedList = true,
+        EnsureFileExists = true,
+        DefaultFileName = recentXmlFile,
+        Multiselect = false,
+        Title = "Select XML file with copilot speeches data..."
+      };
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("Affinity rule-base files", "affi.xml"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("XML files", "xml"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("All files", "*"));
+      if (dialog.ShowDialog() != CommonFileDialogResult.Ok || dialog.FileName == null) return;
+
+      recentXmlFile = dialog.FileName;
+      this.context.LoadRuleBase(recentXmlFile);
     }
   }
 }

@@ -11,33 +11,15 @@ namespace Eng.Chlaot.Modules.AffinityModule
 {
   public class Settings : StorableObject
   {
-    protected override string FileName => "affinityRules.affru.xml";
-
-    public BindingList<Rule> Rules
+    public int RefreshIntervalInSeconds
     {
-      get => base.GetProperty<BindingList<Rule>>(nameof(Rules))!;
-      set => base.UpdateProperty(nameof(Rules), value);
+      get => base.GetProperty<int>(nameof(RefreshIntervalInSeconds))!;
+      set => base.UpdateProperty(nameof(RefreshIntervalInSeconds), value);
     }
 
     public Settings()
     {
-      this.Rules = new();
-    }
-
-    public static Settings CreateDefault()
-    {
-      Settings ret = new();
-      ret.Rules.Add(new Rule()
-      {
-        Regex = "Flight Simulator",
-        CoresPattern = "1-6"
-      });
-      ret.Rules.Add(new Rule()
-      {
-        Regex = ".+",
-        CoresPattern = "7-64"
-      });
-      return ret;
+      this.RefreshIntervalInSeconds = 60;
     }
   }
 }

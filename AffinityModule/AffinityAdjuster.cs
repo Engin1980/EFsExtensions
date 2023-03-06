@@ -1,103 +1,150 @@
-﻿using System;
+﻿using ELogging;
+using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 
-namespace AffinityModule
+namespace Eng.Chlaot.Modules.AffinityModule
 {
-  internal class AffinityAdjuster
+  internal class AffinityAdjuster : IDisposable
   {
-    private int CalculateAffinity(FlowLayoutPanel flp)
+    private NewLogHandler logHandler;
+    private bool isRunning = false;
+    private readonly List<Rule> rules;
+    private readonly BindingList<ProcessInfo> processInfos;
+
+    public AffinityAdjuster(List<Rule> rules, BindingList<ProcessInfo> processInfos)
     {
-      List<bool> bits = new List<bool>();
-      foreach (var ctr in flp.Controls)
+      logHandler = Logger.RegisterSender(typeof(AffinityAdjuster));
+      this.rules = rules;
+      this.processInfos = processInfos;
+    }
+
+    public void AdjustAffinityAsync()
+    {
+      lock (this)
       {
-        CheckBox cb = (CheckBox)ctr;
-        bits.Add(cb.Checked);
+        if (isRunning) return;
+        isRunning = true;
+        var currentTask = new Task(ApplyRules);
+        currentTask.Start();
       }
-      BitArray bitArray = new BitArray(bits.ToArray());
-      int[] tmp = new int[1];
-      bitArray.CopyTo(tmp, 0);
-      int ret = tmp[0];
-      return ret;
     }
 
-    private async void btnApply_Click(object sender, EventArgs e)
+    public void ResetAffinity()
     {
-      slbl.Text = "Applying";
-      btnApply.Enabled = false;
-      processInfoBindingSource.DataSource = null;
-
-      Task<List<ProcessInfo>> task = new Task<List<ProcessInfo>>(DoApplyAndEvaluate);
-      task.Start();
-      List<ProcessInfo> pis = await task;
-
-      processInfoBindingSource.DataSource = pis;
-      btnApply.Enabled = true;
-      slbl.Text = $"Applied. {pis.Count} processes, {pis.Count(q => q.IsAccessible)} accessible, " +
-        $"{pis.Count(q => q.IsAccessible == false)} unacessible, {pis.Count(q => q.IsSelected)} selected";
-    }
-
-    private List<ProcessInfo> DoApplyAndEvaluate()
-    {
-      int selected = CalculateAffinity(flpSelected);
-      int other = CalculateAffinity(flpOther);
-      List<ProcessInfo> pis = ApplyAffinity(txtProcessName.Text.Trim(), (IntPtr)selected, (IntPtr)other);
-      pis = pis.OrderBy(q => q.Name).ToList();
-      return pis;
-    }
-
-    private List<ProcessInfo> ApplyAffinity(string selectedProcess, IntPtr selectedAffinity, IntPtr otherAffinity)
-    {
-      List<ProcessInfo> ret = new List<ProcessInfo>();
-      Process[] processes = Process.GetProcesses();
-      int cnt = processes.Length;
-      int cur = 0;
-      foreach (Process process in processes.OrderBy(q => q.ProcessName))
+      lock (this)
       {
-        UpdateProgress(cur, cnt);
-        ProcessInfo pi = new ProcessInfo()
+        while (isRunning)
+        {
+          Monitor.Wait(this);
+        }
+
+        CancelRules();
+      }
+    }
+
+    private void CancelRules()
+    {
+      Rule rule = new()
+      {
+        Roll = "0-256"
+      };
+
+      Process[] processes = Process.GetProcesses();
+      foreach (var process in processes)
+      {
+        if (processInfos.Any(q => process.Id == q.Id
+                && q.IsAccessible.HasValue
+                && q.IsAccessible.Value))
+          continue;
+
+        try
+        {
+          process.ProcessorAffinity = rule.CalculateAffinity();
+        }
+        catch (Exception)
+        {
+          //TODO resolve somehow
+        }
+      }
+    }
+
+    private void ApplyRules()
+    {
+      Dictionary<Process, Rule?> mapping = MapNewProcessesToRules();
+
+      foreach (var item in mapping)
+      {
+        Process process = item.Key;
+        Rule? rule = item.Value;
+        ProcessInfo pi = new()
         {
           Id = process.Id,
           Name = process.ProcessName,
           WindowTitle = process.MainWindowTitle,
-          IsSelected = false,
           ThreadCount = process.Threads.Count
         };
-        ret.Add(pi);
 
-        IntPtr trgAffinity;
-        if (System.Text.RegularExpressions.Regex.IsMatch(process.ProcessName, selectedProcess))
+        if (rule != null)
         {
-          trgAffinity = selectedAffinity;
-          pi.IsSelected = true;
+          pi.RuleTitle = rule.TitleOrRegex;
+          try
+          {
+            process.ProcessorAffinity = rule.CalculateAffinity();
+            pi.IsAccessible = true;
+          }
+          catch (Exception)
+          {
+            pi.IsAccessible = false;
+          }
+
+          try
+          {
+            pi.Affinity = (int)process.ProcessorAffinity;
+          }
+          catch (Exception)
+          {
+            pi.Affinity = null;
+          }
         }
         else
-          trgAffinity = otherAffinity;
-
-        try
-        {
-          process.ProcessorAffinity = trgAffinity;
-          pi.IsAccessible = true;
-        }
-        catch (Exception)
-        {
-          pi.IsAccessible = false;
-        }
-
-        try
-        {
-          pi.Affinity = (int)process.ProcessorAffinity;
-        }
-        catch (Exception)
-        {
-          pi.Affinity = null;
-        }
-        cur++;
+          pi.RuleTitle = "(none)";
+        this.processInfos.Add(pi);
       }
-      UpdateProgress(cnt, cnt);
+      isRunning = false;
+      Monitor.PulseAll(this);
+    }
+
+    private Dictionary<Process, Rule?> MapNewProcessesToRules()
+    {
+      Dictionary<Process, Rule?> ret = new();
+      Process[] processes = Process.GetProcesses();
+
+      foreach (var process in processes)
+      {
+        if (processInfos.Any(q => q.Id == process.Id)) continue; // already set process
+
+        Rule? rule = this.rules
+          .FirstOrDefault(q => System.Text.RegularExpressions.Regex.IsMatch(
+            process.ProcessName, q.Regex));
+        ret[process] = rule;
+      }
       return ret;
+    }
+
+
+    public void Dispose()
+    {
+      Logger.UnregisterSender(this);
+      GC.SuppressFinalize(this);
     }
   }
 }

@@ -15,13 +15,18 @@ namespace Eng.Chlaot.Modules.AffinityModule
   public class AffinityModule : NotifyPropertyChangedBase, IModule
   {
 
-    private readonly Context context = new();
+    private readonly Context context;
 
     private CtrInit? ctrInit;
 
     public Control InitControl => this.ctrInit ?? throw new ApplicationException("CtrInit is null");
 
-    public bool IsReady => true;
+
+    public bool IsReady
+    {
+      get => base.GetProperty<bool>(nameof(IsReady))!;
+      set => base.UpdateProperty(nameof(IsReady), value);
+    }
 
     public string Name => "Affinity Module";
 
@@ -32,6 +37,11 @@ namespace Eng.Chlaot.Modules.AffinityModule
       get => base.GetProperty<Settings>(nameof(Settings))!;
       set => base.UpdateProperty(nameof(Settings), value);
     }
+
+    public AffinityModule()
+    {
+      this.context = new Context(q => this.IsReady = q);
+    }
     public void Init()
     {
       this.ctrInit = new CtrInit(this.context);
@@ -40,7 +50,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
     public void Run()
     {
-      // intentionally blank
+      this.context.Run();
     }
 
     public void SetUp(ModuleSetUpInfo setUpInfo)
@@ -50,9 +60,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
     public void Stop()
     {
-      throw new NotImplementedException();
+      this.context.Stop();
     }
-
-
   }
 }

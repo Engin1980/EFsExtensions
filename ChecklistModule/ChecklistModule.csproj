@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Speech" Version="7.0.0" />
-    <PackageReference Include="WindowsAPICodePack" Version="7.0.2" />
+    <PackageReference Include="WindowsAPICodePack" Version="7.0.4" />
   </ItemGroup>
 
   <ItemGroup>

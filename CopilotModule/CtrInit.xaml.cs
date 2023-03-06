@@ -1,4 +1,5 @@
 ﻿using ChlaotModuleBase.ModuleUtils.Playing;
+using ChlaotModuleBase.ModuleUtils.Storable;
 using CopilotModule.Types;
 using Eng.Chlaot.Modules.CopilotModule;
 using Microsoft.WindowsAPICodePack.Dialogs;
@@ -24,7 +25,7 @@ namespace CopilotModule
   /// </summary>
   public partial class CtrInit : UserControl
   {
-    private InitContext context;
+    private readonly InitContext context;
     private string recentXmlFile = "";
     private readonly AutoPlaybackManager autoPlaybackManager = new();
 
@@ -40,20 +41,6 @@ namespace CopilotModule
       this.DataContext = context;
     }
 
-    private static CommonFileDialogFilter CreateCommonFileDialogFilter(string title, string extension)
-    {
-      CommonFileDialogFilter cfdf = new CommonFileDialogFilter(title, extension);
-      Type t = cfdf.GetType();
-      var fieldInfo = t.GetField("_extensions",
-        System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)
-        ?? throw new ApplicationException("Field with name '_extensions' not found; reflection error.");
-      System.Collections.ObjectModel.Collection<string?> col =
-        (System.Collections.ObjectModel.Collection<string?>)fieldInfo.GetValue(cfdf)!;
-      col.Clear();
-      col.Add(extension);
-      return cfdf;
-    }
-
     private void btnLoadChecklistFile_Click(object sender, RoutedEventArgs e)
     {
       var dialog = new CommonOpenFileDialog()
@@ -64,9 +51,9 @@ namespace CopilotModule
         Multiselect = false,
         Title = "Select XML file with copilot speeches data..."
       };
-      dialog.Filters.Add(CreateCommonFileDialogFilter("Copilot files", "copilot.xml"));
-      dialog.Filters.Add(CreateCommonFileDialogFilter("XML files", "xml"));
-      dialog.Filters.Add(CreateCommonFileDialogFilter("All files", "*"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("Copilot files", "copilot.xml"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("XML files", "xml"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("All files", "*"));
       if (dialog.ShowDialog() != CommonFileDialogResult.Ok || dialog.FileName == null) return;
 
       recentXmlFile = dialog.FileName;

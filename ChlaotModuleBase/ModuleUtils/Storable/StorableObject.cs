@@ -12,26 +12,24 @@ namespace ChlaotModuleBase.ModuleUtils.Storable
 {
   public abstract class StorableObject : NotifyPropertyChangedBase
   {
-    protected abstract string FileName { get; }
-
-    public void Load()
+    public void Load(string fileName)
     {
       object tmp;
       try
       {
-        using FileStream fs = new(FileName, FileMode.Open);
+        using FileStream fs = new(fileName, FileMode.Open);
         XmlSerializer ser = new(this.GetType());
         tmp = ser.Deserialize(fs)!;
       }
       catch (Exception ex)
       {
-        throw new ApplicationException($"Failed to deserialize settings from {FileName}.", ex);
+        throw new ApplicationException($"Failed to deserialize settings from {fileName}.", ex);
       }
 
       CopyProperties(tmp, this);
     }
 
-    public void Save()
+    public void Save(string fileName)
     {
       try
       {
@@ -41,12 +39,12 @@ namespace ChlaotModuleBase.ModuleUtils.Storable
           XmlSerializer ser = new(this.GetType());
           ser.Serialize(fs, this);
         }
-        System.IO.File.Copy(file, FileName, true);
-        System.IO.File.Delete(file);
+        File.Copy(file, fileName, true);
+        File.Delete(file);
       }
       catch (Exception ex)
       {
-        throw new ApplicationException($"Failed to serialize settings to {FileName}.", ex);
+        throw new ApplicationException($"Failed to serialize settings to {fileName}.", ex);
       }
     }
 
