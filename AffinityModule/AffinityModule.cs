@@ -21,6 +21,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
     public Control InitControl => this.ctrInit ?? throw new ApplicationException("CtrInit is null");
 
+    private CtrRun? ctrRun;
 
     public bool IsReady
     {
@@ -30,7 +31,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
     public string Name => "Affinity Module";
 
-    public Control RunControl => this.ctrInit ?? throw new ApplicationException("CtrRun is null");
+    public Control RunControl => this.ctrRun ?? throw new ApplicationException("CtrRun is null");
 
     public Settings Settings
     {
@@ -50,6 +51,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
     public void Run()
     {
+      this.ctrRun = new CtrRun(context);
       this.context.Run();
     }
 

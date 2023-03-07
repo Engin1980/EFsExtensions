@@ -35,6 +35,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
     }
 
     public string Regex { get; set; }
+    public bool ShouldChangeAffinity { get => this._Roll.Length > 0; }
 
     public Rule()
     {
@@ -85,6 +86,13 @@ namespace Eng.Chlaot.Modules.AffinityModule
         for (int i = 0; i < CoreFlags.Count; i++)
         {
           CoreFlags[i] = includedIndices.Contains(i);
+        }
+      }
+      else
+      {
+        for (int i = 0; i < CoreFlags.Count; i++)
+        {
+          CoreFlags[i] = true;
         }
       }
     }

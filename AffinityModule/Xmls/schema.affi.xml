@@ -13,5 +13,6 @@
     </metaData:description>
   </metaInfo>
   <rule title="FS2020" regex="FlightSimulator.exe" roll="0-5" />
+  <rule title="Idle" regex="Idle" roll="" />
   <rule title="Other" regex=".+" roll="6-64" />
 </affinityRuleBase>

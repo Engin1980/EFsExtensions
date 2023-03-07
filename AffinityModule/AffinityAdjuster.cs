@@ -31,7 +31,13 @@ namespace Eng.Chlaot.Modules.AffinityModule
     {
       lock (this)
       {
-        if (isRunning) return;
+        if (isRunning)
+        {
+          logHandler.Invoke(LogLevel.INFO, "AdjustAffinityAsync() invoked, but the task is running yet.");
+          return;
+        }
+
+        logHandler.Invoke(LogLevel.INFO, "AdjustAffinityAsync() invoked.");
         isRunning = true;
         var currentTask = new Task(ApplyRules);
         currentTask.Start();
@@ -80,6 +86,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
     private void ApplyRules()
     {
       Dictionary<Process, Rule?> mapping = MapNewProcessesToRules();
+      logHandler.Invoke(LogLevel.VERBOSE, $"Analysis completed, adjusting {mapping.Count} processes.");
 
       foreach (var item in mapping)
       {
@@ -95,32 +102,50 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
         if (rule != null)
         {
+          logHandler.Invoke(LogLevel.VERBOSE, $"Adjusting '{pi.Name} ({pi.Id})'.");
           pi.RuleTitle = rule.TitleOrRegex;
-          try
-          {
-            process.ProcessorAffinity = rule.CalculateAffinity();
-            pi.IsAccessible = true;
-          }
-          catch (Exception)
-          {
-            pi.IsAccessible = false;
-          }
 
-          try
+          if (rule.ShouldChangeAffinity)
           {
-            pi.Affinity = (int)process.ProcessorAffinity;
-          }
-          catch (Exception)
-          {
-            pi.Affinity = null;
+            try
+            {
+              process.ProcessorAffinity = rule.CalculateAffinity();
+              pi.IsAccessible = true;
+            }
+            catch (Exception ex)
+            {
+              pi.IsAccessible = false;
+              logHandler.Invoke(LogLevel.VERBOSE, $"Adjusting '{pi.Name} ({pi.Id})' failed. " +
+                $"Probably no rights to do this. {ex.Message}");
+            }
+
+            try
+            {
+              pi.Affinity = (int)process.ProcessorAffinity;
+            }
+            catch (Exception)
+            {
+              pi.Affinity = null;
+            }
           }
         }
         else
+        {
+          logHandler.Invoke(LogLevel.VERBOSE, $"No rule to cover '{pi.Name} ({pi.Id})', skipping.");
           pi.RuleTitle = "(none)";
+        }
+
         this.processInfos.Add(pi);
       }
+      logHandler.Invoke(LogLevel.INFO, $"Adjustment completed, " +
+        $"changed {processInfos.Count(q => q.IsAccessible.HasValue && q.IsAccessible.Value)}, " +
+        $"failed {processInfos.Count(q => q.IsAccessible.HasValue && !q.IsAccessible.Value)}, " +
+        $"skipped {processInfos.Count(q => q.IsAccessible == null)}.");
       isRunning = false;
-      Monitor.PulseAll(this);
+      lock (this)
+      {
+        Monitor.PulseAll(this);
+      }
     }
 
     private Dictionary<Process, Rule?> MapNewProcessesToRules()
