@@ -22,5 +22,9 @@
         </Trigger>
       </Style.Triggers>
     </Style>
+    <Style TargetType="{x:Type DataGridCell}">
+      <Setter Property="FontFamily" Value="Consolas" />
+      <Setter Property="FontSize" Value="16" />
+    </Style>
   </Application.Resources>
 </Application>

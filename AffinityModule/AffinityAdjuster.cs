@@ -1,4 +1,5 @@
-﻿using ELogging;
+﻿using AffinityModule;
+using ELogging;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -74,7 +75,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
         try
         {
-          process.ProcessorAffinity = rule.CalculateAffinity();
+          process.ProcessorAffinity = AffinityUtils.ToIntPtr(rule.CoreFlags.ToArray());
         }
         catch (Exception)
         {
@@ -109,7 +110,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
           {
             try
             {
-              process.ProcessorAffinity = rule.CalculateAffinity();
+              process.ProcessorAffinity = AffinityUtils.ToIntPtr(rule.CoreFlags.ToArray());
               pi.IsAccessible = true;
             }
             catch (Exception ex)
@@ -121,7 +122,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
             try
             {
-              pi.Affinity = (int)process.ProcessorAffinity;
+              pi.Affinity = process.ProcessorAffinity;
             }
             catch (Exception)
             {

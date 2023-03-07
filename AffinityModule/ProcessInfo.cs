@@ -1,6 +1,8 @@
-﻿using System;
+﻿using AffinityModule;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Speech.Synthesis.TtsEngine;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,33 +12,41 @@ namespace Eng.Chlaot.Modules.AffinityModule
   {
     public int Id { get; set; }
     public string Name { get; set; }
-    public string WindowTitle { get; set; }
+    public string? WindowTitle { get; set; }
     public int ThreadCount { get; set; }
-    public int? Affinity { get; set; }
+    public IntPtr? Affinity { get; set; }
     public string? RuleTitle { get; set; }
 
-    public string AffinityBinaryString
+    public bool? IsAccessible { get; set; }
+    public bool[] CoreFlags
     {
       get
       {
-        StringBuilder sb = new StringBuilder();
-        if (Affinity != null)
-          sb.Append(Convert.ToString((int)Affinity, 2).PadLeft(Environment.ProcessorCount, '0'));
-
-        char[] chars = sb.ToString().ToCharArray();
-        Array.Reverse(chars);
-        string tmp = new string(chars);
-
-        sb = new StringBuilder();
-        for (int i = 0; i < tmp.Length; i++)
+        bool[] ret;
+        if (this.Affinity == null)
+          ret = Array.Empty<bool>();
+        else
         {
-          if (i > 0 && i % 4 == 0)
-            sb.Append(" ");
-          sb.Append(tmp[i]);
+          ret = AffinityUtils.ToArray(this.Affinity.Value);
         }
-        return sb.ToString();
+        return ret;
       }
     }
-    public bool? IsAccessible { get; set; }
+    public string StateString
+    {
+      get
+      {
+        string ret;
+
+        if (this.RuleTitle == null)
+          ret = "No rule to apply";
+        else if (this.IsAccessible == null)
+          ret = "Not applied";
+        else
+          ret = this.IsAccessible.Value ? "Applied" : "Access denied.";
+
+        return ret;
+      }
+    }
   }
 }

@@ -8,10 +8,29 @@
              d:DesignHeight="450" d:DesignWidth="800">
   <DataGrid ItemsSource="{Binding ProcessInfos}" AutoGenerateColumns="False">
     <DataGrid.Columns>
-      <DataGridTextColumn Header="Id" Binding="{Binding ID}"/>
-      <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
-      <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}"/>
-      <DataGridTextColumn Header="Applied Rule" Binding="{Binding RuleTitle}"/>
+      <DataGridTextColumn Header="Id" Binding="{Binding ID}" IsReadOnly="True" />
+      <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
+      <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}" IsReadOnly="True"/>
+      <DataGridTextColumn Header="Applied Rule" Binding="{Binding RuleTitle}" IsReadOnly="True"/>
+      <DataGridTextColumn Header="State" Binding="{Binding StateString}"  IsReadOnly="True"/>
+      <DataGridTemplateColumn Header="Affinity">
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <ItemsControl ItemsSource="{Binding CoreFlags}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <CheckBox IsChecked="{Binding Mode=OneWay}" IsEnabled="False" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
     </DataGrid.Columns>
   </DataGrid>
 </UserControl>

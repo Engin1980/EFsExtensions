@@ -1,4 +1,5 @@
-﻿using ChlaotModuleBase;
+﻿using AffinityModule;
+using ChlaotModuleBase;
 using ELogging;
 using System;
 using System.Collections;
@@ -15,7 +16,6 @@ namespace Eng.Chlaot.Modules.AffinityModule
   public class Rule
   {
     public const string ROLL_REGEX = "^((\\d+)(-(\\d+))?)(,(\\d+)(-(\\d+))?)*$";
-    private static readonly int numberOfCores = Environment.ProcessorCount;
 
     public List<bool> CoreFlags { get; set; }
 
@@ -39,17 +39,9 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
     public Rule()
     {
-      this.CoreFlags = BuildCoresList();
+      this.CoreFlags = AffinityUtils.ToEmptyArray(false);
       _Roll = Roll = "";
       Regex = ".+";
-    }
-
-    private static List<bool> BuildCoresList()
-    {
-      var ret = new List<bool>();
-      for (int i = 0; i < numberOfCores; i++)
-        ret.Add(false);
-      return ret;
     }
 
     private void ExpandToCores()
@@ -97,14 +89,5 @@ namespace Eng.Chlaot.Modules.AffinityModule
       }
     }
 
-    internal IntPtr CalculateAffinity()
-    {
-      BitArray bitArray = new(CoreFlags.ToArray());
-      int intLen = (int)Math.Ceiling(numberOfCores / 8d);
-      int[] tmp = new int[intLen];
-      bitArray.CopyTo(tmp, 0);
-      IntPtr ret = (IntPtr)tmp[0];
-      return ret;
-    }
   }
 }
