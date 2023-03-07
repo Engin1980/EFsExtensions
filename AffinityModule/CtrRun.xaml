@@ -6,31 +6,55 @@
              xmlns:local="clr-namespace:AffinityModule"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-  <DataGrid ItemsSource="{Binding ProcessInfos}" AutoGenerateColumns="False">
-    <DataGrid.Columns>
-      <DataGridTextColumn Header="Id" Binding="{Binding ID}" IsReadOnly="True" />
-      <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
-      <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}" IsReadOnly="True"/>
-      <DataGridTextColumn Header="Applied Rule" Binding="{Binding RuleTitle}" IsReadOnly="True"/>
-      <DataGridTextColumn Header="State" Binding="{Binding StateString}"  IsReadOnly="True"/>
-      <DataGridTemplateColumn Header="Affinity">
-        <DataGridTemplateColumn.CellTemplate>
-          <DataTemplate>
-            <ItemsControl ItemsSource="{Binding CoreFlags}">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <StackPanel Orientation="Horizontal"/>
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-              <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                  <CheckBox IsChecked="{Binding Mode=OneWay}" IsEnabled="False" />
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </DataTemplate>
-        </DataGridTemplateColumn.CellTemplate>
-      </DataGridTemplateColumn>
-    </DataGrid.Columns>
-  </DataGrid>
+  <TabControl>
+    <TabItem x:Name="tabProcessed" Header="Processed items">
+      <DataGrid x:Name="grdProcessed"  AutoGenerateColumns="False">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
+          <DataGridTextColumn Header="Window Title" MaxWidth="300" Binding="{Binding WindowTitle}" IsReadOnly="True"/>
+          <DataGridTextColumn Header="Applied Rule" Binding="{Binding RuleTitle}" IsReadOnly="True"/>
+          <DataGridTemplateColumn Header="Affinity">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <ItemsControl ItemsSource="{Binding CoreFlags}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <CheckBox IsChecked="{Binding Mode=OneWay}" IsEnabled="False" />
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+        </DataGrid.Columns>
+      </DataGrid>
+    </TabItem>
+    <TabItem x:Name="tabFailed"  Header="Failed items">
+      <DataGrid x:Name="grdFailed" AutoGenerateColumns="False">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
+          <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}" IsReadOnly="True"/>
+          <DataGridTextColumn Header="Applied Rule" Binding="{Binding RuleTitle}" IsReadOnly="True"/>
+        </DataGrid.Columns> 
+      </DataGrid>
+    </TabItem>
+    <TabItem x:Name="tabSkipped" Header="Skipped items">
+      <DataGrid x:Name="grdSkipped" AutoGenerateColumns="False">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
+          <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}" IsReadOnly="True"/>
+        </DataGrid.Columns>
+      </DataGrid>
+    </TabItem>
+  </TabControl>
+
+
 </UserControl>

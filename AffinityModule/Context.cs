@@ -20,24 +20,15 @@ namespace Eng.Chlaot.Modules.AffinityModule
   public class Context : NotifyPropertyChangedBase
   {
     private const string SETTINGS_FILE = "affinity.sett.xml";
-    private readonly Action<bool> setIsReadyFlagAction;
-    private AffinityAdjuster? affinityAdjuster = null;
-    private Timer? refreshTimer = null;
-    public BindingList<ProcessInfo> ProcessInfos { get; set; } = new();
-
-    public Settings Settings
-    {
-      get => base.GetProperty<Settings>(nameof(Settings))!;
-      set => base.UpdateProperty(nameof(Settings), value);
-    }
-
-    public RuleBase RuleBase
-    {
-      get => base.GetProperty<RuleBase>(nameof(RuleBase))!;
-      set => base.UpdateProperty(nameof(RuleBase), value);
-    }
 
     private readonly NewLogHandler logHandler;
+
+    private readonly Action<bool> setIsReadyFlagAction;
+
+    private AffinityAdjuster? affinityAdjuster = null;
+
+    private Timer? refreshTimer = null;
+
     public Context(Action<bool> setIsReadyFlagAction)
     {
       this.setIsReadyFlagAction = setIsReadyFlagAction
@@ -47,33 +38,21 @@ namespace Eng.Chlaot.Modules.AffinityModule
       this.logHandler = Logger.RegisterSender(this);
     }
 
-    public void LoadSettings()
+    public delegate void AdjustmentCompletedDelegate();
+    public event AdjustmentCompletedDelegate? AdjustmentCompleted;
+    public List<ProcessInfo> ProcessInfos { get; set; } = new();
+
+    public RuleBase RuleBase
     {
-      this.logHandler.Invoke(LogLevel.VERBOSE, "Loading settings");
-      try
-      {
-        this.Settings.Load(SETTINGS_FILE);
-        this.logHandler.Invoke(LogLevel.INFO, "Settings saved");
-      }
-      catch (Exception ex)
-      {
-        this.logHandler.Invoke(LogLevel.ERROR, "Failed to load settings. " + ex.GetFullMessage("\n\t"));
-      }
-    }
-    public void SaveSettings()
-    {
-      this.logHandler.Invoke(LogLevel.VERBOSE, "Saving settings");
-      try
-      {
-        this.Settings.Save(SETTINGS_FILE);
-        this.logHandler.Invoke(LogLevel.INFO, "Settings saved");
-      }
-      catch (Exception ex)
-      {
-        this.logHandler.Invoke(LogLevel.ERROR, "Failed to save settings. " + ex.GetFullMessage("\n\t"));
-      }
+      get => base.GetProperty<RuleBase>(nameof(RuleBase))!;
+      set => base.UpdateProperty(nameof(RuleBase), value);
     }
 
+    public Settings Settings
+    {
+      get => base.GetProperty<Settings>(nameof(Settings))!;
+      set => base.UpdateProperty(nameof(Settings), value);
+    }
     public void LoadRuleBase(string xmlFile)
     {
       RuleBase tmp;
@@ -104,6 +83,52 @@ namespace Eng.Chlaot.Modules.AffinityModule
       }
     }
 
+    public void LoadSettings()
+    {
+      this.logHandler.Invoke(LogLevel.VERBOSE, "Loading settings");
+      try
+      {
+        this.Settings.Load(SETTINGS_FILE);
+        this.logHandler.Invoke(LogLevel.INFO, "Settings saved");
+      }
+      catch (Exception ex)
+      {
+        this.logHandler.Invoke(LogLevel.ERROR, "Failed to load settings. " + ex.GetFullMessage("\n\t"));
+      }
+    }
+    public void SaveSettings()
+    {
+      this.logHandler.Invoke(LogLevel.VERBOSE, "Saving settings");
+      try
+      {
+        this.Settings.Save(SETTINGS_FILE);
+        this.logHandler.Invoke(LogLevel.INFO, "Settings saved");
+      }
+      catch (Exception ex)
+      {
+        this.logHandler.Invoke(LogLevel.ERROR, "Failed to save settings. " + ex.GetFullMessage("\n\t"));
+      }
+    }
+    internal void Run()
+    {
+      affinityAdjuster = new AffinityAdjuster(
+        this.RuleBase.Rules, this.ProcessInfos, () => this.AdjustmentCompleted?.Invoke());
+      affinityAdjuster.AdjustAffinityAsync();
+      this.refreshTimer = new Timer(Settings.RefreshIntervalInSeconds * 1000)
+      {
+        AutoReset = true,
+        Enabled = true
+      };
+      this.refreshTimer.Elapsed += RefreshTimer_Elapsed;
+      this.refreshTimer.Start();
+    }
+
+    internal void Stop()
+    {
+      this.refreshTimer?.Stop();
+      affinityAdjuster?.ResetAffinity();
+    }
+
     private EXml<RuleBase> CreateDeserializer()
     {
       EXml<RuleBase> ret = new();
@@ -132,30 +157,9 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
       return ret;
     }
-
-    internal void Run()
-    {
-      affinityAdjuster = new AffinityAdjuster(
-        this.RuleBase.Rules, this.ProcessInfos);
-      affinityAdjuster.AdjustAffinityAsync();
-      this.refreshTimer = new Timer(Settings.RefreshIntervalInSeconds * 1000)
-      {
-        AutoReset = true,
-        Enabled = true
-      };
-      this.refreshTimer.Elapsed += RefreshTimer_Elapsed;
-      this.refreshTimer.Start();
-    }
-
     private void RefreshTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
       affinityAdjuster!.AdjustAffinityAsync();
-    }
-
-    internal void Stop()
-    {
-      this.refreshTimer?.Stop();
-      affinityAdjuster?.ResetAffinity();
     }
   }
 }

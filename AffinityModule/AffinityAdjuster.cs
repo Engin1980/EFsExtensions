@@ -19,13 +19,15 @@ namespace Eng.Chlaot.Modules.AffinityModule
     private NewLogHandler logHandler;
     private bool isRunning = false;
     private readonly List<Rule> rules;
-    private readonly BindingList<ProcessInfo> processInfos;
+    private readonly List<ProcessInfo> processInfos;
+    private Action onAdjustmentCompleted;
 
-    public AffinityAdjuster(List<Rule> rules, BindingList<ProcessInfo> processInfos)
+    public AffinityAdjuster(List<Rule> rules, List<ProcessInfo> processInfos, Action onAdjustmentCompleted)
     {
       logHandler = Logger.RegisterSender(typeof(AffinityAdjuster));
       this.rules = rules;
       this.processInfos = processInfos;
+      this.onAdjustmentCompleted = onAdjustmentCompleted;
     }
 
     public void AdjustAffinityAsync()
@@ -93,6 +95,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
       {
         Process process = item.Key;
         Rule? rule = item.Value;
+        logHandler.Invoke(LogLevel.VERBOSE, $"Adjusting process {process.Id}/{process.ProcessName}");
         ProcessInfo pi = new()
         {
           Id = process.Id,
@@ -119,15 +122,17 @@ namespace Eng.Chlaot.Modules.AffinityModule
               logHandler.Invoke(LogLevel.VERBOSE, $"Adjusting '{pi.Name} ({pi.Id})' failed. " +
                 $"Probably no rights to do this. {ex.Message}");
             }
+          }
 
-            try
-            {
-              pi.Affinity = process.ProcessorAffinity;
-            }
-            catch (Exception)
-            {
-              pi.Affinity = null;
-            }
+          try
+          {
+            pi.Affinity = process.ProcessorAffinity;
+            pi.IsAccessible ??= true;
+          }
+          catch (Exception)
+          {
+            pi.IsAccessible = false;
+            pi.Affinity = null;
           }
         }
         else
@@ -147,6 +152,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
       {
         Monitor.PulseAll(this);
       }
+      this.onAdjustmentCompleted();
     }
 
     private Dictionary<Process, Rule?> MapNewProcessesToRules()

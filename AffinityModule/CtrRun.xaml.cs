@@ -1,6 +1,7 @@
 ﻿using Eng.Chlaot.Modules.AffinityModule;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,11 +28,42 @@ namespace AffinityModule
       InitializeComponent();
       this.context = null!;
     }
+    private void AdjustmentCompletedWrapped()
+    {
+      Application.Current.Dispatcher.Invoke(() => AdjustmentCompleted());
+    }
+    private void AdjustmentCompleted()
+    {
+      List<ProcessInfo> tmp;
+
+      tmp = this.context.ProcessInfos
+        .Where(q => q.IsAccessible == true)
+        .OrderBy(q => q.Name)
+        .ToList();
+      this.grdProcessed.ItemsSource = tmp;
+      this.tabProcessed.Header = $"Processed items ({tmp.Count})";
+
+      tmp = this.context.ProcessInfos
+          .Where(q => q.IsAccessible == false)
+          .OrderBy(q => q.Name)
+          .ToList();
+      this.grdFailed.ItemsSource = tmp;
+      this.tabFailed.Header = $"Failed items ({tmp.Count})";
+
+      tmp = this.context.ProcessInfos
+        .Where(q => q.IsAccessible == null)
+        .OrderBy(q => q.Name)
+        .ToList();
+      this.grdSkipped.ItemsSource = tmp;
+      this.tabSkipped.Header = $"Skipped items ({tmp.Count})";
+    }
 
     public CtrRun(Context context) : this()
     {
       this.context = context;
       this.DataContext = context;
+      this.context.AdjustmentCompleted += AdjustmentCompletedWrapped;
+
     }
   }
 }
