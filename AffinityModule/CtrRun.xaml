@@ -6,7 +6,12 @@
              xmlns:local="clr-namespace:AffinityModule"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+  <DataGrid ItemsSource="{Binding ProcessInfos}" AutoGenerateColumns="False">
+    <DataGrid.Columns>
+      <DataGridTextColumn Header="Id" Binding="{Binding ID}"/>
+      <DataGridTextColumn Header="Name" Binding="{Binding Name}"/>
+      <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}"/>
+      <DataGridTextColumn Header="Applied Rule" Binding="{Binding RuleTitle}"/>
+    </DataGrid.Columns>
+  </DataGrid>
 </UserControl>

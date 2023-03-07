@@ -135,7 +135,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
           pi.RuleTitle = "(none)";
         }
 
-        this.processInfos.Add(pi);
+        Application.Current.Dispatcher.Invoke(() => { this.processInfos.Add(pi); });
       }
       logHandler.Invoke(LogLevel.INFO, $"Adjustment completed, " +
         $"changed {processInfos.Count(q => q.IsAccessible.HasValue && q.IsAccessible.Value)}, " +

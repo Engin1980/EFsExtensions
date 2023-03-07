@@ -21,7 +21,6 @@ namespace Eng.Chlaot.Modules.AffinityModule
   {
     private const string SETTINGS_FILE = "affinity.sett.xml";
     private readonly Action<bool> setIsReadyFlagAction;
-    private readonly Dictionary<Process, string> applicationResult = new();
     private AffinityAdjuster? affinityAdjuster = null;
     private Timer? refreshTimer = null;
     public BindingList<ProcessInfo> ProcessInfos { get; set; } = new();
