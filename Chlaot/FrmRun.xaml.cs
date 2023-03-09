@@ -51,13 +51,23 @@ namespace Chlaot
       if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
     }
 
+    private bool isClosing = false;
     private void Window_Closed(object sender, EventArgs e)
     {
-      Logger.UnregisterLogAction(this);
-      foreach (var module in context.Modules)
+      lock (this)
       {
-        module.Stop();
+        if (isClosing) return;
+        isClosing = true;
       }
+
+      Logger.UnregisterLogAction(this);
+
+      Task[] stopTasks = context.Modules
+        .Select(q => Task.Run(q.Stop))
+        .ToArray();
+
+      Task.WaitAll(stopTasks);
+
       Application.Current.Shutdown();
     }
   }
