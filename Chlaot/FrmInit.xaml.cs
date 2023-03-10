@@ -1,6 +1,7 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Eventing.Reader;
@@ -17,6 +18,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static ESimConnect.SimUnits;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Chlaot
 {
@@ -26,6 +29,7 @@ namespace Chlaot
   public partial class FrmInit : Window
   {
     private readonly Context context = new Context();
+    private Settings appSettings;
 
     public FrmInit()
     {
@@ -35,7 +39,7 @@ namespace Chlaot
     [SuppressMessage("", "IDE1006")]
     private void btnRun_Click(object sender, RoutedEventArgs e)
     {
-      FrmRun frmRun = new(this.context);
+      FrmRun frmRun = new(this.context, appSettings);
       Logger.UnregisterLogAction(this);
       this.Close();
       frmRun.Show();
@@ -51,8 +55,8 @@ namespace Chlaot
 
     private void Window_Initialized(object sender, EventArgs e)
     {
-      LogHelper.RegisterGlobalLogListener();
-      LogHelper.RegisterWindowLogListener(this,this.txtConsole);
+      LoadSettings();
+      RegisterLogListeners();
       this.context.SetUpModules();
 
       this.DataContext = this.context;
@@ -61,8 +65,27 @@ namespace Chlaot
       this.context.InitModules();
     }
 
-    
+    private void RegisterLogListeners()
+    {
 
+      LogHelper.RegisterGlobalLogListener(this.appSettings.LogFileLogRules);
+      LogHelper.RegisterWindowLogListener(this.appSettings.WindowLogRules, this, this.txtConsole);
+    }
 
+    private const string APP_SETTINGS_FILE = "appConfig.xml";
+    private void LoadSettings()
+    {
+      this.appSettings = Settings.Load(APP_SETTINGS_FILE, out string? err);
+      if (err != null)
+      {
+        LogToConsole("Failed to load stored settings. Default ones will be used. Reason: " + err + "\n");
+      }
+    }
+
+    private void LogToConsole(string s)
+    {
+      txtConsole.AppendText(s);
+      txtConsole.ScrollToEnd();
+    }
   }
 }

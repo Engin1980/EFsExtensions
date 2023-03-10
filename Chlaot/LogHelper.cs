@@ -13,7 +13,7 @@ namespace Chlaot
   internal class LogHelper
   {
     private const string LOG_FILE_NAME = "log.txt";
-    internal static void RegisterGlobalLogListener()
+    internal static void RegisterGlobalLogListener(List<Settings.LogRule> logFileLogRules)
     {
       void process(LogItem item)
       {
@@ -32,15 +32,11 @@ namespace Chlaot
         }
       }
 
-      List<LogRule> rules = new()
-      {
-        new LogRule("StateCheckEvaluator",false,false,true,true),
-        new LogRule(".*", true,true,true,true)
-      };
+      List<LogRule> rules = logFileLogRules.Select(q => q.ToELogRule()).ToList();
       Logger.RegisterLogAction(process, rules);
     }
 
-    internal static void RegisterWindowLogListener(Window owner, TextBox txt)
+    internal static void RegisterWindowLogListener(List<Settings.LogRule> windowLogRules, Window owner, TextBox txt)
     {
       void txtOutWriter(LogItem li)
       {
@@ -56,14 +52,7 @@ namespace Chlaot
           txtOutWriter(li);
       }
 
-      List<LogRule> rules = new()
-      {
-        //new LogRule("Playing\\.AutoPlaybackManager",false,false,true,true),
-        new LogRule("Playing\\.Player",false,true,true,true),
-        new LogRule("SimConManager",false,true,true,true),
-        new LogRule("StateCheckEvaluator",false,false,true,true),
-        new LogRule(".*", false, true, true, true)
-      };
+      List<LogRule> rules = windowLogRules.Select(q => q.ToELogRule()).ToList();
 
       Logger.RegisterLogAction(q => dispatcherEnsurer(q), rules, owner);
     }
