@@ -23,16 +23,20 @@ namespace Chlaot
   public partial class FrmRun : Window
   {
     private readonly Context context;
+    private readonly Settings appSettings;
+
     public FrmRun()
     {
       InitializeComponent();
       this.context = null!;
+      this.appSettings = null!;
     }
 
-    public FrmRun(Context context) : this()
+    public FrmRun(Context context, Settings appSettings) : this()
     {
       this.context = context ?? throw new ArgumentNullException(nameof(context));
       this.DataContext = context;
+      this.appSettings = appSettings;
     }
 
     private void lstModules_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -44,7 +48,7 @@ namespace Chlaot
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-      LogHelper.RegisterWindowLogListener(this, this.txtConsole);
+      LogHelper.RegisterWindowLogListener(this.appSettings.WindowLogRules, this, this.txtConsole);
       this.context.RemoveUnreadyModules();
       this.DataContext = this.context;
       this.context.RunModules();

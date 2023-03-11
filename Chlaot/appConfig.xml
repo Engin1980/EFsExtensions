@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings>
+  <LogFileLogRules>
+    <Rule Regex=".+" Verbose="true" Info="true" Warning="true" Error="true" />
+  </LogFileLogRules>
+  <WindowLogRules>
+    <Rule Regex=".+" Verbose="false" Info="false" Warning="true" Error="true" />
+  </WindowLogRules>
+  <ModuleRules>
+    
+  </ModuleRules>
+</Settings>
