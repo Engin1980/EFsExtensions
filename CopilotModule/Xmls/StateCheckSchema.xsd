@@ -11,15 +11,22 @@
       <xsd:element name="or" type="stateCheckConditionInternal"/>
       <xsd:element name="property" type="stateCheckProperty"/>
       <xsd:element name="for" type="stateCheckDelay" />
+      <xsd:element name="true" type="stateCheckTrueFalse" />
+      <xsd:element name="false" type="stateCheckTrueFalse" />
     </xsd:choice>
   </xsd:complexType>
 
+  <xsd:complexType name="stateCheckTrueFalse">
+  </xsd:complexType>
+  
   <xsd:complexType name="stateCheckConditionInternal">
     <xsd:choice minOccurs="1" maxOccurs="unbounded">
       <xsd:element name="and" type="stateCheckConditionInternal"/>
       <xsd:element name="or" type="stateCheckConditionInternal"/>
       <xsd:element name="property" type="stateCheckProperty"/>
       <xsd:element name="for" type="stateCheckDelay" />
+      <xsd:element name="true" type="stateCheckTrueFalse" />
+      <xsd:element name="false" type="stateCheckTrueFalse" />
     </xsd:choice>
   </xsd:complexType>
 
@@ -28,6 +35,8 @@
       <xsd:element name="and" type="stateCheckConditionInternal"/>
       <xsd:element name="or" type="stateCheckConditionInternal"/>
       <xsd:element name="property" type="stateCheckProperty"/>
+      <xsd:element name="true" type="stateCheckTrueFalse" />
+      <xsd:element name="false" type="stateCheckTrueFalse" />
     </xsd:choice>
     <xsd:attribute name="seconds" type="xsd:nonNegativeInteger" use="required" />
   </xsd:complexType>

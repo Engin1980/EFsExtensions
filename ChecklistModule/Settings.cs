@@ -79,7 +79,7 @@ namespace ChecklistModule
       public KeyShortcut SkipToPrevious { get; set; } = new();
     }
 
-    
+
     private const string FILE_NAME = "checklist-module-settings.xml";
     public bool LogSimConnectToFile
     {
@@ -91,6 +91,13 @@ namespace ChecklistModule
     {
       get => base.GetProperty<bool>(nameof(ReadConfirmations))!;
       set => base.UpdateProperty(nameof(ReadConfirmations), value);
+    }
+
+
+    public bool EvalDebugEnabled
+    {
+      get => base.GetProperty<bool>(nameof(EvalDebugEnabled))!;
+      set => base.UpdateProperty(nameof(EvalDebugEnabled), value);
     }
 
     public KeyShortcuts Shortcuts { get; set; } = new()

@@ -217,6 +217,10 @@ namespace ChecklistModule
               $"Location: {string.Join(" ==> ", stck.Reverse().ToList().Select(q => q.DisplayString))}");
           }
         }
+        else if (sti is StateCheckTrueFalse sttf)
+        {
+          // intentionally blank
+        }
         else
           throw new ApplicationException($"Unsupported type of '{nameof(IStateCheckItem)}'.");
         stck.Pop();

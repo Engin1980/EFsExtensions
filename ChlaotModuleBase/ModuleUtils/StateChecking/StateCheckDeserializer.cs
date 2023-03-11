@@ -30,8 +30,16 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
         "property" => DeserializePropertyFromElement(element, targetType, context),
         "and" or "or" => DeserializeConditionFromElement(element, targetType, context),
         "for" => DeserializeDelayfromElement(element, context),
+        "true" or "false" => DeserializeTrueFalseFromElement(element),
         _ => throw new NotSupportedException($"Unknown element name '{elementName}'."),
       };
+      return ret;
+    }
+
+    private StateCheckTrueFalse DeserializeTrueFalseFromElement(XElement element)
+    {
+      bool value = element.Name.LocalName == "true";
+      StateCheckTrueFalse ret = new StateCheckTrueFalse(value);
       return ret;
     }
 

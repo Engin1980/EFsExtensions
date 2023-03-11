@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows;
 
-namespace CopilotModule.Converters
+namespace Eng.Chlaot.Modules.CopilotModule.Converters
 {
   public class Int2VisibilityConverter : IValueConverter
   {

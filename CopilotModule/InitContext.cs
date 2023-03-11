@@ -121,12 +121,17 @@ namespace Eng.Chlaot.Modules.CopilotModule
             throw new ApplicationException($"Expression of checked property {stp.DisplayName} not set." +
               $"Location: {string.Join(" ==> ", stck.Reverse().ToList().Select(q => q.DisplayString))}");
         }
+        else if (sti is StateCheckTrueFalse sttf)
+        {
+          // intentionally blank
+        }
         else
           throw new ApplicationException($"Unsupported type of '{nameof(IStateCheckItem)}'.");
         stck.Pop();
       }
 
       tmp.SpeechDefinitions.ForEach(q => checkStateCheckItem(q.When));
+      tmp.SpeechDefinitions.ForEach(q => checkStateCheckItem(q.ReactivateWhen));
     }
 
     private void UpdateReadyFlag()
@@ -193,6 +198,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
       Stack<IStateCheckItem> stack = new();
 
       stack.Push(sd.When);
+      stack.Push(sd.ReactivateWhen);
       while (stack.Count > 0)
       {
         IStateCheckItem sci = stack.Pop();

@@ -15,7 +15,7 @@ namespace CopilotModule
 {
   public class Settings : NotifyPropertyChangedBase
   {
-    
+
     private const string FILE_NAME = "copilot-module-settings.xml";
     public bool LogSimConnectToFile
     {
@@ -27,6 +27,12 @@ namespace CopilotModule
     {
       get => base.GetProperty<bool>(nameof(ReadConfirmations))!;
       set => base.UpdateProperty(nameof(ReadConfirmations), value);
+    }
+
+    public bool EvalDebugEnabled
+    {
+      get => base.GetProperty<bool>(nameof(EvalDebugEnabled))!;
+      set => base.UpdateProperty(nameof(EvalDebugEnabled), value);
     }
 
     public SynthetizerSettings Synthetizer { get; set; } = new();

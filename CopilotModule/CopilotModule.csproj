@@ -22,7 +22,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Update="Xmls\ifrCommon.copilot.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

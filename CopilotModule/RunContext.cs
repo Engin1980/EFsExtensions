@@ -13,11 +13,12 @@ using System.ComponentModel;
 using System.Linq;
 using System.Security.Policy;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
-  public class RunContext
+  public class RunContext : NotifyPropertyChangedBase
   {
     private const int INITIAL_CONNECTION_TIMER_INTERVAL = 1500;
     private const int REPEATED_CONNECTION_TIMER_INTERVAL = 10500;
@@ -38,18 +39,28 @@ namespace Eng.Chlaot.Modules.CopilotModule
         set => base.UpdateProperty(nameof(IsActive), value);
       }
 
-      public DateTime? ReactivationDateTime
+      public List<StateCheckEvaluator.HistoryRecord>? WhenEvaluationHistory
       {
-        get => base.GetProperty<DateTime?>(nameof(ReactivationDateTime))!;
-        set
-        {
-          base.UpdateProperty(nameof(ReactivationDateTime), value);
-          this.IsActive = value == null;
-        }
+        get => base.GetProperty<List<StateCheckEvaluator.HistoryRecord>?>(nameof(WhenEvaluationHistory))!;
+        set => base.UpdateProperty(nameof(WhenEvaluationHistory), value);
+      }
+
+      public List<StateCheckEvaluator.HistoryRecord>? ReactivationEvaluationHistory
+      {
+        get => base.GetProperty<List<StateCheckEvaluator.HistoryRecord>?>(nameof(ReactivationEvaluationHistory))!;
+        set => base.UpdateProperty(nameof(ReactivationEvaluationHistory), value);
       }
     }
+
     public CopilotSet Set { get; private set; }
     public SimData SimData => this.simConManager.SimData;
+
+    public SpeechDefinitionInfo? DebugEvalHistorySource
+    {
+      get => base.GetProperty<SpeechDefinitionInfo?>(nameof(DebugEvalHistorySource))!;
+      set => base.UpdateProperty(nameof(DebugEvalHistorySource), value);
+    }
+
     public BindingList<SpeechDefinitionInfo> Infos { get; set; } = new();
     private readonly StateCheckEvaluator evaluator;
     private readonly Settings settings;
@@ -65,23 +76,40 @@ namespace Eng.Chlaot.Modules.CopilotModule
 #if USE_MOCK
       this.simConManager = SimConManagerMock.CreateTakeOff();
 #else
-      this.simConManager = new SimConManager();
+      //this.simConManager = new SimConManager();
+      this.simConManager = SimConManagerMock.CreateTakeOff();
 #endif
       this.evaluator = new(this.simConManager.SimData);
 
       this.Set.SpeechDefinitions.ForEach(q => Infos.Add(new SpeechDefinitionInfo(q)));
     }
 
+    private readonly object evaluatingLock = new object();
     private void SimConManager_SimSecondElapsed()
-    {      
+    {
       if (this.simConManager.SimData.IsSimPaused) return;
       this.logHandler.Invoke(LogLevel.VERBOSE, "SimSecondElapsed (non-paused)");
 
+      if (Monitor.TryEnter(evaluatingLock) == false)
+      {
+        this.logHandler.Invoke(LogLevel.WARNING, "SimSecondElapsed took longer than sim-second! Performance issue?");
+        return;
+      }
+
       EvaluateForSpeeches();
+
+      Monitor.Exit(evaluatingLock);
     }
 
     private void EvaluateForSpeeches()
     {
+      if (this.settings.EvalDebugEnabled)
+        this.Infos.ToList().ForEach(q =>
+        {
+          q.WhenEvaluationHistory = null;
+          q.ReactivationEvaluationHistory = null;
+        });
+
       var readys = this.Infos.Where(q => q.IsActive);
       this.logHandler.Invoke(LogLevel.VERBOSE, $"Evaluating {readys.Count()} readys");
       EvaluateActives(readys);
@@ -94,29 +122,54 @@ namespace Eng.Chlaot.Modules.CopilotModule
     private void EvaluateActives(IEnumerable<SpeechDefinitionInfo> readys)
     {
       // play one one at once
-      SpeechDefinitionInfo? active = readys
-        .FirstOrDefault(q => this.evaluator.Evaluate(q.SpeechDefinition.When));
-      if (active != null)
+      SpeechDefinitionInfo? activated = readys
+        .FirstOrDefault(q =>
+        {
+          List<StateCheckEvaluator.HistoryRecord>? history = this.settings.EvalDebugEnabled
+            ? new List<StateCheckEvaluator.HistoryRecord>()
+            : null;
+
+          var ret = this.evaluator.Evaluate(q.SpeechDefinition.When, history);
+          q.WhenEvaluationHistory = history;
+
+          return ret;
+        });
+
+      if (activated != null)
       {
-        Player player = new(active.SpeechDefinition.Speech.Bytes);
+        Player player = new(activated.SpeechDefinition.Speech.Bytes);
         player.PlayAsync();
 
-        var rai = active.SpeechDefinition.ReactivateIn;
-        active.ReactivationDateTime = rai == null || rai.Value < 0
-            ? DateTime.Now.AddDays(365)
-            : DateTime.Now.AddSeconds(active.SpeechDefinition.ReactivateIn!.Value);
+        activated.IsActive = false;
         this.logHandler.Invoke(LogLevel.VERBOSE,
-          $"Activated speech {active.SpeechDefinition.Title}, reactivation at {active.ReactivationDateTime}");
+          $"Activated speech {activated.SpeechDefinition.Title}");
       }
+    }
+
+    private List<StateCheckEvaluator.HistoryRecord>? GetHistoryListIfRequired()
+    {
+      List<StateCheckEvaluator.HistoryRecord>? ret = this.settings.EvalDebugEnabled
+            ? new List<StateCheckEvaluator.HistoryRecord>()
+            : null;
+      return ret;
     }
 
     private void EvaluateInactives(IEnumerable<SpeechDefinitionInfo> waits)
     {
-      DateTime now = DateTime.Now;
       waits
-        .Where(q => q.ReactivationDateTime < now)
-        .ToList()
-        .ForEach(q => q.ReactivationDateTime = null);
+        .Where(q =>
+        {
+          var h = GetHistoryListIfRequired();
+          var ret = this.evaluator.Evaluate(q.SpeechDefinition.ReactivateWhen, h);
+          q.ReactivationEvaluationHistory = h;
+          return ret;
+        })
+        .ForEach(q =>
+        {
+          q.IsActive = true;
+          this.logHandler.Invoke(LogLevel.VERBOSE,
+          $"Reactivated speech {q.SpeechDefinition.Title}");
+        });
     }
 
     private void Log(LogLevel level, string message)

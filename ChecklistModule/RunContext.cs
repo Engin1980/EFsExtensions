@@ -16,6 +16,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Printing;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,6 +34,7 @@ namespace ChecklistModule
       private readonly RunContext parent;
       private bool autoplaySuppressed = false;
       private CheckList? prevList = null;
+
 
       public SimData SimData => this.parent.simConManager.SimData;
 

@@ -10,7 +10,21 @@
     <metaData:author>Marek Vajgl</metaData:author>
     <metaData:description>(none)</metaData:description>
   </metaInfo>
-  <speechDefinition title="Deceleration announcement (80)kts" reactivateIn="10">
+  <speechDefinition title="Positive rate">
+    <speech type="speech" value="Positive rate" />
+    <when>
+      <and>
+        <cs:property name="height" direction="above" expression="0" />
+        <cs:property name="verticalSpeed" direction="above" expression="100" />
+      </and>
+    </when>
+    <reactivateWhen>
+      <cs:for seconds="10">
+        <cs:property name="height" direction="below" expression="1" />
+      </cs:for>
+    </reactivateWhen>
+  </speechDefinition>
+  <speechDefinition title="Deceleration announcement (80)kts" >
     <speech type="speech" value="{speed} knots" />
     <when>
       <and>
@@ -19,9 +33,14 @@
         <cs:property name="acceleration" direction="below" expression="0" />
       </and>
     </when>
+    <reactivateWhen>
+      <cs:for seconds="10">
+        <cs:true />
+      </cs:for>
+    </reactivateWhen>
     <variable name="speed" defaultValue="80" info="Speed in kts" />
   </speechDefinition>
-  <speechDefinition title="Deceleration announcement (60)kts" reactivateIn="10">
+  <speechDefinition title="Deceleration announcement (60)kts">
     <speech type="speech" value="{speed} knots" />
     <when>
       <and>
@@ -30,20 +49,14 @@
         <cs:property name="acceleration" direction="below" expression="0" />
       </and>
     </when>
+    <reactivateWhen>
+      <cs:for seconds="10">
+        <cs:true />
+      </cs:for>
+    </reactivateWhen>
     <variable name="speed" defaultValue="60" info="Speed in kts" />
-  </speechDefinition>
-  <speechDefinition title="Positive rate" reactivateIn="-1">
-    <speech type="speech" value="Positive rate" />
-    <when>
-      <cs:and>
-        <cs:for seconds="3">
-          <cs:property name="verticalSpeed" direction="above" expression="0" />
-        </cs:for>
-        <cs:property name="height" direction="above" expression="50" />
-      </cs:and>
-    </when>
-  </speechDefinition>
-  <speechDefinition title="Transition Altitude" reactivateIn="10">
+  </speechDefinition>  
+  <speechDefinition title="Transition Altitude">
     <speech type="speech" value="Transition altitude" />
     <when>
       <cs:and>
@@ -51,9 +64,14 @@
         <cs:property name="altitude" direction="passing" expression="{transition_altitude}" randomize="+-3" />
       </cs:and>
     </when>
+    <reactivateWhen>
+      <cs:for seconds="10">
+        <cs:true />
+      </cs:for>
+    </reactivateWhen>
     <variable name="transition_altitude" defaultValue="5000" info="Transition altitude" />
   </speechDefinition>
-  <speechDefinition title="Transition Level" reactivateIn="10">
+  <speechDefinition title="Transition Level">
     <speech type="speech" value="Transition level" />
     <when>
       <cs:and>
@@ -61,17 +79,30 @@
         <cs:property name="altitude" direction="passing" expression="{transition_level}" randomize="+-3" />
       </cs:and>
     </when>
+    <reactivateWhen>
+      <cs:for seconds="10">
+        <cs:true />
+      </cs:for>
+    </reactivateWhen>
     <variable name="transition_level" defaultValue="5000" info="Transition level" />
   </speechDefinition>
-  <speechDefinition title="FL100 pass" reactivateIn="30">
+  <speechDefinition title="FL100 pass">
     <speech type="speech" value="Passing ten thousand feet" />
     <when>
       <cs:and>
         <cs:property name="altitude" direction="passing" expression="10000" randomize="+-10" />
       </cs:and>
     </when>
+    <reactivateWhen>
+      <cs:for seconds="30">
+        <or>
+          <cs:property name="verticalSpeed" direction="above" expression="500" />
+          <cs:property name="verticalSpeed" direction="below" expression="-500" />
+        </or>
+      </cs:for>
+    </reactivateWhen>
   </speechDefinition>
-  <speechDefinition title="v1" reactivateIn="10">
+  <speechDefinition title="v1">
     <speech type="speech" value="V One" />
     <when>
       <and>
@@ -79,8 +110,13 @@
         <cs:property name="acceleration" direction="above" expression="1" />
       </and>
     </when>
+    <reactivateWhen>
+      <cs:for seconds="10">
+        <cs:true />
+      </cs:for>
+    </reactivateWhen>
   </speechDefinition>
-  <speechDefinition title="v1" reactivateIn="10">
+  <speechDefinition title="vr">
     <speech type="speech" value="V Rotate" />
     <when>
       <and>
@@ -88,8 +124,13 @@
         <cs:property name="acceleration" direction="above" expression="1" />
       </and>
     </when>
+    <reactivateWhen>
+      <cs:for seconds="10">
+        <cs:true />
+      </cs:for>
+    </reactivateWhen>
   </speechDefinition>
-  <speechDefinition title="v2" reactivateIn="10">
+  <speechDefinition title="v2">
     <speech type="speech" value="V Two" />
     <when>
       <and>
@@ -97,5 +138,10 @@
         <cs:property name="acceleration" direction="above" expression="1" />
       </and>
     </when>
+    <reactivateWhen>
+      <cs:for seconds="10">
+        <cs:true />
+      </cs:for>
+    </reactivateWhen>
   </speechDefinition>
 </copilotSet>

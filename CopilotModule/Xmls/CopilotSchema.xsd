@@ -30,10 +30,10 @@
     <xsd:sequence>
       <xsd:element name="speech" minOccurs="1" maxOccurs="unbounded" type="speech:speech"/>
       <xsd:element name="when" minOccurs="1" maxOccurs="1" type="stateChecking:stateCheckConditionTop" />
+      <xsd:element name="reactivateWhen" minOccurs="1" maxOccurs="1" type="stateChecking:stateCheckConditionTop" />
       <xsd:element name="variable" minOccurs="0" maxOccurs="unbounded" type="variableInfo" />
     </xsd:sequence>
     <xsd:attribute name="title" type="nonemptyString" use="required"/>
-    <xsd:attribute name="reactivateIn" type="xsd:integer" use="optional"/>
   </xsd:complexType>
 
   <xsd:complexType name="variableInfo">

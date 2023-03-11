@@ -4,8 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Eng.Chlaot.Modules.CopilotModule"
+             xmlns:converters="clr-namespace:Eng.Chlaot.Modules.CopilotModule.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+  <UserControl.Resources>
+    <converters:Int2VisibilityConverter x:Key="Int2VisibilityConverter" />
+  </UserControl.Resources>
   <DockPanel DataContext="{Binding}">
     <TabControl>
       <TabItem Header="Speeches">
@@ -130,6 +134,52 @@
           <Label Grid.Row="10" Grid.Column="0" Content="Tug connected" />
           <Label Grid.Row="10" Grid.Column="1" Content="{Binding PushbackTugConnected}" />
         </Grid>
+      </TabItem>
+      <TabItem Header="Debug">
+        <DockPanel>
+          <ComboBox x:Name="cmbDebugSpeechDefinition" DockPanel.Dock="Top" 
+                    SelectedValue="{Binding DebugEvalHistorySource}"
+                    ItemsSource="{Binding Infos}" 
+                    DisplayMemberPath="SpeechDefinition.Title" />
+          <StackPanel>
+            <StackPanel Orientation="Horizontal">
+              <Label Content="Is active?" />
+              <CheckBox IsChecked="{Binding DebugEvalHistorySource.IsActive,Mode=OneWay}" Margin="0 8 0 0" />
+            </StackPanel>
+            <GroupBox Header="When">
+              <ItemsControl ItemsSource="{Binding DebugEvalHistorySource.WhenEvaluationHistory}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <StackPanel>
+                      <StackPanel Orientation="Horizontal">
+                        <Label Content="{Binding Item.DisplayString}" />
+                        <Label Content=" = " />
+                        <Label Content="{Binding Result}" />
+                      </StackPanel>
+                      <TextBlock Margin="32 0 0 0" FontSize="12" Text="{Binding Message}" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </GroupBox>
+            <GroupBox Header="Reactivate">
+              <ItemsControl ItemsSource="{Binding DebugEvalHistorySource.ReactivationEvaluationHistory}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <StackPanel>
+                      <StackPanel Orientation="Horizontal">
+                        <Label Content="{Binding Item.DisplayString}" />
+                        <Label Content=" = " />
+                        <Label Content="{Binding Result}" />
+                      </StackPanel>
+                      <TextBlock Margin="32 0 0 0" FontSize="12" Text="{Binding Message}" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </GroupBox>
+          </StackPanel>
+        </DockPanel>
       </TabItem>
     </TabControl>
   </DockPanel>

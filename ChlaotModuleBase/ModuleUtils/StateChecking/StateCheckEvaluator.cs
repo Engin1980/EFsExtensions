@@ -17,6 +17,20 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
 {
   public class StateCheckEvaluator : LogIdAble
   {
+    public class HistoryRecord
+    {
+      public HistoryRecord(IStateCheckItem item, bool result, string message)
+      {
+        Item = item ?? throw new ArgumentNullException(nameof(item));
+        Result = result;
+        Message = message ?? throw new ArgumentNullException(nameof(message));
+      }
+
+      public IStateCheckItem Item { get; set; }
+      public bool Result { get; set; }
+      public string Message { get; set; }
+    }
+
     private enum EPassingState
     {
       Above,
@@ -27,6 +41,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
     private readonly Dictionary<StateCheckProperty, EPassingState> passingPropertiesStates = new();
     private readonly IPlaneData planeData;
     private readonly NewLogHandler logHandler;
+    private List<HistoryRecord>? evaluationHistoryContext;
 
     public StateCheckEvaluator(IPlaneData planeData)
     {
@@ -43,24 +58,53 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
       return ret;
     }
 
-    public bool Evaluate(IStateCheckItem autostart)
+    public bool Evaluate(IStateCheckItem item)
     {
-      logHandler.Invoke(LogLevel.INFO, $"Top-Level evaluation of {autostart.DisplayString} started 2.");
-      if (autostart == null) throw new ArgumentNullException(nameof(autostart));
-      var ret = autostart switch
+      return this.Evaluate(item, null);
+    }
+
+    public bool Evaluate(IStateCheckItem item, List<HistoryRecord>? evaluationHistory)
+    {
+      logHandler.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} started.");
+      if (item == null) throw new ArgumentNullException(nameof(item));
+      bool ret;
+      lock (this)
       {
-        StateCheckCondition condition => EvaluateCondition(condition),
-        StateCheckDelay delay => EvaluateDelay(delay),
-        StateCheckProperty property => EvaluateProperty(property),
-        _ => throw new NotImplementedException(),
-      };
-      logHandler.Invoke(LogLevel.INFO, $"Top-Level evaluation of {autostart.DisplayString} resulted in {ret}.");
+        this.evaluationHistoryContext = evaluationHistory;
+        ret = EvaluateItem(item);
+        this.evaluationHistoryContext = null;
+      }
+      logHandler.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} resulted in {ret}.");
       return ret;
     }
 
-    private bool EvaluateCondition(StateCheckCondition condition)
+    private bool EvaluateItem(IStateCheckItem item)
     {
-      List<bool> subs = condition.Items.Select(q => Evaluate(q)).ToList();
+      string msg;
+      bool ret = item switch
+      {
+        StateCheckCondition condition => EvaluateCondition(condition, out msg),
+        StateCheckDelay delay => EvaluateDelay(delay, out msg),
+        StateCheckProperty property => EvaluateProperty(property, out msg),
+        StateCheckTrueFalse trueFalse => EvalauteTrueFalse(trueFalse, out msg),
+        _ => throw new NotImplementedException(),
+      }; ;
+      if (evaluationHistoryContext != null)
+        evaluationHistoryContext.Add(new HistoryRecord(item, ret, msg));
+      return ret;
+    }
+
+    private bool EvalauteTrueFalse(StateCheckTrueFalse trueFalse, out string message)
+    {
+      bool ret = trueFalse.Value;
+      message = $"{trueFalse.Value}";
+      Log(trueFalse, "T/F", message, ret);
+      return ret;
+    }
+
+    private bool EvaluateCondition(StateCheckCondition condition, out string message)
+    {
+      List<bool> subs = condition.Items.Select(q => EvaluateItem(q)).ToList();
       var ret = condition.Operator switch
       {
         StateCheckConditionOperator.Or => subs.Any(q => q),
@@ -68,14 +112,15 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
         _ => throw new NotImplementedException(),
       };
 
+      message = $"{condition.Operator} ({string.Join(",", subs)})";
       Log(condition, $"op (a, b, ..)", $"{condition.Operator} ({string.Join(",", subs)})", ret);
       return ret;
     }
 
-    private bool EvaluateDelay(StateCheckDelay delay)
+    private bool EvaluateDelay(StateCheckDelay delay, out string message)
     {
       bool ret;
-      bool tmp = Evaluate(delay.Item);
+      bool tmp = EvaluateItem(delay.Item);
       if (tmp)
       {
         if (historyCounter.ContainsKey(delay))
@@ -87,11 +132,13 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
         historyCounter[delay] = 0;
 
       ret = historyCounter[delay] >= delay.Seconds;
-      Log(delay, $"current / target /= inner", $"{historyCounter[delay]} / {delay.Seconds} /= {tmp}", ret);
+
+      message = $"{historyCounter[delay]} / {delay.Seconds} /= {tmp}";
+      Log(delay, $"current / target /= inner", message, ret);
       return ret;
     }
 
-    private bool EvaluateProperty(StateCheckProperty property)
+    private bool EvaluateProperty(StateCheckProperty property, out string message)
     {
       double expected = property.RandomizedValue;
       double actual = property.Name switch
@@ -109,21 +156,25 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
         _ => throw new NotImplementedException()
       };
 
+      string expr;
       bool ret;
       switch (property.Direction)
       {
         case StateCheckPropertyDirection.Above:
           ret = actual > expected;
-          Log(property, "actual > expected", $"{actual} > {expected}", ret);
+          expr = "actual < expected";
+          message = $"{actual} < {expected}";
           break;
         case StateCheckPropertyDirection.Below:
           ret = actual < expected;
-          Log(property, "actual < expected", $"{actual} < {expected}", ret);
+          expr = "actual < expected";
+          message = $"{actual} < {expected}";
           break;
         case StateCheckPropertyDirection.Exactly:
           double epsilon = property.SensitivityEpsilon;
           ret = Math.Abs(actual - expected) < epsilon;
-          Log(property, "Math.Abs(actual - expected) < epsilon", $"Math.Abs({actual} - {expected}) < {epsilon}", ret);
+          expr = "Math.Abs(actual - expected) < epsilon";
+          message = $"Math.Abs({actual} - {expected}) < {epsilon}";
           break;
         case StateCheckPropertyDirection.Passing:
           EPassingState nowState = actual > expected ? EPassingState.Above : EPassingState.Below;
@@ -131,7 +182,8 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
           {
             ret = false;
             passingPropertiesStates[property] = nowState;
-            Log(property, "//new// actual (vs) expected", $"//new// {actual} {nowState} {expected}", ret);
+            expr = "//new// actual (vs) expected";
+            message = $"//new// {actual} {nowState} {expected}";
           }
           else
           {
@@ -143,12 +195,15 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
               passingPropertiesStates[property] = nowState;
               ret = true;
             }
-            Log(property, "//bef:// actual (vs) expected", $"//{befState}// {actual} {nowState} {expected}", ret);
+            expr = "//bef:// actual (vs) expected";
+            message = $"//{befState}// {actual} {nowState} {expected}";
           }
           break;
         default:
           throw new NotImplementedException($"Unknown property direction '{property.Direction}'.");
       }
+
+      Log(property, expr, message, ret);
       return ret;
     }
 
