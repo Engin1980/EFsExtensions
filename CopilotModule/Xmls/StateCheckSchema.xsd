@@ -62,6 +62,8 @@
       <xsd:enumeration value="below"/>
       <xsd:enumeration value="exactly"/>
       <xsd:enumeration value="passing"/>
+      <xsd:enumeration value="passingAbove"/>
+      <xsd:enumeration value="passingBelow"/>
     </xsd:restriction>
   </xsd:simpleType>
 

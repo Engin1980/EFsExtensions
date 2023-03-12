@@ -88,17 +88,17 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
         StateCheckProperty property => EvaluateProperty(property, out msg),
         StateCheckTrueFalse trueFalse => EvalauteTrueFalse(trueFalse, out msg),
         _ => throw new NotImplementedException(),
-      }; ;
-      if (evaluationHistoryContext != null)
-        evaluationHistoryContext.Add(new HistoryRecord(item, ret, msg));
+      };
+
+      Log(item, msg, ret);
+      evaluationHistoryContext?.Add(new HistoryRecord(item, ret, msg));
       return ret;
     }
 
     private bool EvalauteTrueFalse(StateCheckTrueFalse trueFalse, out string message)
     {
       bool ret = trueFalse.Value;
-      message = $"{trueFalse.Value}";
-      Log(trueFalse, "T/F", message, ret);
+      message = $"T/F => {trueFalse.Value}";
       return ret;
     }
 
@@ -112,8 +112,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
         _ => throw new NotImplementedException(),
       };
 
-      message = $"{condition.Operator} ({string.Join(",", subs)})";
-      Log(condition, $"op (a, b, ..)", $"{condition.Operator} ({string.Join(",", subs)})", ret);
+      message = $"op(a,b,..) => {condition.Operator} ({string.Join(",", subs)})";
       return ret;
     }
 
@@ -133,8 +132,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
 
       ret = historyCounter[delay] >= delay.Seconds;
 
-      message = $"{historyCounter[delay]} / {delay.Seconds} /= {tmp}";
-      Log(delay, $"current / target /= inner", message, ret);
+      message = $"curr_sec/trg_sec/inner => {historyCounter[delay]} / {delay.Seconds} /= {tmp}";
       return ret;
     }
 
@@ -156,60 +154,62 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
         _ => throw new NotImplementedException()
       };
 
-      string expr;
       bool ret;
       switch (property.Direction)
       {
         case StateCheckPropertyDirection.Above:
           ret = actual > expected;
-          expr = "actual < expected";
-          message = $"{actual} < {expected}";
+          message = $"act > exp => {actual:N2} > {expected:N2}";
           break;
         case StateCheckPropertyDirection.Below:
           ret = actual < expected;
-          expr = "actual < expected";
-          message = $"{actual} < {expected}";
+          message = $"act < exp => {actual:N2} < {expected:N2}";
           break;
         case StateCheckPropertyDirection.Exactly:
           double epsilon = property.SensitivityEpsilon;
           ret = Math.Abs(actual - expected) < epsilon;
-          expr = "Math.Abs(actual - expected) < epsilon";
-          message = $"Math.Abs({actual} - {expected}) < {epsilon}";
+          message = $"abs(act-exp)<eps => Math.Abs({actual:N2} - {expected:N2}) < {epsilon:N2}";
           break;
         case StateCheckPropertyDirection.Passing:
+        case StateCheckPropertyDirection.PassingDown:
+        case StateCheckPropertyDirection.PassingUp:
           EPassingState nowState = actual > expected ? EPassingState.Above : EPassingState.Below;
           if (passingPropertiesStates.ContainsKey(property) == false)
           {
             ret = false;
             passingPropertiesStates[property] = nowState;
-            expr = "//new// actual (vs) expected";
-            message = $"//new// {actual} {nowState} {expected}";
+            message = $"mode={property.Direction} // state=new // act state exp => {actual:N2} {nowState} {expected:N2}";
           }
           else
           {
             EPassingState befState = passingPropertiesStates[property];
-            if (nowState == befState)
-              ret = false;
+            if (property.Direction == StateCheckPropertyDirection.PassingDown)
+            {
+              ret = nowState == EPassingState.Below && befState == EPassingState.Above;
+            }
+            else if (property.Direction == StateCheckPropertyDirection.PassingUp)
+            {
+              ret = nowState == EPassingState.Above && befState == EPassingState.Below;
+            }
             else
             {
-              passingPropertiesStates[property] = nowState;
-              ret = true;
+              ret = nowState != befState; // direction is just "passing", unequality means change
             }
-            expr = "//bef:// actual (vs) expected";
-            message = $"//{befState}// {actual} {nowState} {expected}";
+            passingPropertiesStates[property] = nowState;
+
+            message = $"mode={property.Direction} // state={befState} // act state exp => {actual:N2} {nowState} {expected:N2}";
           }
           break;
         default:
           throw new NotImplementedException($"Unknown property direction '{property.Direction}'.");
       }
 
-      Log(property, expr, message, ret);
       return ret;
     }
 
-    private void Log(IStateCheckItem property, string expl, string data, bool ret)
+    private void Log(IStateCheckItem property, string msg, bool ret)
     {
-      this.logHandler.Invoke(LogLevel.INFO, $"EVAL {property.DisplayString} \t {expl} \t {data} \t {ret}");
+      this.logHandler.Invoke(LogLevel.INFO, $"EVAL {property.DisplayString} \t {msg} \t {ret}");
     }
 
     public void Reset()

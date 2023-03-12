@@ -5,11 +5,12 @@
   xmlns:metaData="http://tempuri.org/metaData.xsd"
   xmlns:cs="http://tempuri.org/stateCheck.xsd"
   xsi:noNamespaceSchemaLocation="CopilotSchema.xsd">
-  <metaInfo>
+  <metaData:metaInfo>
     <metaData:label>Common IFS copilot callouts</metaData:label>
     <metaData:author>Marek Vajgl</metaData:author>
     <metaData:description>(none)</metaData:description>
-  </metaInfo>
+    <metaData:version>1.1</metaData:version>
+  </metaData:metaInfo>
   <speechDefinition title="Positive rate">
     <speech type="speech" value="Positive rate" />
     <when>
@@ -28,14 +29,14 @@
     <speech type="speech" value="{speed} knots" />
     <when>
       <and>
-        <cs:property name="ias" direction="exactly" expression="{speed}" randomize="+-5" />
+        <cs:property name="ias" direction="passingDown" expression="{speed}" />
         <cs:property name="height" direction="below" expression="5" />
         <cs:property name="acceleration" direction="below" expression="0" />
       </and>
     </when>
     <reactivateWhen>
       <cs:for seconds="10">
-        <cs:true />
+        <cs:property name="ias" direction="above" expression="{speed}" />
       </cs:for>
     </reactivateWhen>
     <variable name="speed" defaultValue="80" info="Speed in kts" />
@@ -44,24 +45,24 @@
     <speech type="speech" value="{speed} knots" />
     <when>
       <and>
-        <cs:property name="ias" direction="exactly" expression="{speed}" randomize="+-5" sensitivity="+-10%" />
+        <cs:property name="ias" direction="passingDown" expression="{speed}" />
         <cs:property name="height" direction="below" expression="5" />
         <cs:property name="acceleration" direction="below" expression="0" />
       </and>
     </when>
     <reactivateWhen>
       <cs:for seconds="10">
-        <cs:true />
+        <cs:property name="ias" direction="above" expression="{speed}" />
       </cs:for>
     </reactivateWhen>
     <variable name="speed" defaultValue="60" info="Speed in kts" />
-  </speechDefinition>  
+  </speechDefinition>
   <speechDefinition title="Transition Altitude">
     <speech type="speech" value="Transition altitude" />
     <when>
       <cs:and>
         <cs:property name="verticalSpeed" direction="above" expression="300" />
-        <cs:property name="altitude" direction="passing" expression="{transition_altitude}" randomize="+-3" />
+        <cs:property name="altitude" direction="passing" expression="{transition_altitude}" randomize="+-300" />
       </cs:and>
     </when>
     <reactivateWhen>
@@ -76,7 +77,7 @@
     <when>
       <cs:and>
         <cs:property name="verticalSpeed" direction="below" expression="-300" />
-        <cs:property name="altitude" direction="passing" expression="{transition_level}" randomize="+-3" />
+        <cs:property name="altitude" direction="passing" expression="{transition_level}" randomize="+-300" />
       </cs:and>
     </when>
     <reactivateWhen>
@@ -90,7 +91,7 @@
     <speech type="speech" value="Passing ten thousand feet" />
     <when>
       <cs:and>
-        <cs:property name="altitude" direction="passing" expression="10000" randomize="+-10" />
+        <cs:property name="altitude" direction="passing" expression="10000" randomize="+-300" />
       </cs:and>
     </when>
     <reactivateWhen>
@@ -111,9 +112,7 @@
       </and>
     </when>
     <reactivateWhen>
-      <cs:for seconds="10">
-        <cs:true />
-      </cs:for>
+      <cs:property name="ias" direction="below" expression="10" />
     </reactivateWhen>
   </speechDefinition>
   <speechDefinition title="vr">
@@ -125,9 +124,7 @@
       </and>
     </when>
     <reactivateWhen>
-      <cs:for seconds="10">
-        <cs:true />
-      </cs:for>
+      <cs:property name="ias" direction="below" expression="10" />
     </reactivateWhen>
   </speechDefinition>
   <speechDefinition title="v2">
@@ -139,9 +136,7 @@
       </and>
     </when>
     <reactivateWhen>
-      <cs:for seconds="10">
-        <cs:true />
-      </cs:for>
+      <cs:property name="ias" direction="below" expression="10" />
     </reactivateWhen>
   </speechDefinition>
 </copilotSet>

@@ -17,7 +17,9 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
     Above,
     Below,
     Exactly,
-    Passing
+    Passing,
+    PassingDown,
+    PassingUp
   }
 
   public enum StateCheckPropertyName

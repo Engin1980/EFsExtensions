@@ -110,7 +110,7 @@ namespace ChlaotModuleBase.ModuleUtils.StateChecking
 
       string pm = match.Groups[1].Value;
       double val = double.Parse(match.Groups[2].Value);
-      bool isProc = match.Groups[3].Success;
+      bool isProc = match.Groups[3].Value.Length > 0;
 
       double lower = pm.Contains('-') ? -val : 0;
       double upper = pm.Contains('+') ? +val : 0;

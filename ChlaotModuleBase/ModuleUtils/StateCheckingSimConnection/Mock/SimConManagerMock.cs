@@ -20,22 +20,23 @@ namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection.Mock
     private Timer? timer = null;
     public static SimConManagerMock CreateTakeOff()
     {
-      SimConManagerMock mck = new();
-      mck.SimData = new SimData()
+      SimConManagerMock mck = new()
       {
-        Acceleration = 0,
-        BankAngle = 0,
-        Altitude = 500,
-        Callsign = "TEST 001",
-        GroundSpeed = 0,
-        EngineCombustion = new bool[] { true, true, false, false },
-        Height = 0,
-        IndicatedSpeed = 0,
-        IsSimPaused = true,
-        IsTugConnected = false,
-        ParkingBrakeSet = true,
-        PushbackTugConnected = false,
-        VerticalSpeed = 0
+        SimData = new SimData()
+        {
+          Acceleration = 0,
+          BankAngle = 0,
+          Altitude = 500,
+          Callsign = "TEST 001",
+          GroundSpeed = 0,
+          EngineCombustion = new bool[] { true, true, false, false },
+          Height = 0,
+          IndicatedSpeed = 0,
+          IsSimPaused = true,
+          ParkingBrakeSet = true,
+          PushbackTugConnected = false,
+          VerticalSpeed = 0
+        }
       };
 
       for (int i = 0; i < 3; i++)
@@ -66,8 +67,8 @@ namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection.Mock
         int tmp = i * 16;
         mck.actions.Add(() =>
         {
-          mck.SimData.Altitude = tmp;
-          mck.SimData.Height = tmp + 500;
+          mck.SimData.Altitude = tmp + 500;
+          mck.SimData.Height = tmp;
         });
       }
 
@@ -77,11 +78,67 @@ namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection.Mock
         int tmp = i * 200;
         mck.actions.Add(() =>
         {
-          mck.SimData.Altitude = tmp;
-          mck.SimData.Height = tmp + 500;
+          mck.SimData.Altitude = tmp + 500;
+          mck.SimData.Height = tmp;
         });
       }
       mck.actions.Add(() => mck.SimData.VerticalSpeed = 0);
+
+      return mck;
+    }
+
+    public static SimConManagerMock CreateLanding()
+    {
+      SimConManagerMock mck = new()
+      {
+        SimData = new SimData()
+        {
+          Acceleration = 0,
+          BankAngle = 0,
+          Altitude = 1000,
+          Callsign = "TEST 001",
+          GroundSpeed = 120,
+          EngineCombustion = new bool[] { true, true, false, false },
+          Height = 500,
+          IndicatedSpeed = 120,
+          IsSimPaused = true,
+          ParkingBrakeSet = false,
+          PushbackTugConnected = false,
+          VerticalSpeed = 0
+        }
+      };
+
+      for (int i = 0; i < 3; i++)
+        mck.actions.Add(() => { });
+      mck.actions.Add(() => mck.SimData.IsSimPaused = false);
+
+      mck.actions.Add(() => mck.SimData.VerticalSpeed = -700);
+      for (int i = 0; i < 11; i++)
+      {
+        int tmp = 500 - i * 50;
+        mck.actions.Add(() =>
+        {
+          mck.SimData.Altitude = tmp + 500;
+          mck.SimData.Height = tmp;
+        });
+      }
+      mck.actions.Add(() => mck.SimData.VerticalSpeed = 0);
+
+      mck.actions.Add(() => mck.SimData.Acceleration = -5);
+      for (int i = 0; i < 13; i++)
+      {
+        int tmp = 120 - (i * 10);
+        mck.actions.Add(() =>
+        {
+          mck.SimData.IndicatedSpeed = tmp;
+          mck.SimData.GroundSpeed = tmp;
+        });
+      }
+      mck.actions.Add(() => mck.SimData.Acceleration = 0);
+
+      for (int i = 0; i < 3; i++)
+        mck.actions.Add(() => { });
+      mck.actions.Add(() => mck.SimData.ParkingBrakeSet= true);
 
       return mck;
     }

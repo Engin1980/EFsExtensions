@@ -92,12 +92,6 @@ namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
       set => base.UpdateProperty(nameof(Acceleration), value);
     }
 
-    public bool IsTugConnected
-    {
-      get => base.GetProperty<bool>(nameof(IsTugConnected))!;
-      set => base.UpdateProperty(nameof(IsTugConnected), value);
-    }
-
     internal void Update(CommonDataStruct ss)
     {
       this.Callsign = ss.callsign;

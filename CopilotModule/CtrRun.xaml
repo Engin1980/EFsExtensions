@@ -152,9 +152,9 @@
                   <DataTemplate>
                     <StackPanel>
                       <StackPanel Orientation="Horizontal">
-                        <Label Content="{Binding Item.DisplayString}" />
-                        <Label Content=" = " />
-                        <Label Content="{Binding Result}" />
+                        <TextBlock Text="{Binding Item.DisplayString}" />
+                        <TextBlock Text=" = " />
+                        <TextBlock Text="{Binding Result}" />
                       </StackPanel>
                       <TextBlock Margin="32 0 0 0" FontSize="12" Text="{Binding Message}" />
                     </StackPanel>
@@ -168,9 +168,9 @@
                   <DataTemplate>
                     <StackPanel>
                       <StackPanel Orientation="Horizontal">
-                        <Label Content="{Binding Item.DisplayString}" />
-                        <Label Content=" = " />
-                        <Label Content="{Binding Result}" />
+                        <TextBlock Text="{Binding Item.DisplayString}" />
+                        <TextBlock Text=" = " />
+                        <TextBlock Text="{Binding Result}" />
                       </StackPanel>
                       <TextBlock Margin="32 0 0 0" FontSize="12" Text="{Binding Message}" />
                     </StackPanel>
