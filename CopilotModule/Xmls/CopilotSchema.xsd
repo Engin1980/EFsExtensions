@@ -1,29 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 
 <xsd:schema id="Schema"
-            targetNamespace="http://tempuri.org/Schema.xsd"
+            targetNamespace="http://tempuri.org/chlaotModule.xsd"
             elementFormDefault="qualified"
-            xmlns="http://tempuri.org/Schema.xsd"
+            xmlns="http://tempuri.org/chlaotModule.xsd"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns:mt="http://tempuri.org/metaData.xsd"
-            xmlns:sc="http://tempuri.org/stateCheck.xsd"
-            xmlns:speech="http://tempuri.org/speech.xsd"
-            xmlns:g="http://tempuri.org/global.xsd"
             >
 
-  <xsd:import namespace="http://tempuri.org/stateCheck.xsd"
-           schemaLocation="StateCheckSchema.xsd"/>
-  <xsd:import namespace="http://tempuri.org/metaData.xsd"
-           schemaLocation="MetaDataSchema.xsd"/>
-  <xsd:import namespace="http://tempuri.org/speech.xsd"
-              schemaLocation="Speech.xsd" />
-  <xsd:import namespace="http://tempuri.org/global.xsd"
-            schemaLocation="Global.xsd" />
+  <xsd:include schemaLocation="ChlaotModuleSchema.xsd"/>
+  <xsd:include schemaLocation="Global.xsd"/>
 
   <xsd:element name="copilotSet">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="metaInfo" minOccurs="1" maxOccurs="1" type="mt:metaData"/>
+        <xsd:element name="metaInfo" minOccurs="1" maxOccurs="1" type="metaData"/>
         <xsd:element name="speechDefinition" minOccurs="1" maxOccurs="unbounded" type="speechDefinition"/>
       </xsd:sequence>
     </xsd:complexType>
@@ -31,16 +21,16 @@
 
   <xsd:complexType name="speechDefinition">
     <xsd:sequence>
-      <xsd:element name="speech" minOccurs="1" maxOccurs="unbounded" type="speech:speech"/>
-      <xsd:element name="when" minOccurs="1" maxOccurs="1" type="sc:stateCheckConditionTop" />
-      <xsd:element name="reactivateWhen" minOccurs="1" maxOccurs="1" type="sc:stateCheckConditionTop" />
+      <xsd:element name="speech" minOccurs="1" maxOccurs="unbounded" type="speech"/>
+      <xsd:element name="when" minOccurs="1" maxOccurs="1" type="stateCheckConditionTop" />
+      <xsd:element name="reactivateWhen" minOccurs="1" maxOccurs="1" type="stateCheckConditionTop" />
       <xsd:element name="variable" minOccurs="0" maxOccurs="unbounded" type="variableInfo" />
     </xsd:sequence>
-    <xsd:attribute name="title" type="g:nonemptyString" use="required"/>
+    <xsd:attribute name="title" type="nonemptyString" use="required"/>
   </xsd:complexType>
 
   <xsd:complexType name="variableInfo">
-    <xsd:attribute name="name" type="g:nonemptyString" use="required" />
+    <xsd:attribute name="name" type="nonemptyString" use="required" />
     <xsd:attribute name="defaultValue" type="xsd:int" use="optional" />
     <xsd:attribute name="info" type="xsd:string" use="optional" />
   </xsd:complexType>

@@ -5,13 +5,7 @@
     <None Update="ModuleUtils\Xsds\Global.xsd">
       <SubType>Designer</SubType>
     </None>
-    <None Update="ModuleUtils\Xsds\MetaDataSchema.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Update="ModuleUtils\Xsds\Speech.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Update="ModuleUtils\Xsds\StateCheckSchema.xsd">
+    <None Update="ModuleUtils\Xsds\ChlaotModuleSchema.xsd">
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
