@@ -1,6 +1,4 @@
-﻿using ChecklistModule.Types;
-using ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase;
+﻿using Eng.Chlaot.ChlaotModuleBase;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using System;
@@ -16,11 +14,12 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Policy;
-using ChlaotModuleBase.ModuleUtils.Synthetization;
-using ChlaotModuleBase.ModuleUtils.StateChecking;
 using ELogging;
+using Eng.Chlaot.Modules.ChecklistModule.Types;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 
-namespace ChecklistModule
+namespace Eng.Chlaot.Modules.ChecklistModule
 {
   public class InitContext : NotifyPropertyChangedBase
   {

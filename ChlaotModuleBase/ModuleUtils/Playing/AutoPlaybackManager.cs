@@ -6,7 +6,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace ChlaotModuleBase.ModuleUtils.Playing
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing
 {
   public class AutoPlaybackManager : LogIdAble, IDisposable
   {

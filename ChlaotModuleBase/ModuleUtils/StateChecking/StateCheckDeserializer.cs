@@ -5,7 +5,7 @@ using System.Linq;
 using System.Windows.Navigation;
 using System.Xml.Linq;
 
-namespace ChlaotModuleBase.ModuleUtils.StateChecking
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
   public class StateCheckDeserializer : IElementDeserializer
   {

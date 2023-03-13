@@ -2,7 +2,7 @@
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChlaotModuleBase.ModuleUtils.StateChecking
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
   public interface IStateCheckItem
   {

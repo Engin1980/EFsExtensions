@@ -1,5 +1,4 @@
-﻿using ChlaotModuleBase;
-using ELogging;
+﻿using ELogging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -14,7 +13,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 
-namespace ChlaotModuleBase.ModuleUtils.KeyHooking
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking
 {
   public class KeyHookWrapper : IDisposable
   {

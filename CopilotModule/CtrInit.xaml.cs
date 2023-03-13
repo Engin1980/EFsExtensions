@@ -1,7 +1,7 @@
-﻿using ChlaotModuleBase.ModuleUtils.Playing;
-using ChlaotModuleBase.ModuleUtils.Storable;
-using CopilotModule.Types;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
 using Eng.Chlaot.Modules.CopilotModule;
+using Eng.Chlaot.Modules.CopilotModule.Types;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;

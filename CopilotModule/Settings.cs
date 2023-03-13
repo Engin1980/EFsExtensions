@@ -1,5 +1,5 @@
-﻿using ChlaotModuleBase;
-using ChlaotModuleBase.ModuleUtils.Synthetization;
+﻿using Eng.Chlaot.ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Serialization;
 
-namespace CopilotModule
+namespace Eng.Chlaot.Modules.CopilotModule
 {
   public class Settings : NotifyPropertyChangedBase
   {

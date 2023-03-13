@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChlaotModuleBase
+namespace Eng.Chlaot.ChlaotModuleBase
 {
   public class NotifyPropertyChangedBase : INotifyPropertyChanged
   {

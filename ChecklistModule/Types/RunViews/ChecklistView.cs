@@ -1,7 +1,7 @@
-﻿using ChlaotModuleBase;
+﻿using Eng.Chlaot.ChlaotModuleBase;
 using System.Collections.Generic;
 
-namespace ChecklistModule.Types.RunViews
+namespace Eng.Chlaot.Modules.ChecklistModule.Types.RunViews
 {
   public class CheckListView : NotifyPropertyChangedBase
   {

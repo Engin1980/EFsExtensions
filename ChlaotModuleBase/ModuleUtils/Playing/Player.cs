@@ -4,7 +4,7 @@ using System.IO;
 using System.Media;
 using System.Threading.Tasks;
 
-namespace ChlaotModuleBase.ModuleUtils.Playing
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing
 {
   public class Player : LogIdAble, IDisposable
   {

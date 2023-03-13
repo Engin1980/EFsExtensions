@@ -1,4 +1,4 @@
-﻿using ChlaotModuleBase.ModuleUtils.StateChecking;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CopilotModule.Types
+namespace Eng.Chlaot.Modules.CopilotModule.Types
 {
   public class SpeechDefinition
   {

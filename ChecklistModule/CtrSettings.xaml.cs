@@ -1,5 +1,6 @@
-﻿using ChlaotModuleBase.ModuleUtils.Playing;
-using ChlaotModuleBase.ModuleUtils.Synthetization;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
+using Eng.Chlaot.Modules.ChecklistModule;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

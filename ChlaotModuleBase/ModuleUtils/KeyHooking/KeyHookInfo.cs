@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static ChlaotModuleBase.ModuleUtils.KeyHooking.KeyHookWrapper;
 using System.Windows.Input;
 
-namespace ChlaotModuleBase.ModuleUtils.KeyHooking
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking
 {
   public class KeyHookInfo
   {

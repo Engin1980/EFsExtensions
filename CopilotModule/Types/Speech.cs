@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace CopilotModule.Types
+namespace Eng.Chlaot.Modules.CopilotModule.Types
 {
   public class Speech
   {

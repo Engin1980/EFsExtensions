@@ -1,6 +1,5 @@
-using ChlaotModuleBase;
-using ChlaotModuleBase.ModuleUtils.Storable;
 using ELogging;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
 using Eng.Chlaot.Modules.AffinityModule;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;

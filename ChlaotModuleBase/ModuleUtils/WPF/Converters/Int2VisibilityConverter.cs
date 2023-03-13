@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
-namespace ChlaotModuleBase.ModuleUtils.WPF.Converters
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters
 {
   public class Int2VisibilityConverter : IValueConverter
   {

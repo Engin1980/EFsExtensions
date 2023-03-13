@@ -1,5 +1,5 @@
-﻿using ChlaotModuleBase.ModuleUtils;
-using ChlaotModuleBase.ModuleUtils.Storable;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
 using Eng.Chlaot.Modules.AffinityModule;
 using System;
 using System.Collections.Generic;

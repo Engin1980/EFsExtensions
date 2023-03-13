@@ -1,5 +1,4 @@
-﻿using ChlaotModuleBase;
-using CopilotModule;
+﻿using CopilotModule;
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using System;

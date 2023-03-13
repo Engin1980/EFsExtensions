@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChlaotModuleBase.ModuleUtils.KeyHooking
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking
 {
   [Flags]
   public enum KeyModifiers

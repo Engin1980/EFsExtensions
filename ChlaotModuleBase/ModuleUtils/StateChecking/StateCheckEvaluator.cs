@@ -13,7 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.TextFormatting;
 
-namespace ChlaotModuleBase.ModuleUtils.StateChecking
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
   public class StateCheckEvaluator : LogIdAble
   {

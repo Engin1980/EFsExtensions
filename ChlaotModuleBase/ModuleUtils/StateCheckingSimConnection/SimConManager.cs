@@ -11,7 +11,7 @@ using System.Threading;
 using System.Runtime.CompilerServices;
 using ELogging;
 
-namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
 {
   public class SimConManager : LogIdAble, ISimConManager
   {

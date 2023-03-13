@@ -1,7 +1,7 @@
 ﻿using ESimConnect;
 using System.Runtime.InteropServices;
 
-namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
 {
   [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
   public struct CommonDataStruct

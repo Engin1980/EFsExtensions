@@ -1,4 +1,4 @@
-﻿using ChecklistModule.Types.RunViews;
+﻿using Eng.Chlaot.Modules.ChecklistModule.Types.RunViews;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,9 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
-using static ChecklistModule.RunContext;
 
-namespace ChecklistModule.Converters
+namespace Eng.Chlaot.Modules.ChecklistModule.Converters
 {
   internal class RunStateToSolidBrushColorConverter : IValueConverter
   {

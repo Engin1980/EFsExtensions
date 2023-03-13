@@ -1,13 +1,11 @@
-﻿using ChecklistModule.Types;
-using ChecklistModule.Types.RunViews;
-using ChlaotModuleBase;
-using ChlaotModuleBase.ModuleUtils.KeyHooking;
-using ChlaotModuleBase.ModuleUtils.Playing;
-using ChlaotModuleBase.ModuleUtils.StateChecking;
-using ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
-using ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection.Mock;
-using ELogging;
+﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
+using Eng.Chlaot.Modules.ChecklistModule.Types;
+using Eng.Chlaot.Modules.ChecklistModule.Types.RunViews;
 using Microsoft.VisualBasic.Logging;
 using System;
 using System.Collections.Generic;
@@ -23,7 +21,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
 
-namespace ChecklistModule
+namespace Eng.Chlaot.Modules.ChecklistModule
 {
   public class RunContext : NotifyPropertyChangedBase
   {

@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection.Mock
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection.Mock
 {
   public class SimConManagerMock : ISimConManager
   {

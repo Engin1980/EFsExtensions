@@ -1,6 +1,7 @@
-using ChecklistModule.Types;
-using ChlaotModuleBase.ModuleUtils.Playing;
-using ChlaotModuleBase.ModuleUtils.Storable;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
+using Eng.Chlaot.Modules.ChecklistModule;
+using Eng.Chlaot.Modules.ChecklistModule.Types;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;

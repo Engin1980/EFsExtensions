@@ -4,7 +4,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
-namespace ChlaotModuleBase.ModuleUtils.StateChecking
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
   public class StateCheckProperty : IStateCheckItem
   {

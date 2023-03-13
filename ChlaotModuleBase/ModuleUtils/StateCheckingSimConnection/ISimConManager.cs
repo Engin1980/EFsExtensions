@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
 {
   public interface ISimConManager
   {

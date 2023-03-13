@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace ChlaotModuleBase.ModuleUtils.Synthetization
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization
 {
   public class SynthetizerSettings : NotifyPropertyChangedBase
   {

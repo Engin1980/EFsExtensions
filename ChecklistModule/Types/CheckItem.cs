@@ -1,11 +1,10 @@
-﻿using ChlaotModuleBase;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChecklistModule.Types
+namespace Eng.Chlaot.Modules.ChecklistModule.Types
 {
   public class CheckItem
   {

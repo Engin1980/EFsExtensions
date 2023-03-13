@@ -1,10 +1,9 @@
-﻿using ChlaotModuleBase;
-using ChlaotModuleBase.ModuleUtils.StateChecking;
-using ChlaotModuleBase.ModuleUtils.Synthetization;
-using CopilotModule;
-using CopilotModule.Types;
+﻿using CopilotModule;
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
+using Eng.Chlaot.Modules.CopilotModule.Types;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using System;

@@ -1,6 +1,6 @@
-﻿using ChlaotModuleBase.ModuleUtils.StateChecking;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 
-namespace ChecklistModule.Types
+namespace Eng.Chlaot.Modules.ChecklistModule.Types
 {
   public class CheckListMetaInfo
   {

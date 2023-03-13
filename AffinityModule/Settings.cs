@@ -1,5 +1,4 @@
-﻿using ChlaotModuleBase;
-using ChlaotModuleBase.ModuleUtils.Storable;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

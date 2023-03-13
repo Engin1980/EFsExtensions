@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChecklistModule.Types.RunViews
+namespace Eng.Chlaot.Modules.ChecklistModule.Types.RunViews
 {
   public enum RunState
   {

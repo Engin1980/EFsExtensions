@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace AffinityModule
+namespace Eng.Chlaot.Modules.AffinityModule
 {
   public class AffinityUtils
   {

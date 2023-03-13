@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace ChlaotModuleBase.ModuleUtils.StateChecking
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
   public class StateCheckCondition : IStateCheckItem
   {

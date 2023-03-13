@@ -1,5 +1,4 @@
-﻿using ChlaotModuleBase.ModuleUtils.Synthetization;
-using Microsoft.FlightSimulator.SimConnect;
+﻿using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace ChlaotModuleBase.ModuleUtils.Storable
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable
 {
   public abstract class StorableObject : NotifyPropertyChangedBase
   {

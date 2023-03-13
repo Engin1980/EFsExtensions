@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ChlaotModuleBase.ModuleUtils.Shares
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Shares
 {
   public static class ShareManager
   {
