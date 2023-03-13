@@ -1,0 +1,253 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<checklistSet
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://tempuri.org/chlaotModule.xsd"
+  xsi:noNamespaceSchemaLocation="ChecklistSchema.xsd"
+  firstChecklistId="batteryOn">
+  <meta>
+    <label>Baron B58 checklist</label>
+    <author>Marek Vajgl</author>
+    <description>Simple checklists Baron B58 default plane</description>
+  </meta>
+  <checklist id="beforeStart" callSpeech="Before Start-up">
+    <item>
+      <call type="speech" value="Parking Brake"/>
+      <confirmation type="speech" value="Set"/>
+    </item>
+    <item>
+      <call type="speech" value="Avionics"/>
+      <confirmation type="speech" value="Off"/>
+    </item>
+    <item>
+      <call type="speech" value="Landing Gear"/>
+      <confirmation type="speech" value="Down"/>
+    </item>
+    <item>
+      <call type="speech" value="Fuel Selectors"/>
+      <confirmation type="speech" value="On"/>
+    </item>
+    <item>
+      <call type="speech" value="Batery Switch"/>
+      <confirmation type="speech" value="On"/>
+    </item>
+    <item>
+      <call type="speech" value="Beacon Light"/>
+      <confirmation type="speech" value="On"/>
+    </item>
+    <item>
+      <call type="speech" value="Fuel Quantity"/>
+      <confirmation type="speech" value="Checked"/>
+    </item>
+    <metaInfo>
+    </metaInfo>
+    <nextChecklistId />
+  </checklist>
+  <checklist id="beforeTaxi" callSpeech="Before Taxi">
+    <item>
+      <call type="speech" value="Alternator Switch"/>
+      <confirmation type="speech" value="On"/>
+    </item>
+    <item>
+      <call type="speech" value="Voltmeter"/>
+      <confirmation type="speech" value="28 volts at least"/>
+    </item>
+    <item>
+      <call type="speech" value="Avionics"/>
+      <confirmation type="speech" value="On"/>
+    </item>
+    <item>
+      <call type="speech" value="Exterior Lights"/>
+      <confirmation type="speech" value="On"/>
+    </item>
+    <item>
+      <call type="speech" value="Surfaces"/>
+      <confirmation type="speech" value="Checked"/>
+    </item>
+    
+
+
+
+
+    <metaInfo>
+      <when>
+        <and>
+          <property name="pushbackTugConnected" direction="below" expression="1" />
+          <property name="engineStarted" nameIndex="1" direction="above" expression="0"/>
+          <property name="engineStarted" nameIndex="2" direction="above" expression="0"/>
+          <for seconds="3">
+            <property name="parkingBrakeSet" direction="below" expression="1"/>
+          </for>
+        </and>
+      </when>
+    </metaInfo>
+    <nextChecklistId />
+  </checklist>
+  <checklist id="beforeTakeoff" callSpeech="Before Take Off">
+    <item>
+      <call type="speech" value="Ice Protection System" />
+      <confirmation type="speech" value="Check" />
+    </item>
+    <item>
+      <call type="speech" value="Climate Control Selector" />
+      <confirmation type="speech" value="Off" />
+    </item>
+    <item>
+      <call type="speech" value="Pitot Heat" />
+      <confirmation type="speech" value="On" />
+    </item>
+    <item>
+      <call type="speech" value="Flaps" />
+      <confirmation type="speech" value="Set" />
+    </item>
+    <item>
+      <call type="speech" value="Lights" />
+      <confirmation type="speech" value="On" />
+    </item>
+    <item>
+      <call type="speech" value="Squawk Mode" />
+      <confirmation type="speech" value="Charlie" />
+    </item>
+    <item>
+      <call type="speech" value="Toga" />
+      <confirmation type="speech" value="Set" />
+    </item>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="afterTakeoff" callSpeech="After Take Off">
+    <item>
+      <call type="speech" value="Gear" />
+      <confirmation type="speech" value="Up" />
+    </item>
+    <metaInfo>
+      <when>
+        <property name="height" direction="above" expression="400"/>
+      </when>
+    </metaInfo>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="departure" callSpeech="Departure">
+    <item>
+      <call type="speech" value="Flaps" />
+      <confirmation type="speech" value="Up" />
+    </item>
+    <item>
+      <call type="speech" value="Climate Control" />
+      <confirmation type="speech" value="On" />
+    </item>
+    <metaInfo>
+      <when>
+        <and>
+          <property name="height" direction="above" expression="1500"/>
+          <property name="ias" direction="above" expression="180"/>
+        </and>
+      </when>
+    </metaInfo>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="descend" callSpeech="Descend">
+    <item>
+      <call type="speech" value="Arrival"/>
+      <confirmation type="speech" value="Set"/>
+    </item>
+    <item>
+      <call type="speech" value="Arrival and approach"/>
+      <confirmation type="speech" value="Set"/>
+    </item>
+    <item>
+      <call type="speech" value="Decision height" />
+      <confirmation type="speech" value="Set" />
+    </item>
+    <item>
+      <call type="speech" value="Reference speeds" />
+      <confirmation type="speech" value="Set" />
+    </item>
+    <metaInfo>
+      <when>
+        <for seconds="60">
+          <property name="verticalSpeed" direction="below" expression="-1800"/>
+        </for>
+      </when>
+    </metaInfo>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="approach" callSpeech="Approach">
+    <item>
+      <call type="speech" value="Flaps" />
+      <confirmation type="speech" value="Set" />
+    </item>
+    <item>
+      <call type="speech" value="Lights" />
+      <confirmation type="speech" value="On" />
+    </item>
+    <item>
+      <call type="speech" value="Seat Belts" />
+      <confirmation type="speech" value="On" />
+    </item>
+    <metaInfo>
+      <when>
+        <and>
+          <property name="ias" direction="below" expression="200"/>
+          <property name="height" direction="below" expression="10000"/>
+        </and>
+      </when>
+    </metaInfo>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="shortFinal" callSpeech="Short Final">
+    <item>
+      <call type="speech" value="Landing Gear" />
+      <confirmation type="speech" value="Down Three Green" />
+    </item>
+    <item>
+      <call type="speech" value="Flaps" />
+      <confirmation type="speech" value="Full" />
+    </item>
+    <item>
+      <call type="speech" value="Speed brake" />
+      <confirmation type="speech" value="None" />
+    </item>
+    <item>
+      <call type="speech" value="Landing Clearance" />
+      <confirmation type="speech" value="Obtained" />
+    </item>
+    <metaInfo>
+      <when>
+        <and>
+          <property name="ias" direction="below" expression="200"/>
+          <property name="height" direction="below" expression="1000"/>
+        </and>
+      </when>
+    </metaInfo>
+    <nextChecklistId id="vacated" />
+  </checklist>
+  <checklist id="goAround" callSpeech="Go Around">
+    <item>
+      <call type="speech" value="Gear"/>
+      <confirmation type="speech" value="Up"/>
+    </item>
+    <item>
+      <call type="speech" value="Flaps"/>
+      <confirmation type="speech" value="Checked"/>
+    </item>
+    <nextChecklistId id="approach" />
+  </checklist>
+  <checklist id="vacated" callSpeech="Vacated">
+    <item>
+      <call type="speech" value="Speed Brakes" />
+      <confirmation type="speech" value="Retracted" />
+    </item>
+    <item>
+      <call type="speech" value="Flaps" />
+      <confirmation type="speech" value="Up" />
+    </item>
+    <item>
+      <call type="speech" value="Squawk" />
+      <confirmation type="speech" value="Stand by" />
+    </item>
+    <item>
+      <call type="speech" value="Lights" />
+      <confirmation type="speech" value="Off" />
+    </item>
+    <nextChecklistId id="beforeStart" />
+  </checklist>
+</checklistSet>

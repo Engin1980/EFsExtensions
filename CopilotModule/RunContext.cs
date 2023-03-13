@@ -75,8 +75,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
 #if USE_MOCK
       this.simConManager = SimConManagerMock.CreateTakeOff();
 #else
-      //this.simConManager = new SimConManager();
-      this.simConManager = SimConManagerMock.CreateTakeOff();
+      this.simConManager = new SimConManager();
+      //this.simConManager = SimConManagerMock.CreateTakeOff();
 #endif
       this.evaluator = new(this.simConManager.SimData);
 
