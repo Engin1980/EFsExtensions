@@ -60,7 +60,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         if (this.autoplaySuppressed)
           ret = false;
         else
-          ret = checkList.MetaInfo?.Autostart != null && this.evaluator.Evaluate(checkList.MetaInfo.Autostart);
+          ret = checkList.MetaInfo?.When != null && this.evaluator.Evaluate(checkList.MetaInfo.When);
 
         this.parent.logHandler.Invoke(LogLevel.VERBOSE,
           $"Evaluation finished for {checkList.Id} as={ret}, autoplaySupressed={autoplaySuppressed}");

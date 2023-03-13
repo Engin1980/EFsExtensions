@@ -108,7 +108,7 @@
                   <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding CallSpeech}" />
                     <TextBlock Text="  = = >  " />
-                    <TextBlock Text="{Binding MetaInfo.Autostart.DisplayString,FallbackValue=(None)}" />
+                    <TextBlock Text="{Binding MetaInfo.When.DisplayString,FallbackValue=(None)}" />
                   </StackPanel>
                 </DataTemplate>
               </ItemsControl.ItemTemplate>

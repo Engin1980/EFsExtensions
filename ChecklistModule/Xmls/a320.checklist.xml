@@ -67,9 +67,9 @@
       <confirmation type="speech" value="On"/>
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <property name="pushbackTugConnected" direction="above" expression="0" />
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId />
   </checklist>
@@ -99,7 +99,7 @@
       <confirmation type="speech" value="On"/>
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <for seconds="30">
           <and>
             <property name="pushbackTugConnected" direction="below" expression="1" />
@@ -108,7 +108,7 @@
             <property name="engineStarted" nameIndex="2" direction="above" expression="0" />
           </and>
         </for>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId />
   </checklist>
@@ -161,9 +161,9 @@
       <confirmation type="speech" value="As required" />
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <property name="height" direction="above" expression="500"/>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId/>
   </checklist>
@@ -181,12 +181,12 @@
       <confirmation type="speech" value="On" />
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <and>
           <property name="height" direction="above" expression="3000"/>
           <property name="ias" direction="above" expression="205"/>
         </and>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId/>
   </checklist>
@@ -200,11 +200,11 @@
       <confirmation type="speech" value="Set" />
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <and>
           <property name="altitude" direction="below" expression="17000"/>
         </and>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId/>
   </checklist>
@@ -234,12 +234,12 @@
       <confirmation type="speech" value="On" />
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <and>
           <property name="height" direction="below" expression="4000"/>
           <property name="ias" direction="below" expression="190"/>
         </and>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId/>
   </checklist>
@@ -257,9 +257,9 @@
       <confirmation type="speech" value="Stable" />
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <property name="height" direction="below" expression="1000"/>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId id="vacated" />
   </checklist>
@@ -277,12 +277,12 @@
       <confirmation type="speech" value="Stable" />
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <and>
           <property name="height" direction="above" expression="400" />
           <property name="verticalSpeed" direction="above" expression="500"/>
         </and>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId id="approach" />
   </checklist>

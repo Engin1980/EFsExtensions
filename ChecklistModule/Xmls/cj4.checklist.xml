@@ -72,7 +72,7 @@
       <confirmation type="speech" value="On"/>
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <and>
           <property name="pushbackTugConnected" direction="below" expression="1" />
           <property name="engineStarted" nameIndex="1" direction="above" expression="0"/>
@@ -81,7 +81,7 @@
             <property name="parkingBrakeSet" direction="below" expression="1"/>
           </for>
         </and>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId />
   </checklist>
@@ -122,9 +122,9 @@
       <confirmation type="speech" value="Up" />
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <property name="height" direction="above" expression="400"/>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId/>
   </checklist>
@@ -138,12 +138,12 @@
       <confirmation type="speech" value="On" />
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <and>
           <property name="height" direction="above" expression="1500"/>
           <property name="ias" direction="above" expression="180"/>
         </and>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId/>
   </checklist>
@@ -165,11 +165,11 @@
       <confirmation type="speech" value="Set" />
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <for seconds="60">
           <property name="verticalSpeed" direction="below" expression="-1800"/>
         </for>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId/>
   </checklist>
@@ -187,12 +187,12 @@
       <confirmation type="speech" value="On" />
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <and>
           <property name="ias" direction="below" expression="200"/>
           <property name="height" direction="below" expression="10000"/>
         </and>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId/>
   </checklist>
@@ -214,12 +214,12 @@
       <confirmation type="speech" value="Obtained" />
     </item>
     <metaInfo>
-      <autostart>
+      <when>
         <and>
           <property name="ias" direction="below" expression="200"/>
           <property name="height" direction="below" expression="1000"/>
         </and>
-      </autostart>
+      </when>
     </metaInfo>
     <nextChecklistId id="vacated" />
   </checklist>

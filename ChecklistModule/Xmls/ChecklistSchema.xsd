@@ -34,7 +34,7 @@
 
   <xsd:complexType name="checklistMetaInfo">
     <xsd:sequence>
-      <xsd:element name="autostart" minOccurs="0" maxOccurs="1" type="stateCheckConditionTop" />
+      <xsd:element name="when" minOccurs="0" maxOccurs="1" type="stateCheckConditionTop" />
       <xsd:element name="customEntrySpeech" minOccurs="0" maxOccurs="1" type="callOrConfirmation" />
       <xsd:element name="customExitSpeech" minOccurs="0" maxOccurs="1" type="callOrConfirmation" />
     </xsd:sequence>

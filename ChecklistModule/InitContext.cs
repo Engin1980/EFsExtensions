@@ -227,9 +227,9 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
       tmp.Checklists
         .Where(q => q.MetaInfo != null)
-        .Where(q => q.MetaInfo.Autostart != null)
+        .Where(q => q.MetaInfo.When != null)
         .ToList()
-        .ForEach(q => checkStateCheckItem(q.MetaInfo.Autostart));
+        .ForEach(q => checkStateCheckItem(q.MetaInfo.When));
     }
     private void InitializeSoundStreams(CheckSet checkSet, string relativePath)
     {
