@@ -2,6 +2,9 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
+    <None Update="ModuleUtils\Xsds\Global.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <None Update="ModuleUtils\Xsds\MetaDataSchema.xsd">
       <SubType>Designer</SubType>
     </None>

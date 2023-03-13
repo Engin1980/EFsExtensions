@@ -3,23 +3,22 @@
             targetNamespace="http://tempuri.org/metaData.xsd"
             elementFormDefault="qualified"
             xmlns="http://tempuri.org/metaData.xsd"
-            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:g="http://tempuri.org/global.xsd"
+            >
+
+  <xsd:import namespace="http://tempuri.org/global.xsd"  schemaLocation="global.xsd" />
 
   <xsd:complexType name="metaData">
     <xsd:choice maxOccurs="unbounded">
-      <xsd:element name="author" minOccurs="1" maxOccurs="1" type="nonemptyString"/>
-      <xsd:element name="label" minOccurs="1" maxOccurs="1" type="nonemptyString"/>
+      <xsd:element name="author" minOccurs="1" maxOccurs="1" type="g:nonemptyString"/>
+      <xsd:element name="label" minOccurs="1" maxOccurs="1" type="g:nonemptyString"/>
       <xsd:element name="description" minOccurs="1" maxOccurs="1" type="xsd:string"/>
-      <xsd:element name="web" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-      <xsd:element name="email" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-      <xsd:element name="license" minOccurs="0" maxOccurs="1" type="xsd:string"/>
+      <xsd:element name="web" minOccurs="0" maxOccurs="1" type="g:nonemptyString"/>
+      <xsd:element name="email" minOccurs="0" maxOccurs="1" type="g:nonemptyString"/>
+      <xsd:element name="license" minOccurs="0" maxOccurs="1" type="g:nonemptyString"/>
+      <xsd:element name="version" minOccurs="0" maxOccurs="1" type="g:nonemptyString"/>
     </xsd:choice>
   </xsd:complexType>
-
-  <xsd:simpleType name="nonemptyString">
-    <xsd:restriction base="xsd:string">
-      <xsd:pattern value=".+"/>
-    </xsd:restriction>
-  </xsd:simpleType>
 
 </xsd:schema>

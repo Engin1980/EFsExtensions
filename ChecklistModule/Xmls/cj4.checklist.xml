@@ -3,11 +3,13 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://tempuri.org/Schema.xsd"
   xsi:noNamespaceSchemaLocation="ChecklistSchema.xsd"
+  xmlns:mt="http://tempuri.org/metaData.xsd"
+  xmlns:cs="http://tempuri.org/stateCheck.xsd"
   firstChecklistId="batteryOn">
   <meta>
-    <label>CJ4 checklist</label>
-    <author>Marek Vajgl</author>
-    <description>Simple checklists test for Working Title CJ4</description>
+    <mt:label>CJ4 checklist</mt:label>
+    <mt:author>Marek Vajgl</mt:author>
+    <mt:description>Simple checklists test for Working Title CJ4</mt:description>
   </meta>
   <checklist id="beforeStart" callSpeech="Before Start-up">
     <item>
@@ -73,14 +75,14 @@
     </item>
     <metaInfo>
       <autostart>
-        <and>
-          <property name="pushbackTugConnected" direction="below" value="1" />
-          <property name="engineStarted" nameIndex="1" direction="above" value="0"/>
-          <property name="engineStarted" nameIndex="2" direction="above" value="0"/>
-          <for seconds="3">
-            <property name="parkingBrakeSet" direction="below" value="1"/>
-          </for>
-        </and>
+        <cs:and>
+          <cs:property name="pushbackTugConnected" direction="below" expression="1" />
+          <cs:property name="engineStarted" nameIndex="1" direction="above" expression="0"/>
+          <cs:property name="engineStarted" nameIndex="2" direction="above" expression="0"/>
+          <cs:for seconds="3">
+            <cs:property name="parkingBrakeSet" direction="below" expression="1"/>
+          </cs:for>
+        </cs:and>
       </autostart>
     </metaInfo>
     <nextChecklistId />
@@ -123,7 +125,7 @@
     </item>
     <metaInfo>
       <autostart>
-        <property name="height" direction="above" value="400"/>
+        <cs:property name="height" direction="above" expression="400"/>
       </autostart>
     </metaInfo>
     <nextChecklistId/>
@@ -139,10 +141,10 @@
     </item>
     <metaInfo>
       <autostart>
-        <and>
-          <property name="height" direction="above" value="1500"/>
-          <property name="ias" direction="above" value="180"/>
-        </and>
+        <cs:and>
+          <cs:property name="height" direction="above" expression="1500"/>
+          <cs:property name="ias" direction="above" expression="180"/>
+        </cs:and>
       </autostart>
     </metaInfo>
     <nextChecklistId/>
@@ -166,9 +168,9 @@
     </item>
     <metaInfo>
       <autostart>
-        <for seconds="60">
-          <property name="verticalSpeed" direction="below" value="-1800"/>
-        </for>
+        <cs:for seconds="60">
+          <cs:property name="verticalSpeed" direction="below" expression="-1800"/>
+        </cs:for>
       </autostart>
     </metaInfo>
     <nextChecklistId/>
@@ -188,10 +190,10 @@
     </item>
     <metaInfo>
       <autostart>
-        <and>
-          <property name="ias" direction="below" value="200"/>
-          <property name="height" direction="below" value="10000"/>
-        </and>
+        <cs:and>
+          <cs:property name="ias" direction="below" expression="200"/>
+          <cs:property name="height" direction="below" expression="10000"/>
+        </cs:and>
       </autostart>
     </metaInfo>
     <nextChecklistId/>
@@ -215,10 +217,10 @@
     </item>
     <metaInfo>
       <autostart>
-        <and>
-          <property name="ias" direction="below" value="200"/>
-          <property name="height" direction="below" value="1000"/>
-        </and>
+        <cs:and>
+          <cs:property name="ias" direction="below" expression="200"/>
+          <cs:property name="height" direction="below" expression="1000"/>
+        </cs:and>
       </autostart>
     </metaInfo>
     <nextChecklistId id="vacated" />

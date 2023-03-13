@@ -2,22 +2,22 @@
 <copilotSet
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://tempuri.org/Schema.xsd"
-  xmlns:metaData="http://tempuri.org/metaData.xsd"
+  xmlns:mt="http://tempuri.org/metaData.xsd"
   xmlns:cs="http://tempuri.org/stateCheck.xsd"
   xsi:noNamespaceSchemaLocation="CopilotSchema.xsd">
-  <metaData:metaInfo>
-    <metaData:label>Common IFS copilot callouts</metaData:label>
-    <metaData:author>Marek Vajgl</metaData:author>
-    <metaData:description>(none)</metaData:description>
-    <metaData:version>1.1</metaData:version>
-  </metaData:metaInfo>
+  <metaInfo>
+    <mt:label>Common IFS copilot callouts</mt:label>
+    <mt:author>Marek Vajgl</mt:author>
+    <mt:description>(none)</mt:description>
+    <mt:version>1.1</mt:version>
+  </metaInfo>
   <speechDefinition title="Positive rate">
     <speech type="speech" value="Positive rate" />
     <when>
-      <and>
+      <cs:and>
         <cs:property name="height" direction="above" expression="0" />
         <cs:property name="verticalSpeed" direction="above" expression="100" />
-      </and>
+      </cs:and>
     </when>
     <reactivateWhen>
       <cs:for seconds="10">
@@ -28,11 +28,11 @@
   <speechDefinition title="Deceleration announcement (80)kts" >
     <speech type="speech" value="{speed} knots" />
     <when>
-      <and>
+      <cs:and>
         <cs:property name="ias" direction="passingDown" expression="{speed}" />
         <cs:property name="height" direction="below" expression="5" />
         <cs:property name="acceleration" direction="below" expression="0" />
-      </and>
+      </cs:and>
     </when>
     <reactivateWhen>
       <cs:for seconds="10">
@@ -44,11 +44,11 @@
   <speechDefinition title="Deceleration announcement (60)kts">
     <speech type="speech" value="{speed} knots" />
     <when>
-      <and>
+      <cs:and>
         <cs:property name="ias" direction="passingDown" expression="{speed}" />
         <cs:property name="height" direction="below" expression="5" />
         <cs:property name="acceleration" direction="below" expression="0" />
-      </and>
+      </cs:and>
     </when>
     <reactivateWhen>
       <cs:for seconds="10">
@@ -96,20 +96,20 @@
     </when>
     <reactivateWhen>
       <cs:for seconds="30">
-        <or>
+        <cs:or>
           <cs:property name="verticalSpeed" direction="above" expression="500" />
           <cs:property name="verticalSpeed" direction="below" expression="-500" />
-        </or>
+        </cs:or>
       </cs:for>
     </reactivateWhen>
   </speechDefinition>
   <speechDefinition title="v1">
     <speech type="speech" value="V One" />
     <when>
-      <and>
+      <cs:and>
         <cs:property name="ias" direction="passing" expression="{v1}" />
         <cs:property name="acceleration" direction="above" expression="1" />
-      </and>
+      </cs:and>
     </when>
     <reactivateWhen>
       <cs:property name="ias" direction="below" expression="10" />
@@ -118,10 +118,10 @@
   <speechDefinition title="vr">
     <speech type="speech" value="V Rotate" />
     <when>
-      <and>
+      <cs:and>
         <cs:property name="ias" direction="passing" expression="{vr}" />
         <cs:property name="acceleration" direction="above" expression="1" />
-      </and>
+      </cs:and>
     </when>
     <reactivateWhen>
       <cs:property name="ias" direction="below" expression="10" />
@@ -130,10 +130,10 @@
   <speechDefinition title="v2">
     <speech type="speech" value="V Two" />
     <when>
-      <and>
+      <cs:and>
         <cs:property name="ias" direction="passing" expression="{v2}" />
         <cs:property name="acceleration" direction="above" expression="1" />
-      </and>
+      </cs:and>
     </when>
     <reactivateWhen>
       <cs:property name="ias" direction="below" expression="10" />

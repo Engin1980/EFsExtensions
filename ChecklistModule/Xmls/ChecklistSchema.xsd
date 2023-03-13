@@ -3,27 +3,31 @@
             targetNamespace="http://tempuri.org/Schema.xsd"
             elementFormDefault="qualified"
             xmlns="http://tempuri.org/Schema.xsd"
-            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:mt="http://tempuri.org/metaData.xsd"
+            xmlns:sc="http://tempuri.org/stateCheck.xsd"
+            xmlns:speech="http://tempuri.org/speech.xsd"
+            xmlns:g="http://tempuri.org/global.xsd"
+            >
+
+  <xsd:import namespace="http://tempuri.org/stateCheck.xsd"
+    schemaLocation="StateCheckSchema.xsd"/>
+  <xsd:import namespace="http://tempuri.org/metaData.xsd"
+    schemaLocation="MetaDataSchema.xsd"/>
+  <xsd:import namespace="http://tempuri.org/speech.xsd"
+    schemaLocation="Speech.xsd" />
+  <xsd:import namespace="http://tempuri.org/global.xsd"
+    schemaLocation="Global.xsd" />
+
   <xsd:element name="checklistSet">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="meta" minOccurs="1" maxOccurs="1" type="metadata"/>
+        <xsd:element name="meta" minOccurs="1" maxOccurs="1" type="mt:metaData"/>
         <xsd:element name="checklist" minOccurs="1" maxOccurs="unbounded" type="checklist"/>
       </xsd:sequence>
-      <xsd:attribute name="firstChecklistId" type="nonemptyString" use="required" />
+      <xsd:attribute name="firstChecklistId" type="g:nonemptyString" use="required" />
     </xsd:complexType>
   </xsd:element>
-
-  <xsd:complexType name="metadata">
-    <xsd:choice maxOccurs="unbounded">
-      <xsd:element name="author" minOccurs="1" maxOccurs="1" type="nonemptyString"/>
-      <xsd:element name="label" minOccurs="1" maxOccurs="1" type="nonemptyString"/>
-      <xsd:element name="description" minOccurs="1" maxOccurs="1" type="xsd:string"/>
-      <xsd:element name="web" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-      <xsd:element name="email" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-      <xsd:element name="license" minOccurs="0" maxOccurs="1" type="xsd:string"/>
-    </xsd:choice>
-  </xsd:complexType>
 
   <xsd:complexType name="checklist">
     <xsd:sequence>
@@ -31,84 +35,23 @@
       <xsd:element name="metaInfo" minOccurs="0" maxOccurs="1" type="checklistMetaInfo" />
       <xsd:element name="nextChecklistId" minOccurs="1" maxOccurs="1" type="nextChecklistId" />
     </xsd:sequence>
-    <xsd:attribute name="id" type="nonemptyString" use="required"/>
-    <xsd:attribute name="callSpeech" type="nonemptyString" use="optional"/>
+    <xsd:attribute name="id" type="g:nonemptyString" use="required"/>
+    <xsd:attribute name="callSpeech" type="g:nonemptyString" use="optional"/>
     <xsd:attribute name="sequence" type="xsd:integer" use="optional"/>
-    <xsd:attribute name="beginCallFile" type="nonemptyString" use="optional"/>
-    <xsd:attribute name="endCallFile" type="nonemptyString" use="optional"/>
+    <xsd:attribute name="beginCallFile" type="g:nonemptyString" use="optional"/>
+    <xsd:attribute name="endCallFile" type="g:nonemptyString" use="optional"/>
   </xsd:complexType>
 
   <xsd:complexType name="checklistMetaInfo">
     <xsd:sequence>
-      <xsd:element name="autostart" minOccurs="0" maxOccurs="1" type="autostartConditionTop" />
+      <xsd:element name="autostart" minOccurs="0" maxOccurs="1" type="sc:stateCheckConditionTop" />
       <xsd:element name="customEntrySpeech" minOccurs="0" maxOccurs="1" type="callOrConfirmation" />
       <xsd:element name="customExitSpeech" minOccurs="0" maxOccurs="1" type="callOrConfirmation" />
     </xsd:sequence>
   </xsd:complexType>
 
-  <xsd:complexType name="autostartConditionTop">
-    <xsd:choice minOccurs="1" maxOccurs="1">
-      <xsd:element name="and" type="autostartCondition"/>
-      <xsd:element name="or" type="autostartCondition"/>
-      <xsd:element name="property" type="autostartProperty"/>
-      <xsd:element name="for" type="autostartDelay" />
-    </xsd:choice>
-  </xsd:complexType>
-
-  <xsd:complexType name="autostartCondition">
-    <xsd:choice minOccurs="1" maxOccurs="unbounded">
-      <xsd:element name="and" type="autostartCondition"/>
-      <xsd:element name="or" type="autostartCondition"/>
-      <xsd:element name="property" type="autostartProperty"/>
-      <xsd:element name="for" type="autostartDelay" />
-    </xsd:choice>
-  </xsd:complexType>
-
-  <xsd:complexType name="autostartDelay">
-    <xsd:choice minOccurs="1" maxOccurs="1">
-      <xsd:element name="and" type="autostartCondition"/>
-      <xsd:element name="or" type="autostartCondition"/>
-      <xsd:element name="property" type="autostartProperty"/>
-    </xsd:choice>
-    <xsd:attribute name="seconds" type="xsd:nonNegativeInteger" use="required" />
-  </xsd:complexType>
-
-  <xsd:complexType name="autostartProperty">
-    <xsd:attribute name="name" type="autostartPropertyName" use="required"/>
-    <xsd:attribute name="direction" type="autostartPropertyDirection" use="required" />
-    <xsd:attribute name="value" type="xsd:integer" use="required"/>
-    <xsd:attribute name="nameIndex" type="xsd:integer" use="optional" />
-  </xsd:complexType>
-
-  <xsd:simpleType name="autostartPropertyDirection">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="above"/>
-      <xsd:enumeration value="below"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-  
-  <xsd:simpleType name="autostartPropertyName">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="altitude"/>
-      <xsd:enumeration value="height"/>
-      <xsd:enumeration value="gs"/>
-      <xsd:enumeration value="ias" />
-      <xsd:enumeration value="bank" />
-      <xsd:enumeration value="parkingBrakeSet" />
-      <xsd:enumeration value="pushbackTugConnected" />
-      <xsd:enumeration value="engineStarted" />
-      <xsd:enumeration value="verticalSpeed" />
-    </xsd:restriction>
-  </xsd:simpleType>
-
-  <xsd:simpleType name="autostartPropertyValue">
-    <xsd:restriction base="xsd:string">
-      <xsd:pattern value="((gt)|(lt))?-?\d+"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-
   <xsd:complexType name="nextChecklistId">
-    <xsd:attribute name="id" type="nonemptyString" use="optional"/>
+    <xsd:attribute name="id" type="g:nonemptyString" use="optional"/>
   </xsd:complexType>
 
   <xsd:complexType name="item">
@@ -120,19 +63,13 @@
 
   <xsd:complexType name="callOrConfirmation">
     <xsd:attribute name="type" type="callOrConfirmationType" use="required"/>
-    <xsd:attribute name="value" type="nonemptyString" use="required"/>
+    <xsd:attribute name="value" type="g:nonemptyString" use="required"/>
   </xsd:complexType>
 
   <xsd:simpleType name="callOrConfirmationType">
     <xsd:restriction base="xsd:string">
       <xsd:enumeration value="file"/>
       <xsd:enumeration value="speech"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-
-  <xsd:simpleType name="nonemptyString">
-    <xsd:restriction base="xsd:string">
-      <xsd:pattern value=".+"/>
     </xsd:restriction>
   </xsd:simpleType>
 </xsd:schema>

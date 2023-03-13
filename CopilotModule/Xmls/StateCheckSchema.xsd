@@ -3,8 +3,14 @@
             targetNamespace="http://tempuri.org/stateCheck.xsd"
             elementFormDefault="qualified"
             xmlns="http://tempuri.org/stateCheck.xsd"
-            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:g="http://tempuri.org/globa.xsd"
+            xmlns:sp="http://tempuri.org/speech.xsd"
+            >
 
+  <xsd:import namespace="http://tempuri.org/speech.xsd" schemaLocation="speech.xsd" />
+  <xsd:import namespace="http://tempuri.org/global.xsd" schemaLocation="global.xsd" />
+  
   <xsd:complexType name="stateCheckConditionTop">
     <xsd:choice minOccurs="1" maxOccurs="1">
       <xsd:element name="and" type="stateCheckConditionInternal"/>
@@ -62,8 +68,8 @@
       <xsd:enumeration value="below"/>
       <xsd:enumeration value="exactly"/>
       <xsd:enumeration value="passing"/>
-      <xsd:enumeration value="passingAbove"/>
-      <xsd:enumeration value="passingBelow"/>
+      <xsd:enumeration value="passingUp"/>
+      <xsd:enumeration value="passingDown"/>
     </xsd:restriction>
   </xsd:simpleType>
 
@@ -87,18 +93,4 @@
       <xsd:pattern value="(\+|\-|\+-|\-\+)\d+\.?\d*\%?" />
     </xsd:restriction>
   </xsd:simpleType>
-
-  <xsd:simpleType name="speechType">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="file"/>
-      <xsd:enumeration value="speech"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-
-  <xsd:simpleType name="nonemptyString">
-    <xsd:restriction base="xsd:string">
-      <xsd:pattern value=".+"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-
 </xsd:schema>
