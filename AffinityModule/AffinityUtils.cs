@@ -48,7 +48,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
       return ret;
     }
 
-    internal static List<bool>? ToEmptyArray(bool defaultValue)
+    internal static List<bool> ToEmptyArray(bool defaultValue)
     {
       var ret = new List<bool>();
       for (int i = 0; i < coresCount; i++)

@@ -12,7 +12,7 @@
       This division is created for =&gt;12 cores CPU.
     </metaData:description>
   </metaInfo>
-  <rule title="FS2020" regex="FlightSimulator.exe" roll="0-4" />
+  <rule title="Mozilla" regex="Firefox" roll="0-4" />
   <rule title="Idle" regex="Idle" roll="" />
   <rule title="Other" regex=".+" roll="6-64" />
 </affinityRuleBase>

@@ -20,7 +20,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
     private bool isRunning = false;
     private readonly List<Rule> rules;
     private readonly List<ProcessInfo> processInfos;
-    private Action onAdjustmentCompleted;
+    private readonly Action onAdjustmentCompleted;
 
     public AffinityAdjuster(List<Rule> rules, List<ProcessInfo> processInfos, Action onAdjustmentCompleted)
     {
@@ -62,7 +62,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
     private void CancelRules()
     {
-      Rule rule = new()
+      Rule affinityAllRule = new()
       {
         Roll = "0-256"
       };
@@ -71,13 +71,12 @@ namespace Eng.Chlaot.Modules.AffinityModule
       foreach (var process in processes)
       {
         if (processInfos.Any(q => process.Id == q.Id
-                && q.IsAccessible.HasValue
-                && q.IsAccessible.Value))
+            && q.AffinitySetResult != ProcessInfo.EResult.Ok))
           continue;
 
         try
         {
-          process.ProcessorAffinity = AffinityUtils.ToIntPtr(rule.CoreFlags.ToArray());
+          process.ProcessorAffinity = AffinityUtils.ToIntPtr(affinityAllRule.CoreFlags.ToArray());
         }
         catch (Exception)
         {
@@ -103,56 +102,104 @@ namespace Eng.Chlaot.Modules.AffinityModule
           WindowTitle = process.MainWindowTitle,
           ThreadCount = process.Threads.Count
         };
-
         if (rule != null)
         {
-          logHandler.Invoke(LogLevel.VERBOSE, $"Adjusting '{pi.Name} ({pi.Id})'.");
           pi.RuleTitle = rule.TitleOrRegex;
-
-          if (rule.ShouldChangeAffinity)
-          {
-            try
-            {
-              process.ProcessorAffinity = AffinityUtils.ToIntPtr(rule.CoreFlags.ToArray());
-              pi.IsAccessible = true;
-            }
-            catch (Exception ex)
-            {
-              pi.IsAccessible = false;
-              logHandler.Invoke(LogLevel.VERBOSE, $"Adjusting '{pi.Name} ({pi.Id})' failed. " +
-                $"Probably no rights to do this. {ex.Message}");
-            }
-          }
-
-          try
-          {
-            pi.Affinity = process.ProcessorAffinity;
-            pi.IsAccessible ??= true;
-          }
-          catch (Exception)
-          {
-            pi.IsAccessible = false;
-            pi.Affinity = null;
-          }
+          SetAffinityIfRequired(process, rule, pi);
+          SetPriorityIfRequired(process, rule, pi);
         }
         else
         {
           logHandler.Invoke(LogLevel.VERBOSE, $"No rule to cover '{pi.Name} ({pi.Id})', skipping.");
           pi.RuleTitle = "(none)";
         }
+        GetAffinity(process, pi);
+        GetPriority(process, pi);
 
         Application.Current.Dispatcher.Invoke(() => { this.processInfos.Add(pi); });
       }
-      logHandler.Invoke(LogLevel.INFO, $"Adjustment completed, " +
-        $"changed {processInfos.Count(q => q.IsAccessible.HasValue && q.IsAccessible.Value)}, " +
-        $"failed {processInfos.Count(q => q.IsAccessible.HasValue && !q.IsAccessible.Value)}, " +
-        $"skipped {processInfos.Count(q => q.IsAccessible == null)}.");
+      logHandler.Invoke(LogLevel.INFO, $"Affinity adjustment completed, " +
+        $"changed {processInfos.Count(q => q.AffinitySetResult == ProcessInfo.EResult.Ok)}, " +
+        $"failed {processInfos.Count(q => q.AffinitySetResult == ProcessInfo.EResult.Failed)}, " +
+        $"skipped {processInfos.Count(q => q.AffinitySetResult == ProcessInfo.EResult.Unchanged)}.");
+      logHandler.Invoke(LogLevel.INFO, $"Priority adjustment completed, " +
+        $"changed {processInfos.Count(q => q.PrioritySetResult == ProcessInfo.EResult.Ok)}, " +
+        $"failed {processInfos.Count(q => q.PrioritySetResult == ProcessInfo.EResult.Failed)}, " +
+        $"skipped {processInfos.Count(q => q.PrioritySetResult == ProcessInfo.EResult.Unchanged)}.");
       isRunning = false;
       lock (this)
       {
         Monitor.PulseAll(this);
       }
       this.onAdjustmentCompleted();
+    }
+
+    private void GetPriority(Process process, ProcessInfo pi)
+    {
+      try
+      {
+        pi.Priority = process.PriorityClass;
+        pi.PriorityGetResult = ProcessInfo.EResult.Ok;
+      }
+      catch (Exception)
+      {
+        pi.PriorityGetResult = ProcessInfo.EResult.Failed;
+        pi.Priority = null;
+      }
+    }
+
+    private void SetPriorityIfRequired(Process process, Rule rule, ProcessInfo pi)
+    {
+      if (rule.ShouldChangePriority)
+      {
+        try
+        {
+          process.PriorityClass = rule.PriorityClass;
+          pi.PrioritySetResult = ProcessInfo.EResult.Ok;
+        }
+        catch (Exception ex)
+        {
+          pi.PrioritySetResult = ProcessInfo.EResult.Failed;
+          logHandler.Invoke(LogLevel.VERBOSE, $"Adjusting '{pi.Name} ({pi.Id})' priority failed. " +
+              $"Probably no rights to do this. {ex.Message}");
+        }
+      }
+      else
+        pi.PrioritySetResult = ProcessInfo.EResult.Unchanged;
+    }
+
+    private void SetAffinityIfRequired(Process process, Rule rule, ProcessInfo pi)
+    {
+      if (rule.ShouldChangeAffinity)
+      {
+        try
+        {
+          process.ProcessorAffinity = AffinityUtils.ToIntPtr(rule.CoreFlags.ToArray());
+          pi.AffinitySetResult = ProcessInfo.EResult.Ok;
+        }
+        catch (Exception ex)
+        {
+          pi.AffinitySetResult = ProcessInfo.EResult.Failed;
+          logHandler.Invoke(LogLevel.VERBOSE, $"Adjusting '{pi.Name} ({pi.Id})' affinity failed. " +
+            $"Probably no rights to do this. {ex.Message}");
+        }
+      }
+      else
+        pi.AffinitySetResult = ProcessInfo.EResult.Unchanged;
+    }
+
+    private static void GetAffinity(Process process, ProcessInfo pi)
+    {
+      try
+      {
+        pi.Affinity = process.ProcessorAffinity;
+        pi.AffinityGetResult = ProcessInfo.EResult.Ok;
+      }
+      catch (Exception)
+      {
+        pi.AffinityGetResult = ProcessInfo.EResult.Failed;
+        pi.Affinity = null;
+      }
     }
 
     private Dictionary<Process, Rule?> MapNewProcessesToRules()

@@ -34,28 +34,30 @@ namespace AffinityModule
     }
     private void AdjustmentCompleted()
     {
-      List<ProcessInfo> tmp;
+      List<ProcessInfo> oks = new();
+      List<ProcessInfo> fails = new();
+      List<ProcessInfo> skips = new();
 
-      tmp = this.context.ProcessInfos
-        .Where(q => q.IsAccessible == true)
-        .OrderBy(q => q.Name)
-        .ToList();
-      this.grdProcessed.ItemsSource = tmp;
-      this.tabProcessed.Header = $"Processed items ({tmp.Count})";
+      foreach (ProcessInfo info in this.context.ProcessInfos)
+      {
+        if (info.AffinitySetResult == ProcessInfo.EResult.Unchanged
+          && info.PrioritySetResult == ProcessInfo.EResult.Unchanged)
+          skips.Add(info);
+        else if (info.AffinitySetResult == ProcessInfo.EResult.Failed
+          || info.PrioritySetResult == ProcessInfo.EResult.Failed)
+          fails.Add(info);
+        else
+          oks.Add(info);
+      }
 
-      tmp = this.context.ProcessInfos
-          .Where(q => q.IsAccessible == false)
-          .OrderBy(q => q.Name)
-          .ToList();
-      this.grdFailed.ItemsSource = tmp;
-      this.tabFailed.Header = $"Failed items ({tmp.Count})";
+      this.grdProcessed.ItemsSource = oks;
+      this.tabProcessed.Header = $"Processed items ({oks.Count})";
+      
+      this.grdFailed.ItemsSource = fails;
+      this.tabFailed.Header = $"Failed items ({fails.Count})";
 
-      tmp = this.context.ProcessInfos
-        .Where(q => q.IsAccessible == null)
-        .OrderBy(q => q.Name)
-        .ToList();
-      this.grdSkipped.ItemsSource = tmp;
-      this.tabSkipped.Header = $"Skipped items ({tmp.Count})";
+      this.grdSkipped.ItemsSource = skips;
+      this.tabSkipped.Header = $"Skipped items ({skips.Count})";
     }
 
     public CtrRun(Context context) : this()
