@@ -63,11 +63,14 @@
       <call type="speech" value="Surfaces"/>
       <confirmation type="speech" value="Checked"/>
     </item>
-    
-
-
-
-
+    <item>
+      <call type="speech" value="Trim"/>
+      <confirmation type="speech" value="Set"/>
+    </item>
+    <item>
+      <call type="speech" value="Flaps"/>
+      <confirmation type="speech" value="Set"/>
+    </item>
     <metaInfo>
       <when>
         <and>
@@ -84,32 +87,28 @@
   </checklist>
   <checklist id="beforeTakeoff" callSpeech="Before Take Off">
     <item>
-      <call type="speech" value="Ice Protection System" />
-      <confirmation type="speech" value="Check" />
+      <call type="speech" value="Seat Belts"/>
+      <confirmation type="speech" value="On"/>
     </item>
     <item>
-      <call type="speech" value="Climate Control Selector" />
-      <confirmation type="speech" value="Off" />
+      <call type="speech" value="Mixture"/>
+      <confirmation type="speech" value="Set"/>
     </item>
     <item>
-      <call type="speech" value="Pitot Heat" />
-      <confirmation type="speech" value="On" />
+      <call type="speech" value="Propeller"/>
+      <confirmation type="speech" value="Feathering"/>
     </item>
     <item>
-      <call type="speech" value="Flaps" />
-      <confirmation type="speech" value="Set" />
+      <call type="speech" value="Landing Lights"/>
+      <confirmation type="speech" value="On"/>
     </item>
     <item>
-      <call type="speech" value="Lights" />
-      <confirmation type="speech" value="On" />
+      <call type="speech" value="Strobe Light"/>
+      <confirmation type="speech" value="On"/>
     </item>
     <item>
-      <call type="speech" value="Squawk Mode" />
-      <confirmation type="speech" value="Charlie" />
-    </item>
-    <item>
-      <call type="speech" value="Toga" />
-      <confirmation type="speech" value="Set" />
+      <call type="speech" value="Transponder mode"/>
+      <confirmation type="speech" value="Charlie"/>
     </item>
     <nextChecklistId/>
   </checklist>
@@ -117,6 +116,10 @@
     <item>
       <call type="speech" value="Gear" />
       <confirmation type="speech" value="Up" />
+    </item>
+    <item>
+      <call type="speech" value="Landing Lights" />
+      <confirmation type="speech" value="Off" />
     </item>
     <metaInfo>
       <when>
@@ -131,8 +134,12 @@
       <confirmation type="speech" value="Up" />
     </item>
     <item>
-      <call type="speech" value="Climate Control" />
-      <confirmation type="speech" value="On" />
+      <call type="speech" value="Fuel Boost Pump" />
+      <confirmation type="speech" value="Off" />
+    </item>
+    <item>
+      <call type="speech" value="Cowl Flaps" />
+      <confirmation type="speech" value="Closed" />
     </item>
     <metaInfo>
       <when>
@@ -146,16 +153,16 @@
   </checklist>
   <checklist id="descend" callSpeech="Descend">
     <item>
-      <call type="speech" value="Arrival"/>
+      <call type="speech" value="Altimeter"/>
       <confirmation type="speech" value="Set"/>
     </item>
     <item>
-      <call type="speech" value="Arrival and approach"/>
-      <confirmation type="speech" value="Set"/>
+      <call type="speech" value="Mixture"/>
+      <confirmation type="speech" value="Set full"/>
     </item>
     <item>
-      <call type="speech" value="Decision height" />
-      <confirmation type="speech" value="Set" />
+      <call type="speech" value="Cowl flaps" />
+      <confirmation type="speech" value="Closed" />
     </item>
     <item>
       <call type="speech" value="Reference speeds" />
