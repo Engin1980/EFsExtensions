@@ -31,6 +31,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AffinityModule", "AffinityM
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{BDA214A5-916B-47DD-AAC4-51A85D016FAE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FailuresModule", "FailuresModule\FailuresModule.csproj", "{8A76BE54-20F4-40A1-BEF6-204FC3B97006}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{55673CEE-5EAB-46EB-9890-C8F06325C550}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{55673CEE-5EAB-46EB-9890-C8F06325C550}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{55673CEE-5EAB-46EB-9890-C8F06325C550}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8A76BE54-20F4-40A1-BEF6-204FC3B97006}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8A76BE54-20F4-40A1-BEF6-204FC3B97006}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8A76BE54-20F4-40A1-BEF6-204FC3B97006}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8A76BE54-20F4-40A1-BEF6-204FC3B97006}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -85,6 +91,7 @@ Global
 		{5C2968BA-C202-433D-991F-D3EB49D8C8EA} = {50476E83-616C-4626-99B3-011038C60496}
 		{B3A9ED8D-95CD-4BA9-9E3E-E09FCAA4D54A} = {BDA214A5-916B-47DD-AAC4-51A85D016FAE}
 		{55673CEE-5EAB-46EB-9890-C8F06325C550} = {50476E83-616C-4626-99B3-011038C60496}
+		{8A76BE54-20F4-40A1-BEF6-204FC3B97006} = {50476E83-616C-4626-99B3-011038C60496}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {635265FD-4132-4AE6-BFE3-2E4C9A812E0B}

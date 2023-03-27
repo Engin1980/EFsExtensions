@@ -32,6 +32,11 @@
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
+          <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Affi-Set" Binding="{Binding AffinitySetResult}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Affi-Get" Binding="{Binding AffinityGetResult}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Prio-Set" Binding="{Binding PrioritySetResult}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Prio-Get" Binding="{Binding PriorityGetResult}" IsReadOnly="True" />
         </DataGrid.Columns>
       </DataGrid>
     </TabItem>
@@ -42,6 +47,10 @@
           <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
           <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}" IsReadOnly="True"/>
           <DataGridTextColumn Header="Applied Rule" Binding="{Binding RuleTitle}" IsReadOnly="True"/>
+          <DataGridTextColumn Header="Affi-Set" Binding="{Binding AffinitySetResult}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Affi-Get" Binding="{Binding AffinityGetResult}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Prio-Set" Binding="{Binding PrioritySetResult}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Prio-Get" Binding="{Binding PriorityGetResult}" IsReadOnly="True" />
         </DataGrid.Columns> 
       </DataGrid>
     </TabItem>
@@ -51,6 +60,8 @@
           <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
           <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
           <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}" IsReadOnly="True"/>
+          <DataGridTextColumn Header="Affi-Get" Binding="{Binding AffinityGetResult}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Prio-Get" Binding="{Binding PriorityGetResult}" IsReadOnly="True" />
         </DataGrid.Columns>
       </DataGrid>
     </TabItem>
