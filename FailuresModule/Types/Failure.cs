@@ -9,7 +9,9 @@ namespace FailuresModule.Types
   public abstract class Failure
   {
     public SimConPoint SimConPoint { get; set; }
-  }
+        public string Title { get; set; }
+        public string GroupId { get; set; } = string.Empty;
+    }
 
   public class StuckFailure : Failure
   {
