@@ -9,64 +9,37 @@ namespace FailuresModule.Types
 {
   public abstract class Failure
   {
-    public Failure(string title)
+    public Failure(string id, string title, SimConPoint simConPoint)
     {
+      this.Id = id ?? throw new ArgumentNullException(nameof(id));
       this.Title = title ?? throw new ArgumentNullException(nameof(title));
-    }
-
-    public string Title { get; set; }
-    public string GroupId { get; set; } = string.Empty;
-  }
-
-  public abstract class InvokableFailure : Failure
-  {
-    protected InvokableFailure(string title, SimConPoint simConPoint) : base(title)
-    {
       this.SimConPoint = simConPoint ?? throw new ArgumentNullException(nameof(simConPoint));
     }
 
+    public string Id { get; }
+    public string Title { get; }
     public SimConPoint SimConPoint { get; set; }
+
+    public string TypeName => this.GetType().Name;
   }
 
-  public class StuckFailure : InvokableFailure
+  public class StuckFailure : Failure
   {
-    public StuckFailure(string title, SimConPoint simConPoint) : base(title, simConPoint)
-    {
-    }
-  }
-  public class InstantFailure : InvokableFailure
-  {
-    public InstantFailure(string title, SimConPoint simConPoint) : base(title, simConPoint)
+    public StuckFailure(string id, string title, SimConPoint simConPoint) : base(id, title, simConPoint)
     {
     }
   }
 
-  public class LeakFailure : InvokableFailure
+  public class InstantFailure : Failure
   {
-    public LeakFailure(string title, SimConPoint simConPoint) : base(title, simConPoint)
+    public InstantFailure(string id, string title, SimConPoint simConPoint) : base(id, title, simConPoint)
     {
     }
   }
 
-  public class MultiFailure : Failure
+  public class LeakFailure : Failure
   {
-    public MultiFailure(string title) : base(title)
-    {
-    }
-
-    public List<Failure> Failures { get; } = new List<Failure>();
-  }
-
-  public class OneOfFailure : MultiFailure
-  {
-    public OneOfFailure(string title) : base(title)
-    {
-    }
-  }
-
-  public class AnyOfFailure : MultiFailure
-  {
-    public AnyOfFailure(string title) : base(title)
+    public LeakFailure(string id, string title, SimConPoint simConPoint) : base(id, title, simConPoint)
     {
     }
   }

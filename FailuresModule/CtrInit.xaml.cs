@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,13 +16,21 @@ using System.Windows.Shapes;
 namespace FailuresModule
 {
   /// <summary>
-  /// Interaction logic for UserControl1.xaml
+  /// Interaction logic for CtrInit.xaml
   /// </summary>
-  public partial class UserControl1 : UserControl
+  public partial class CtrInit : UserControl
   {
-    public UserControl1()
+    public Context Context { get; private set; }
+    public CtrInit()
     {
       InitializeComponent();
+      this.Context = null!;
+    }
+
+    public CtrInit(Context context) : this()
+    {
+      this.Context = context;
+      this.DataContext = context;
     }
   }
 }

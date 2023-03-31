@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESimConnect;
+using System;
 using System.Collections.Generic;
 using System.IO.IsolatedStorage;
 using System.Linq;
@@ -7,9 +8,12 @@ using System.Printing;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Xps.Serialization;
 
 namespace FailuresModule.Types
 {
+  internal record NameTuple(string Id, string Name, string Sim);
+
   public class FailureFactory
   {
     private static int ENGINES_COUNT = 4;
@@ -41,55 +45,72 @@ namespace FailuresModule.Types
       return ret;
     }
 
-    private static MultiFailure BuildEngineFire()
+    private static List<Failure> BuildEngineFire()
     {
-      MultiFailure ret = new("Engine Fire");
+      List<Failure> ret = new();
 
-      for (int i = 0; i < ENGINES_COUNT; i++)
+      for (int i = 1; i <= ENGINES_COUNT; i++)
       {
-        InstantFailure instantFailure = new($"Engine {i} fire", new VarSimConPoint($"ENGINE ON FIRE:{i}"));
-
-        ret.Failures.Add(instantFailure);
+        InstantFailure f = new($"engFire{i}", $"Engine {i} fire", new VarSimConPoint($"ENGINE ON FIRE:{i}"));
+        ret.Add(f);
       }
 
       return ret;
     }
 
-    private static MultiFailure BuildEngineFailure()
+    private static List<Failure> BuildEngineTurbochanger()
     {
-      MultiFailure ret = new("Engine Failure");
+      List<Failure> ret = new();
 
-      for (int i = 0; i < ENGINES_COUNT; i++)
+      for (int i = 1; i <= ENGINES_COUNT; i++)
       {
-        InstantFailure tmp = new($"Engine {i} Failure", new EventSimConPoint($"TOGGLE_ENGINE{i}_FAILURE"));
-        ret.Failures.Add(tmp);
+        InstantFailure f = new($"engTurbo{i}", $"Engine {i} TurboChanger", new VarSimConPoint($"RECIP ENG TURBOCHARGER FAILED:{i}"));
+        ret.Add(f);
       }
 
       return ret;
     }
 
-    private static string ExtractName(string varName)
+    private static List<Failure> BuildEngineCoolantReservoir()
     {
-      throw new NotImplementedException();
+      List<Failure> ret = new();
+
+      for (int i = 1; i <= ENGINES_COUNT; i++)
+      {
+        LeakFailure f = new($"engCoolant{i}", $"Engine {i} Coolant Reservoir", new VarSimConPoint($"RECIP ENG COOLANT RESERVOIR PERCENT:{i}"));
+        ret.Add(f);
+      }
+
+      return ret;
     }
+
+    private static List<Failure> BuildEngineFailure()
+    {
+      List<Failure> ret = new();
+
+      for (int i = 0; i < ENGINES_COUNT; i++)
+      {
+        InstantFailure tmp = new($"eng{i}", $"Engine {i} Failure", new EventSimConPoint($"TOGGLE_ENGINE{i}_FAILURE"));
+        ret.Add(tmp);
+      }
+
+      return ret;
+    }
+
 
     private static List<Failure> BuildSystemFailures()
     {
-      string[] tmp =
+      NameTuple[] tmp =
       {
-        "TOGGLE_VACUUM_FAILURE",
-        "TOGGLE_ELECTRICAL_FAILURE",
-        "TOGGLE_PITOT_BLOCKAGE",
-        "TOGGLE_STATIC_PORT_BLOCKAGE",
-        "TOGGLE_HYDRAULIC_FAILURE",
-        "TOGGLE_PITOT_BLOCKAGE"
+        new("vacuum", "Vacuum failure", "TOGGLE_VACUUM_FAILURE"),
+        new("electrical", "Electrical failure", "TOGGLE_ELECTRICAL_FAILURE"),
+        new("pitot", "Pitot blockage", "TOGGLE_PITOT_BLOCKAGE"),
+        new("static_port", "Static port blockage", "TOGGLE_STATIC_PORT_BLOCKAGE"),
+        new("hydraulics", "Hydraulics failure", "TOGGLE_HYDRAULIC_FAILURE")
       };
 
       var ret = tmp
-        .Select(q => new InstantFailure(ExtractName(q), new EventSimConPoint(q))
-        {
-          GroupId = "Systems"
-        })
+        .Select(q => new InstantFailure(q.Id, q.Name, new EventSimConPoint(q.Sim)))
         .Cast<Failure>()
         .ToList();
 
@@ -98,94 +119,116 @@ namespace FailuresModule.Types
 
     private static List<Failure> BuildInstrumentFailures()
     {
-      string[] vars =
+      NameTuple[] vars =
       {
-      "PARTIAL PANEL AIRSPEED",
-        "PARTIAL PANEL ALTIMETER",
-        "PARTIAL PANEL ATTITUDE",
-        "PARTIAL PANEL COMPASS",
-        "PARTIAL PANEL ELECTRICAL",
-        "PARTIAL PANEL AVIONICS",
-        "PARTIAL PANEL ENGINE",
-        "PARTIAL PANEL FUEL INDICATOR",
-        "PARTIAL PANEL HEADING",
-        "PARTIAL PANEL VERTICAL VELOCITY",
-        "PARTIAL PANEL PITOT",
-        "PARTIAL PANEL TURN COORDINATOR",
-        "PARTIAL PANEL VACUUM"
+        new("pnlAirspeed", "Airspeed (panel)", "PARTIAL PANEL AIRSPEED"),
+        new("pnlAltimeter", "Altimeter (panel)",  "PARTIAL PANEL ALTIMETER"),
+        new("pnlAttitude", "Attitude (panel)","PARTIAL PANEL ATTITUDE"),
+        new("pnlCompass", "Compass (panel)","PARTIAL PANEL COMPASS"),
+        new("pnlElectrical", "Electrical (panel)","PARTIAL PANEL ELECTRICAL"),
+        new("pnlAvionics", "Avionics (panel)","PARTIAL PANEL AVIONICS"),
+        new("pnlEngine", "Engine (panel)", "PARTIAL PANEL ENGINE"),
+        new("pnlFuel", "Fuel indicator (panel)","PARTIAL PANEL FUEL INDICATOR"),
+        new("pnlHeading", "Heading (panel)", "PARTIAL PANEL HEADING"),
+        new("pnlVS", "Vertical velocity (panel)", "PARTIAL PANEL VERTICAL VELOCITY"),
+        new("pnlPitot", "Pitot (panel)", "PARTIAL PANEL PITOT"),
+        new("pnlTurn", "Turn coordinator (panel)", "PARTIAL PANEL TURN COORDINATOR"),
+        new("pnlVacuum", "Vacuum (panel)", "PARTIAL PANEL VACUUM")
       };
 
       var ret = vars.ToList()
-        .Select(q => new InstantFailure($"Instrument {q[8..]} Failure", new VarSimConPoint(q))
-        {
-          GroupId = "Instruments"
-        })
+        .Select(q => new InstantFailure(q.Id, q.Name, new VarSimConPoint(q.Sim)))
         .Cast<Failure>()
         .ToList();
 
       return ret;
     }
 
-    public static OneOfFailure BuildBrakeFailures()
+    private static List<Failure> BuildBrakeFailures()
     {
-      string[] tmp =
+      NameTuple[] tmp =
       {
-        "TOGGLE_TOTAL_BRAKE_FAILURE",
-        "TOGGLE_LEFT_BRAKE_FAILURE",
-        "TOGGLE_RIGHT_BRAKE_FAILURE"
+        new("brakeAll", "All brakes","TOGGLE_TOTAL_BRAKE_FAILURE"),
+        new("brakeLeft", "Left brake", "TOGGLE_LEFT_BRAKE_FAILURE"),
+        new("brakeRight", "Right brake", "TOGGLE_RIGHT_BRAKE_FAILURE")
       };
 
-      OneOfFailure ret = new OneOfFailure("Brake Failure");
-      ret.Failures.AddRange(tmp
-         .Select(q => new InstantFailure(ExtractName(q), new EventSimConPoint(q)))
-         .Cast<Failure>()
-         .ToList());
+      var ret = tmp.ToList()
+        .Select(q => new InstantFailure(q.Id, q.Name, new EventSimConPoint(q.Sim)))
+        .Cast<Failure>()
+        .ToList();
 
       return ret;
     }
 
-    public static AnyOfFailure BuildFuelFailures()
+    private static List<Failure> BuildFuelFailures()
     {
-      string[] tmp =
+      NameTuple[] tmp =
       {
-        "FUEL TANK CENTER LEVEL",
-        "FUEL TANK LEFT MAIN LEVEL",
-        "FUEL TANK RIGHT MAIN LEVEL"
+        new("fuelCenter", "Center Fuel Tank", "FUEL TANK CENTER LEVEL"),
+        new("fuelLeft", "Left Fuel Tank", "FUEL TANK LEFT MAIN LEVEL"),
+        new("fuelRight", "Right Fuel Tank", "FUEL TANK RIGHT MAIN LEVEL")
       };
 
-      AnyOfFailure ret = new("Fuel Tank Failure");
-      ret.Failures.AddRange(tmp
-         .Select(q => new LeakFailure(ExtractName(q), new VarSimConPoint(q)))
+      var ret = tmp
+         .Select(q => new LeakFailure(q.Id, q.Name, new VarSimConPoint(q.Sim)))
          .Cast<Failure>()
-         .ToList());
+         .ToList();
 
       return ret;
     }
 
-    public static List<Failure> BuildGearFailures()
+    private static List<Failure> BuildGearFailures()
     {
-      //createRegister(new SimVar(lSimVars.Count(), "GEAR CENTER POSITION", "fCenterGear", POSSIBLE_FAIL_TYPE.STUCK));
-      //createRegister(new SimVar(lSimVars.Count(), "GEAR LEFT POSITION", "fLeftGear", POSSIBLE_FAIL_TYPE.STUCK));
-      //createRegister(new SimVar(lSimVars.Count(), "GEAR RIGHT POSITION", "fRightGear", POSSIBLE_FAIL_TYPE.STUCK));
+      NameTuple[] tmp =
+      {
+        new ("gearCenter", "Gear Center", "GEAR CENTER POSITION"),
+        new ("gearLeft", "Left Gear", "GEAR LEFT POSITION"),
+        new ("gearRight", "Right Gear", "GEAR RIGHT POSITION")
+      };
+
+      var ret = tmp.ToList()
+        .Select(q => new StuckFailure(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+        .Cast<Failure>()
+        .ToList();
+
+      return ret;
     }
 
-    public static List<Failure> BuildFlapsFailures()
+    private static List<Failure> BuildFlapsFailures()
     {
-      //createRegister(new SimVar(lSimVars.Count(), "TRAILING EDGE FLAPS LEFT PERCENT", "fLeftFlap", POSSIBLE_FAIL_TYPE.STUCK));
-      //createRegister(new SimVar(lSimVars.Count(), "TRAILING EDGE FLAPS RIGHT PERCENT", "fRightFlap", POSSIBLE_FAIL_TYPE.STUCK));
+      NameTuple[] tmp =
+      {
+        new ("flapsLeft", "Left Flaps", "TRAILING EDGE FLAPS LEFT PERCENT"),
+        new ("flapsRight", "Right Flaps", "TRAILING EDGE FLAPS RIGHT PERCENT")
+      };
+
+      var ret = tmp.ToList()
+        .Select(q => new StuckFailure(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+        .Cast<Failure>()
+        .ToList();
+
+      return ret;
     }
 
-    public static List<Failure> BuildSurfacesFailures()
+    private static List<Failure> BuildSurfacesFailures()
     {
-      //createRegister(new SimVar(lSimVars.Count(), "ELEVATOR TRIM POSITION", "fTrimElevator", POSSIBLE_FAIL_TYPE.STUCK));
-      //createRegister(new SimVar(lSimVars.Count(), "RUDDER TRIM PCT", "fTrimRudder", POSSIBLE_FAIL_TYPE.STUCK));
-      //createRegister(new SimVar(lSimVars.Count(), "AILERON TRIM PCT", "fTrimAileron", POSSIBLE_FAIL_TYPE.STUCK));
+      NameTuple[] tmp =
+      {
+        new("rudderTrim", "Rudder Trim", "RUDDER TRIM PCT"),
+        new("aileronTrim", "Aileron Trim", "AILERON TRIM PCT"),
+        new("elevatorTrim", "Elevator Trim", "ELEVATOR TRIM POSITION"),
+        new ("elevator", "Elevator", "ELEVATOR POSITION"),
+        new("aileron", "Aileron", "AILERON POSITION"),
+        new("rudder", "Rudder", "RUDDER POSITION")
+      };
 
-      //createRegister(new SimVar(lSimVars.Count(), "ELEVATOR POSITION", "fControlElevator", POSSIBLE_FAIL_TYPE.STUCK));
-      //createRegister(new SimVar(lSimVars.Count(), "RUDDER POSITION", "fControlRudder", POSSIBLE_FAIL_TYPE.STUCK));
-      //createRegister(new SimVar(lSimVars.Count(), "AILERON POSITION", "fControlAileron", POSSIBLE_FAIL_TYPE.STUCK));
+      var ret = tmp.ToList()
+        .Select(q => new StuckFailure(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+        .Cast<Failure>()
+        .ToList();
+
+      return ret;
     }
-
-    public static List<Failure> Build
   }
 }

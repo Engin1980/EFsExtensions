@@ -37,6 +37,10 @@ namespace Chlaot
       module = new Eng.Chlaot.Modules.AffinityModule.AffinityModule();
       TryAddModule(module);
 
+      logHandler.Invoke(LogLevel.INFO, "Loading failures module...");
+      module = new Eng.Chlaot.Modules.FailuresModule.FailuresModule();
+      TryAddModule(module);
+
 
       logHandler.Invoke(LogLevel.INFO, "Setting up modules...");
       Modules.ToList().ForEach(q => q.SetUp(

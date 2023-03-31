@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<group>
+  <group title="Engine" forwarding="any">
+    <group title="Fire" forwarding="any" invoker="takeOff">
+      <failure id="engFire1" />
+      <failure id="engFire2" />
+      <failure id="engFire3" />
+      <failure id="engFire4" />
+    </group>
+    <group title="TurboCharger" forwarding="any">
+      <failure id="engTurbo1" />
+      <failure id="engTurbo2" />
+      <failure id="engTurbo3" />
+      <failure id="engTurbo4" />
+    </group>
+    <group type="Coolant" forwarding="any">
+      <failure id="engCoolant1" />
+      <failure id="engCoolant2" />
+      <failure id="engCoolant3" />
+      <failure id="engCoolant4" />
+    </group>
+    <group type="Failure" forwarding="any">
+      <failure id="eng1" />
+      <failure id="eng2" />
+      <failure id="eng3" />
+      <failure id="eng4" />
+    </group>
+  </group>
+  <group title="Systems" forwarding="any">
+    <failure id="vacuum" />
+    <failure id="electrical" />
+    <failure id="pitot" />
+    <failure id="static_port" />
+    <failure id="hydraulics" />
+  </group>
+  <group title="Panel Instruments" forwarding="any">
+    <failure id="pnlAirspeed" />
+    <failure id="pnlAltimeter" />
+    <failure id="pnlAttitude" />
+    <failure id="pnlCompass" />
+    <failure id="pnlElectrical" />
+    <failure id="pnlAvionics" />
+    <failure id="pnlEngine" />
+    <failure id="pnlFuel" />
+    <failure id="pnlHeading" />
+    <failure id="pnlVS" />
+    <failure id="pnlPitot" />
+    <failure id="pnlTurn" />
+    <failure id="pnlVacuum" />
+  </group>
+  <group title="Brakes" forwarding="one">
+    <failure id="brakeAll" />
+    <failure id="brakeLeft" />
+    <failure id="brakeRight" />
+  </group>
+  <group title="Fuel" forwarding="any">
+    <failure id="fuelCenter" />
+    <failure id="fuelLeft" />
+    <failure id="fuelRight" />
+  </group>
+  <group title="Gear" forwarding="one">
+    <failure id="gearCenter" />
+    <failure id="gearLeft" />
+    <failure id="gearRight" />
+    <group title="Gear all" forwarding="all">
+      <failure id="gearCenter" />
+      <failure id="gearLeft" />
+      <failure id="gearRight" />
+    </group>
+  </group>
+  <group title="Flaps" forwarding="any">
+    <failure id="flapsLeft" />
+    <failure id="flapsRight" />
+    <group title="Flaps all" forwarding="all">
+      <failure id="flapsLeft" />
+      <failure id="flapsRight" />
+    </group>
+  </group>
+  <group title="surfaces" forwarding="any">
+    <failure id="rudderTrim" />
+    <failure id="aileronTrim" />
+    <failure id="elevatorTrim" />
+    <failure id="elevator" />
+    <failure id="aileron" />
+    <failure id="rudder" />
+  </group>
+</group>
