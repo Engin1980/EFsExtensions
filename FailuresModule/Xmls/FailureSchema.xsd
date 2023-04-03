@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema id="Failures"
+    targetNamespace="http://tempuri.org/chlaotModule.xsd"
+    elementFormDefault="qualified"
+    xmlns="http://tempuri.org/chlaotModule.xsd"
+    xmlns:mstns="http://tempuri.org/chlaotModule.xsd"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+>
+  <xsd:include schemaLocation="Global.xsd" />
+  
+  <xsd:element name="group" type="group" />
+
+  <xsd:complexType name="group">
+    <xsd:choice minOccurs="0" maxOccurs="unbounded">
+      <xsd:element name="group" type="group" />
+      <xsd:element name="failure" type="failure" />
+    </xsd:choice>
+    <xsd:attribute name="title" type="nonemptyString" use="required" />
+    <xsd:attribute name="selector" type="groupSelector" use="optional" default="any" />
+    <xsd:attribute name="invokers" type="invokersString" use="optional" />
+    <xsd:attribute name="probability" type="xsd:double" use="optional" />
+  </xsd:complexType>
+
+  <xsd:complexType name="failure">
+    <xsd:attribute name="id" type="failureIdString" />
+    <xsd:attribute name="probability" type="xsd:double" use="optional" />
+  </xsd:complexType>
+
+  <xsd:simpleType name="failureIdString">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="engFire1"/>
+      <xsd:enumeration value="engFire2"/>
+      <xsd:enumeration value="engFire3"/>
+      <xsd:enumeration value="engFire4"/>
+      <xsd:enumeration value="engTurbo1"/>
+      <xsd:enumeration value="engTurbo2"/>
+      <xsd:enumeration value="engTurbo3"/>
+      <xsd:enumeration value="engTurbo4"/>
+      <xsd:enumeration value="engCoolant1"/>
+      <xsd:enumeration value="engCoolant2"/>
+      <xsd:enumeration value="engCoolant3"/>
+      <xsd:enumeration value="engCoolant4"/>
+      <xsd:enumeration value="eng1"/>
+      <xsd:enumeration value="eng2"/>
+      <xsd:enumeration value="eng3"/>
+      <xsd:enumeration value="eng4"/>
+      <xsd:enumeration value="vacuum"/>
+      <xsd:enumeration value="electrical"/>
+      <xsd:enumeration value="pitot"/>
+      <xsd:enumeration value="static_port"/>
+      <xsd:enumeration value="hydraulics"/>
+      <xsd:enumeration value="pnlAirspeed"/>
+      <xsd:enumeration value="pnlAltimeter"/>
+      <xsd:enumeration value="pnlAttitude"/>
+      <xsd:enumeration value="pnlCompass"/>
+      <xsd:enumeration value="pnlElectrical"/>
+      <xsd:enumeration value="pnlAvionics"/>
+      <xsd:enumeration value="pnlEngine"/>
+      <xsd:enumeration value="pnlFuel"/>
+      <xsd:enumeration value="pnlHeading"/>
+      <xsd:enumeration value="pnlVS"/>
+      <xsd:enumeration value="pnlPitot"/>
+      <xsd:enumeration value="pnlTurn"/>
+      <xsd:enumeration value="pnlVacuum"/>
+      <xsd:enumeration value="brakeAll"/>
+      <xsd:enumeration value="brakeRight"/>
+      <xsd:enumeration value="brakeLeft"/>
+      <xsd:enumeration value="fuelCenter"/>
+      <xsd:enumeration value="fuelLeft"/>
+      <xsd:enumeration value="fuelRight"/>
+      <xsd:enumeration value="gearCenter"/>
+      <xsd:enumeration value="gearLeft"/>
+      <xsd:enumeration value="gearRight"/>
+      <xsd:enumeration value="flapsLeft"/>
+      <xsd:enumeration value="flapsRight"/>
+      <xsd:enumeration value="rudderTrim"/>
+      <xsd:enumeration value="aileronTrim"/>
+      <xsd:enumeration value="elevatorTrim"/>
+      <xsd:enumeration value="elevator"/>
+      <xsd:enumeration value="aileron"/>
+      <xsd:enumeration value="rudder"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="invokersString">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\S+(;\S+)+" />
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="groupSelector">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="any" />
+      <xsd:enumeration value="one" />
+      <xsd:enumeration value="all" />
+      <xsd:enumeration value="none" />
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+</xsd:schema>
