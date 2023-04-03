@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -26,6 +27,12 @@ namespace Eng.Chlaot.ChlaotModuleBase
       {
         action(item);
       }
+    }
+
+    public static BindingList<T> ToBindingList<T>(this List<T> lst)
+    {
+      BindingList<T> ret = new BindingList<T>(lst);
+      return ret;
     }
 
   }

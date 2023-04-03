@@ -37,12 +37,51 @@ namespace EXmlLib
       }
     }
 
+    public class ContextCustomData
+    {
+      private readonly Dictionary<string, object> data = new();
+      public object this[string key]
+      {
+        get
+        {
+          if (data.ContainsKey(key))
+          {
+            return data[key];
+          }
+          else
+            throw new ArgumentException($"There is no key 'key' in CustomData.");
+        }
+        set
+        {
+          this.data[key] = value;
+        }
+      }
+
+      public T Get<T>(string key)
+      {
+        T ret;
+        object tmp = this[key];
+        if (tmp is T)
+          ret = (T)tmp;
+        else
+          throw new ArgumentException($"The CustomData item '{key}' is not of the type '{typeof(T).Name}' (but '{tmp.GetType().Name}')");
+        return ret;
+      }
+
+      public void Delete(string key)
+      {
+        if (data.ContainsKey(key))
+          data.Remove(key);
+      }
+    }
+
     private DefaultObjectFactoryImplementation _DefaultObjectFactory = new();
     public List<IAttributeDeserializer> AttributeDeserializers { get; private set; } = new();
     public IFactory DefaultObjectFactory => _DefaultObjectFactory;
     public List<IElementDeserializer> ElementDeserializers { get; private set; } = new();
     public List<IFactory> Factories { get; private set; } = new();
     public bool IgnoreMissingProperties { get; set; } = true;
+    public ContextCustomData CustomData { get; } = new ContextCustomData();
 
     public IAttributeDeserializer ResolveAttributeDeserializer(Type type)
     {

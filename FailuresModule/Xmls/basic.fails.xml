@@ -1,39 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<group>
-  <group title="Engine" forwarding="any">
-    <group title="Fire" forwarding="any" invoker="takeOff">
+<group  
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://tempuri.org/Schema.xsd"
+  xsi:noNamespaceSchemaLocation="FailureSchema.xsd">
+  <group title="Engine" selector="any">
+    <group title="Fire" selector="any" invoker="takeOff">
       <failure id="engFire1" />
       <failure id="engFire2" />
       <failure id="engFire3" />
       <failure id="engFire4" />
     </group>
-    <group title="TurboCharger" forwarding="any">
+    <group title="TurboCharger" selector="any">
       <failure id="engTurbo1" />
       <failure id="engTurbo2" />
       <failure id="engTurbo3" />
       <failure id="engTurbo4" />
     </group>
-    <group type="Coolant" forwarding="any">
+    <group title="Coolant" selector="any">
       <failure id="engCoolant1" />
       <failure id="engCoolant2" />
       <failure id="engCoolant3" />
       <failure id="engCoolant4" />
     </group>
-    <group type="Failure" forwarding="any">
+    <group title="Failure" selector="any">
       <failure id="eng1" />
       <failure id="eng2" />
       <failure id="eng3" />
       <failure id="eng4" />
     </group>
   </group>
-  <group title="Systems" forwarding="any">
+  <group title="Systems" selector="any">
     <failure id="vacuum" />
     <failure id="electrical" />
     <failure id="pitot" />
     <failure id="static_port" />
     <failure id="hydraulics" />
   </group>
-  <group title="Panel Instruments" forwarding="any">
+  <group title="Panel Instruments" selector="any">
     <failure id="pnlAirspeed" />
     <failure id="pnlAltimeter" />
     <failure id="pnlAttitude" />
@@ -48,35 +51,35 @@
     <failure id="pnlTurn" />
     <failure id="pnlVacuum" />
   </group>
-  <group title="Brakes" forwarding="one">
+  <group title="Brakes" selector="one">
     <failure id="brakeAll" />
     <failure id="brakeLeft" />
     <failure id="brakeRight" />
   </group>
-  <group title="Fuel" forwarding="any">
+  <group title="Fuel" selector="any">
     <failure id="fuelCenter" />
     <failure id="fuelLeft" />
     <failure id="fuelRight" />
   </group>
-  <group title="Gear" forwarding="one">
+  <group title="Gear" selector="one">
     <failure id="gearCenter" />
     <failure id="gearLeft" />
     <failure id="gearRight" />
-    <group title="Gear all" forwarding="all">
+    <group title="Gear all" selector="all">
       <failure id="gearCenter" />
       <failure id="gearLeft" />
       <failure id="gearRight" />
     </group>
   </group>
-  <group title="Flaps" forwarding="any">
+  <group title="Flaps" selector="any">
     <failure id="flapsLeft" />
     <failure id="flapsRight" />
-    <group title="Flaps all" forwarding="all">
+    <group title="Flaps all" selector="all">
       <failure id="flapsLeft" />
       <failure id="flapsRight" />
     </group>
   </group>
-  <group title="surfaces" forwarding="any">
+  <group title="Surfaces" selector="none">
     <failure id="rudderTrim" />
     <failure id="aileronTrim" />
     <failure id="elevatorTrim" />

@@ -10,4 +10,10 @@
     <ProjectReference Include="..\ChlaotModuleBase\ChlaotModuleBase.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Xmls\basic.fails.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
