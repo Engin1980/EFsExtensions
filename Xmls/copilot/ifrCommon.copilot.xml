@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<copilotSet
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://chlaot.org/copilots.xsd"
+        xmlns:g="http://chlaot.org/global.xsd"
+        >
+
+  <metaInfo>
+    <g:author>Marek Vajgl</g:author>
+    <g:label>Common IFS copilot callouts</g:label>
+    <g:description>(none)</g:description>
+    <g:version>1.1</g:version>
+  </metaInfo>
+  <speechDefinition title="Positive rate">
+    <speech type="speech" value="Positive rate"/>
+    <trigger>
+      <g:and>
+        <g:property name="height" direction="above" value="0"/>
+        <g:property name="verticalSpeed" direction="above" value="100"/>
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:for seconds="10">
+        <g:property name="height" direction="below" value="1"/>
+      </g:for>
+    </reactivationTrigger>
+  </speechDefinition>
+  <speechDefinition title="Deceleration announcement (80)kts">
+    <speech type="speech" value="{speed} knots"/>
+    <trigger>
+      <and>
+        <property name="ias" direction="passingDown" value="{speed}"/>
+        <property name="height" direction="below" value="5"/>
+        <property name="acceleration" direction="below" value="0"/>
+      </and>
+    </trigger>
+    <reactivationTrigger>
+      <for seconds="10">
+        <property name="ias" direction="above" value="{speed}"/>
+      </for>
+    </reactivationTrigger>
+    <variables>
+      <userVariable name="speed" defaultValue="80" info="Speed in kts"/>
+    </variables>
+  </speechDefinition>
+  <speechDefinition title="Deceleration announcement (60)kts">
+    <speech type="speech" value="{speed} knots"/>
+    <trigger>
+      <and>
+        <property name="ias" direction="passingDown" value="{speed}"/>
+        <property name="height" direction="below" value="5"/>
+        <property name="acceleration" direction="below" value="0"/>
+      </and>
+    </trigger>
+    <reactivationTrigger>
+      <for seconds="10">
+        <property name="ias" direction="above" value="{speed}"/>
+      </for>
+    </reactivationTrigger>
+    <variables>
+      <userVariable name="speed" defaultValue="60" info="Speed in kts"/>
+    </variables>
+  </speechDefinition>
+  <speechDefinition title="Transition Altitude">
+    <speech type="speech" value="Transition altitude"/>
+    <trigger>
+      <and>
+        <property name="verticalSpeed" direction="above" value="300"/>
+        <property name="altitude" direction="passing" value="{transition_altitude}"
+                  randomize="+-300"/>
+      </and>
+    </trigger>
+    <reactivationTrigger>
+      <for seconds="10">
+        <true/>
+      </for>
+    </reactivationTrigger>
+    <variables>
+      <userVariable name="transition_altitude" defaultValue="5000" info="Transition altitude"/>
+    </variables>
+  </speechDefinition>
+  <speechDefinition title="Transition Level">
+    <speech type="speech" value="Transition level"/>
+    <trigger>
+      <and>
+        <property name="verticalSpeed" direction="below" value="-300"/>
+        <property name="altitude" direction="passing" value="{transition_level}"
+                  randomize="+-300"/>
+      </and>
+    </trigger>
+    <reactivationTrigger>
+      <for seconds="10">
+        <true/>
+      </for>
+    </reactivationTrigger>
+    <variables>
+      <userVariable name="transition_level" defaultValue="5000" info="Transition level"/>
+    </variables>
+  </speechDefinition>
+  <speechDefinition title="FL100 pass">
+    <speech type="speech" value="Passing ten thousand feet"/>
+    <trigger>
+      <and>
+        <property name="altitude" direction="passing" value="10000" randomize="+-300"/>
+      </and>
+    </trigger>
+    <reactivationTrigger>
+      <for seconds="30">
+        <or>
+          <property name="verticalSpeed" direction="above" value="500"/>
+          <property name="verticalSpeed" direction="below" value="-500"/>
+        </or>
+      </for>
+    </reactivationTrigger>
+  </speechDefinition>
+  <speechDefinition title="v1">
+    <speech type="speech" value="V One"/>
+    <trigger>
+      <and>
+        <property name="ias" direction="passing" value="{v1}"/>
+        <property name="acceleration" direction="above" value="1"/>
+      </and>
+    </trigger>
+    <reactivationTrigger>
+      <property name="ias" direction="below" value="10"/>
+    </reactivationTrigger>
+  </speechDefinition>
+  <speechDefinition title="vr">
+    <speech type="speech" value="V Rotate"/>
+    <trigger>
+      <and>
+        <property name="ias" direction="passing" value="{vr}"/>
+        <property name="acceleration" direction="above" value="1"/>
+      </and>
+    </trigger>
+    <reactivationTrigger>
+      <property name="ias" direction="below" value="10"/>
+    </reactivationTrigger>
+  </speechDefinition>
+  <speechDefinition title="v2">
+    <speech type="speech" value="V Two"/>
+    <trigger>
+      <and>
+        <property name="ias" direction="passing" value="{v2}"/>
+        <property name="acceleration" direction="above" value="1"/>
+      </and>
+    </trigger>
+    <reactivationTrigger>
+      <property name="ias" direction="below" value="10"/>
+    </reactivationTrigger>
+  </speechDefinition>
+</copilotSet>

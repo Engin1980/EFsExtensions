@@ -5,10 +5,12 @@ using FailuresModule.Types;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Xml.Linq;
 
 namespace FailuresModule.Xmls
@@ -17,11 +19,11 @@ namespace FailuresModule.Xmls
   {
     private const string FAILURES_KEY = "__failures";
     private const string LOG_HANDLER_KEY = "__log_handler";
-    public static EXml<FailGroup> CreateDeserializer(List<Failure> failures, NewLogHandler logHandler)
+    public static EXml<FailGroup> CreateDeserializer(List<FailureDefinition> failures, NewLogHandler logHandler)
     {
       EXml<FailGroup> ret = new();
 
-      Dictionary<string, Failure> failDict = failures.ToDictionary(q => q.Id, q => q);
+      Dictionary<string, FailureDefinition> failDict = failures.ToDictionary(q => q.Id, q => q);
       ret.Context.CustomData[FAILURES_KEY] = failDict;
       ret.Context.CustomData[LOG_HANDLER_KEY] = logHandler;
       ret.Context.ElementDeserializers.Insert(0, CreateFailGroupDeserializer());
@@ -44,25 +46,81 @@ namespace FailuresModule.Xmls
             var bindingItems = new BindingList<FailGroup>(items);
             SafeUtils.SetPropertyValue(p, t, bindingItems);
           })
+        .WithCustomPropertyDeserialization(nameof(FailGroup.Frequency),
+        (e, t, p, c) =>
+        {
+          NewLogHandler newLogHandler = c.CustomData.Get<NewLogHandler>(LOG_HANDLER_KEY);
+          var frequency = LoadFrequency($"Group {e.Attribute("title")!.Value}", e, newLogHandler);
+          SafeUtils.SetPropertyValue(p, t, frequency);
+        })
         .WithCustomPropertyDeserialization(nameof(FailGroup.Failures),
           (e, t, p, c) =>
           {
-            IEnumerable<string> ids = e.LElements("failure").Select(q => q.Attribute("id")!.Value);
-            Dictionary<string, Failure> failures =
-              c.CustomData.Get<Dictionary<string, Failure>>(FAILURES_KEY);
+            var tmps = e.LElements("failure").Select(q => new
+            {
+              Id = q.Attribute("id")!.Value,
+              Element = q
+            });
+            Dictionary<string, FailureDefinition> failures =
+              c.CustomData.Get<Dictionary<string, FailureDefinition>>(FAILURES_KEY);
             NewLogHandler newLogHandler = c.CustomData.Get<NewLogHandler>(LOG_HANDLER_KEY);
             BindingList<Failure> items = new();
-            foreach (var id in ids)
+            foreach (var tmp in tmps)
             {
-              if (!failures.TryGetValue(id, out Failure? f))
+              if (!failures.TryGetValue(tmp.Id, out FailureDefinition? f))
+              {
                 newLogHandler.Invoke(LogLevel.WARNING, "Unknown failure id '{id}'. Skipped.");
-              else
-                items.Add(f!);
+                continue;
+              }
+              Failure failure = new()
+              {
+                Definition = f
+              };
+              var frequency = LoadFrequency($"Failure '{tmp.Id}'", tmp.Element, newLogHandler);
+              failure.Frequency = frequency;
+
+              items.Add(failure!);
             }
 
             SafeUtils.SetPropertyValue(p, t, items);
           });
 
+      return ret;
+    }
+
+    private static FailureFrequency LoadFrequency(string sourceId, XElement element, NewLogHandler newLogHandler)
+    {
+      FailureFrequency? ret = null;
+      if (element.Attributes("mtbf").Any())
+        try
+        {
+          int attval = int.Parse(element.Attribute("mtbf")!.Value);
+          ret = new MtbfFailureFrequency() { MTBF = attval };
+        }
+        catch
+        {
+          newLogHandler.Invoke(
+            LogLevel.WARNING,
+            $"'{sourceId}' has MTBF set to {element.Attribute("mtbf")!.Value}, what cannot be represented as int. Skipped.");
+        }
+
+      if (ret == null && element.Attributes("probability").Any())
+        try
+        {
+          int attval = int.Parse(element.Attribute("probability")!.Value);
+          ret = new ProbabilityFailureFrequency() { Probability = attval };
+        }
+        catch
+        {
+          newLogHandler.Invoke(
+            LogLevel.WARNING, 
+            $"'{sourceId}' has probability set to {element.Attribute("probability")!.Value}, what cannot be represented as int. Skipped.");
+        }
+      else
+      {
+        newLogHandler.Invoke(LogLevel.WARNING, $"Failure id '{sourceId}' has neither MTBF nor Probability set. Default probability 5% used.");
+        ret = new ProbabilityFailureFrequency() { Probability = 5 };
+      }
       return ret;
     }
   }

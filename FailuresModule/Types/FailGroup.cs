@@ -64,7 +64,13 @@ namespace FailuresModule.Types
     }
 
     public string Title { get; set; }
-    public double? Probability { get; set; }
+
+    public FailureFrequency Frequency
+    {
+      get => base.GetProperty<FailureFrequency>(nameof(Frequency))!;
+      set => base.UpdateProperty(nameof(Frequency), value);
+    }
+
     public ESelector Selector { get; set; }
 
     public List<object> Items
@@ -73,7 +79,7 @@ namespace FailuresModule.Types
       {
         List<object> ret = new();
         ret.AddRange(Groups.OrderBy(q => q.Title));
-        ret.AddRange(Failures.OrderBy(q => q.Title));
+        ret.AddRange(Failures.OrderBy(q => q.Definition.Title));
         return ret;
       }
     }

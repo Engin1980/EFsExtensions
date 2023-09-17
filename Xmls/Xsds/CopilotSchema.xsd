@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<xsd:schema id="Schema"
+            targetNamespace="http://chlaot.org/copilots.xsd"
+            elementFormDefault="qualified"
+            xmlns="http://chlaot.org/copilots.xsd"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:g ="http://chlaot.org/global.xsd"
+>
+  <xsd:import namespace="http://chlaot.org/global.xsd" schemaLocation="Global.xsd" />
+
+  <xsd:element name="copilotSet">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="metaInfo" minOccurs="1" maxOccurs="1" type="g:metaData"/>
+        <xsd:element name="speechDefinition" minOccurs="1" maxOccurs="unbounded" type="speechDefinition"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="speechDefinition">
+    <xsd:sequence>
+      <xsd:element name="speech" minOccurs="1" maxOccurs="unbounded" type="g:speech"/>
+      <xsd:element name="trigger" minOccurs="1" maxOccurs="1" type="g:stateCheckConditionTop"/>
+      <xsd:element name="reactivationTrigger" minOccurs="1" maxOccurs="1" type="g:stateCheckConditionTop"/>
+      <xsd:element name="variables" minOccurs="0" maxOccurs="unbounded" type="g:variables"/>
+    </xsd:sequence>
+    <xsd:attribute name="title" type="g:nonemptyString" use="required"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="variableInfo">
+    <xsd:attribute name="name" type="g:nonemptyString" use="required"/>
+    <xsd:attribute name="defaultValue" type="xsd:int" use="optional"/>
+    <xsd:attribute name="info" type="xsd:string" use="optional"/>
+  </xsd:complexType>
+
+</xsd:schema>

@@ -34,7 +34,7 @@ namespace FailuresModule
       set => base.UpdateProperty(nameof(FailGroup), value);
     }
 
-    public List<Failure> Failures { get; set; }
+    public List<FailureDefinition> Failures { get; set; }
 
     internal void BuildFailures()
     {

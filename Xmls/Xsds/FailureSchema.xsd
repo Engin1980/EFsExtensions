@@ -1,79 +1,82 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <xsd:schema id="Failures"
-    targetNamespace="http://tempuri.org/failureModule.xsd"
-    elementFormDefault="qualified"
-    xmlns="http://tempuri.org/failureModule.xsd"
-    xmlns:mstns="http://tempuri.org/failureModule.xsd"
-    xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            targetNamespace="http://chlaot.org/failures.xsd"
+            elementFormDefault="qualified"
+            xmlns="http://chlaot.org/failures.xsd"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:g ="http://chlaot.org/global.xsd"
 >
-  <xsd:include schemaLocation="Global.xsd" />
-  
-  <xsd:element name="group" type="group" />
+  <xsd:import namespace="http://chlaot.org/global.xsd" schemaLocation="Global.xsd" />
+
+  <xsd:element name="failureDefinitions">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="meta" minOccurs="1" maxOccurs="1" type="g:metaData"/>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element name="group" type="group"/>
+          <xsd:element name="incident" type="incident"/>
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="group" type="group"/>
 
   <xsd:complexType name="group">
     <xsd:choice minOccurs="0" maxOccurs="unbounded">
-      <xsd:element name="group" type="group" />
-      <xsd:element name="incident" type="incident" />
+      <xsd:element name="group" type="group"/>
+      <xsd:element name="incident" type="incident"/>
     </xsd:choice>
-    <xsd:attribute name="title" type="nonemptyString" use="required" />
+    <xsd:attribute name="title" type="g:nonemptyString" use="required"/>
   </xsd:complexType>
 
   <xsd:complexType name="incident">
     <xsd:sequence>
-      <xsd:element name="variables" type="variables" minOccurs="0" maxOccurs="1" />
-      <xsd:element name="triggers" type="triggers" minOccurs="1" maxOccurs="1" />
-      <xsd:element name="failures" type="failures" minOccurs="1" maxOccurs="1" />
+      <xsd:element name="variables" type="g:variables" minOccurs="0" maxOccurs="1"/>
+      <xsd:element name="triggers" type="triggers" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="failures" type="failures" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
+    <xsd:attribute name="title" type="g:nonemptyString" use="required"/>
+    <xsd:attribute name="repetitive" type="xsd:boolean" use="required"/>
   </xsd:complexType>
 
-  <xsd:complexType name="variables">
-    <xsd:choice minOccurs="1" maxOccurs="unbounded">
-      <xsd:element name="randomVariable" type="randomVariable" />
-      <xsd:element name="userVariable" type="userVariable" />
-    </xsd:choice>
-  </xsd:complexType>
 
-  <xsd:complexType name="randomVariable">
-    <xsd:attribute name="name" type="nonemptyString" use="required" />
-    <xsd:attribute name="minimum" type="xsd:double" use="required" />
-    <xsd:attribute name="maximum" type="xsd:double" use="required" />
-  </xsd:complexType>
-
-  <xsd:complexType name="userVariable">
-    <xsd:attribute name="name" type="nonemptyString" use="required" />
-  </xsd:complexType>
 
   <xsd:complexType name="triggers">
     <xsd:sequence minOccurs="1" maxOccurs="unbounded">
-      <xsd:element name="trigger" type="trigger" minOccurs="1" maxOccurs="unbounded" />
+      <xsd:element name="trigger" type="trigger" minOccurs="1" maxOccurs="unbounded"/>
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="trigger">
-    <xsd:attribute name="probability" type="xsd:double" use="required" />
-    <xsd:attribute name="repetitive" type="xsd:boolean" use="required" />
+    <xsd:complexContent>
+      <xsd:extension base="g:stateCheckConditionTop">
+        <xsd:attribute name="probability" type="xsd:double" use="required"/>
+        <xsd:attribute name="repetitive" type="xsd:boolean" use="required"/>
+      </xsd:extension>
+    </xsd:complexContent>
   </xsd:complexType>
-  
+
   <!-- tady dopsat trigger zanoření na properties -->
 
   <xsd:complexType name="failures">
     <xsd:choice>
-      <xsd:element name="failure" type="failure" minOccurs="0" maxOccurs="unbounded" />
-      <xsd:element name="failGroup" type="failGroup" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="failure" type="failure" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="failGroup" type="failGroup" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:choice>
   </xsd:complexType>
-  
+
   <xsd:complexType name="failGroup">
     <xsd:choice>
-      <xsd:element name="failure" type="failure" minOccurs="0" maxOccurs="unbounded" />
-      <xsd:element name="failGroup" type="failGroup" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="failure" type="failure" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="failGroup" type="failGroup" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:choice>
-    <xsd:attribute name="selection" type="failGroupSelector" use="required" />
+    <xsd:attribute name="selection" type="failGroupSelector" use="required"/>
   </xsd:complexType>
 
   <xsd:complexType name="failure">
-    <xsd:attribute name="id" type="failureIdString" />
-    <xsd:attribute name="weight" type="xsd:double" use="optional" />
+    <xsd:attribute name="id" type="failureIdString"/>
+    <xsd:attribute name="weight" type="xsd:double" use="optional"/>
   </xsd:complexType>
 
   <xsd:simpleType name="failureIdString">
@@ -131,13 +134,13 @@
       <xsd:enumeration value="rudder"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
+
   <xsd:simpleType name="failGroupSelector">
     <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="one" />
-      <xsd:enumeration value="all" />
-      <xsd:enumeration value="none" />
+      <xsd:enumeration value="one"/>
+      <xsd:enumeration value="all"/>
+      <xsd:enumeration value="none"/>
     </xsd:restriction>
   </xsd:simpleType>
-  
+
 </xsd:schema>

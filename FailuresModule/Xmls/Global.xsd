@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsd:schema id="Schema"
-            targetNamespace="http://tempuri.org/chlaotModule.xsd"
+            targetNamespace="http://tempuri.org/failureModule.xsd"
             elementFormDefault="qualified"
-            xmlns="http://tempuri.org/chlaotModule.xsd"
+            xmlns="http://tempuri.org/failureModule.xsd"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 
   <xsd:simpleType name="nonemptyString">

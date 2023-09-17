@@ -18,9 +18,9 @@ namespace FailuresModule.Types
   {
     private static int ENGINES_COUNT = 4;
 
-    public static List<Failure> BuildFailures()
+    public static List<FailureDefinition> BuildFailures()
     {
-      List<Failure> ret = new();
+      List<FailureDefinition> ret = new();
 
       var funs = typeof(FailureFactory)
         .GetMethods(System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.NonPublic)
@@ -32,9 +32,9 @@ namespace FailuresModule.Types
         try
         {
           object tmp = (fun.Invoke(null, null) ?? throw new NullReferenceException());
-          if (tmp is Failure f)
+          if (tmp is FailureDefinition f)
             ret.Add(f);
-          else if (tmp is List<Failure> l)
+          else if (tmp is List<FailureDefinition> l)
             ret.AddRange(l);
         }
         catch (Exception ex)
@@ -45,52 +45,52 @@ namespace FailuresModule.Types
       return ret;
     }
 
-    private static List<Failure> BuildEngineFire()
+    private static List<FailureDefinition> BuildEngineFire()
     {
-      List<Failure> ret = new();
+      List<FailureDefinition> ret = new();
 
       for (int i = 1; i <= ENGINES_COUNT; i++)
       {
-        InstantFailure f = new($"engFire{i}", $"Engine {i} fire", new VarSimConPoint($"ENGINE ON FIRE:{i}"));
+        InstantFailureDefinition f = new($"engFire{i}", $"Engine {i} fire", new VarSimConPoint($"ENGINE ON FIRE:{i}"));
         ret.Add(f);
       }
 
       return ret;
     }
 
-    private static List<Failure> BuildEngineTurbochanger()
+    private static List<FailureDefinition> BuildEngineTurbochanger()
     {
-      List<Failure> ret = new();
+      List<FailureDefinition> ret = new();
 
       for (int i = 1; i <= ENGINES_COUNT; i++)
       {
-        InstantFailure f = new($"engTurbo{i}", $"Engine {i} TurboChanger", new VarSimConPoint($"RECIP ENG TURBOCHARGER FAILED:{i}"));
+        InstantFailureDefinition f = new($"engTurbo{i}", $"Engine {i} TurboChanger", new VarSimConPoint($"RECIP ENG TURBOCHARGER FAILED:{i}"));
         ret.Add(f);
       }
 
       return ret;
     }
 
-    private static List<Failure> BuildEngineCoolantReservoir()
+    private static List<FailureDefinition> BuildEngineCoolantReservoir()
     {
-      List<Failure> ret = new();
+      List<FailureDefinition> ret = new();
 
       for (int i = 1; i <= ENGINES_COUNT; i++)
       {
-        LeakFailure f = new($"engCoolant{i}", $"Engine {i} Coolant Reservoir", new VarSimConPoint($"RECIP ENG COOLANT RESERVOIR PERCENT:{i}"));
+        LeakFailureDefinition f = new($"engCoolant{i}", $"Engine {i} Coolant Reservoir", new VarSimConPoint($"RECIP ENG COOLANT RESERVOIR PERCENT:{i}"));
         ret.Add(f);
       }
 
       return ret;
     }
 
-    private static List<Failure> BuildEngineFailure()
+    private static List<FailureDefinition> BuildEngineFailure()
     {
-      List<Failure> ret = new();
+      List<FailureDefinition> ret = new();
 
       for (int i = 0; i < ENGINES_COUNT; i++)
       {
-        InstantFailure tmp = new($"eng{i}", $"Engine {i} Failure", new EventSimConPoint($"TOGGLE_ENGINE{i}_FAILURE"));
+        InstantFailureDefinition tmp = new($"eng{i}", $"Engine {i} Failure", new EventSimConPoint($"TOGGLE_ENGINE{i}_FAILURE"));
         ret.Add(tmp);
       }
 
@@ -98,7 +98,7 @@ namespace FailuresModule.Types
     }
 
 
-    private static List<Failure> BuildSystemFailures()
+    private static List<FailureDefinition> BuildSystemFailures()
     {
       NameTuple[] tmp =
       {
@@ -110,14 +110,14 @@ namespace FailuresModule.Types
       };
 
       var ret = tmp
-        .Select(q => new InstantFailure(q.Id, q.Name, new EventSimConPoint(q.Sim)))
-        .Cast<Failure>()
+        .Select(q => new InstantFailureDefinition(q.Id, q.Name, new EventSimConPoint(q.Sim)))
+        .Cast<FailureDefinition>()
         .ToList();
 
       return ret;
     }
 
-    private static List<Failure> BuildInstrumentFailures()
+    private static List<FailureDefinition> BuildInstrumentFailures()
     {
       NameTuple[] vars =
       {
@@ -137,14 +137,14 @@ namespace FailuresModule.Types
       };
 
       var ret = vars.ToList()
-        .Select(q => new InstantFailure(q.Id, q.Name, new VarSimConPoint(q.Sim)))
-        .Cast<Failure>()
+        .Select(q => new InstantFailureDefinition(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+        .Cast<FailureDefinition>()
         .ToList();
 
       return ret;
     }
 
-    private static List<Failure> BuildBrakeFailures()
+    private static List<FailureDefinition> BuildBrakeFailures()
     {
       NameTuple[] tmp =
       {
@@ -154,14 +154,14 @@ namespace FailuresModule.Types
       };
 
       var ret = tmp.ToList()
-        .Select(q => new InstantFailure(q.Id, q.Name, new EventSimConPoint(q.Sim)))
-        .Cast<Failure>()
+        .Select(q => new InstantFailureDefinition(q.Id, q.Name, new EventSimConPoint(q.Sim)))
+        .Cast<FailureDefinition>()
         .ToList();
 
       return ret;
     }
 
-    private static List<Failure> BuildFuelFailures()
+    private static List<FailureDefinition> BuildFuelFailures()
     {
       NameTuple[] tmp =
       {
@@ -171,14 +171,14 @@ namespace FailuresModule.Types
       };
 
       var ret = tmp
-         .Select(q => new LeakFailure(q.Id, q.Name, new VarSimConPoint(q.Sim)))
-         .Cast<Failure>()
+         .Select(q => new LeakFailureDefinition(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+         .Cast<FailureDefinition>()
          .ToList();
 
       return ret;
     }
 
-    private static List<Failure> BuildGearFailures()
+    private static List<FailureDefinition> BuildGearFailures()
     {
       NameTuple[] tmp =
       {
@@ -188,14 +188,14 @@ namespace FailuresModule.Types
       };
 
       var ret = tmp.ToList()
-        .Select(q => new StuckFailure(q.Id, q.Name, new VarSimConPoint(q.Sim)))
-        .Cast<Failure>()
+        .Select(q => new StuckFailureDefinition(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+        .Cast<FailureDefinition>()
         .ToList();
 
       return ret;
     }
 
-    private static List<Failure> BuildFlapsFailures()
+    private static List<FailureDefinition> BuildFlapsFailures()
     {
       NameTuple[] tmp =
       {
@@ -204,14 +204,14 @@ namespace FailuresModule.Types
       };
 
       var ret = tmp.ToList()
-        .Select(q => new StuckFailure(q.Id, q.Name, new VarSimConPoint(q.Sim)))
-        .Cast<Failure>()
+        .Select(q => new StuckFailureDefinition(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+        .Cast<FailureDefinition>()
         .ToList();
 
       return ret;
     }
 
-    private static List<Failure> BuildSurfacesFailures()
+    private static List<FailureDefinition> BuildSurfacesFailures()
     {
       NameTuple[] tmp =
       {
@@ -224,8 +224,8 @@ namespace FailuresModule.Types
       };
 
       var ret = tmp.ToList()
-        .Select(q => new StuckFailure(q.Id, q.Name, new VarSimConPoint(q.Sim)))
-        .Cast<Failure>()
+        .Select(q => new StuckFailureDefinition(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+        .Cast<FailureDefinition>()
         .ToList();
 
       return ret;

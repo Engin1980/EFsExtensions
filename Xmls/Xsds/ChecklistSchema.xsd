@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema id="Schema"
+            targetNamespace="http://chlaot.org/checklists.xsd"
+            elementFormDefault="qualified"
+            xmlns="http://chlaot.org/checklists.xsd"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:g ="http://chlaot.org/global.xsd"
+>
+  <xsd:import namespace="http://chlaot.org/global.xsd" schemaLocation="Global.xsd" />
+
+  <xsd:element name="checklistSet">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="meta" minOccurs="1" maxOccurs="1" type="g:metaData"/>
+        <xsd:element name="checklist" minOccurs="1" maxOccurs="unbounded" type="checklist"/>
+      </xsd:sequence>
+      <xsd:attribute name="firstChecklistId" type="g:nonemptyString" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:complexType name="checklist">
+    <xsd:sequence>
+      <xsd:element name="items">
+        <xsd:complexType>
+          <xsd:sequence>
+            <xsd:element name="item" minOccurs="1" maxOccurs="unbounded" type="item"/>
+          </xsd:sequence>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="trigger" minOccurs="0" maxOccurs="1" type="g:stateCheckConditionTop"/>
+      <xsd:element name="nextChecklistId" minOccurs="1" maxOccurs="1" type="nextChecklistId"/>
+      <xsd:element name="customEntrySpeech" minOccurs="0" maxOccurs="1" type="g:speech"/>
+      <xsd:element name="customExitSpeech" minOccurs="0" maxOccurs="1" type="g:speech"/>
+    </xsd:sequence>
+    <xsd:attribute name="id" type="g:nonemptyString" use="required"/>
+    <xsd:attribute name="callSpeech" type="g:nonemptyString" use="optional"/>
+    <xsd:attribute name="sequence" type="xsd:integer" use="optional"/>
+    <xsd:attribute name="beginCallFile" type="g:nonemptyString" use="optional"/>
+    <xsd:attribute name="endCallFile" type="g:nonemptyString" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="nextChecklistId">
+    <xsd:attribute name="id" type="g:nonemptyString" use="optional"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="item">
+    <xsd:sequence>
+      <xsd:element name="call" type="g:speech"/>
+      <xsd:element name="confirmation" type="g:speech"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+</xsd:schema>

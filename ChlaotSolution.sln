@@ -31,7 +31,32 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AffinityModule", "AffinityM
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{BDA214A5-916B-47DD-AAC4-51A85D016FAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FailuresModule", "FailuresModule\FailuresModule.csproj", "{8A76BE54-20F4-40A1-BEF6-204FC3B97006}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FailuresModule", "FailuresModule\FailuresModule.csproj", "{8A76BE54-20F4-40A1-BEF6-204FC3B97006}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xmls", "Xmls", "{56EA1EB7-0FB0-42D6-B301-9BFE7061088D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xsds", "Xsds", "{404576BE-5C9A-4B1A-8A79-87DFB1E2718C}"
+	ProjectSection(SolutionItems) = preProject
+		Xmls\Xsds\ChecklistSchema.xsd = Xmls\Xsds\ChecklistSchema.xsd
+		Xmls\Xsds\CopilotSchema.xsd = Xmls\Xsds\CopilotSchema.xsd
+		Xmls\Xsds\FailureSchema.xsd = Xmls\Xsds\FailureSchema.xsd
+		Xmls\Xsds\Global.xsd = Xmls\Xsds\Global.xsd
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Checklist", "Checklist", "{449B60D4-B914-4D79-A613-532AFFF4AA5A}"
+	ProjectSection(SolutionItems) = preProject
+		Xmls\Checklist\a320.checklist.xml = Xmls\Checklist\a320.checklist.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Failures", "Failures", "{10F6197D-30D2-4517-9B58-04E7A9451A95}"
+	ProjectSection(SolutionItems) = preProject
+		Xmls\Failures\Failures.fail.xml = Xmls\Failures\Failures.fail.xml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Copilot", "Copilot", "{6F1EAD50-F00C-44CF-A9E0-4CCBDEF29773}"
+	ProjectSection(SolutionItems) = preProject
+		Xmls\Copilot\ifrCommon.copilot.xml = Xmls\Copilot\ifrCommon.copilot.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -92,6 +117,10 @@ Global
 		{B3A9ED8D-95CD-4BA9-9E3E-E09FCAA4D54A} = {BDA214A5-916B-47DD-AAC4-51A85D016FAE}
 		{55673CEE-5EAB-46EB-9890-C8F06325C550} = {50476E83-616C-4626-99B3-011038C60496}
 		{8A76BE54-20F4-40A1-BEF6-204FC3B97006} = {50476E83-616C-4626-99B3-011038C60496}
+		{404576BE-5C9A-4B1A-8A79-87DFB1E2718C} = {56EA1EB7-0FB0-42D6-B301-9BFE7061088D}
+		{449B60D4-B914-4D79-A613-532AFFF4AA5A} = {56EA1EB7-0FB0-42D6-B301-9BFE7061088D}
+		{10F6197D-30D2-4517-9B58-04E7A9451A95} = {56EA1EB7-0FB0-42D6-B301-9BFE7061088D}
+		{6F1EAD50-F00C-44CF-A9E0-4CCBDEF29773} = {56EA1EB7-0FB0-42D6-B301-9BFE7061088D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {635265FD-4132-4AE6-BFE3-2E4C9A812E0B}

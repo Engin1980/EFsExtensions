@@ -1,9 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <checklistSet
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://tempuri.org/chlaotModule.xsd"
-  xsi:noNamespaceSchemaLocation="ChecklistSchema.xsd"
-  firstChecklistId="batteryOn">
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://chlaot.org/checklists.xsd"
+        firstChecklistId="batteryOn">
   <meta>
     <label>A320 FBW checklist</label>
     <author>Marek Vajgl</author>
@@ -64,7 +63,7 @@
     </item>
     <metaInfo>
       <when>
-        <property name="pushbackTugConnected" direction="above" expression="0" />
+        <property name="pushbackTugConnected" direction="above" value="0" />
       </when>
     </metaInfo>
     <nextChecklistId />
@@ -98,10 +97,10 @@
       <when>
         <for seconds="30">
           <and>
-            <property name="pushbackTugConnected" direction="below" expression="1" />
-            <property name="parkingBrakeSet" direction="below" expression="1" />
-            <property name="engineStarted" nameIndex="1" direction="above" expression="0" />
-            <property name="engineStarted" nameIndex="2" direction="above" expression="0" />
+            <property name="pushbackTugConnected" direction="below" value="1" />
+            <property name="parkingBrakeSet" direction="below" value="1" />
+            <property name="engineStarted" nameIndex="1" direction="above" value="0" />
+            <property name="engineStarted" nameIndex="2" direction="above" value="0" />
           </and>
         </for>
       </when>
@@ -158,7 +157,7 @@
     </item>
     <metaInfo>
       <when>
-        <property name="height" direction="above" expression="500"/>
+        <property name="height" direction="above" value="500"/>
       </when>
     </metaInfo>
     <nextChecklistId/>
@@ -179,8 +178,8 @@
     <metaInfo>
       <when>
         <and>
-          <property name="height" direction="above" expression="3000"/>
-          <property name="ias" direction="above" expression="205"/>
+          <property name="height" direction="above" value="3000"/>
+          <property name="ias" direction="above" value="205"/>
         </and>
       </when>
     </metaInfo>
@@ -202,8 +201,8 @@
     <metaInfo>
       <when>
         <and>
-          <property name="altitude" direction="below" expression="17000"/>
-          <property name="verticalSpeed" direction="below" expression="0"/>
+          <property name="altitude" direction="below" value="17000"/>
+          <property name="verticalSpeed" direction="below" value="0"/>
         </and>
       </when>
     </metaInfo>
@@ -237,8 +236,8 @@
     <metaInfo>
       <when>
         <and>
-          <property name="height" direction="below" expression="4000"/>
-          <property name="ias" direction="below" expression="190"/>
+          <property name="height" direction="below" value="4000"/>
+          <property name="ias" direction="below" value="190"/>
         </and>
       </when>
     </metaInfo>
@@ -259,7 +258,7 @@
     </item>
     <metaInfo>
       <when>
-        <property name="height" direction="below" expression="1000"/>
+        <property name="height" direction="below" value="1000"/>
       </when>
     </metaInfo>
     <nextChecklistId id="vacated" />
@@ -280,8 +279,8 @@
     <metaInfo>
       <when>
         <and>
-          <property name="height" direction="above" expression="400" />
-          <property name="verticalSpeed" direction="above" expression="500"/>
+          <property name="height" direction="above" value="400" />
+          <property name="verticalSpeed" direction="above" value="500"/>
         </and>
       </when>
     </metaInfo>
