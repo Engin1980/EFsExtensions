@@ -50,12 +50,12 @@ namespace ESimConnect.Types
 
   internal class Optional<T>
   {
-    public T Value { get; private set; }
+    public T? Value { get; private set; }
     public bool HasValue { get; private set; }
     public static Optional<T> Of(T t) => new Optional<T>() { Value = t, HasValue = true };
     public static Optional<T> Empty() => new Optional<T>() { Value = default(T), HasValue = false };
 
-    internal T OrThrow(Func<Exception> exceptionProducer)
+    internal T? OrThrow(Func<Exception> exceptionProducer)
     {
       if (!HasValue)
         throw exceptionProducer.Invoke();

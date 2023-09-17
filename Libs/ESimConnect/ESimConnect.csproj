@@ -8,17 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Logger\ELogging.csproj" />
+    <Folder Include="Mock\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ELoging\ELogging.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
-      <HintPath>..\Libs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+      <HintPath>..\..\DLLs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Mock\" />
   </ItemGroup>
 
 </Project>

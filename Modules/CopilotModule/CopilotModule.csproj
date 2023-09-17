@@ -13,8 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ChlaotModuleBase\ChlaotModuleBase.csproj" />
-    <ProjectReference Include="..\EXmlLib\EXmlLib.csproj" />
+    <ProjectReference Include="..\..\Libs\ChlaotModuleBase\ChlaotModuleBase.csproj" />
   </ItemGroup>
 
   <ItemGroup>

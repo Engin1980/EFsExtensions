@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<checklistSet
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://chlaot.org/checklists.xsd"
+        firstChecklistId="batteryOn">
+  <meta>
+    <label>A320 FBW checklist</label>
+    <author>Marek Vajgl</author>
+    <description>Simple checklists test for A320 FBW customized</description>
+  </meta>
+  <checklist id="beforeStart" callSpeech="Before Start-up">
+    <items>
+      <item>
+        <call type="speech" value="Parking Brake"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="Seatbelts"/>
+        <confirmation type="speech" value="On"/>
+      </item>
+      <item>
+        <call type="speech" value="ADIRS"/>
+        <confirmation type="speech" value="Aligned"/>
+      </item>
+      <item>
+        <call type="speech" value="Altimeter"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="M C D U departure"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="Squawk Code"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="A P U"/>
+        <confirmation type="speech" value="Started"/>
+      </item>
+      <item>
+        <call type="speech" value="External Power"/>
+        <confirmation type="speech" value="Disconnected"/>
+      </item>
+      <item>
+        <call type="speech" value="Doors"/>
+        <confirmation type="speech" value="Closed"/>
+      </item>
+      <item>
+        <call type="speech" value="Packs"/>
+        <confirmation type="speech" value="Off"/>
+      </item>
+      <item>
+        <call type="speech" value="Throttles"/>
+        <confirmation type="speech" value="Idle"/>
+      </item>
+      <item>
+        <call type="speech" value="Surfaces"/>
+        <confirmation type="speech" value="Checked"/>
+      </item>
+      <item>
+        <call type="speech" value="Beacon light"/>
+        <confirmation type="speech" value="On"/>
+      </item>
+    </items>
+    <trigger>
+      <property name="pushbackTugConnected" direction="above" value="0"/>
+    </trigger>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="inTaxi" callSpeech="In Taxi">
+    <items>
+      <item>
+        <call type="speech" value="Packs"/>
+        <confirmation type="speech" value="On"/>
+      </item>
+      <item>
+        <call type="speech" value="A P U Bleed"/>
+        <confirmation type="speech" value="Off"/>
+      </item>
+      <item>
+        <call type="speech" value="Flaps"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="Autobrake"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="Take-off ecam state"/>
+        <confirmation type="speech" value="No blue"/>
+      </item>
+      <item>
+        <call type="speech" value="Weather Radar"/>
+        <confirmation type="speech" value="On"/>
+      </item>
+    </items>
+    <trigger>
+      <for seconds="30">
+        <and>
+          <property name="pushbackTugConnected" direction="below" value="1"/>
+          <property name="parkingBrakeSet" direction="below" value="1"/>
+          <property name="engineStarted" nameIndex="1" direction="above" value="0"/>
+          <property name="engineStarted" nameIndex="2" direction="above" value="0"/>
+        </and>
+      </for>
+    </trigger>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="beforeTakeoff" callSpeech="Before Take Off">
+    <items>
+      <item>
+        <call type="speech" value="Flight Director"/>
+        <confirmation type="speech" value="On"/>
+      </item>
+      <item>
+        <call type="speech" value="Landing Lights"/>
+        <confirmation type="speech" value="On"/>
+      </item>
+      <item>
+        <call type="speech" value="Strobe Light"/>
+        <confirmation type="speech" value="On"/>
+      </item>
+      <item>
+        <call type="speech" value="Crew"/>
+        <confirmation type="speech" value="Alerted"/>
+      </item>
+      <item>
+        <call type="speech" value="Packs"/>
+        <confirmation type="speech" value="Off"/>
+      </item>
+      <item>
+        <call type="speech" value="Transponder"/>
+        <confirmation type="speech" value="Charlie"/>
+      </item>
+      <item>
+        <call type="speech" value="Terrain"/>
+        <confirmation type="speech" value="As required"/>
+      </item>
+      <item>
+        <call type="speech" value="Clock"/>
+        <confirmation type="speech" value="Run"/>
+      </item>
+    </items>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="afterTakeoff" callSpeech="After Take Off">
+    <items>
+      <item>
+        <call type="speech" value="Gear"/>
+        <confirmation type="speech" value="Up"/>
+      </item>
+      <item>
+        <call type="speech" value="Flaps"/>
+        <confirmation type="speech" value="One"/>
+      </item>
+      <item>
+        <call type="speech" value="Autopilot"/>
+        <confirmation type="speech" value="As required"/>
+      </item>
+    </items>
+    <trigger>
+      <property name="height" direction="above" value="500"/>
+    </trigger>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="departure" callSpeech="Departure">
+    <items>
+      <item>
+        <call type="speech" value="Flaps"/>
+        <confirmation type="speech" value="Up"/>
+      </item>
+      <item>
+        <call type="speech" value="A P U"/>
+        <confirmation type="speech" value="Off"/>
+      </item>
+      <item>
+        <call type="speech" value="Packs"/>
+        <confirmation type="speech" value="On"/>
+      </item>
+    </items>
+    <trigger>
+      <and>
+        <property name="height" direction="above" value="3000"/>
+        <property name="ias" direction="above" value="205"/>
+      </and>
+    </trigger>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="descent" callSpeech="Descent">
+    <items>
+      <item>
+        <call type="speech" value="Seatbelts"/>
+        <confirmation type="speech" value="On"/>
+      </item>
+      <item>
+        <call type="speech" value="Approach M C D U data"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="Terrain"/>
+        <confirmation type="speech" value="On"/>
+      </item>
+    </items>
+    <trigger>
+      <and>
+        <property name="altitude" direction="below" value="17000"/>
+        <property name="verticalSpeed" direction="below" value="0"/>
+      </and>
+    </trigger>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="approach" callSpeech="Approach">
+    <items>
+      <item>
+        <call type="speech" value="SeatBelts"/>
+        <confirmation type="speech" value="on"/>
+      </item>
+      <item>
+        <call type="speech" value="Baro"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="Landing Lights"/>
+        <confirmation type="speech" value="On"/>
+      </item>
+      <item>
+        <call type="speech" value="Autobrake"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="Speedbrake"/>
+        <confirmation type="speech" value="Armed"/>
+      </item>
+      <item>
+        <call type="speech" value="Terrain"/>
+        <confirmation type="speech" value="On"/>
+      </item>
+    </items>
+    <trigger>
+      <and>
+        <property name="height" direction="below" value="4000"/>
+        <property name="ias" direction="below" value="190"/>
+      </and>
+    </trigger>
+    <nextChecklistId/>
+  </checklist>
+  <checklist id="shortFinal" callSpeech="Short Final">
+    <items>
+      <item>
+        <call type="speech" value="Landing Gear"/>
+        <confirmation type="speech" value="Down Three Green"/>
+      </item>
+      <item>
+        <call type="speech" value="Flaps"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="Engine thrust"/>
+        <confirmation type="speech" value="Stable"/>
+      </item>
+    </items>
+    <trigger>
+      <property name="height" direction="below" value="1000"/>
+    </trigger>
+    <nextChecklistId id="vacated"/>
+  </checklist>
+  <checklist id="goAround" callSpeech="Go Around">
+    <items>
+      <item>
+        <call type="speech" value="Gear"/>
+        <confirmation type="speech" value="Up"/>
+      </item>
+      <item>
+        <call type="speech" value="Flaps"/>
+        <confirmation type="speech" value="As required"/>
+      </item>
+      <item>
+        <call type="speech" value="Engine thrust"/>
+        <confirmation type="speech" value="Stable"/>
+      </item>
+    </items>
+    <trigger>
+      <and>
+        <property name="height" direction="above" value="400"/>
+        <property name="verticalSpeed" direction="above" value="500"/>
+      </and>
+    </trigger>
+    <nextChecklistId id="approach"/>
+  </checklist>
+  <checklist id="vacated" callSpeech="Vacated">
+    <items>
+      <item>
+        <call type="speech" value="Speed Brakes"/>
+        <confirmation type="speech" value="Retracted"/>
+      </item>
+      <item>
+        <call type="speech" value="Flaps"/>
+        <confirmation type="speech" value="Up"/>
+      </item>
+      <item>
+        <call type="speech" value="Transponder"/>
+        <confirmation type="speech" value="Stand by"/>
+      </item>
+      <item>
+        <call type="speech" value="Landing Lights"/>
+        <confirmation type="speech" value="Off"/>
+      </item>
+    </items>
+    <nextChecklistId id="beforeStart"/>
+  </checklist>
+</checklistSet>

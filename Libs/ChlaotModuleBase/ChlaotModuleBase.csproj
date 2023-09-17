@@ -15,15 +15,14 @@
   <ItemGroup>
     <ProjectReference Include="..\ESimConnect\ESimConnect.csproj" />
     <ProjectReference Include="..\EXmlLib\EXmlLib.csproj" />
-    <ProjectReference Include="..\Logger\ELogging.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
-      <HintPath>..\Libs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+      <HintPath>..\..\DLLs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
     <Reference Include="NAudioCore">
-      <HintPath>..\Libs\NAudioCore.dll</HintPath>
+      <HintPath>..\..\DLLs\NAudioCore.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -32,9 +31,5 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="call .\ModuleUtils\Xsds\copyOut.bat" />
-  </Target>
 
 </Project>

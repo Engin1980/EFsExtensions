@@ -13,19 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ChlaotModuleBase\ChlaotModuleBase.csproj" />
-    <ProjectReference Include="..\ESimConnect\ESimConnect.csproj" />
-    <ProjectReference Include="..\EXmlLib\EXmlLib.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="Microsoft.FlightSimulator.SimConnect">
-      <HintPath>..\Libs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
-    </Reference>
-    <Reference Include="NAudioCore">
-      <HintPath>..\Libs\NAudioCore.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
+    <ProjectReference Include="..\..\Libs\ChlaotModuleBase\ChlaotModuleBase.csproj" />
   </ItemGroup>
 
   <ItemGroup>
