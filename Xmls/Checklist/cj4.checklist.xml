@@ -2,7 +2,7 @@
 <checklistSet
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://tempuri.org/chlaotModule.xsd"
-  xsi:noNamespaceSchemaLocation="ChecklistSchema.xsd"
+  xsi:noNamespaceSchemaLocation="file://./Xsds/ChecklistSchema.xsd"
   firstChecklistId="batteryOn">
   <meta>
     <label>CJ4 checklist</label>

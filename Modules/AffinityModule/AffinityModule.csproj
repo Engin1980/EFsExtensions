@@ -8,21 +8,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Xmls\**" />
+    <EmbeddedResource Remove="Xmls\**" />
+    <None Remove="Xmls\**" />
+    <Page Remove="Xmls\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="System.Management" Version="7.0.0" />
     <PackageReference Include="WindowsAPICodePack" Version="7.0.4" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Libs\ChlaotModuleBase\ChlaotModuleBase.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Xmls\AffinitySchema.xsd">
-      <SubType>Designer</SubType>
-    </None>
-    <None Update="Xmls\schema.affi.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 </Project>

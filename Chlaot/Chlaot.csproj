@@ -25,4 +25,8 @@
     </None>
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="call ..\Xmls\copyXmlXsd.bat" />
+  </Target>
+
 </Project>

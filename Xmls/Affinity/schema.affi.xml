@@ -1,16 +1,15 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <affinityRuleBase
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns="http://tempuri.org/Schema.xsd"
-  xmlns:metaData="http://tempuri.org/metaData.xsd"
-  xsi:noNamespaceSchemaLocation="AffinitySchema.xsd">
+  xsi:noNamespaceSchemaLocation="file://./Xsds/AffinitySchema.xsd">
   <metaInfo>
-    <metaData:label>Simple Affinity Schema</metaData:label>
-    <metaData:author>Marek Vajgl</metaData:author>
-    <metaData:description>
+    <label>Simple Affinity Schema</label>
+    <author>Marek Vajgl</author>
+    <description>
       FS2020 uses mostly 4-5, only sometimes about 6 threads. 
       This division is created for =&gt;12 cores CPU.
-    </metaData:description>
+    </description>
   </metaInfo>
   <rule title="Mozilla" regex="Firefox" roll="0-4" />
   <rule title="Idle" regex="Idle" roll="" />

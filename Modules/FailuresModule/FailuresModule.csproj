@@ -7,13 +7,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Libs\ChlaotModuleBase\ChlaotModuleBase.csproj" />
+    <None Remove="Xmls\basic.fails.old.xml" />
+    <None Remove="Xmls\basic.fails.xml" />
+    <None Remove="Xmls\FailureSchema.xsd" />
+    <None Remove="Xmls\Global.xsd" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Xmls\basic.fails.old.xml">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <ProjectReference Include="..\..\Libs\ChlaotModuleBase\ChlaotModuleBase.csproj" />
   </ItemGroup>
 
 </Project>
