@@ -2,7 +2,7 @@
 using Eng.Chlaot.ChlaotModuleBase;
 using EXmlLib;
 using EXmlLib.Deserializers;
-using FailuresModule.Types;
+using FailuresModule.Types.Old;
 using FailuresModule.Xmls;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ using System.Xml.Serialization;
 
 namespace FailuresModule
 {
-  public class Context : NotifyPropertyChangedBase
+    public class Context : NotifyPropertyChangedBase
   {
     private readonly NewLogHandler logHandler;
     private readonly Action<bool> setIsReadyFlagAction;

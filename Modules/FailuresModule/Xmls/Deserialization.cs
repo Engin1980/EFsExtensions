@@ -1,7 +1,7 @@
 ﻿using ELogging;
 using EXmlLib;
 using EXmlLib.Deserializers;
-using FailuresModule.Types;
+using FailuresModule.Types.Old;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,7 +15,7 @@ using System.Xml.Linq;
 
 namespace FailuresModule.Xmls
 {
-  public class Deserialization
+    public class Deserialization
   {
     private const string FAILURES_KEY = "__failures";
     private const string LOG_HANDLER_KEY = "__log_handler";

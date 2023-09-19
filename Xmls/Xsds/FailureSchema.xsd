@@ -34,7 +34,7 @@
     <xsd:sequence>
       <xsd:element name="variables" type="g:variables" minOccurs="0" maxOccurs="1"/>
       <xsd:element name="triggers" type="triggers" minOccurs="1" maxOccurs="1"/>
-      <xsd:element name="failures" type="failures" minOccurs="1" maxOccurs="1"/>
+      <xsd:element name="failures" type="failGroup" minOccurs="1" maxOccurs="1"/>
     </xsd:sequence>
     <xsd:attribute name="title" type="g:nonemptyString" use="required"/>
     <xsd:attribute name="repetitive" type="xsd:boolean" use="required"/>
@@ -59,19 +59,13 @@
 
   <!-- tady dopsat trigger zanoření na properties -->
 
-  <xsd:complexType name="failures">
-    <xsd:choice>
-      <xsd:element name="failure" type="failure" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="failGroup" type="failGroup" minOccurs="0" maxOccurs="unbounded"/>
-    </xsd:choice>
-  </xsd:complexType>
-
   <xsd:complexType name="failGroup">
     <xsd:choice>
       <xsd:element name="failure" type="failure" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="failGroup" type="failGroup" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:choice>
     <xsd:attribute name="selection" type="failGroupSelector" use="required"/>
+    <xsd:attribute name="weight" type="xsd:double" use="optional"/>
   </xsd:complexType>
 
   <xsd:complexType name="failure">

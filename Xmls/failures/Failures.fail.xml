@@ -1,6 +1,6 @@
 <failureDefinitions
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://tempuri.org/Schema.xsd"
+        xmlns="http://chlaot.org/failures.xsd"
         xsi:noNamespaceSchemaLocation="file://./Xsds/FailureSchema.xsd">
   <meta>
     <label>Default failures for 2engine plane</label>
@@ -17,14 +17,16 @@
           <property name="ias" direction="passing" value="{vFail}"/>
         </trigger>
       </triggers>
-      <what>
-        <failGroup type="oneOf">
-          <failure type="eng1"/>
-          <failure type="eng2"/>
-          <failure type="engFire1"/>
-          <failure type="engFire2"/>
+      <failures selection="one">
+        <failure id="eng1"/>
+        <failure id="eng2"/>
+        <failure id="engFire1"/>
+        <failure id="engFire2"/>
+        <failGroup selection="all" weight="0.05">
+          <failure id="eng1" />
+          <failure id="eng2" />
         </failGroup>
-      </what>
+      </failures>
     </incident>
     <group title="Common failures">
       <group title="System failures">
@@ -37,52 +39,47 @@
               </and>
             </trigger>
           </triggers>
-          <what>
-            <failGroup type="oneOf">
-              <failure id="vacuum"/>
-              <failure id="electrical"/>
-              <failure id="pitot"/>
-              <failure id="static_port"/>
-              <failure id="hydraulics"/>
-            </failGroup>
-          </what>
+          <failures selection="one">
+            <failure id="vacuum"/>
+            <failure id="electrical"/>
+            <failure id="pitot"/>
+            <failure id="static_port"/>
+            <failure id="hydraulics"/>
+          </failures>
         </incident>
       </group>
       <incident title="Brake failures" repetitive="false">
         <triggers>
           <trigger probability="0.05" repetitive="false">
-            <property name="height" direction="below" expression="500"/>
+            <property name="height" direction="below" value="500"/>
           </trigger>
         </triggers>
-        <what>
-          <failGroup type="one">
-            <failure type="brakeAll"/>
-            <failure type="brakeLeft"/>
-            <failure type="brakeRight"/>
-          </failGroup>
-        </what>
+        <failures selection="one">
+          <failure id="brakeAll"/>
+          <failure id="brakeLeft"/>
+          <failure id="brakeRight"/>
+        </failures>
       </incident>
       <incident title="Gear failure" repetitive="false">
-        <if probability="0.03" repetitive="true">
-          <or>
-            <property name="speed" direction="passingUp" value="50"/>
-            <property name="height" direction="passingDown" value="2500" />
-          </or>
-        </if>
-        <what>
-          <failGroup type="one">
-            <failure type="gearLeft"/>
-            <failure type="gearRight"/>
-            <failure type="gearCenter"/>
-            <failGroup type="all">
-              <failure type="gearLeft"/>
-              <failure type="gearRight"/>
-              <failure type="gearCenter"/>
-            </failGroup>
+        <triggers>
+          <trigger probability="0.03" repetitive="true">
+            <or>
+              <property name="ias" direction="passingUp" value="50"/>
+              <property name="height" direction="passingDown" value="2500"/>
+            </or>
+          </trigger>
+        </triggers>
+        <failures selection="one">
+          <failure id="gearLeft"/>
+          <failure id="gearRight"/>
+          <failure id="gearCenter"/>
+          <failGroup selection="all">
+            <failure id="gearLeft"/>
+            <failure id="gearRight"/>
+            <failure id="gearCenter"/>
           </failGroup>
-        </what>
+        </failures>
       </incident>
-      <group></group>
     </group>
   </group>
 </failureDefinitions>

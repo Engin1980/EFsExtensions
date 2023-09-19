@@ -129,12 +129,13 @@
     <xsd:attribute name="name" type="nonemptyString" use="required"/>
     <xsd:attribute name="minimum" type="xsd:double" use="required"/>
     <xsd:attribute name="maximum" type="xsd:double" use="required"/>
+    <xsd:attribute name="description" type="xsd:string" use="optional" />
   </xsd:complexType>
 
   <xsd:complexType name="userVariable">
     <xsd:attribute name="name" type="nonemptyString" use="required"/>
     <xsd:attribute name="defaultValue" type="xsd:double" use="required" />
-    <xsd:attribute name="info" type="xsd:string" use="optional" />
+    <xsd:attribute name="description" type="xsd:string" use="optional" />
   </xsd:complexType>
 
 </xsd:schema>
