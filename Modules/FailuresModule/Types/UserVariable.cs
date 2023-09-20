@@ -8,6 +8,8 @@ namespace FailuresModule.Types
 {
   public class UserVariable : Variable
   {
-        public double DefaultValue { get; set; }
-    }
+    public double DefaultValue { get; set; }
+    public double Value { get; set; }
+    public override double GetValue() => this.Value;
+  }
 }

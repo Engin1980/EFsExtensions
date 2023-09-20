@@ -8,7 +8,9 @@ namespace FailuresModule.Types
 {
   public abstract class Variable
   {
-        public string Name { get; set; }
-        public string Description { get; set; }
-    }
+    public string Name { get; set; }
+    public string Description { get; set; }
+
+    public abstract double GetValue();
+  }
 }
