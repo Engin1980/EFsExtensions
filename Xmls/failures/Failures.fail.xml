@@ -2,11 +2,11 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://chlaot.org/failures.xsd"
         xsi:noNamespaceSchemaLocation="file://./Xsds/FailureSchema.xsd">
-  <meta>
+  <metaInfo>
     <label>Default failures for 2engine plane</label>
     <author>Marek Vajgl</author>
     <description></description>
-  </meta>
+  </metaInfo>
   <group title="Failures">
     <incident title="bird-strike" repetitive="false">
       <variables>
@@ -31,11 +31,15 @@
     <group title="Common failures">
       <group title="System failures">
         <incident title="Internal systems" repetitive="true">
+          <variables>
+            <randomVariable minimum="0" maximum="59" name="secondValue" />
+            <randomVariable minimum="0" maximum="9" name="minuteValue" />
+          </variables>
           <triggers>
             <trigger probability="0.0005" repetitive="true">
-              <and>
-                <property name="height" direction="above" value="1"/>
-                <property name="ias" direction="above" value="1"/>
+              <and xmlns="http://chlaot.org/global.xsd">
+                <property name="realTimeSecond" direction="exactly" value="{secondValue}" />
+                <property name="realTimeMinuteLastDigit" direction="exactly" value="{minuteValue}" />
               </and>
             </trigger>
           </triggers>

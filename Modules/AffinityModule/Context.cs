@@ -64,7 +64,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
         try
         {
           doc = XDocument.Load(xmlFile);
-          EXml<RuleBase> exml = CreateDeserializer();
+          EXml<RuleBase> exml = Deserialization.CreateDeserializer();
           tmp = exml.Deserialize(doc);
         }
         catch (Exception ex)
@@ -128,34 +128,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
       affinityAdjuster?.ResetAffinity();
     }
 
-    private EXml<RuleBase> CreateDeserializer()
-    {
-      EXml<RuleBase> ret = new();
-
-      ObjectElementDeserializer oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(RuleBase))
-        .WithCustomPropertyDeserialization(
-        nameof(RuleBase.Rules),
-        (e, t, p, c) =>
-        {
-          var des = c.ResolveElementDeserializer(typeof(Rule));
-
-          var lst = e.LElements("rule")
-            .Select(q => des.Deserialize(q, typeof(Rule), c))
-            .Cast<Rule>()
-            .ToList();
-
-          SafeUtils.SetPropertyValue(p, t, lst);
-        });
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(Rule))
-        .WithIgnoredProperty(nameof(Rule.CoreFlags));
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      return ret;
-    }
+    
     private void RefreshTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
       affinityAdjuster!.AdjustAffinityAsync();

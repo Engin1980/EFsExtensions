@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,8 @@ namespace FailuresModule.Types
 {
   public class Trigger
   {
-        public Percentage Probability { get; set; }
-        public bool Repetitive { get; set; }
-    }
+    public Percentage Probability { get; set; }
+    public bool Repetitive { get; set; }
+    public StateCheckCondition Condition { get; set; }
+  }
 }

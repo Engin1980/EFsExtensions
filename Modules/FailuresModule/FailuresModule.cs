@@ -36,7 +36,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
     public void Init()
     {
-      Context.BuildFailures();
+      //Context.BuildFailures();
       this._InitControl = new CtrInit(Context);
     }
 

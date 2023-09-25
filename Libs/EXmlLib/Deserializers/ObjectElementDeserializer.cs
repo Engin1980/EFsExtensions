@@ -81,15 +81,15 @@ namespace EXmlLib.Deserializers
         {
           IElementDeserializer deserializer = context.ResolveElementDeserializer(propertyInfo.PropertyType)
             ?? throw new EXmlException($"Unable to find element deserializer for type '{propertyInfo.PropertyType}'");
-          val = SafeUtils.Deserialize(elm, propertyInfo.PropertyType, deserializer, context);
+          val = EXmlHelper.Deserialize(elm, propertyInfo.PropertyType, deserializer, context);
         }
         else // if (attr != null)
         {
           IAttributeDeserializer deserializer = context.ResolveAttributeDeserializer(propertyInfo.PropertyType)
             ?? throw new EXmlException($"Unable to find attribute deserializer for type '{propertyInfo.PropertyType}'.");
-          val = SafeUtils.Deserialize(attr!, propertyInfo.PropertyType, deserializer);
+          val = EXmlHelper.Deserialize(attr!, propertyInfo.PropertyType, deserializer);
         }
-        SafeUtils.SetPropertyValue(propertyInfo, target, val);
+        EXmlHelper.SetPropertyValue(propertyInfo, target, val);
       }
 
       else
@@ -103,8 +103,9 @@ namespace EXmlLib.Deserializers
     public object Deserialize(XElement element, Type targetType, EXmlContext context)
     {
       object ret;
+      string targetTypeName = targetType.Name;
       IFactory factory = context.TryResolveFactory(targetType) ?? context.DefaultObjectFactory;
-      ret = SafeUtils.CreateInstance(factory, targetType);
+      ret = EXmlHelper.CreateInstance(factory, targetType);
       var props = targetType.GetProperties(
         BindingFlags.Instance
         | BindingFlags.Public

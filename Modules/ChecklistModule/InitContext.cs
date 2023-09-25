@@ -132,15 +132,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         .WithCustomTargetType(typeof(CheckSet))
         .WithCustomPropertyDeserialization(
           nameof(CheckSet.Checklists),
-          (e, t, f, c) =>
-          {
-            var deser = c.ResolveElementDeserializer(typeof(CheckList));
-            var items = e.LElements("checklist")
-              .Select(q => SafeUtils.Deserialize(q, typeof(CheckList), deser, c))
-              .Cast<CheckList>()
-              .ToList();
-            SafeUtils.SetPropertyValue(f, t, items);
-          });
+          EXmlHelper.List.CreateForFlat<CheckList>("checklist"));
       ret.Context.ElementDeserializers.Insert(0, oed);
 
       oed = new ObjectElementDeserializer()
@@ -148,38 +140,15 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         .WithIgnoredProperty(nameof(CheckList.EntrySpeechBytes))
         .WithIgnoredProperty(nameof(CheckList.ExitSpeechBytes))
         .WithCustomPropertyDeserialization(
-        nameof(CheckList.Items),
-        (e, t, p, c) =>
-        {
-          var deser = c.ResolveElementDeserializer(typeof(CheckItem));
-          var items = e.LElements("item")
-          .Select(q => SafeUtils.Deserialize(q, typeof(CheckItem), deser, c))
-          .Cast<CheckItem>()
-          .ToList();
-          SafeUtils.SetPropertyValue(p, t, items);
-        })
+          nameof(CheckList.Items),
+          EXmlHelper.List.CreateForFlat<CheckItem>("item"))
         .WithCustomPropertyDeserialization(
-        nameof(CheckList.NextChecklistId),
-        (e, t, p, c) =>
-        {
-          string? val = e.LElementOrNull("nextChecklistId")?.Attribute("id")?.Value;
-          SafeUtils.SetPropertyValue(p, t, val);
-        });
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(CheckSet))
-      .WithCustomPropertyDeserialization(
-        "Checklists",
-        (e, t, f, c) =>
-        {
-          var deser = c.ResolveElementDeserializer(typeof(CheckList));
-          var val = e.LElements("checklist")
-          .Select(q => SafeUtils.Deserialize(q, typeof(CheckList), deser, c))
-          .Cast<CheckList>()
-          .ToList();
-          SafeUtils.SetPropertyValue(f, t, val);
-        });
+          nameof(CheckList.NextChecklistId),
+          (e, t, p, c) =>
+          {
+            string? val = e.LElementOrNull("nextChecklistId")?.Attribute("id")?.Value;
+            EXmlHelper.SetPropertyValue(p, t, val);
+          });
       ret.Context.ElementDeserializers.Insert(0, oed);
 
       ret.Context.ElementDeserializers.Insert(0, new StateCheckDeserializer());
@@ -197,7 +166,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       {
         throw new ApplicationException("There are repeated checklist id definitions: " + string.Join(", ", exc));
       }
-
 
       // all property conditions has values
       Stack<IStateCheckItem> stck = new();
@@ -231,6 +199,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         .ToList()
         .ForEach(q => checkStateCheckItem(q.MetaInfo.When));
     }
+
     private void InitializeSoundStreams(CheckSet checkSet, string relativePath)
     {
       Synthetizer synthetizer = new(Settings.Synthetizer);

@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace FailuresModule.Types
 {
-  public class IncidentGroup
+  public class IncidentGroup : Incident
   {
-        public List<IncidentGroup> Groups { get; set; }
         public List<Incident> Incidents { get; set; }
     }
 }

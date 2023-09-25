@@ -219,30 +219,14 @@ namespace Eng.Chlaot.Modules.CopilotModule
         .WithCustomTargetType(typeof(CopilotSet))
         .WithCustomPropertyDeserialization(
         nameof(CopilotSet.SpeechDefinitions),
-        (e, t, f, c) =>
-        {
-          var deser = c.ResolveElementDeserializer(typeof(SpeechDefinition));
-          var items = e.LElements("speechDefinition")
-            .Select(q => SafeUtils.Deserialize(q, typeof(SpeechDefinition), deser, c))
-            .Cast<SpeechDefinition>()
-            .ToList();
-          SafeUtils.SetPropertyValue(f, t, items);
-        });
+        EXmlHelper.List.CreateForFlat<SpeechDefinition>("speechDefinition"));
       ret.Context.ElementDeserializers.Insert(0, oed);
 
       oed = new ObjectElementDeserializer()
         .WithCustomTargetType(typeof(SpeechDefinition))
         .WithCustomPropertyDeserialization(
           nameof(SpeechDefinition.Variables),
-          (e, t, f, c) =>
-          {
-            var deser = c.ResolveElementDeserializer(typeof(Variable));
-            var items = e.LElements("variable")
-              .Select(q => SafeUtils.Deserialize(q, typeof(Variable), deser, c))
-              .Cast<Variable>()
-              .ToList();
-            SafeUtils.SetPropertyValue(f, t, items);
-          });
+          EXmlHelper.List.CreateForFlat<Variable>("variable"));
       ret.Context.ElementDeserializers.Insert(0, oed);
 
       oed = new ObjectElementDeserializer()

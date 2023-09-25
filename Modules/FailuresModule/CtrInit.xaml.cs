@@ -46,7 +46,7 @@ namespace FailuresModule
         Multiselect = false,
         Title = "Select XML file with failures definitions data..."
       };
-      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("Failures definitions", "fails.xml"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("Failures definitions", "fail.xml"));
       dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("XML files", "xml"));
       dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("All files", "*"));
       if (dialog.ShowDialog() != CommonFileDialogResult.Ok || dialog.FileName == null) return;

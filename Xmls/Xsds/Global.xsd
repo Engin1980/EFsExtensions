@@ -109,6 +109,12 @@
       <xsd:enumeration value="engineStarted" />
       <xsd:enumeration value="verticalSpeed" />
       <xsd:enumeration value="acceleration" />
+      <xsd:enumeration value="realTimeHour" />
+      <xsd:enumeration value="realTimeHourLastDigit" />
+      <xsd:enumeration value="realTimeMinute" />
+      <xsd:enumeration value="realTimeMinuteLastDigit" />
+      <xsd:enumeration value="realTimeSecond" />
+      <xsd:enumeration value="realTimeSecondLastDigit" />
     </xsd:restriction>
   </xsd:simpleType>
 

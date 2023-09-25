@@ -9,12 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ESimConnect\ESimConnect.csproj" />
+    <ProjectReference Include="..\Libs\ESimConnect\ESimConnect.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
-      <HintPath>..\Libs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
+      <HintPath>..\DLLs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
   </ItemGroup>
 

@@ -1,32 +1,66 @@
 ﻿using ELogging;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using EXmlLib;
 using EXmlLib.Deserializers;
-using FailuresModule.Types.Old;
+using FailuresModule.Types;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Printing;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Documents;
+using System.Windows.Input;
 using System.Xml.Linq;
 
 namespace FailuresModule.Xmls
 {
-    public class Deserialization
+  public class Deserialization
   {
     private const string FAILURES_KEY = "__failures";
     private const string LOG_HANDLER_KEY = "__log_handler";
-    public static EXml<FailGroup> CreateDeserializer(List<FailureDefinition> failures, NewLogHandler logHandler)
+
+    private class PercentageDeserializer : IAttributeDeserializer
     {
-      EXml<FailGroup> ret = new();
+      public bool AcceptsType(Type type)
+      {
+        return type == typeof(Percentage);
+      }
+
+      public object Deserialize(XAttribute attribute, Type targetType)
+      {
+        string tmp = attribute.Value;
+        if (double.TryParse(tmp, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.GetCultureInfo("en-US"), out double res) == false)
+        {
+          throw new EXmlException($"Percentage-deserialzer failed to deserialize percentage value from attribute {attribute.Name} with value {attribute.Value}.");
+        }
+        Percentage ret = (Percentage)res;
+        return ret;
+      }
+    }
+
+    public static EXml<FailureSet> CreateDeserializer(List<FailureDefinition> failures, NewLogHandler logHandler)
+    {
+      EXml<FailureSet> ret = new();
 
       Dictionary<string, FailureDefinition> failDict = failures.ToDictionary(q => q.Id, q => q);
       ret.Context.CustomData[FAILURES_KEY] = failDict;
       ret.Context.CustomData[LOG_HANDLER_KEY] = logHandler;
-      ret.Context.ElementDeserializers.Insert(0, CreateFailGroupDeserializer());
+      int index = 0;
+      ret.Context.ElementDeserializers.Insert(index++, CreateIncidentSetDeserializer());
+      ret.Context.ElementDeserializers.Insert(index++, CreateIncidentGroupDeserializer());
+      ret.Context.ElementDeserializers.Insert(index++, CreateIncidentDefinitionDeserializer());
+      //ret.Context.ElementDeserializers.Insert(index++, CreateTriggerDeserializer()); // this one should work as default
+      ret.Context.ElementDeserializers.Insert(index++, new StateCheckDeserializer());
+      ret.Context.ElementDeserializers.Insert(index++, CreateFailureDeserializer());
+      ret.Context.ElementDeserializers.Insert(index++, CreateFailGroupDeserializer());
+
+      index = 0;
+      ret.Context.AttributeDeserializers.Insert(index++, new PercentageDeserializer());
 
       return ret;
     }
@@ -35,92 +69,74 @@ namespace FailuresModule.Xmls
     {
       ObjectElementDeserializer ret = new ObjectElementDeserializer()
         .WithCustomTargetType(typeof(FailGroup))
-        .WithCustomPropertyDeserialization(nameof(FailGroup.Groups),
-          (e, t, p, c) =>
-          {
-            var deser = c.ResolveElementDeserializer(typeof(FailGroup));
-            var items = e.LElements("group")
-              .Select(q => SafeUtils.Deserialize(q, typeof(FailGroup), deser, c))
-              .Cast<FailGroup>()
-              .ToList();
-            var bindingItems = new BindingList<FailGroup>(items);
-            SafeUtils.SetPropertyValue(p, t, bindingItems);
-          })
-        .WithCustomPropertyDeserialization(nameof(FailGroup.Frequency),
-        (e, t, p, c) =>
+        .WithCustomPropertyDeserialization(
+          nameof(FailGroup.Items),
+          EXmlHelper.List.CreateForFlat<FailItem>(
+            new EXmlHelper.List.DT[]
+            {
+              new EXmlHelper.List.DT("failure", typeof(Failure)),
+              new EXmlHelper.List.DT("failGroup", typeof(FailGroup))
+             }));
+      return ret;
+    }
+
+    private static IElementDeserializer CreateFailureDeserializer()
+    {
+      ObjectElementDeserializer ret = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(Failure));
+      return ret;
+    }
+
+    private static IElementDeserializer CreateIncidentSetDeserializer()
+    {
+      ObjectElementDeserializer ret = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(FailureSet))
+        .WithCustomPropertyDeserialization(
+        nameof(FailureSet.Incidents),
+        EXmlHelper.List.CreateForFlat<Incident>(new EXmlHelper.List.DT[]
         {
-          NewLogHandler newLogHandler = c.CustomData.Get<NewLogHandler>(LOG_HANDLER_KEY);
-          var frequency = LoadFrequency($"Group {e.Attribute("title")!.Value}", e, newLogHandler);
-          SafeUtils.SetPropertyValue(p, t, frequency);
-        })
-        .WithCustomPropertyDeserialization(nameof(FailGroup.Failures),
-          (e, t, p, c) =>
-          {
-            var tmps = e.LElements("failure").Select(q => new
-            {
-              Id = q.Attribute("id")!.Value,
-              Element = q
-            });
-            Dictionary<string, FailureDefinition> failures =
-              c.CustomData.Get<Dictionary<string, FailureDefinition>>(FAILURES_KEY);
-            NewLogHandler newLogHandler = c.CustomData.Get<NewLogHandler>(LOG_HANDLER_KEY);
-            BindingList<Failure> items = new();
-            foreach (var tmp in tmps)
-            {
-              if (!failures.TryGetValue(tmp.Id, out FailureDefinition? f))
-              {
-                newLogHandler.Invoke(LogLevel.WARNING, "Unknown failure id '{id}'. Skipped.");
-                continue;
-              }
-              Failure failure = new()
-              {
-                Definition = f
-              };
-              var frequency = LoadFrequency($"Failure '{tmp.Id}'", tmp.Element, newLogHandler);
-              failure.Frequency = frequency;
+          new EXmlHelper.List.DT("incident", typeof(IncidentDefinition)),
+          new EXmlHelper.List.DT("group", typeof(IncidentGroup))
+        }));
+      return ret;
+    }
 
-              items.Add(failure!);
-            }
-
-            SafeUtils.SetPropertyValue(p, t, items);
-          });
+    private static IElementDeserializer CreateIncidentDefinitionDeserializer()
+    {
+      IElementDeserializer ret = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(IncidentDefinition))
+        .WithCustomPropertyDeserialization(
+          nameof(IncidentDefinition.Variables),
+          EXmlHelper.List.CreateForNested<Variable>(
+            "variables",
+            new EXmlHelper.List.DT[] {
+              new EXmlHelper.List.DT("randomVariable", typeof(RandomVariable)),
+              new EXmlHelper.List.DT("userVariable", typeof(UserVariable))},
+            () => new List<Variable>()))
+        .WithCustomPropertyDeserialization(
+          nameof(IncidentDefinition.Triggers),
+          EXmlHelper.List.CreateForNested<Trigger>(
+            "triggers",
+            new EXmlHelper.List.DT("trigger", typeof(Trigger))))
+        .WithCustomPropertyDeserialization(
+          nameof(IncidentDefinition.FailGroup),
+          EXmlHelper.Property.Create("failures", typeof(FailGroup)));
 
       return ret;
     }
 
-    private static FailureFrequency LoadFrequency(string sourceId, XElement element, NewLogHandler newLogHandler)
+    private static IElementDeserializer CreateIncidentGroupDeserializer()
     {
-      FailureFrequency? ret = null;
-      if (element.Attributes("mtbf").Any())
-        try
-        {
-          int attval = int.Parse(element.Attribute("mtbf")!.Value);
-          ret = new MtbfFailureFrequency() { MTBF = attval };
-        }
-        catch
-        {
-          newLogHandler.Invoke(
-            LogLevel.WARNING,
-            $"'{sourceId}' has MTBF set to {element.Attribute("mtbf")!.Value}, what cannot be represented as int. Skipped.");
-        }
+      IElementDeserializer ret = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(IncidentGroup))
+        .WithCustomPropertyDeserialization(
+          nameof(FailureSet.Incidents),
+          EXmlHelper.List.CreateForFlat<Incident>(new EXmlHelper.List.DT[]
+          {
+            new EXmlHelper.List.DT("incident", typeof(IncidentDefinition)),
+            new EXmlHelper.List.DT("group", typeof(IncidentGroup))
+          }));
 
-      if (ret == null && element.Attributes("probability").Any())
-        try
-        {
-          int attval = int.Parse(element.Attribute("probability")!.Value);
-          ret = new ProbabilityFailureFrequency() { Probability = attval };
-        }
-        catch
-        {
-          newLogHandler.Invoke(
-            LogLevel.WARNING, 
-            $"'{sourceId}' has probability set to {element.Attribute("probability")!.Value}, what cannot be represented as int. Skipped.");
-        }
-      else
-      {
-        newLogHandler.Invoke(LogLevel.WARNING, $"Failure id '{sourceId}' has neither MTBF nor Probability set. Default probability 5% used.");
-        ret = new ProbabilityFailureFrequency() { Probability = 5 };
-      }
       return ret;
     }
   }

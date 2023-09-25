@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
@@ -11,6 +12,8 @@ namespace EXmlLib.Deserializers
 {
   public class NullableNumberDeserializer : IElementDeserializer, IAttributeDeserializer
   {
+    private static CultureInfo enUsCulture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+
     private static readonly Dictionary<Type, Func<double, object>> supportedTypes = new()
     {
       { typeof(int?), q => (int?) q },
@@ -26,7 +29,7 @@ namespace EXmlLib.Deserializers
     public object Deserialize(XAttribute attribute, Type targetType)
     {
       double? val = attribute.Value.ToLower().Contains("null") == false
-        ? double.Parse(attribute.Value)
+        ? double.Parse(attribute.Value, enUsCulture)
         : null;
       object? ret = ConvertToTargetType(val, targetType);
       return ret!;
@@ -35,7 +38,7 @@ namespace EXmlLib.Deserializers
     public object Deserialize(XElement element, Type targetType, EXmlContext context)
     {
       double? val = element.Value.ToLower().Contains("null") == false
-        ? double.Parse(element.Value)
+        ? double.Parse(element.Value, enUsCulture)
         : null;
       object? ret = ConvertToTargetType(val, targetType);
       return ret!;

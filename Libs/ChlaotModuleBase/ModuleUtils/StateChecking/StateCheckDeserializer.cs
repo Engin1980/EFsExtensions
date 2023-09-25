@@ -86,15 +86,15 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         {
           string tmp = e.Attribute("randomize")?.Value ?? "0";
           StateCheckPropertyValueDeviation scpvd = new(tmp);
-          SafeUtils.SetPropertyValue(p, t, scpvd);
+          EXmlHelper.SetPropertyValue(p, t, scpvd);
         })
         .WithCustomPropertyDeserialization("sensitivity", (e, t, p, c) =>
         {
           string tmp = e.Attribute("sensitivity")?.Value ?? "0";
           StateCheckPropertyValueDeviation scpvd = new(tmp);
-          SafeUtils.SetPropertyValue(p, t, scpvd);
+          EXmlHelper.SetPropertyValue(p, t, scpvd);
         });
-      StateCheckProperty ret = (StateCheckProperty)SafeUtils.Deserialize(
+      StateCheckProperty ret = (StateCheckProperty)EXmlHelper.Deserialize(
         element, typeof(StateCheckProperty), deser, context);
       return ret;
     }

@@ -20,6 +20,7 @@ namespace EXmlLib
       Context.AttributeDeserializers.Add(new NumberDeserializer());
       Context.AttributeDeserializers.Add(new NullableNumberDeserializer());
       Context.AttributeDeserializers.Add(new StringDeserializer());
+      Context.AttributeDeserializers.Add(new BooleanDeserializer());
     }
 
     public T Deserialize(XDocument doc)
@@ -34,8 +35,8 @@ namespace EXmlLib
 
       IElementDeserializer elementDeserializer = Context.ResolveElementDeserializer(typeof(T))
         ?? throw new EXmlException($"Unable to find element deserializer for type '{typeof(T)}'.");
-      tmp = SafeUtils.Deserialize(element, typeof(T), elementDeserializer, Context);
-      T ret = SafeUtils.Cast<T>(tmp);
+      tmp = EXmlHelper.Deserialize(element, typeof(T), elementDeserializer, Context);
+      T ret = EXmlHelper.Cast<T>(tmp);
       return ret;
     }
 

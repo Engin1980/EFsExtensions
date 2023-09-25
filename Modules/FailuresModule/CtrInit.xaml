@@ -12,8 +12,19 @@
       <Button x:Name="btnLoad" Content="Load Configuration" Padding="8" Click="btnLoad_Click" />
     </DockPanel>
     <TabControl>
-      <TabItem Header="Failures">
-        <DataGrid ItemsSource="{Binding Failures, Mode=OneWay}"  AutoGenerateColumns="False">
+      <TabItem Header="Failure Settings">
+        <TreeView ItemsSource="{Binding IncidentGroup.Groups}">
+          <TreeView.Resources>
+            <HierarchicalDataTemplate DataType="{x:Type types:IncidentGroup}" ItemsSource="{Binding Groups}">
+              <StackPanel Orientation="Horizontal" Margin="2" Background="#F0F0FF">
+                <TextBlock Text="{Binding Title}" />
+              </StackPanel>
+            </HierarchicalDataTemplate>
+          </TreeView.Resources>
+        </TreeView>
+      </TabItem>
+      <TabItem Header="Failure Definitions">
+        <DataGrid ItemsSource="{Binding FailureDefinitions, Mode=OneWay}"  AutoGenerateColumns="False">
           <DataGrid.Columns>
             <DataGridTextColumn Header="ID" Binding="{Binding Id,Mode=OneWay}" />
             <DataGridTextColumn Header="Label" Binding="{Binding Title,Mode=OneTime}" />
@@ -21,72 +32,6 @@
             <DataGridTextColumn Header="Sim-Point" Binding="{Binding SimConPoint.SimPointName,FallbackValue=N/A}" />
           </DataGrid.Columns>
         </DataGrid>
-      </TabItem>
-      <TabItem Header="Failure Settings">
-        <TreeView ItemsSource="{Binding FailGroup.Items}">
-          <TreeView.Resources>
-            <HierarchicalDataTemplate DataType="{x:Type types:FailGroup}" ItemsSource="{Binding Items}" >
-              <StackPanel Orientation="Horizontal" Margin="2" Background="#F0F0FF">
-                <TextBlock Text="{Binding Title}" />
-                <TextBlock Text=" (selector=" />
-                <TextBlock Text="{Binding Selector}" />
-                <TextBlock Text=", invoker=" />
-                <TextBlock Text="{Binding Invoker, FallbackValue=N/A}" />
-                <TextBlock Text=", frequency=" />
-                <ContentPresenter Content="{Binding Activation}">
-                  <ContentPresenter.Resources>
-                    <!-- prob/tbf styles here -->
-                    <HierarchicalDataTemplate DataType="{x:Type types:ProbabilityFailureFrequency}">
-                      <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="probability " />
-                        <TextBox Text="{Binding Probability}" HorizontalAlignment="Right" Width="50" />
-                        <TextBlock Text=" %" />
-                      </StackPanel>
-                    </HierarchicalDataTemplate>
-                    <HierarchicalDataTemplate DataType="{x:Type types:MtbfFailureFrequency}">
-                      <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="MTBF: " />
-                        <TextBox Text="{Binding MTBF}" Width="50" />
-                        <TextBlock Text=" (Linear probability: " />
-                        <TextBox Text="{Binding CalculatedProbability}" Width="50" IsReadOnly="True" />
-                        <TextBlock Text=" %" />
-                      </StackPanel>
-                    </HierarchicalDataTemplate>
-                  </ContentPresenter.Resources>
-                </ContentPresenter>
-                <TextBlock Text=")" />
-              </StackPanel>
-            </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type types:Failure}">
-              <StackPanel Orientation="Horizontal" Margin="2">
-                <TextBlock Text="{Binding Definition.Title}" />
-                <TextBlock Text=", frequency=" />
-                <ContentPresenter Content="{Binding Activation}">
-                  <ContentPresenter.Resources>
-                    <!-- prob/tbf styles here -->
-                    <HierarchicalDataTemplate DataType="{x:Type types:ProbabilityFailureFrequency}">
-                      <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Probability " />
-                        <TextBox Text="{Binding Probability}" HorizontalAlignment="Right" Width="50" />
-                        <TextBlock Text=" %" />
-                      </StackPanel>
-                    </HierarchicalDataTemplate>
-                    <HierarchicalDataTemplate DataType="{x:Type types:MtbfFailureFrequency}">
-                      <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="MTBF: " />
-                        <TextBox Text="{Binding MTBF}" Width="50" />
-                        <TextBlock Text=" (Linear probability: " />
-                        <TextBox Text="{Binding CalculatedProbability}" Width="50" IsReadOnly="True" />
-                        <TextBlock Text=" %" />
-                      </StackPanel>
-                    </HierarchicalDataTemplate>
-                  </ContentPresenter.Resources>
-                </ContentPresenter>
-                
-              </StackPanel>
-            </HierarchicalDataTemplate>
-          </TreeView.Resources>
-        </TreeView>
       </TabItem>
     </TabControl>
   </DockPanel>

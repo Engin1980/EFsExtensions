@@ -18,7 +18,7 @@ namespace EXmlLib.Deserializers
     public object Deserialize(XElement element, Type targetType, EXmlContext context)
     {
       var factory = context.ResolveFactory(targetType);
-      var ret = SafeUtils.CreateInstance(factory, targetType);
+      var ret = EXmlHelper.CreateInstance(factory, targetType);
 
       var elms = element.Elements();
       var itemType = targetType.GetGenericArguments()[0];
@@ -26,7 +26,7 @@ namespace EXmlLib.Deserializers
       foreach (var elm in elms)
       {
         var des = context.ResolveElementDeserializer(itemType);
-        var tmp = SafeUtils.Deserialize(elm, itemType, des, context);
+        var tmp = EXmlHelper.Deserialize(elm, itemType, des, context);
         AddItemToList(ret, tmp);
       }
 

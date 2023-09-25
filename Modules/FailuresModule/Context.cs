@@ -2,7 +2,7 @@
 using Eng.Chlaot.ChlaotModuleBase;
 using EXmlLib;
 using EXmlLib.Deserializers;
-using FailuresModule.Types.Old;
+using FailuresModule.Types;
 using FailuresModule.Xmls;
 using System;
 using System.Collections.Generic;
@@ -24,27 +24,34 @@ namespace FailuresModule
     {
       this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
-      this.Failures = new();
-      this.FailGroup = new("Root");
+      this.FailureDefinitions = new();
+      this.BuildFailures();
+      //this.FailGroup = new("Root");
     }
 
-    public FailGroup FailGroup
+    //public FailGroup FailGroup
+    //{
+    //  get => base.GetProperty<FailGroup>(nameof(FailGroup))!;
+    //  set => base.UpdateProperty(nameof(FailGroup), value);
+    //}
+
+    public List<FailureDefinition> FailureDefinitions { get; set; }
+
+    public FailureSet FailureSet
     {
-      get => base.GetProperty<FailGroup>(nameof(FailGroup))!;
-      set => base.UpdateProperty(nameof(FailGroup), value);
+      get => base.GetProperty<FailureSet>(nameof(FailureSet))!;
+      set => base.UpdateProperty(nameof(FailureSet), value);
     }
-
-    public List<FailureDefinition> Failures { get; set; }
 
     internal void BuildFailures()
     {
-      this.Failures = FailureFactory.BuildFailures();
+      this.FailureDefinitions = FailureDefinitionFactory.BuildFailures();
     }
 
     public void LoadFile(string xmlFile)
     {
       var factory = new XmlSerializerFactory();
-      FailGroup tmp;
+      FailureSet tmp;
       XDocument doc;
 
       try
@@ -53,7 +60,7 @@ namespace FailuresModule
         try
         {
           doc = XDocument.Load(xmlFile);
-          EXml<FailGroup> exml = Deserialization.CreateDeserializer(this.Failures, this.logHandler);
+          EXml<FailureSet> exml = Deserialization.CreateDeserializer(this.FailureDefinitions, this.logHandler);
           tmp = exml.Deserialize(doc);
         }
         catch (Exception ex)
@@ -71,7 +78,7 @@ namespace FailuresModule
         //  throw new ApplicationException("Error loading checklist.", ex);
         //}
 
-        this.FailGroup = tmp;
+        this.FailureSet = tmp;
         UpdateReadyFlag();
         logHandler.Invoke(LogLevel.INFO, $"Copilot set file '{xmlFile}' successfully loaded.");
 

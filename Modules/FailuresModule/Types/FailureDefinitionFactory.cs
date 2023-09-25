@@ -10,11 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Xps.Serialization;
 
-namespace FailuresModule.Types.Old
+namespace FailuresModule.Types
 {
-    internal record NameTuple(string Id, string Name, string Sim);
+    internal record NameTriple(string Id, string Name, string Sim);
 
-    public class FailureFactory
+    public class FailureDefinitionFactory
     {
         private static int ENGINES_COUNT = 4;
 
@@ -22,7 +22,7 @@ namespace FailuresModule.Types.Old
         {
             List<FailureDefinition> ret = new();
 
-            var funs = typeof(FailureFactory)
+            var funs = typeof(FailureDefinitionFactory)
               .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
               .Where(q => q.Name.StartsWith("Build") && q.Name != "BuildFailures")
               .ToList();
@@ -100,7 +100,7 @@ namespace FailuresModule.Types.Old
 
         private static List<FailureDefinition> BuildSystemFailures()
         {
-            NameTuple[] tmp =
+            NameTriple[] tmp =
             {
         new("vacuum", "Vacuum failure", "TOGGLE_VACUUM_FAILURE"),
         new("electrical", "Electrical failure", "TOGGLE_ELECTRICAL_FAILURE"),
@@ -119,7 +119,7 @@ namespace FailuresModule.Types.Old
 
         private static List<FailureDefinition> BuildInstrumentFailures()
         {
-            NameTuple[] vars =
+            NameTriple[] vars =
             {
         new("pnlAirspeed", "Airspeed (panel)", "PARTIAL PANEL AIRSPEED"),
         new("pnlAltimeter", "Altimeter (panel)",  "PARTIAL PANEL ALTIMETER"),
@@ -146,7 +146,7 @@ namespace FailuresModule.Types.Old
 
         private static List<FailureDefinition> BuildBrakeFailures()
         {
-            NameTuple[] tmp =
+            NameTriple[] tmp =
             {
         new("brakeAll", "All brakes","TOGGLE_TOTAL_BRAKE_FAILURE"),
         new("brakeLeft", "Left brake", "TOGGLE_LEFT_BRAKE_FAILURE"),
@@ -163,7 +163,7 @@ namespace FailuresModule.Types.Old
 
         private static List<FailureDefinition> BuildFuelFailures()
         {
-            NameTuple[] tmp =
+            NameTriple[] tmp =
             {
         new("fuelCenter", "Center Fuel Tank", "FUEL TANK CENTER LEVEL"),
         new("fuelLeft", "Left Fuel Tank", "FUEL TANK LEFT MAIN LEVEL"),
@@ -180,7 +180,7 @@ namespace FailuresModule.Types.Old
 
         private static List<FailureDefinition> BuildGearFailures()
         {
-            NameTuple[] tmp =
+            NameTriple[] tmp =
             {
         new ("gearCenter", "Gear Center", "GEAR CENTER POSITION"),
         new ("gearLeft", "Left Gear", "GEAR LEFT POSITION"),
@@ -197,7 +197,7 @@ namespace FailuresModule.Types.Old
 
         private static List<FailureDefinition> BuildFlapsFailures()
         {
-            NameTuple[] tmp =
+            NameTriple[] tmp =
             {
         new ("flapsLeft", "Left Flaps", "TRAILING EDGE FLAPS LEFT PERCENT"),
         new ("flapsRight", "Right Flaps", "TRAILING EDGE FLAPS RIGHT PERCENT")
@@ -213,7 +213,7 @@ namespace FailuresModule.Types.Old
 
         private static List<FailureDefinition> BuildSurfacesFailures()
         {
-            NameTuple[] tmp =
+            NameTriple[] tmp =
             {
         new("rudderTrim", "Rudder Trim", "RUDDER TRIM PCT"),
         new("aileronTrim", "Aileron Trim", "AILERON TRIM PCT"),

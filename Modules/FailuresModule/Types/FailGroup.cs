@@ -8,7 +8,7 @@ namespace FailuresModule.Types
 {
   public abstract class FailItem
   {
-    public double Weight { get; set; }
+    public double? Weight { get; set; }
   }
 
   public class FailGroup : FailItem
