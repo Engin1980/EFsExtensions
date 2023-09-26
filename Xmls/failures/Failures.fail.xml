@@ -14,7 +14,7 @@
       </variables>
       <triggers>
         <trigger probability="0.05" repetitive="false">
-          <property name="ias" direction="passing" value="{vFail}"/>
+          <property name="ias" direction="passing" expression="{vFail}"/>
         </trigger>
       </triggers>
       <failures selection="one">
@@ -38,8 +38,8 @@
           <triggers>
             <trigger probability="0.0005" repetitive="true">
               <and xmlns="http://chlaot.org/global.xsd">
-                <property name="realTimeSecond" direction="exactly" value="{secondValue}" />
-                <property name="realTimeMinuteLastDigit" direction="exactly" value="{minuteValue}" />
+                <property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
+                <property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
               </and>
             </trigger>
           </triggers>
@@ -55,7 +55,7 @@
       <incident title="Brake failures" repetitive="false">
         <triggers>
           <trigger probability="0.05" repetitive="false">
-            <property name="height" direction="below" value="500"/>
+            <property name="height" direction="below" expression="500"/>
           </trigger>
         </triggers>
         <failures selection="one">
@@ -68,8 +68,8 @@
         <triggers>
           <trigger probability="0.03" repetitive="true">
             <or>
-              <property name="ias" direction="passingUp" value="50"/>
-              <property name="height" direction="passingDown" value="2500"/>
+              <property name="ias" direction="passingUp" expression="50"/>
+              <property name="height" direction="passingDown" expression="2500"/>
             </or>
           </trigger>
         </triggers>

@@ -33,6 +33,12 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     PushbackTugConnected,
     EngineStarted,
     VerticalSpeed,
-    Acceleration
+    Acceleration,
+    RealTimeHour,
+    RealTimeHourLastDigit,
+    RealTimeMinute,
+    RealTimeMinuteLastDigit,
+    RealTimeSecond,
+    RealTimeSecondLastDigit
   }
 }

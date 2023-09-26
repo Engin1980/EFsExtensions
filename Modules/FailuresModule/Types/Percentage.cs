@@ -24,5 +24,10 @@ namespace FailuresModule.Types
     public static explicit operator Percentage(double value) => new Percentage(value);
 
     public static implicit operator double(Percentage value) => value.value;
+
+    public override string ToString()
+    {
+      return (int)(value * 100) + "%";
+    }
   }
 }

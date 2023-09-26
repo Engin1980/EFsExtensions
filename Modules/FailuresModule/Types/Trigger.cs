@@ -11,6 +11,6 @@ namespace FailuresModule.Types
   {
     public Percentage Probability { get; set; }
     public bool Repetitive { get; set; }
-    public StateCheckCondition Condition { get; set; }
+    public IStateCheckItem Condition { get; set; }
   }
 }

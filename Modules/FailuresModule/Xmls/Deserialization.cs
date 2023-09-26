@@ -54,7 +54,7 @@ namespace FailuresModule.Xmls
       ret.Context.ElementDeserializers.Insert(index++, CreateIncidentSetDeserializer());
       ret.Context.ElementDeserializers.Insert(index++, CreateIncidentGroupDeserializer());
       ret.Context.ElementDeserializers.Insert(index++, CreateIncidentDefinitionDeserializer());
-      //ret.Context.ElementDeserializers.Insert(index++, CreateTriggerDeserializer()); // this one should work as default
+      ret.Context.ElementDeserializers.Insert(index++, CreateTriggerDeserializer()); // this one should work as default
       ret.Context.ElementDeserializers.Insert(index++, new StateCheckDeserializer());
       ret.Context.ElementDeserializers.Insert(index++, CreateFailureDeserializer());
       ret.Context.ElementDeserializers.Insert(index++, CreateFailGroupDeserializer());
@@ -62,6 +62,20 @@ namespace FailuresModule.Xmls
       index = 0;
       ret.Context.AttributeDeserializers.Insert(index++, new PercentageDeserializer());
 
+      return ret;
+    }
+
+    private static IElementDeserializer CreateTriggerDeserializer()
+    {
+      ObjectElementDeserializer ret = new ObjectElementDeserializer()
+        .WithCustomTargetType(typeof(Trigger))
+        .WithCustomPropertyDeserialization(
+          nameof(Trigger.Condition), (e, t, f, c) =>
+          {
+            var deser = new StateCheckDeserializer();
+            var val = deser.Deserialize(e, typeof(IStateCheckItem), c);
+            EXmlHelper.SetPropertyValue(f, t, val);
+          });
       return ret;
     }
 
