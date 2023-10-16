@@ -25,14 +25,14 @@ namespace EXmlLib.Deserializers
 
     public object Deserialize(XAttribute attribute, Type targetType)
     {
-      double val = double.Parse(attribute.Value);
+      double val = double.Parse(attribute.Value, System.Globalization.CultureInfo.GetCultureInfo("en-US"));
       object ret = ConvertToTargetType(val, targetType);
       return ret;
     }
 
     public object Deserialize(XElement element, Type targetType, EXmlContext context)
     {
-      double val = double.Parse(element.Value);
+      double val = double.Parse(element.Value, System.Globalization.CultureInfo.GetCultureInfo("en-US"));
       object ret = ConvertToTargetType(val, targetType);
       return ret;
     }

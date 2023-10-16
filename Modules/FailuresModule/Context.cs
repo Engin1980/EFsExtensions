@@ -69,14 +69,14 @@ namespace FailuresModule
         }
 
         logHandler.Invoke(LogLevel.INFO, $"Checking sanity");
-        //try
-        //{
-        //  CheckSanity(tmp);
-        //}
-        //catch (Exception ex)
-        //{
-        //  throw new ApplicationException("Error loading checklist.", ex);
-        //}
+        try
+        {
+          SanityChecker.CheckSanity(tmp);
+        }
+        catch (Exception ex)
+        {
+          throw new ApplicationException("Error loading failures.", ex);
+        }
 
         this.FailureSet = tmp;
         UpdateReadyFlag();

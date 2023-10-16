@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EXmlLib.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace FailuresModule.Types
 {
   public abstract class FailItem
   {
-    public double? Weight { get; set; }
+    public double Weight { get; set; } = 1;
   }
 
   public class FailGroup : FailItem
@@ -18,12 +19,13 @@ namespace FailuresModule.Types
       None, One, All
     }
 
-    public ESelection Selection { get; set; }
+    public ESelection Selection { get; set; } = ESelection.One;
     public List<FailItem> Items { get; set; } = new List<FailItem>();
   }
 
   public class Failure : FailItem
   {
-    public string Id { get; set; }
+    [EXmlNonemptyString]
+    public string Id { get; set; } = "";
   }
 }

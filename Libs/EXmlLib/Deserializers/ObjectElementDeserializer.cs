@@ -90,8 +90,15 @@ namespace EXmlLib.Deserializers
           val = EXmlHelper.Deserialize(attr!, propertyInfo.PropertyType, deserializer);
         }
         EXmlHelper.SetPropertyValue(propertyInfo, target, val);
-      }
 
+        if (propertyInfo.PropertyType == typeof(string) && propertyInfo.GetCustomAttribute(typeof(EXmlNonemptyString)) != null)
+        {
+          string vals = (string)val;
+          if (string.IsNullOrEmpty(vals))
+            throw new EXmlException(
+              $"Property {propertyInfo.DeclaringType?.Name}.{propertyInfo.Name} needs to be non-empty string, but provided value is {val}.");
+        }
+      }
       else
       {
         if (!context.IgnoreMissingProperties)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EXmlLib.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace FailuresModule.Types
 {
   public abstract class Incident
   {
+    [EXmlNonemptyString]
     public string Title { get; set; }
     public override string ToString()
     {

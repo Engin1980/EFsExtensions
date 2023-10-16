@@ -9,8 +9,9 @@ namespace FailuresModule.Types
 {
   public class IncidentDefinition : Incident
   {
-    public List<Variable> Variables { get; set; }
-    public List<Trigger> Triggers { get; set; }
+    public List<Variable> Variables { get; set; } = new List<Variable>();
+    public List<Trigger> Triggers { get; set; } = new List<Trigger>();
     public FailGroup FailGroup { get; set; }
+    public bool Repetitive { get; set; }
   }
 }
