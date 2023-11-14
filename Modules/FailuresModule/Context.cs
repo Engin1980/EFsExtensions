@@ -59,7 +59,7 @@ namespace FailuresModule
         logHandler.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
-          doc = XDocument.Load(xmlFile);
+          doc = XDocument.Load(xmlFile, LoadOptions.SetLineInfo);
           EXml<FailureSet> exml = Deserialization.CreateDeserializer(this.FailureDefinitions, this.logHandler);
           tmp = exml.Deserialize(doc);
         }
@@ -71,7 +71,7 @@ namespace FailuresModule
         logHandler.Invoke(LogLevel.INFO, $"Checking sanity");
         try
         {
-          SanityChecker.CheckSanity(tmp);
+          SanityChecker.CheckSanity(tmp, this.FailureDefinitions);
         }
         catch (Exception ex)
         {
@@ -80,13 +80,13 @@ namespace FailuresModule
 
         this.FailureSet = tmp;
         UpdateReadyFlag();
-        logHandler.Invoke(LogLevel.INFO, $"Copilot set file '{xmlFile}' successfully loaded.");
+        logHandler.Invoke(LogLevel.INFO, $"Failure set file '{xmlFile}' successfully loaded.");
 
       }
       catch (Exception ex)
       {
         this.setIsReadyFlagAction(false);
-        logHandler.Invoke(LogLevel.ERROR, $"Failed to load copilot set from '{xmlFile}'." + ex.GetFullMessage());
+        logHandler.Invoke(LogLevel.ERROR, $"Failed to load failure set from '{xmlFile}'." + ex.GetFullMessage());
       }
     }
 

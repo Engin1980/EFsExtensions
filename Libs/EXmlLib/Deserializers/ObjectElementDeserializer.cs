@@ -1,4 +1,5 @@
-﻿using EXmlLib.Attributes;
+﻿using ELogging;
+using EXmlLib.Attributes;
 using EXmlLib.Factories;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.Reflection;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace EXmlLib.Deserializers
@@ -109,6 +111,8 @@ namespace EXmlLib.Deserializers
 
     public object Deserialize(XElement element, Type targetType, EXmlContext context)
     {
+      IXmlLineInfo xmlLineInfo = element;
+      Logger.Log(this, LogLevel.INFO, $"Loading {targetType.FullName} from {element.Name} (row {xmlLineInfo.LineNumber})");
       object ret;
       string targetTypeName = targetType.Name;
       IFactory factory = context.TryResolveFactory(targetType) ?? context.DefaultObjectFactory;

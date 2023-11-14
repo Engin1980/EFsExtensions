@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ELoging\ELogging.csproj" />
+  </ItemGroup>
+
 </Project>

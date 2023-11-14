@@ -72,12 +72,11 @@ namespace Chlaot
 
     public static Settings Load(string fileName, out string? errorText)
     {
-      Settings tmp = Settings.CreateDefault();
-      XmlSerializer tmps = new XmlSerializer(typeof(Settings));
-      FileStream tmpf = new FileStream(fileName, FileMode.Create);
-      tmps.Serialize(tmpf, tmp);
-      tmpf.Close();
-
+      //Settings tmp = Settings.CreateDefault();
+      //XmlSerializer tmps = new XmlSerializer(typeof(Settings));
+      //FileStream tmpf = new FileStream(fileName, FileMode.Create);
+      //tmps.Serialize(tmpf, tmp);
+      //tmpf.Close();
 
       Settings ret;
       try
