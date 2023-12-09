@@ -1,4 +1,5 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
+using FailuresModule.Types;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.TextFormatting;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
@@ -53,6 +55,34 @@ namespace FailuresModule
 
       recentXmlFile = dialog.FileName;
       this.Context.LoadFile(recentXmlFile);
+    }
+
+    private void CollectionViewSource_Filter(object sender, FilterEventArgs e)
+    {
+      string filterText = txtFilter.Text.Trim().ToLower();
+      if (string.IsNullOrEmpty(filterText))
+      {
+        e.Accepted = true;
+        return;
+      }
+
+      FailureDefinition? fd = e.Item as FailureDefinition;
+      if (fd == null) return;
+
+      e.Accepted = fd.Title.ToLower().Contains(filterText) || fd.SimConPoint.SimPointName.ToLower().Contains(filterText);
+    }
+
+    private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)
+    {
+      ListCollectionView lcv = grdFailures.ItemsSource as ListCollectionView;
+      if (lcv == null) return;
+      lcv.Refresh();
+    }
+
+    private void txtFilter_KeyDown(object sender, KeyEventArgs e)
+    {
+      if (e.Key == Key.Escape)
+        txtFilter.Text = "";
     }
   }
 }
