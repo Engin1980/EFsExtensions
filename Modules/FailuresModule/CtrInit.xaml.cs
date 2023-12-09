@@ -69,12 +69,14 @@ namespace FailuresModule
       FailureDefinition? fd = e.Item as FailureDefinition;
       if (fd == null) return;
 
-      e.Accepted = fd.Title.ToLower().Contains(filterText) || fd.SimConPoint.SimPointName.ToLower().Contains(filterText);
+      e.Accepted = fd.Title.ToLower().Contains(filterText)
+        || fd.Id.ToLower().Contains(filterText)
+        || fd.SimConPoint.SimPointName.ToLower().Contains(filterText);
     }
 
     private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)
     {
-      ListCollectionView lcv = grdFailures.ItemsSource as ListCollectionView;
+      ListCollectionView? lcv = grdFailures.ItemsSource as ListCollectionView;
       if (lcv == null) return;
       lcv.Refresh();
     }
@@ -83,6 +85,11 @@ namespace FailuresModule
     {
       if (e.Key == Key.Escape)
         txtFilter.Text = "";
+    }
+
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+
     }
   }
 }

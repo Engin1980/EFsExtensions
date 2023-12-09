@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FailuresModule"
              xmlns:types ="clr-namespace:FailuresModule.Types"
+             xmlns:converters="clr-namespace:FailuresModule.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
@@ -12,6 +13,7 @@
                           Source="{Binding FailureDefinitions}"
                           Filter="CollectionViewSource_Filter">
     </CollectionViewSource>
+    <converters:PercentageToIntConverter x:Key="PercentageToIntConverter" />
   </UserControl.Resources>
   <DockPanel>
     <DockPanel DockPanel.Dock="Top">
@@ -89,7 +91,8 @@
                 <TextBlock Text="{Binding Repetitive}" />
                 <TextBlock Text=", cond=" />
                 <TextBlock Text="{Binding Condition.DisplayString}" />
-                <TextBlock Text=")" />
+                <TextBlock Text=") " />
+                <Slider Minimum="0" Maximum="100" Value="{Binding Probability, Converter={StaticResource PercentageToIntConverter}}" Width="400" />
               </StackPanel>
             </HierarchicalDataTemplate>
             <HierarchicalDataTemplate DataType="{x:Type types:FailGroup}" ItemsSource="{Binding Items}">
