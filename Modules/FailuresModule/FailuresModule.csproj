@@ -7,6 +7,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Icons\failure32.png" />
+    <None Remove="Icons\trigger32.png" />
+    <None Remove="Icons\variable32.png" />
     <None Remove="Xmls\basic.fails.old.xml" />
     <None Remove="Xmls\basic.fails.xml" />
     <None Remove="Xmls\FailureSchema.xsd" />
@@ -15,6 +18,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Libs\ChlaotModuleBase\ChlaotModuleBase.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Icons\failure32.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\trigger32.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Icons\variable32.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 
 </Project>

@@ -15,25 +15,18 @@ using System.Xml.Serialization;
 
 namespace FailuresModule
 {
-    public class Context : NotifyPropertyChangedBase
+  public class InitContext : NotifyPropertyChangedBase
   {
     private readonly NewLogHandler logHandler;
     private readonly Action<bool> setIsReadyFlagAction;
 
-    public Context(NewLogHandler logHandler, Action<bool> setIsReadyFlagAction)
+    public InitContext(NewLogHandler logHandler, Action<bool> setIsReadyFlagAction)
     {
       this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
       this.FailureDefinitions = new();
       this.BuildFailures();
-      //this.FailGroup = new("Root");
     }
-
-    //public FailGroup FailGroup
-    //{
-    //  get => base.GetProperty<FailGroup>(nameof(FailGroup))!;
-    //  set => base.UpdateProperty(nameof(FailGroup), value);
-    //}
 
     public List<FailureDefinition> FailureDefinitions { get; set; }
 
@@ -81,7 +74,7 @@ namespace FailuresModule
         this.FailureSet = tmp;
         UpdateReadyFlag();
         logHandler.Invoke(LogLevel.INFO, $"Failure set file '{xmlFile}' successfully loaded.");
-
+        this.setIsReadyFlagAction(true);
       }
       catch (Exception ex)
       {

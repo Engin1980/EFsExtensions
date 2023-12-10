@@ -13,11 +13,14 @@ namespace FailuresModule.Types
     public double Maximum { get; set; }
 
     private double? _Value = null;
-    public override double GetValue()
+    public override double Value
     {
-      if (_Value == null)
-        this._Value = this.Minimum + RandomVariable.rnd.NextDouble() * (this.Maximum - this.Minimum);
-      return this._Value.Value;
+      get
+      {
+        if (_Value == null)
+          this._Value = this.Minimum + RandomVariable.rnd.NextDouble() * (this.Maximum - this.Minimum);
+        return this._Value.Value;
+      }
     }
   }
 }

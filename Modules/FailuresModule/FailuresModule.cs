@@ -11,12 +11,17 @@ using System.Windows.Controls;
 
 namespace Eng.Chlaot.Modules.FailuresModule
 {
-  public class FailuresModule : IModule
+  public class FailuresModule : NotifyPropertyChangedBase, IModule
   {
-    public bool IsReady { get; private set; }
+    public bool IsReady
+    {
+      get => base.GetProperty<bool>(nameof(IsReady))!;
+      private set => base.UpdateProperty(nameof(IsReady), value);
+    }
     private readonly NewLogHandler logHandler;
 
     private CtrInit? _InitControl;
+    private CtrRun? _RunControl;
 
     public FailuresModule()
     {
@@ -26,28 +31,27 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
     public Control InitControl => this._InitControl ?? throw new ApplicationException("InitControl is null.");
 
-    public Control RunControl => throw new NotImplementedException();
+    public Control RunControl => this._RunControl ?? throw new ApplicationException("RunControl is null.");
 
     public string Name => "Failures";
 
-    public event PropertyChangedEventHandler? PropertyChanged;
-
-    public Context Context { get; set; }
+    public InitContext InitContext { get; set; }
 
     public void Init()
     {
-      //Context.BuildFailures();
-      this._InitControl = new CtrInit(Context);
+      this._InitControl = new CtrInit(InitContext);
     }
 
     public void Run()
     {
-      throw new NotImplementedException();
+      RunContext runContext = RunContext.Create(InitContext.FailureDefinitions, InitContext.FailureSet);
+      runContext.Init();
+      this._RunControl = new CtrRun(runContext);
     }
 
     public void SetUp(ModuleSetUpInfo setUpInfo)
     {
-      Context = new Context(this.logHandler, q => this.IsReady = q);
+      InitContext = new InitContext(this.logHandler, q => this.IsReady = q);
     }
 
     public void Stop()

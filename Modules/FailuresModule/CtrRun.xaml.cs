@@ -1,5 +1,4 @@
-﻿using Eng.Chlaot.Modules.CopilotModule;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,25 +13,24 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CopilotModule
+namespace FailuresModule
 {
   /// <summary>
   /// Interaction logic for CtrRun.xaml
   /// </summary>
   public partial class CtrRun : UserControl
   {
-    private readonly RunContext runContext;
+    private RunContext context;
 
     public CtrRun()
     {
       InitializeComponent();
-      this.runContext = null!;
     }
 
-    public CtrRun(RunContext runContext) : this()
+    public CtrRun(RunContext context) : this()
     {
-      this.runContext = runContext;
-      this.DataContext = runContext;
+      this.context = context;
+      this.DataContext = context;
     }
   }
 }

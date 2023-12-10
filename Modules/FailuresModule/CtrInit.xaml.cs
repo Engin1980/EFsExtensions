@@ -24,14 +24,14 @@ namespace FailuresModule
   /// </summary>
   public partial class CtrInit : UserControl
   {
-    public Context Context { get; private set; }
+    public InitContext Context { get; private set; }
     public CtrInit()
     {
       InitializeComponent();
       this.Context = null!;
     }
 
-    public CtrInit(Context context) : this()
+    public CtrInit(InitContext context) : this()
     {
       this.Context = context;
       this.DataContext = context;
@@ -85,11 +85,6 @@ namespace FailuresModule
     {
       if (e.Key == Key.Escape)
         txtFilter.Text = "";
-    }
-
-    private void Button_Click(object sender, RoutedEventArgs e)
-    {
-
     }
   }
 }
