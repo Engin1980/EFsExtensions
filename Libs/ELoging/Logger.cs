@@ -112,5 +112,11 @@ namespace ELogging
         ret += " {{" + lia.LogId + "}}";
       return ret;
     }
+
+    public static string GetSenderName(object sender)
+    {
+      string ret = ResolveSenderName(sender);
+      return ret;
+    }
   }
 }

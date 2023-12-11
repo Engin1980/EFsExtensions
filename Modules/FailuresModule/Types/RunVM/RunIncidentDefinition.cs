@@ -21,5 +21,6 @@ namespace FailuresModule.Types.RunVM
 
     public IncidentDefinition IncidentDefinition { get; }
     public List<RunTriggerEvaluation> TriggerEvaluations { get; } = new List<RunTriggerEvaluation>();
+    public List<Trigger> OneShotTriggersInvoked { get; } = new List<Trigger>();
   }
 }
