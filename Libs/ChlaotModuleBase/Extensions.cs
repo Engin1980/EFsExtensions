@@ -35,5 +35,17 @@ namespace Eng.Chlaot.ChlaotModuleBase
       return ret;
     }
 
+    public static double NextDouble(this Random rnd, double minInclusive, double maxExclusive)
+    {
+      double ret = rnd.NextDouble() * (maxExclusive - minInclusive) + minInclusive;
+      return ret;
+    }
+
+    public static List<T> With<T>(this List<T> lst, params T[] values)
+    {
+      lst.AddRange(values.ToList());
+      return lst;
+    }
+
   }
 }

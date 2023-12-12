@@ -42,7 +42,8 @@ namespace FailuresModule
         {
           var tmp = CalculateFlatIncidentDefinitions(rig.Incidents);
           ret.AddRange(tmp);
-        } else  if (incident is RunIncidentDefinition rid)
+        }
+        else if (incident is RunIncidentDefinition rid)
         {
           ret.Add(rid);
         }
@@ -103,9 +104,84 @@ namespace FailuresModule
     {
       foreach (var incident in this.IncidentDefinitions)
       {
-        bool isActivated = false;
-        EvaluateIncidentDefinition(incident, out isActivated);
+        EvaluateIncidentDefinition(incident, out bool isActivated);
+        if (!isActivated) continue;
+
+        List<Failure> failItems = PickFailItems(incident);
+
+        tady dopsat jak to failne
       }
+    }
+
+    private List<Failure> PickFailItems(RunIncidentDefinition incident)
+    {
+      FailGroup rootGroup = incident.IncidentDefinition.FailGroup;
+      List<Failure> ret = PickFailItems(rootGroup);
+      return ret;
+    }
+
+    private List<Failure> PickFailItems(FailGroup root)
+    {
+      List<Failure> ret;
+      switch (root.Selection)
+      {
+        case FailGroup.ESelection.None:
+          ret = new List<Failure>();
+          break;
+        case FailGroup.ESelection.All:
+          ret = FlatterFailGroup(root);
+          break;
+        case FailGroup.ESelection.One:
+          FailItem tmp = PickRandomFailItem(root.Items);
+          if (tmp is FailGroup fg)
+            ret = PickFailItems(fg);
+          else if (tmp is Failure f)
+          {
+            ret = new List<Failure>().With(f);
+          }
+          else
+            throw new NotImplementedException();
+          break;
+        default:
+          throw new NotImplementedException();
+      }
+      return ret;
+    }
+
+    private List<Failure> FlatterFailGroup(FailItem failItem)
+    {
+      void DoFlattening(FailItem fi, List<Failure> lst)
+      {
+        if (fi is FailGroup fg)
+          DoFlattening(fg, lst);
+        else if (fi is Failure f)
+          lst.Add(f);
+        else
+          throw new NotImplementedException();
+      }
+      List<Failure> ret = new();
+      DoFlattening(failItem, ret);
+      return ret;
+    }
+
+    private FailItem PickRandomFailItem(List<FailItem> items)
+    {
+      FailItem? ret = null;
+      var totalWeight = items.Sum(q => q.Weight);
+      var randomWeight = random.NextDouble(0, totalWeight);
+      foreach (var item in items)
+      {
+        randomWeight -= item.Weight;
+        if (randomWeight < 0)
+        {
+          ret = item;
+          break;
+        }
+      }
+      if (ret == null)
+        ret = items.Last();
+
+      return ret;
     }
 
     private void EvaluateIncidentDefinition(RunIncidentDefinition incident, out bool isActivated)
@@ -128,8 +204,9 @@ namespace FailuresModule
 
     private bool IsTriggerConditionTrue(IStateCheckItem condition)
     {
-      tady najít jak se overovala pravdivost iStateCheckItem
-      throw new NotImplementedException();
+      StateCheckEvaluator sce = new StateCheckEvaluator(this.SimData);
+      bool ret = sce.Evaluate(condition);
+      return ret;
     }
   }
 }
