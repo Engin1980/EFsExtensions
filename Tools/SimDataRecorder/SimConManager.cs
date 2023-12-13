@@ -1,5 +1,6 @@
 ﻿using ELogging;
 using ESimConnect;
+using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,13 +23,15 @@ namespace SimDataRecorder
     public SimConManager()
     {
       simCon = new();
-      simCon.Open();
       simCon.ThrowsException += SimCon_ThrowsException;
       simCon.Disconnected += SimCon_Disconnected;
       simCon.Connected += SimCon_Connected;
       simCon.DataReceived += SimCon_DataReceived;
       simCon.EventInvoked += SimCon_EventInvoked;
+
+      simCon.Open();
       simCon.RegisterType<MockPlaneData>();
+      simCon.RequestDataRepeatedly<MockPlaneData>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
       simCon.RegisterSystemEvent(SimEvents.System.Pause);
       simCon.RegisterSystemEvent(SimEvents.System._1sec);
     }
@@ -73,6 +76,11 @@ namespace SimDataRecorder
     {
       simCon.Close();
       isRunning = false;
+    }
+
+    internal void RequestDataManually()
+    {
+      this.simCon.RequestData<MockPlaneData>();
     }
   }
 }

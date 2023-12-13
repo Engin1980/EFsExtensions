@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace SimDataRecorder
 {
+  [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
   public struct MockPlaneData
   {
     #region Fields

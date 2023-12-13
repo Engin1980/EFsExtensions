@@ -1,6 +1,7 @@
 ﻿using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Printing;
 using System.Runtime.CompilerServices;
@@ -108,7 +109,7 @@ namespace ESimConnect.Types
 
     public void Release()
     {
-      Application.Current.Dispatcher.Invoke(() =>
+      void destroyWindowHandle()
       {
         if (this.hwndSource != null)
         {
@@ -123,20 +124,32 @@ namespace ESimConnect.Types
           this.window = null;
         }
         this.windowHandle = IntPtr.Zero;
-      });
+      };
+      if (Application.Current == null)
+        destroyWindowHandle();
+      else
+        Application.Current.Dispatcher.Invoke(() => destroyWindowHandle());
+
       while (this.windowHandle != IntPtr.Zero)
         System.Threading.Thread.Sleep(50);
     }
 
     private void CreateWindow()
     {
-      Application.Current.Dispatcher.Invoke(() =>
+      void createWindowHandle()
       {
+        this.windowHandle = Process.GetCurrentProcess().MainWindowHandle;
         this.window = new Window();
         var wih = new WindowInteropHelper(window);
         wih.EnsureHandle();
         this.windowHandle = new WindowInteropHelper(this.window).Handle;
-      });
+      };
+
+      if (Application.Current == null)
+        createWindowHandle();
+      else
+        Application.Current.Dispatcher.Invoke(() => createWindowHandle());
+
       while (this.window == null)
         System.Threading.Thread.Sleep(50);
     }
