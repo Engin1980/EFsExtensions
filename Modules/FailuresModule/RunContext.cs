@@ -109,7 +109,7 @@ namespace FailuresModule
 
         List<Failure> failItems = PickFailItems(incident);
 
-        tady dopsat jak to failne
+        throw new NotImplementedException("TODO");
       }
     }
 
@@ -207,6 +207,11 @@ namespace FailuresModule
       StateCheckEvaluator sce = new StateCheckEvaluator(this.SimData);
       bool ret = sce.Evaluate(condition);
       return ret;
+    }
+
+    internal void Init()
+    {
+      throw new NotImplementedException();
     }
   }
 }
