@@ -38,9 +38,9 @@ namespace FailuresModule.Types
     }
   }
 
-  public class LeakFailureDefinition : FailureDefinition
+  public class LeakFailureSustainer : FailureDefinition
   {
-    public LeakFailureDefinition(string id, string title, SimConPoint simConPoint) : base(id, title, simConPoint)
+    public LeakFailureSustainer(string id, string title, SimConPoint simConPoint) : base(id, title, simConPoint)
     {
     }
   }

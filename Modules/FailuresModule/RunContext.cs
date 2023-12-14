@@ -4,6 +4,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
 using FailuresModule.Types;
 using FailuresModule.Types.RunVM;
+using FailuresModule.Types.RunVM.Sustainers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +16,19 @@ namespace FailuresModule
 {
   public class RunContext : NotifyPropertyChangedBase
   {
+    public const int STUCK_TIMER_INITIAL_DELAY = 1000;
+    public const int STUCK_TIMER_PERIOD = 250;
+
+    private readonly Random random = new();
     private readonly SimConManagerWrapper simConWrapper;
-    private readonly Random random = new Random();
+    private List<RunIncidentDefinition>? _IncidentDefinitions = null;
+    private System.Threading.Timer? stuckTimer;
+    private readonly object sustainerLock = new object();
+
     public List<FailureDefinition> FailureDefinitions { get; }
     public List<RunIncident> Incidents { get; }
-    private List<RunIncidentDefinition>? _IncidentDefinitions = null;
+    public SimData SimData { get => this.simConWrapper.SimData; }
+    public List<FailureSustainer> Sustainers { get; }
     internal List<RunIncidentDefinition> IncidentDefinitions
     {
       get
@@ -30,6 +39,40 @@ namespace FailuresModule
         }
         return _IncidentDefinitions;
       }
+    }
+    public RunContext(List<FailureDefinition> failureDefinitions, List<RunIncident> incidents)
+    {
+      FailureDefinitions = failureDefinitions;
+      Incidents = incidents;
+      Sustainers = new();
+
+      simConWrapper = new();
+      simConWrapper.SimSecondElapsed += SimConWrapper_SimSecondElapsed;
+      simConWrapper.SimErrorRaised += SimConWrapper_SimErrorRaised;
+      Logger.RegisterSender(simConWrapper, Logger.GetSenderName(this) + ".SimConWrapper");
+    }
+
+    public static RunContext Create(List<FailureDefinition> failureDefinitions, FailureSet failureSet)
+    {
+      IncidentGroup ig = new()
+      {
+        Incidents = failureSet.Incidents
+      };
+      RunIncidentGroup top = RunIncidentGroup.Create(ig);
+
+      RunContext ret = new(failureDefinitions, top.Incidents);
+      return ret;
+    }
+
+    public void Start()
+    {
+      this.simConWrapper.StartAsync();
+      this.stuckTimer = new System.Threading.Timer(stuckTimer_Tick, null, STUCK_TIMER_INITIAL_DELAY, STUCK_TIMER_PERIOD);
+    }
+
+    internal void Init()
+    {
+      throw new NotImplementedException();
     }
 
     private List<RunIncidentDefinition> CalculateFlatIncidentDefinitions(List<RunIncident> incidents)
@@ -52,54 +95,6 @@ namespace FailuresModule
       return ret;
     }
 
-    public SimData SimData => this.simConWrapper.SimData;
-
-    public RunContext(List<FailureDefinition> failureDefinitions, List<RunIncident> incidents)
-    {
-      FailureDefinitions = failureDefinitions;
-      Incidents = incidents;
-
-      simConWrapper = new();
-      simConWrapper.SimSecondElapsed += SimConWrapper_SimSecondElapsed;
-      simConWrapper.SimErrorRaised += SimConWrapper_SimErrorRaised;
-      Logger.RegisterSender(simConWrapper, Logger.GetSenderName(this) + ".SimConWrapper");
-    }
-
-    private void SimConWrapper_SimErrorRaised(Exception ex)
-    {
-      if (this.simConWrapper.IsRunning)
-        this.simConWrapper.StopAsync();
-
-      //TODO resolve
-      if (ex is SimConManagerWrapper.StartFailedException sfe)
-      {
-        throw new ApplicationException("Failed to start sim readout.", sfe);
-      }
-    }
-
-    private void SimConWrapper_SimSecondElapsed()
-    {
-      EvaluateAndFireFailures();
-    }
-
-    public static RunContext Create(List<FailureDefinition> failureDefinitions, FailureSet failureSet)
-    {
-      IncidentGroup ig = new()
-      {
-        Incidents = failureSet.Incidents
-      };
-      RunIncidentGroup top = RunIncidentGroup.Create(ig);
-
-      RunContext ret = new(failureDefinitions, top.Incidents);
-      return ret;
-    }
-
-    public void Start()
-    {
-      this.simConWrapper.StartAsync();
-    }
-
-
     private void EvaluateAndFireFailures()
     {
       foreach (var incident in this.IncidentDefinitions)
@@ -108,9 +103,61 @@ namespace FailuresModule
         if (!isActivated) continue;
 
         List<Failure> failItems = PickFailItems(incident);
-
-        throw new NotImplementedException("TODO");
+        List<FailureDefinition> failDefs = failItems.Select(q => this.FailureDefinitions.First(p => q.Id == p.Id)).ToList();
+        InitializeFailures(failDefs);
       }
+    }
+
+    private void EvaluateIncidentDefinition(RunIncidentDefinition incident, out bool isActivated)
+    {
+      isActivated = false;
+      foreach (var trigger in incident.IncidentDefinition.Triggers)
+      {
+        if (incident.OneShotTriggersInvoked.Contains(trigger)) continue;
+        if (trigger.Repetitive == false)
+          incident.OneShotTriggersInvoked.Add(trigger);
+
+        bool isConditionTrue = IsTriggerConditionTrue(trigger.Condition);
+        if (isConditionTrue)
+        {
+          double prob = random.NextDouble();
+          isActivated = prob <= trigger.Probability;
+        }
+      }
+    }
+
+    private List<Failure> FlatterFailGroup(FailItem failItem)
+    {
+      void DoFlattening(FailItem fi, List<Failure> lst)
+      {
+        if (fi is FailGroup fg)
+          DoFlattening(fg, lst);
+        else if (fi is Failure f)
+          lst.Add(f);
+        else
+          throw new NotImplementedException();
+      }
+      List<Failure> ret = new();
+      DoFlattening(failItem, ret);
+      return ret;
+    }
+
+    private void InitializeFailures(List<FailureDefinition> failures)
+    {
+      foreach (var failure in failures)
+      {
+        if (this.Sustainers.Any(q => q.Failure == failure)) continue;
+        FailureSustainer fs = FailureSustainerFactory.Create(failure);
+        fs.Init();
+        this.Sustainers.Add(fs);
+      }
+    }
+
+    private bool IsTriggerConditionTrue(IStateCheckItem condition)
+    {
+      StateCheckEvaluator sce = new StateCheckEvaluator(this.SimData);
+      bool ret = sce.Evaluate(condition);
+      return ret;
     }
 
     private List<Failure> PickFailItems(RunIncidentDefinition incident)
@@ -148,22 +195,6 @@ namespace FailuresModule
       return ret;
     }
 
-    private List<Failure> FlatterFailGroup(FailItem failItem)
-    {
-      void DoFlattening(FailItem fi, List<Failure> lst)
-      {
-        if (fi is FailGroup fg)
-          DoFlattening(fg, lst);
-        else if (fi is Failure f)
-          lst.Add(f);
-        else
-          throw new NotImplementedException();
-      }
-      List<Failure> ret = new();
-      DoFlattening(failItem, ret);
-      return ret;
-    }
-
     private FailItem PickRandomFailItem(List<FailItem> items)
     {
       FailItem? ret = null;
@@ -184,34 +215,45 @@ namespace FailuresModule
       return ret;
     }
 
-    private void EvaluateIncidentDefinition(RunIncidentDefinition incident, out bool isActivated)
+    private void SimConWrapper_SimErrorRaised(Exception ex)
     {
-      isActivated = false;
-      foreach (var trigger in incident.IncidentDefinition.Triggers)
-      {
-        if (incident.OneShotTriggersInvoked.Contains(trigger)) continue;
-        if (trigger.Repetitive == false)
-          incident.OneShotTriggersInvoked.Add(trigger);
+      if (this.simConWrapper.IsRunning)
+        this.simConWrapper.StopAsync();
 
-        bool isConditionTrue = IsTriggerConditionTrue(trigger.Condition);
-        if (isConditionTrue)
-        {
-          double prob = random.NextDouble();
-          isActivated = prob <= trigger.Probability;
-        }
+      //TODO resolve
+      if (ex is SimConManagerWrapper.StartFailedException sfe)
+      {
+        throw new ApplicationException("Failed to start sim readout.", sfe);
       }
     }
 
-    private bool IsTriggerConditionTrue(IStateCheckItem condition)
+    private void SimConWrapper_SimSecondElapsed()
     {
-      StateCheckEvaluator sce = new StateCheckEvaluator(this.SimData);
-      bool ret = sce.Evaluate(condition);
-      return ret;
+      lock (sustainerLock)
+      {
+        EvaluateAndFireFailures();
+        RunActiveFailures();
+      }
     }
 
-    internal void Init()
+    private void RunActiveFailures()
     {
-      throw new NotImplementedException();
+      foreach (var sustainer in this.Sustainers)
+      {
+        if (sustainer is StuckFailureSustainer) continue; // handled separately using custom timer tick
+        sustainer.Tick(SimData);
+      }
+    }
+
+    private void stuckTimer_Tick(object? state)
+    {
+      lock (sustainerLock)
+      {
+        this.Sustainers
+          .Where(q => q is StuckFailureSustainer)
+          .Cast<StuckFailureSustainer>()
+          .ForEach(q => q.Tick(SimData));
+      }
     }
   }
 }

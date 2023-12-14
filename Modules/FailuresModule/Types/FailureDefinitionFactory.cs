@@ -77,7 +77,7 @@ namespace FailuresModule.Types
 
       for (int i = 1; i <= ENGINES_COUNT; i++)
       {
-        LeakFailureDefinition f = new($"engCoolant{i}", $"Engine {i} Coolant Reservoir", new VarSimConPoint($"RECIP ENG COOLANT RESERVOIR PERCENT:{i}"));
+        LeakFailureSustainer f = new($"engCoolant{i}", $"Engine {i} Coolant Reservoir", new VarSimConPoint($"RECIP ENG COOLANT RESERVOIR PERCENT:{i}"));
         ret.Add(f);
       }
 
@@ -171,7 +171,7 @@ namespace FailuresModule.Types
       };
 
       var ret = tmp
-         .Select(q => new LeakFailureDefinition(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+         .Select(q => new LeakFailureSustainer(q.Id, q.Name, new VarSimConPoint(q.Sim)))
          .Cast<FailureDefinition>()
          .ToList();
 
