@@ -6,6 +6,7 @@ using System.Linq;
 using System.Printing;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
@@ -146,7 +147,13 @@ namespace ESimConnect.Types
       };
 
       if (Application.Current == null)
-        createWindowHandle();
+      {
+        Thread t = new Thread(createWindowHandle);
+        t.SetApartmentState(ApartmentState.STA);
+        t.Start();
+        t.Join();
+      }
+        
       else
         Application.Current.Dispatcher.Invoke(() => createWindowHandle());
 

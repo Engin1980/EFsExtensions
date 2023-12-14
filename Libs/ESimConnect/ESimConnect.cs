@@ -112,7 +112,6 @@ namespace ESimConnect
         this.simConnect.OnRecvSimobjectDataBytype += SimConnect_OnRecvSimobjectDataBytype;
         this.simConnect.OnRecvSimobjectData += SimConnect_OnRecvSimobjectData;
         this.simConnect.OnRecvEvent += SimConnect_OnRecvEvent;
-        this.winHandleManager.Acquire();
         this.winHandleManager.SimConnect = this.simConnect;
       }
       catch (Exception ex)

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimDataRecorder
+namespace SimDataCapturer
 {
   internal class SimConManager
   {
@@ -28,12 +28,6 @@ namespace SimDataRecorder
       simCon.Connected += SimCon_Connected;
       simCon.DataReceived += SimCon_DataReceived;
       simCon.EventInvoked += SimCon_EventInvoked;
-
-      simCon.Open();
-      simCon.RegisterType<MockPlaneData>();
-      simCon.RequestDataRepeatedly<MockPlaneData>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
-      simCon.RegisterSystemEvent(SimEvents.System.Pause);
-      simCon.RegisterSystemEvent(SimEvents.System._1sec);
     }
 
     public void Start()
@@ -81,6 +75,15 @@ namespace SimDataRecorder
     internal void RequestDataManually()
     {
       this.simCon.RequestData<MockPlaneData>();
+    }
+
+    internal void Open()
+    {
+      simCon.Open();
+      simCon.RegisterType<MockPlaneData>();
+      simCon.RequestDataRepeatedly<MockPlaneData>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
+      simCon.RegisterSystemEvent(SimEvents.System.Pause);
+      simCon.RegisterSystemEvent(SimEvents.System._1sec);
     }
   }
 }
