@@ -12,6 +12,7 @@
         <Button x:Name="btnOpen" Content="Connect to sim" Click="btnOpen_Click" />
         <Button x:Name="btnStart" Content="Start" IsEnabled="{Binding IsRunning}" Click="btnStart_Click" />
         <Button x:Name="btnStop" Content="Stop" IsEnabled="{Binding IsRunning}" Click="btnStop_Click" />
+        <Button x:Name="btnEngine" Content="FailEngine" Click="btnFailEngine" />
       </StackPanel>
       <DockPanel>
         <Label DockPanel.Dock="Left" Content="Target file:" />

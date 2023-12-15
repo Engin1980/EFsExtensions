@@ -133,5 +133,10 @@ namespace SimDataCapturer
         this.TablePlaneData = dv;
       }
     }
+
+    private void btnFailEngine(object sender, RoutedEventArgs e)
+    {
+      simConManager.FailEngine();
+    }
   }
 }

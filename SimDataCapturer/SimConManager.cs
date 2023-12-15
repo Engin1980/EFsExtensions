@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SimDataCapturer
@@ -84,6 +85,17 @@ namespace SimDataCapturer
       simCon.RequestDataRepeatedly<MockPlaneData>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
       simCon.RegisterSystemEvent(SimEvents.System.Pause);
       simCon.RegisterSystemEvent(SimEvents.System._1sec);
+    }
+
+    internal void FailEngine()
+    {
+      //simCon.SendClientEvent("TOGGLE_ENGINE1_FAILURE");
+      simCon.SendClientEvent("TOGGLE_ELECTRICAL_FAILURE");
+
+      /*
+
+
+    */
     }
   }
 }

@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -304,6 +305,19 @@ namespace ESimConnect
 
       ESimConnectEventInvokedEventArgs e = new(@event, value);
       this.EventInvoked?.Invoke(this, e);
+    }
+
+    private EEnum GROUP_ID_PRIORITY_STANDARD = (EEnum)1900000000;
+    public void SendClientEvent(string eventName)
+    {
+      Logger.LogMethodStart();
+      if (this.simConnect == null) throw new NotConnectedException();
+
+      EEnum eEvent = IdProvider.GetNextAsEnum();
+
+      this.simConnect.MapClientEventToSimEvent(eEvent, eventName);
+      this.simConnect.TransmitClientEvent(
+        SimConnect.SIMCONNECT_OBJECT_ID_USER, eEvent, 0, GROUP_ID_PRIORITY_STANDARD, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
     }
   }
 }
