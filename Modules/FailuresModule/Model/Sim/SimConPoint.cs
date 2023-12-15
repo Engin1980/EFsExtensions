@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Types
+namespace FailuresModule.Model.Sim
 {
+    //TODO get rid of this, probably too complicated
     public abstract class SimConPoint
     {
         public abstract string SimPointName { get; }

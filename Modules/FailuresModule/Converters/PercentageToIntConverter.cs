@@ -1,4 +1,4 @@
-﻿using FailuresModule.Types;
+﻿using FailuresModule.Model.App;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -9,7 +9,7 @@ using System.Windows.Data;
 
 namespace FailuresModule.Converters
 {
-  public class PercentageToIntConverter : TypedConverter<Percentage, int>
+    public class PercentageToIntConverter : TypedConverter<Percentage, int>
   {
     protected sealed override int Convert(Percentage value, object parameter, CultureInfo culture) => (int)(value * 100);
 

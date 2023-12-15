@@ -2,7 +2,8 @@
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using EXmlLib;
 using EXmlLib.Deserializers;
-using FailuresModule.Types;
+using FailuresModule.Model.App;
+using FailuresModule.Model.Sim;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ using System.Xml.Linq;
 
 namespace FailuresModule.Xmls
 {
-  public class Deserialization
+    public class Deserialization
   {
     private const string FAILURES_KEY = "__failures";
     private const string LOG_HANDLER_KEY = "__log_handler";
@@ -43,9 +44,9 @@ namespace FailuresModule.Xmls
       }
     }
 
-    public static EXml<FailureSet> CreateDeserializer(List<FailureDefinition> failures, NewLogHandler logHandler)
+    public static EXml<IncidentTopGroup> CreateDeserializer(List<FailureDefinition> failures, NewLogHandler logHandler)
     {
-      EXml<FailureSet> ret = new();
+      EXml<IncidentTopGroup> ret = new();
 
       Dictionary<string, FailureDefinition> failDict = failures.ToDictionary(q => q.Id, q => q);
       ret.Context.CustomData[FAILURES_KEY] = failDict;
@@ -82,14 +83,14 @@ namespace FailuresModule.Xmls
     private static IElementDeserializer CreateFailGroupDeserializer()
     {
       ObjectElementDeserializer ret = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(FailGroup))
+        .WithCustomTargetType(typeof(Fail))
         .WithCustomPropertyDeserialization(
           nameof(FailGroup.Items),
-          EXmlHelper.List.CreateForFlat<FailItem>(
+          EXmlHelper.List.CreateForFlat<Fail>(
             new EXmlHelper.List.DT[]
             {
-              new EXmlHelper.List.DT("failure", typeof(Failure)),
-              new EXmlHelper.List.DT("failGroup", typeof(FailGroup))
+              new EXmlHelper.List.DT("failure", typeof(FailId)),
+              new EXmlHelper.List.DT("failGroup", typeof(Fail))
              }));
       return ret;
     }
@@ -97,16 +98,16 @@ namespace FailuresModule.Xmls
     private static IElementDeserializer CreateFailureDeserializer()
     {
       ObjectElementDeserializer ret = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(Failure));
+        .WithCustomTargetType(typeof(FailId));
       return ret;
     }
 
     private static IElementDeserializer CreateIncidentSetDeserializer()
     {
       ObjectElementDeserializer ret = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(FailureSet))
+        .WithCustomTargetType(typeof(IncidentTopGroup))
         .WithCustomPropertyDeserialization(
-        nameof(FailureSet.Incidents),
+        nameof(IncidentTopGroup.Incidents),
         EXmlHelper.List.CreateForFlat<Incident>(new EXmlHelper.List.DT[]
         {
           new EXmlHelper.List.DT("incident", typeof(IncidentDefinition)),
@@ -134,7 +135,7 @@ namespace FailuresModule.Xmls
             new EXmlHelper.List.DT("trigger", typeof(Trigger))))
         .WithCustomPropertyDeserialization(
           nameof(IncidentDefinition.FailGroup),
-          EXmlHelper.Property.Create("failures", typeof(FailGroup)));
+          EXmlHelper.Property.Create("failures", typeof(Fail)));
 
       return ret;
     }
@@ -144,7 +145,7 @@ namespace FailuresModule.Xmls
       IElementDeserializer ret = new ObjectElementDeserializer()
         .WithCustomTargetType(typeof(IncidentGroup))
         .WithCustomPropertyDeserialization(
-          nameof(FailureSet.Incidents),
+          nameof(IncidentTopGroup.Incidents),
           EXmlHelper.List.CreateForFlat<Incident>(new EXmlHelper.List.DT[]
           {
             new EXmlHelper.List.DT("incident", typeof(IncidentDefinition)),

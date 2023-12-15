@@ -1,5 +1,7 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using FailuresModule.Model.App;
+using FailuresModule.Model.Sim;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -10,12 +12,12 @@ using System.Threading.Tasks;
 
 namespace FailuresModule.Types
 {
-  internal class SanityChecker
+    internal class SanityChecker
   {
     private readonly Stack<string> context = new();
     private List<FailureDefinition> failureDefinitions;
 
-    internal static void CheckSanity(FailureSet tmp, List<FailureDefinition> failureDefinitions)
+    internal static void CheckSanity(IncidentTopGroup tmp, List<FailureDefinition> failureDefinitions)
     {
       SanityChecker sc = new()
       {
@@ -98,11 +100,11 @@ namespace FailuresModule.Types
       }
     }
 
-    private void CheckSanityInternal(FailItem failItem)
+    private void CheckSanityInternal(Fail failItem)
     {
       Logger.Log(this, LogLevel.VERBOSE, "Checking sanity of failItem");
       AssertTrue(failItem.Weight >= 0, $"Weight must be >=0 (provided={failItem.Weight})");
-      if (failItem is Failure failure)
+      if (failItem is FailId failure)
       {
         if (failureDefinitions.Any(q => q.Id == failure.Id) == false)
           throw new ApplicationException($"Failure id {failure.Id} not found among failures.");
@@ -113,7 +115,7 @@ namespace FailuresModule.Types
       }
     }
 
-    private void CheckSanityInternal(FailureSet failureSet)
+    private void CheckSanityInternal(IncidentTopGroup failureSet)
     {
       Logger.Log(this, LogLevel.VERBOSE, "Checking sanity of failureSet");
       context.Push($"Failure-set '{failureSet.MetaInfo.Label}'");

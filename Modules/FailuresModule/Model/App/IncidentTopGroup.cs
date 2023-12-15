@@ -5,11 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Types
+namespace FailuresModule.Model.App
 {
-  public class FailureSet
-  {
-    public MetaInfo MetaInfo { get; set; }
-    public List<Incident> Incidents { get; set; }
-  }
+    public class IncidentTopGroup : IncidentGroup
+    {
+        public MetaInfo MetaInfo { get; set; }
+    }
 }

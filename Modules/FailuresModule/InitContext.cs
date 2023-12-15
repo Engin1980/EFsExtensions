@@ -2,6 +2,8 @@
 using Eng.Chlaot.ChlaotModuleBase;
 using EXmlLib;
 using EXmlLib.Deserializers;
+using FailuresModule.Model.App;
+using FailuresModule.Model.Sim;
 using FailuresModule.Types;
 using FailuresModule.Xmls;
 using System;
@@ -15,7 +17,7 @@ using System.Xml.Serialization;
 
 namespace FailuresModule
 {
-  public class InitContext : NotifyPropertyChangedBase
+    public class InitContext : NotifyPropertyChangedBase
   {
     private readonly NewLogHandler logHandler;
     private readonly Action<bool> setIsReadyFlagAction;
@@ -30,9 +32,9 @@ namespace FailuresModule
 
     public List<FailureDefinition> FailureDefinitions { get; set; }
 
-    public FailureSet FailureSet
+    public IncidentTopGroup FailureSet
     {
-      get => base.GetProperty<FailureSet>(nameof(FailureSet))!;
+      get => base.GetProperty<IncidentTopGroup>(nameof(FailureSet))!;
       set => base.UpdateProperty(nameof(FailureSet), value);
     }
 
@@ -44,7 +46,7 @@ namespace FailuresModule
     public void LoadFile(string xmlFile)
     {
       var factory = new XmlSerializerFactory();
-      FailureSet tmp;
+      IncidentTopGroup tmp;
       XDocument doc;
 
       try
@@ -53,7 +55,7 @@ namespace FailuresModule
         try
         {
           doc = XDocument.Load(xmlFile, LoadOptions.SetLineInfo);
-          EXml<FailureSet> exml = Deserialization.CreateDeserializer(this.FailureDefinitions, this.logHandler);
+          EXml<IncidentTopGroup> exml = Deserialization.CreateDeserializer(this.FailureDefinitions, this.logHandler);
           tmp = exml.Deserialize(doc);
         }
         catch (Exception ex)

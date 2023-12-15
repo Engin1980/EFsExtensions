@@ -1,12 +1,13 @@
-﻿using System;
+﻿using FailuresModule.Model.App;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Types.RunVM
+namespace FailuresModule.Types.Run
 {
-  internal class RunIncidentDefinition : RunIncident
+    internal class RunIncidentDefinition : RunIncident
   {
     internal static RunIncident Create(IncidentDefinition id)
     {

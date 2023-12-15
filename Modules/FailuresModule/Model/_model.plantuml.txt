@@ -1,0 +1,62 @@
+﻿package Model{
+
+class Fail{
++ Weight : double
+}
+
+class FailId{
++ Id : string
+}
+FailId -up-|> Fail
+
+class FailGroup{
++ Items : List<Fail>
++ Selection : Enum(None/One/All)
+}
+FailGroup -up-|> Fail
+
+class Incident{
++ Title : string
+}
+
+class "IncidentDefinition" as ID{
++ Variables : List<Variable>
++ Triggers : List<Trigger>
++ FailGroup : Fail
++ Repetitive : bool
+}
+ID -up-|> Incident
+ID --> FailGroup
+
+class "IncidentGroup" as IG{
++ Incidents : List<Incident>
+}
+IG -up-|> Incident
+
+class "IncidentTopGroup" as ITG{
++ MetaInfo
+}
+note right: Main incident\ngroup class
+ITG -left-|> IG
+
+}
+
+package SimConFailures{
+class "FailureDefinition" as FD{
++ Id : string
++ Title : string
++ SimConPoint : SimConPoint
+}
+
+class "SimVarFailureDefinition" as SVFD
+SVFD -up-|> FD
+
+class "EventFailureDefinition" as EFD
+EFD -up-|> FD
+
+class "StuckFailureDefinition" as SFD
+SFD -up-|> FD
+
+}
+
+ID --> FD

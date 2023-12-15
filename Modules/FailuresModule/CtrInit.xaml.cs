@@ -1,5 +1,5 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
-using FailuresModule.Types;
+using FailuresModule.Model.Sim;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -19,10 +19,10 @@ using System.Windows.Shapes;
 
 namespace FailuresModule
 {
-  /// <summary>
-  /// Interaction logic for CtrInit.xaml
-  /// </summary>
-  public partial class CtrInit : UserControl
+    /// <summary>
+    /// Interaction logic for CtrInit.xaml
+    /// </summary>
+    public partial class CtrInit : UserControl
   {
     public InitContext Context { get; private set; }
     public CtrInit()

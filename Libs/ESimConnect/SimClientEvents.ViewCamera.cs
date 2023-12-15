@@ -47,7 +47,7 @@
         public const string EYEPOINT_UP = "EYEPOINT_UP";
 
       }
-      public static class ViewSystem
+      public static class Miscellaneous
       {
         public const string BOMB_VIEW = "BOMB_VIEW";
 
@@ -88,7 +88,7 @@
         public const string UNLOCK_TARGET = "UNLOCK_TARGET";
 
       }
-      public static class ViewSystem
+      public static class View
       {
         public const string CLOSE_VIEW = "CLOSE_VIEW";
 

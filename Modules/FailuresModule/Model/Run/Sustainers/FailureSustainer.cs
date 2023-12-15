@@ -1,13 +1,14 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
+using FailuresModule.Model.Sim;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Types.RunVM.Sustainers
+namespace FailuresModule.Types.Run.Sustainers
 {
-  public abstract class FailureSustainer
+    public abstract class FailureSustainer
   {
     public FailureDefinition Failure { get; }
     public bool Initialized { get; private set; }

@@ -29,34 +29,43 @@ namespace ESimConnect
         this.Data = data ?? throw new ArgumentNullException(nameof(data));
       }
     }
+
     public class ESimConnectEventInvokedEventArgs
     {
+      public string Event { get; set; }
+
+      public uint Value { get; set; }
+
       public ESimConnectEventInvokedEventArgs(string @event, uint value)
       {
         Event = @event;
         Value = value;
       }
-
-      public string Event { get; set; }
-      public uint Value { get; set; }
-
     }
 
     public delegate void ESimConnectDataReceived(ESimConnect sender, ESimConnectDataReceivedEventArgs e);
-    public delegate void ESimConnectEventInvoked(ESimConnect sender, ESimConnectEventInvokedEventArgs e);
+
     public delegate void ESimConnectDelegate(ESimConnect sender);
+
+    public delegate void ESimConnectEventInvoked(ESimConnect sender, ESimConnectEventInvokedEventArgs e);
+
     public delegate void ESimConnectExceptionDelegate(ESimConnect sender, SIMCONNECT_EXCEPTION ex);
 
     public event ESimConnectDelegate? Connected;
+
     public event ESimConnectDataReceived? DataReceived;
-    public event ESimConnectEventInvoked? EventInvoked;
+
     public event ESimConnectDelegate? Disconnected;
+
+    public event ESimConnectEventInvoked? EventInvoked;
+
     public event ESimConnectExceptionDelegate? ThrowsException;
 
-    private readonly TypeManager typeManager = new();
     private readonly Types.EventManager eventManager = new();
-    private readonly WinHandleManager winHandleManager = new();
     private readonly RequestManager requestIdManager = new();
+    private readonly TypeManager typeManager = new();
+    private readonly WinHandleManager winHandleManager = new();
+    private EEnum GROUP_ID_PRIORITY_STANDARD = (EEnum)1900000000;
     private SimConnect? simConnect;
 
     public bool IsOpened { get => this.simConnect != null; }
@@ -232,6 +241,34 @@ namespace ESimConnect
       Logger.LogMethodEnd();
     }
 
+    public void SendClientEvent(string eventName, uint[]? parameters = null, bool validate = false)
+    {
+      Logger.LogMethodStart();
+      if (this.simConnect == null) throw new NotConnectedException();
+      parameters ??= Array.Empty<uint>();
+      if (parameters.Length > 5) throw new NotImplementedException($"Maximum expected number of parameters is {5} (provided {parameters.Length}).");
+
+      if (validate)
+        ValidateClientEvent(eventName, parameters);
+
+      EEnum eEvent = IdProvider.GetNextAsEnum();
+
+      this.simConnect.MapClientEventToSimEvent(eEvent, eventName);
+
+      if (parameters.Length < 2)
+      {
+        uint val = parameters.Length == 0 ? 0 : parameters[0];
+        this.simConnect.TransmitClientEvent(
+        SimConnect.SIMCONNECT_OBJECT_ID_USER, eEvent, val, GROUP_ID_PRIORITY_STANDARD, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+      }
+      else if (parameters.Length < 5)
+      {
+        throw new NotImplementedException("Current .DLL version probably does not support 'TransmitClientEvent_EX1(...)'.");
+      }
+      else
+        throw new ApplicationException("Maximum allowed number of params is 5.");
+    }
+
     public void UnregisterType<T>()
     {
       Logger.LogMethodStart();
@@ -251,6 +288,38 @@ namespace ESimConnect
       Logger.LogMethodEnd();
     }
 
+    private static void ValidateClientEvent(string eventName, uint[] parameters)
+    {
+      FieldInfo? extractEventField(string eventName, Type? cls = null)
+      {
+        FieldInfo? ret;
+        if (cls == null) cls = typeof(SimClientEvents);
+
+        ret = cls.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+          .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
+          .FirstOrDefault(q => q.Name == eventName);
+
+        if (ret == null)
+        {
+          var classes = cls.GetNestedTypes();
+          foreach (var c in classes)
+          {
+            ret = extractEventField(eventName, c);
+            if (ret != null) break;
+          }
+        }
+        return ret;
+      };
+
+      FieldInfo? eventField = extractEventField(eventName) ?? throw new Exception($"ClientEvent '{eventName}' not found in declarations.");
+
+      var paramAttrs = eventField.GetCustomAttributes().Where(q => q is SimClientEvents.Parameter).Cast<SimClientEvents.Parameter>();
+      if (paramAttrs.Count() != parameters.Length)
+      {
+        throw new Exception($"ClientEvent '{eventName}' parameter check failed. Expected {paramAttrs.Count()} params, provided {parameters.Length}.");
+      }
+    }
+
     private void ResolveExitedFS2020()
     {
       if (this.simConnect != null)
@@ -259,6 +328,17 @@ namespace ESimConnect
         this.simConnect = null;
       }
       this.Disconnected?.Invoke(this);
+    }
+
+    private void SimConnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data)
+    {
+      Logger.LogInvokedEvent(this, nameof(SimConnect_OnRecvEvent), data);
+      EEnum iRequest = (EEnum)data.uEventID;
+      string @event = eventManager.GetEvent(iRequest);
+      uint value = data.dwData;
+
+      ESimConnectEventInvokedEventArgs e = new(@event, value);
+      this.EventInvoked?.Invoke(this, e);
     }
 
     private void SimConnect_OnRecvException(SimConnect sender, SIMCONNECT_RECV_EXCEPTION data)
@@ -295,67 +375,6 @@ namespace ESimConnect
 
       ESimConnectDataReceivedEventArgs e = new(userRequestId, type, ret);
       this.DataReceived?.Invoke(this, e);
-    }
-    private void SimConnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data)
-    {
-      Logger.LogInvokedEvent(this, nameof(SimConnect_OnRecvEvent), data);
-      EEnum iRequest = (EEnum)data.uEventID;
-      string @event = eventManager.GetEvent(iRequest);
-      uint value = data.dwData;
-
-      ESimConnectEventInvokedEventArgs e = new(@event, value);
-      this.EventInvoked?.Invoke(this, e);
-    }
-
-    private EEnum GROUP_ID_PRIORITY_STANDARD = (EEnum)1900000000;
-    public void SendClientEvent(string eventName, object[]? parameters = null, bool validate = false)
-    {
-      Logger.LogMethodStart();
-      if (this.simConnect == null) throw new NotConnectedException();
-
-      if (validate)
-        ValidateClientEvent(eventName, parameters);
-
-      EEnum eEvent = IdProvider.GetNextAsEnum();
-
-      this.simConnect.MapClientEventToSimEvent(eEvent, eventName);
-      tady dodelat argumenty posilani
-      this.simConnect.TransmitClientEvent(
-        SimConnect.SIMCONNECT_OBJECT_ID_USER, eEvent, 0, GROUP_ID_PRIORITY_STANDARD, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
-    }
-
-    private void ValidateClientEvent(string eventName, object[]? parameters)
-    {
-      if (parameters == null) parameters = new object[0];
-
-      FieldInfo? extractEventField(string eventName, Type? cls = null)
-      {
-        FieldInfo? ret;
-        if (cls == null) cls = typeof(SimClientEvents);
-
-        ret = cls.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-          .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
-          .FirstOrDefault(q=>q.Name == eventName);
-
-        if (ret == null)
-        {
-          var classes = cls.GetNestedTypes();
-          foreach (var c in classes)
-          {
-            ret = extractEventField(eventName, c);
-            if (ret != null) break;
-          }
-        }
-        return ret;
-      };
-
-      FieldInfo? eventField = extractEventField(eventName) ?? throw new Exception($"ClientEvent '{eventName}' not found in declarations.");
-
-      var paramAttrs = eventField.GetCustomAttributes().Where(q => q is SimClientEvents.Parameter).Cast<SimClientEvents.Parameter>();
-      if (paramAttrs.Count() != parameters.Length)
-      {
-        throw new Exception($"ClientEvent '{eventName}' parameter check failed. Expected {paramAttrs.Count()} params, provided {parameters.Length}.");
-      }
     }
   }
 }

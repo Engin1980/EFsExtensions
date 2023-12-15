@@ -2,9 +2,10 @@
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
-using FailuresModule.Types;
-using FailuresModule.Types.RunVM;
-using FailuresModule.Types.RunVM.Sustainers;
+using FailuresModule.Model.App;
+using FailuresModule.Model.Sim;
+using FailuresModule.Types.Run;
+using FailuresModule.Types.Run.Sustainers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +53,7 @@ namespace FailuresModule
       Logger.RegisterSender(simConWrapper, Logger.GetSenderName(this) + ".SimConWrapper");
     }
 
-    public static RunContext Create(List<FailureDefinition> failureDefinitions, FailureSet failureSet)
+    public static RunContext Create(List<FailureDefinition> failureDefinitions, IncidentTopGroup failureSet)
     {
       IncidentGroup ig = new()
       {
@@ -102,7 +103,7 @@ namespace FailuresModule
         EvaluateIncidentDefinition(incident, out bool isActivated);
         if (!isActivated) continue;
 
-        List<Failure> failItems = PickFailItems(incident);
+        List<FailId> failItems = PickFailItems(incident);
         List<FailureDefinition> failDefs = failItems.Select(q => this.FailureDefinitions.First(p => q.Id == p.Id)).ToList();
         InitializeFailures(failDefs);
       }
@@ -126,18 +127,18 @@ namespace FailuresModule
       }
     }
 
-    private List<Failure> FlatterFailGroup(FailItem failItem)
+    private List<FailId> FlatterFailGroup(Fail failItem)
     {
-      void DoFlattening(FailItem fi, List<Failure> lst)
+      void DoFlattening(Fail fi, List<FailId> lst)
       {
-        if (fi is FailGroup fg)
+        if (fi is Fail fg)
           DoFlattening(fg, lst);
-        else if (fi is Failure f)
+        else if (fi is FailId f)
           lst.Add(f);
         else
           throw new NotImplementedException();
       }
-      List<Failure> ret = new();
+      List<FailId> ret = new();
       DoFlattening(failItem, ret);
       return ret;
     }
@@ -160,31 +161,31 @@ namespace FailuresModule
       return ret;
     }
 
-    private List<Failure> PickFailItems(RunIncidentDefinition incident)
+    private List<FailId> PickFailItems(RunIncidentDefinition incident)
     {
       FailGroup rootGroup = incident.IncidentDefinition.FailGroup;
-      List<Failure> ret = PickFailItems(rootGroup);
+      List<FailId> ret = PickFailItems(rootGroup);
       return ret;
     }
 
-    private List<Failure> PickFailItems(FailGroup root)
+    private List<FailId> PickFailItems(FailGroup root)
     {
-      List<Failure> ret;
+      List<FailId> ret;
       switch (root.Selection)
       {
         case FailGroup.ESelection.None:
-          ret = new List<Failure>();
+          ret = new List<FailId>();
           break;
         case FailGroup.ESelection.All:
           ret = FlatterFailGroup(root);
           break;
         case FailGroup.ESelection.One:
-          FailItem tmp = PickRandomFailItem(root.Items);
+          Fail tmp = PickRandomFailItem(root.Items);
           if (tmp is FailGroup fg)
             ret = PickFailItems(fg);
-          else if (tmp is Failure f)
+          else if (tmp is FailId f)
           {
-            ret = new List<Failure>().With(f);
+            ret = new List<FailId>().With(f);
           }
           else
             throw new NotImplementedException();
@@ -195,9 +196,9 @@ namespace FailuresModule
       return ret;
     }
 
-    private FailItem PickRandomFailItem(List<FailItem> items)
+    private Fail PickRandomFailItem(List<Fail> items)
     {
-      FailItem? ret = null;
+      Fail? ret = null;
       var totalWeight = items.Sum(q => q.Weight);
       var randomWeight = random.NextDouble(0, totalWeight);
       foreach (var item in items)

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Types.RunVM
+namespace FailuresModule.Types.Run
 {
   public class RunTriggerEvaluation
   {

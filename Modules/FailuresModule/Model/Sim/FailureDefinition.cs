@@ -6,7 +6,7 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Types
+namespace FailuresModule.Model.Sim
 {
   public abstract class FailureDefinition
   {
@@ -24,23 +24,9 @@ namespace FailuresModule.Types
     public string TypeName => GetType().Name;
   }
 
-  public class StuckFailureDefinition : FailureDefinition
+  public class LeakFailureDefinition : FailureDefinition
   {
-    public StuckFailureDefinition(string id, string title, SimConPoint simConPoint) : base(id, title, simConPoint)
-    {
-    }
-  }
-
-  public class InstantFailureDefinition : FailureDefinition
-  {
-    public InstantFailureDefinition(string id, string title, SimConPoint simConPoint) : base(id, title, simConPoint)
-    {
-    }
-  }
-
-  public class LeakFailureSustainer : FailureDefinition
-  {
-    public LeakFailureSustainer(string id, string title, SimConPoint simConPoint) : base(id, title, simConPoint)
+    public LeakFailureDefinition(string id, string title, SimConPoint simConPoint) : base(id, title, simConPoint)
     {
     }
   }

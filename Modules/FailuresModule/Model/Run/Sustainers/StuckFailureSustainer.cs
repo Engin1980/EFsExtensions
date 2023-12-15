@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
+using FailuresModule.Model.Sim;
 
-namespace FailuresModule.Types.RunVM.Sustainers
+namespace FailuresModule.Types.Run.Sustainers
 {
   internal class StuckFailureSustainer : FailureSustainer
   {
-    public StuckFailureSustainer(FailureDefinition failure) : base(failure)
+    public StuckFailureSustainer(StuckFailureDefinition failure) : base(failure)
     {
     }
 
@@ -17,7 +19,7 @@ namespace FailuresModule.Types.RunVM.Sustainers
       throw new NotImplementedException();
     }
 
-    internal void Tick(Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection.SimData simData)
+    protected override void TickInternal(SimData simData)
     {
       throw new NotImplementedException();
     }
