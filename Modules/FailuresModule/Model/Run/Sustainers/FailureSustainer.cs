@@ -8,29 +8,43 @@ using System.Threading.Tasks;
 
 namespace FailuresModule.Types.Run.Sustainers
 {
-    public abstract class FailureSustainer
+  public abstract class FailureSustainer
   {
     public FailureDefinition Failure { get; }
-    public bool Initialized { get; private set; }
+    public bool IsActive { get; private set; }
+    protected ESimConnect.ESimConnect SimCon { get; private set; }
 
     protected FailureSustainer(FailureDefinition failure)
     {
       Failure = failure ?? throw new ArgumentNullException(nameof(failure));
     }
 
-    public void Init()
+    public void Start()
     {
-      this.InitInternal();
-      this.Initialized = true;
+      if (!IsActive)
+      {
+        this.StartInternal();
+        this.IsActive = true;
+      }
+    }
+
+    public void Reset()
+    {
+      if (IsActive)
+      {
+        this.ResetInternal();
+        this.IsActive = false;
+      }
     }
 
     public void Tick(SimData simData)
     {
-      if (!Initialized) throw new ApplicationException("FailureSustainer not initialized.");
-      this.TickInternal(simData);
+      if (IsActive)
+        this.TickInternal(simData);
     }
 
-    protected abstract void InitInternal();
+    protected abstract void StartInternal();
+    protected abstract void ResetInternal();
     protected abstract void TickInternal(SimData simData);
   }
 }
