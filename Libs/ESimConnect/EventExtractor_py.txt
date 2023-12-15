@@ -1,0 +1,121 @@
+﻿import os
+import re
+
+file_name = "all.txt"
+
+with open(file_name) as f:
+    txt = f.read()
+
+def split_to_rows(txt):
+    regex = r"<tr>(.+?)<\/tr>"
+    matches = re.finditer(regex, txt, re.MULTILINE)
+
+    ret = []
+    for match in matches:
+        grp = match.group(1)
+        ret.append(grp)
+
+    return ret
+
+def remove_tags(txt):
+    CLEANR = re.compile('<.*?>') 
+    if txt is None:
+        ret = None
+    else:
+        ret = re.sub(CLEANR, '', txt)
+    return ret
+
+def split_to_blocks(rows):
+    regex3 = r"<td>(.+?)<\/td>.+(?:<td>(.+?)<\/td>).+<td>(.+?)<\/td>"
+    regex2 = r"<td>(.+?)</td>.+(?:<td>(.+?)</td>)?.+<td>(.+?)</td>"
+    ret = []
+
+    for row in rows:
+        blck = []
+        matches = re.finditer(regex3, row, re.MULTILINE)
+        for match in matches:
+            blck.append(remove_tags(match.group(1)).strip())
+            blck.append(remove_tags(match.group(2)).strip())
+            blck.append(remove_tags(match.group(3)).strip())
+            break
+        if len(blck) == 0:
+            matches = re.finditer(regex2, row, re.MULTILINE)
+            for match in matches:
+                blck.append(remove_tags(match.group(1)).strip())
+                blck.append(None)
+                blck.append(remove_tags(match.group(3)).strip())
+                break
+        if len(blck) > 0:
+            ret.append(blck)
+
+    return ret
+
+def expand_multidef_blocks(blocks):
+    ret = []
+
+    for block in blocks:
+        pts = block[0].split()
+        if len(pts) > 1:
+            for pt in pts:
+                new = [pt, block[1], block[2]]
+                ret.append(new)
+        else:
+            ret.append(block)
+
+    return ret
+
+def remove_nas(blocks):
+    for block in blocks:
+        if block[1] == "N/A":
+            block[1] = None
+
+def decode_topic(txt):
+    regex = r"<h2 id=\"(.+?)\""
+    ret = None
+    matches = re.finditer(regex, txt, re.MULTILINE)
+    for match in matches:
+        ret = match.group(1)
+        break
+    if ret is None:
+        raise Exception("Topic not found!")
+    return ret
+
+def decode_areas(txt):
+    ret = []
+
+    regex = r"<h4 id=\"(.+?)\">.+?<\/h4>"
+    matches = re.finditer(regex, txt, re.MULTILINE)
+    for match in matches:
+        area = {}
+        area["id"] = match.group(1)
+        area["start_index"] = match.start()
+        if len(ret) > 0:
+            ret[len(ret)-1]["end_index"] = match.start() - 1
+        ret.append(area)
+
+    ret[len(ret)-1]["end_index"] = len(txt)
+
+    for area in ret:
+        si = area["start_index"]
+        ei = area["end_index"]
+        area["text"] = txt[si:ei]
+
+    return ret
+
+topic = decode_topic(txt)
+areas = decode_areas(txt)
+for area in areas:
+    rows = split_to_rows(area["text"])
+    blocks = split_to_blocks(rows)
+    blocks = expand_multidef_blocks(blocks)
+    remove_nas(blocks)
+    area["blocks"] = blocks
+
+
+print ("TOPIC " + topic)
+for area in areas:
+    print("\t" + area["id"])
+    for block in blocks:
+        print("\t\t", block[0], "\t\t", block[1], "\t\t", block[2])
+        # print("\t\t", block[1])
+        # print("\t\t\t\t", block[2])
