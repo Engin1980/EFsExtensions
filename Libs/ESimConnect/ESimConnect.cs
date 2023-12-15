@@ -308,16 +308,54 @@ namespace ESimConnect
     }
 
     private EEnum GROUP_ID_PRIORITY_STANDARD = (EEnum)1900000000;
-    public void SendClientEvent(string eventName)
+    public void SendClientEvent(string eventName, object[]? parameters = null, bool validate = false)
     {
       Logger.LogMethodStart();
       if (this.simConnect == null) throw new NotConnectedException();
 
+      if (validate)
+        ValidateClientEvent(eventName, parameters);
+
       EEnum eEvent = IdProvider.GetNextAsEnum();
 
       this.simConnect.MapClientEventToSimEvent(eEvent, eventName);
+      tady dodelat argumenty posilani
       this.simConnect.TransmitClientEvent(
         SimConnect.SIMCONNECT_OBJECT_ID_USER, eEvent, 0, GROUP_ID_PRIORITY_STANDARD, SIMCONNECT_EVENT_FLAG.GROUPID_IS_PRIORITY);
+    }
+
+    private void ValidateClientEvent(string eventName, object[]? parameters)
+    {
+      if (parameters == null) parameters = new object[0];
+
+      FieldInfo? extractEventField(string eventName, Type? cls = null)
+      {
+        FieldInfo? ret;
+        if (cls == null) cls = typeof(SimClientEvents);
+
+        ret = cls.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+          .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
+          .FirstOrDefault(q=>q.Name == eventName);
+
+        if (ret == null)
+        {
+          var classes = cls.GetNestedTypes();
+          foreach (var c in classes)
+          {
+            ret = extractEventField(eventName, c);
+            if (ret != null) break;
+          }
+        }
+        return ret;
+      };
+
+      FieldInfo? eventField = extractEventField(eventName) ?? throw new Exception($"ClientEvent '{eventName}' not found in declarations.");
+
+      var paramAttrs = eventField.GetCustomAttributes().Where(q => q is SimClientEvents.Parameter).Cast<SimClientEvents.Parameter>();
+      if (paramAttrs.Count() != parameters.Length)
+      {
+        throw new Exception($"ClientEvent '{eventName}' parameter check failed. Expected {paramAttrs.Count()} params, provided {parameters.Length}.");
+      }
     }
   }
 }
