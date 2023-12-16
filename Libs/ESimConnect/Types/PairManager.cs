@@ -25,6 +25,11 @@ namespace ESimConnect.Types
     {
       this.inner.Remove(typeId);
     }
+
+    internal bool IsRegistered(int id)
+    {
+      return inner.ContainsKey(id);
+    }
   }
 
   internal class TypeManager : PairManager<int, Type>

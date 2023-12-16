@@ -457,5 +457,19 @@ namespace ESimConnect
       ESimConnectDataReceivedEventArgs e = new(userRequestId, type, ret);
       this.DataReceived?.Invoke(this, e);
     }
+
+    public void SendPrimitive(int typeId, double value)
+    {
+      Logger.LogMethodStart();
+      if (this.simConnect == null) throw new NotConnectedException();
+
+      if (!this.primitiveManager.IsRegistered(typeId))
+        throw new ApplicationException($"Primitive type with id {typeId} not registered.");
+
+      EEnum eTypeId = (EEnum)typeId;
+      this.simConnect.SetDataOnSimObject(eTypeId, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, value);
+
+      Logger.LogMethodEnd();
+    }
   }
 }

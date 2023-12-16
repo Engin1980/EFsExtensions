@@ -138,5 +138,10 @@ namespace SimDataCapturer
     {
       simConManager.FailEngine();
     }
-  }
+
+    private void btnSimVar_Click(object sender, RoutedEventArgs e)
+    {
+      simConManager.FailPartialPanelAltimeter();
+        }
+    }
 }

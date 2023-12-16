@@ -149,7 +149,6 @@ namespace FailuresModule
       {
         if (this.Sustainers.Any(q => q.Failure == failure)) continue;
         FailureSustainer fs = FailureSustainerFactory.Create(failure);
-        fs.Init();
         this.Sustainers.Add(fs);
       }
     }

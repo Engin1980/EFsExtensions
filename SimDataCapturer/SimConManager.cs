@@ -78,6 +78,7 @@ namespace SimDataCapturer
       this.simCon.RequestData<MockPlaneData>();
     }
 
+    private int simVarFailId;
     internal void Open()
     {
       simCon.Open();
@@ -85,17 +86,19 @@ namespace SimDataCapturer
       simCon.RequestDataRepeatedly<MockPlaneData>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
       simCon.RegisterSystemEvent(SimEvents.System.Pause);
       simCon.RegisterSystemEvent(SimEvents.System._1sec);
+
+      simVarFailId = simCon.RegisterPrimitive<double>("MyCustomName", "Number", "PARTIAL PANEL ALTITUDE");
     }
 
     internal void FailEngine()
     {
-      //simCon.SendClientEvent("TOGGLE_ENGINE1_FAILURE");
-      simCon.SendClientEvent("TOGGLE_ELECTRICAL_FAILURE");
+      simCon.SendClientEvent("TOGGLE_ENGINE1_FAILURE");
+    }
 
-      /*
-
-
-    */
+    internal void FailPartialPanelAltimeter()
+    {
+      uint value = 1;
+      simCon.SendPrimitive(simVarFailId, value);
     }
   }
 }

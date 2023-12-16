@@ -29,6 +29,9 @@ namespace FailuresModule.Types.Run.Sustainers
 
     private void SendEvent(uint arg)
     {
+      // toto je pro eventy, takhle je to blbe
+      throw new NotImplementedException();
+
       string @event = base.Failure.SimConPoint.SimPointName;
       base.SimCon.SendClientEvent(@event, new uint[] { arg }, true);
     }
