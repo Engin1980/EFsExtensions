@@ -14,6 +14,7 @@
         <Button x:Name="btnStop" Content="Stop" IsEnabled="{Binding IsRunning}" Click="btnStop_Click" />
         <Button x:Name="btnEngine" Content="Fail Event (engine)" Click="btnFailEngine" />
         <Button x:Name="btnSimVar" Content="Fail SimVar (airspeed panel)" Click="btnSimVar_Click"/>
+        <Button x:Name="btnLeak" Content="Fail Leak (left fuel)" Click="btnLeak_Click" />
       </StackPanel>
       <DockPanel>
         <Label DockPanel.Dock="Left" Content="Target file:" />

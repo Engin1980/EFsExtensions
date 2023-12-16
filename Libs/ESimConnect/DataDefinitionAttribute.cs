@@ -10,10 +10,13 @@ namespace ESimConnect
   [AttributeUsage(AttributeTargets.Field)]
   public class DataDefinitionAttribute : Attribute
   {
-    public DataDefinitionAttribute(string simVarName, string? unit = null, SimType type = SimType.UNSPECIFIED) {
+    public const int EMPTY_INDEX = -1;
+
+    public DataDefinitionAttribute(string simVarName, string? unit = null, SimType type = SimType.UNSPECIFIED)
+    {
       this.Name = simVarName;
       this.Unit = unit;
-      this.Type= type;
+      this.Type = type;
     }
     public string Name { get; }
     public string? Unit { get; }

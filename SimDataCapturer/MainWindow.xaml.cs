@@ -143,5 +143,10 @@ namespace SimDataCapturer
     {
       simConManager.FailPartialPanelAltimeter();
         }
+
+    private void btnLeak_Click(object sender, RoutedEventArgs e)
+    {
+      simConManager.FailLeak();
     }
+  }
 }

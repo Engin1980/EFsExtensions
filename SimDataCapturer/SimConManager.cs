@@ -4,6 +4,7 @@ using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Printing;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -48,7 +49,27 @@ namespace SimDataCapturer
 
     private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
     {
-      MockPlaneData data = (MockPlaneData)e.Data;
+      if (e.RequestId == simLeakRequestId)
+      {
+        double value = (double)e.Data;
+        OnLeakDataUpdate(value);
+      } else
+      {
+        MockPlaneData data = (MockPlaneData)e.Data;
+        OnMockPlaneDataUpdate(data);
+      }
+    }
+
+    private void OnLeakDataUpdate(double value)
+    {
+      double newValue = Math.Max(0, value - simLeakStep);
+      simCon.SendPrimitive(simLeakId, newValue);
+      Thread.Sleep(1000);
+      simCon.RequestPrimitive(simLeakId, ++simLeakRequestId);
+    }
+
+    private void OnMockPlaneDataUpdate(MockPlaneData data)
+    {
       this.OnData?.Invoke(data);
     }
 
@@ -79,6 +100,9 @@ namespace SimDataCapturer
     }
 
     private int simVarFailId;
+    private int simLeakId;
+    private int simLeakRequestId = 1;
+    private double simLeakStep = 0.01;
     internal void Open()
     {
       simCon.Open();
@@ -87,7 +111,8 @@ namespace SimDataCapturer
       simCon.RegisterSystemEvent(SimEvents.System.Pause);
       simCon.RegisterSystemEvent(SimEvents.System._1sec);
 
-      simVarFailId = simCon.RegisterPrimitive<double>("MyCustomName", "Number", "PARTIAL PANEL ALTITUDE");
+      // simVarFailId = simCon.RegisterPrimitive<double>("PARTIAL PANEL ALTITUDE", "Number", "FLOAT64");
+      simLeakId = simCon.RegisterPrimitive<double>("FUEL TANK LEFT MAIN LEVEL", "Number", "FLOAT64");
     }
 
     internal void FailEngine()
@@ -99,6 +124,11 @@ namespace SimDataCapturer
     {
       uint value = 1;
       simCon.SendPrimitive(simVarFailId, value);
+    }
+
+    internal void FailLeak()
+    {
+      simCon.RequestPrimitive(simLeakId, ++simLeakRequestId);
     }
   }
 }
