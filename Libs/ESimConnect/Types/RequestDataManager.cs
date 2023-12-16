@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ESimConnect.Types
 {
-  internal class RequestManager
+  internal class RequestDataManager
   {
     private class RData
     {
