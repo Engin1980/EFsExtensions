@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -64,6 +65,7 @@ namespace ESimConnect
     private readonly Types.EventManager eventManager = new();
     private readonly RequestManager requestIdManager = new();
     private readonly TypeManager typeManager = new();
+    private readonly PrimitiveManager primitiveManager = new();
     private readonly WinHandleManager winHandleManager = new();
     private EEnum GROUP_ID_PRIORITY_STANDARD = (EEnum)1900000000;
     private SimConnect? simConnect;
@@ -153,6 +155,47 @@ namespace ESimConnect
       Logger.LogMethodEnd();
     }
 
+    public int RegisterPrimitive<T>(string name, string unit, string simTypeName, int epsilon = 0)
+    {
+      Logger.LogMethodStart();
+      if (this.simConnect == null) throw new NotConnectedException();
+      SIMCONNECT_DATATYPE simType;
+      try
+      {
+        simType = Enum.Parse<SIMCONNECT_DATATYPE>(simTypeName);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException($"Failed to parse '{simTypeName}' as SIMCONNECT_DATATYPE enum value.", ex);
+      }
+
+      EEnum eTypeId = IdProvider.GetNextAsEnum();
+
+      try
+      {
+        simConnect.AddToDataDefinition(eTypeId, name, unit, simType, epsilon, SimConnect.SIMCONNECT_UNUSED);
+      }
+      catch (Exception ex)
+      {
+        var tmp = new InternalException("Failed to invoke 'simConnect.AddToDataDefinition(...)'.", ex);
+        Logger.LogException(tmp);
+        throw tmp;
+      }
+      try
+      {
+        this.simConnect.RegisterDataDefineStruct<T>(eTypeId);
+        this.primitiveManager.Register((int)eTypeId, typeof(T));
+      }
+      catch (Exception ex)
+      {
+        var tmp = new InternalException("Failed to invoke 'simConnect.RegisterDataDefineStruct<T>(...)'.", ex);
+        Logger.LogException(tmp);
+        throw tmp;
+      }
+      Logger.LogMethodEnd();
+      return (int)eTypeId;
+    }
+
     public void RegisterType<T>() where T : struct
     {
       Logger.LogMethodStart();
@@ -194,7 +237,7 @@ namespace ESimConnect
     }
 
     public void RequestData<T>(
-          int? customRequestId = null, uint radius = 0,
+      int? customRequestId = null, uint radius = 0,
       SIMCONNECT_SIMOBJECT_TYPE simObjectType = SIMCONNECT_SIMOBJECT_TYPE.USER)
     {
       Logger.LogMethodStart(new object?[] { customRequestId, radius, simObjectType });
@@ -205,6 +248,25 @@ namespace ESimConnect
       this.simConnect.RequestDataOnSimObjectType(eRequestId, eTypeId, radius, simObjectType);
       requestIdManager.Register(customRequestId, typeof(T), eRequestId);
       Logger.LogMethodEnd();
+    }
+
+    public int RequestPrimitive(int typeId, int? customRequestId = null, uint radius = 0)
+    {
+      return RequestPrimitive(typeId, customRequestId, radius, SIMCONNECT_SIMOBJECT_TYPE.USER);
+    }
+
+    public int RequestPrimitive(int typeId, int? customRequestId, uint radius, SIMCONNECT_SIMOBJECT_TYPE simObjectType)
+    {
+      Logger.LogMethodStart(new object?[] { typeId, customRequestId, radius });
+      if (this.simConnect == null) throw new NotConnectedException();
+
+      EEnum eTypeId = (EEnum)typeId;
+      Type t = primitiveManager.GetType(typeId);
+      EEnum eRequestId = IdProvider.GetNextAsEnum();
+      this.simConnect.RequestDataOnSimObjectType(eRequestId, eTypeId, radius, simObjectType);
+      requestIdManager.Register(customRequestId, t, eRequestId);
+      Logger.LogMethodEnd();
+      return (int)eRequestId;
     }
 
     public void RequestDataRepeatedly<T>(
@@ -284,6 +346,25 @@ namespace ESimConnect
       catch (Exception ex)
       {
         throw new InternalException($"Failed to unregister type {typeof(T).Name}.", ex);
+      }
+      Logger.LogMethodEnd();
+    }
+
+    public void UnregisterPrimitive(int typeId)
+    {
+      Logger.LogMethodStart();
+      if (this.simConnect == null) throw new NotConnectedException();
+
+      EEnum eTypeId = (EEnum)typeId;
+
+      try
+      {
+        this.simConnect.ClearDataDefinition(eTypeId);
+        this.primitiveManager.Unregister(typeId);
+      }
+      catch (Exception ex)
+      {
+        throw new InternalException($"Failed to unregister typeId {typeId}.", ex);
       }
       Logger.LogMethodEnd();
     }

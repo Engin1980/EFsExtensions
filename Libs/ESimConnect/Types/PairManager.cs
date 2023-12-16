@@ -8,6 +8,24 @@ using System.Threading.Tasks;
 
 namespace ESimConnect.Types
 {
+  internal class PrimitiveManager
+  {
+    private readonly Dictionary<int, Type> inner = new();
+
+    public void Register(int id, Type type)
+    {
+      if (inner.ContainsKey(id))
+        throw new ApplicationException("Duplicit ID int Primitive manager.");
+      this.inner[id] = type;
+    }
+
+    public Type GetType(int id) { return inner[id]; }
+
+    internal void Unregister(int typeId)
+    {
+      this.inner.Remove(typeId);
+    }
+  }
 
   internal class TypeManager : PairManager<int, Type>
   {
