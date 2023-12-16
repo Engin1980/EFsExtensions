@@ -53,7 +53,13 @@ namespace SimDataCapturer
       {
         double value = (double)e.Data;
         OnLeakDataUpdate(value);
-      } else
+      }
+      else if (e.RequestId == simStuckRequestId)
+      {
+        double value = (double)e.Data;
+        OnStuckDataUpdate(value);
+      }
+      else
       {
         MockPlaneData data = (MockPlaneData)e.Data;
         OnMockPlaneDataUpdate(data);
@@ -100,19 +106,32 @@ namespace SimDataCapturer
     }
 
     private int simVarFailId;
+
     private int simLeakId;
     private int simLeakRequestId = 1;
     private double simLeakStep = 0.01;
+
+    private int simStuckId;
+    private int simStuckRequestId = 1;
+    private double simStuckValue = -1;
     internal void Open()
     {
       simCon.Open();
-      simCon.RegisterType<MockPlaneData>();
+      simCon.RegisterType<MockPlaneData>(validate: true);
       simCon.RequestDataRepeatedly<MockPlaneData>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
       simCon.RegisterSystemEvent(SimEvents.System.Pause);
       simCon.RegisterSystemEvent(SimEvents.System._1sec);
 
-      // simVarFailId = simCon.RegisterPrimitive<double>("PARTIAL PANEL ALTITUDE", "Number", "FLOAT64");
-      simLeakId = simCon.RegisterPrimitive<double>("FUEL TANK LEFT MAIN LEVEL", "Number", "FLOAT64");
+      simVarFailId = simCon.RegisterPrimitive<double>(SimVars.Aircraft.Engine.ENG_ON_FIRE__index + "1", "Number", "FLOAT64");
+
+      simLeakId = simCon.RegisterPrimitive<double>("FUEL TANK LEFT MAIN LEVEL", "Number", "FLOAT64", validate: true);
+
+
+      // tohle funguje blbě v defalt planech, ale vubec v FBW
+      //simStuckId = simCon.RegisterPrimitive<double>(SimVars.Aircraft.Control.TRAILING_EDGE_FLAPS_LEFT_PERCENT, "Number", "FLOAT64", validate: true);
+
+      simStuckId = simCon.RegisterPrimitive<double>(SimVars.Aircraft.Control.FLAPS_HANDLE_INDEX__index + "1", "Number", "FLOAT64");
+      // not Writeable: simStuckId = simCon.RegisterPrimitive<int>(SimVars.Aircraft.Control.TRAILING_EDGE_FLAPS_LEFT_INDEX, "Number", "INT32", validate: true);
     }
 
     internal void FailEngine()
@@ -120,15 +139,30 @@ namespace SimDataCapturer
       simCon.SendClientEvent("TOGGLE_ENGINE1_FAILURE");
     }
 
-    internal void FailPartialPanelAltimeter()
+    internal void FailEngineFire()
     {
-      uint value = 1;
+      double value = 1;
       simCon.SendPrimitive(simVarFailId, value);
     }
 
     internal void FailLeak()
     {
       simCon.RequestPrimitive(simLeakId, ++simLeakRequestId);
+    }
+
+    internal void FailStuck()
+    {
+      simCon.RequestPrimitiveRepeatedly(simStuckId, out this.simStuckRequestId, SIMCONNECT_PERIOD.SIM_FRAME, sendOnlyOnChange: true);
+    }
+
+    private void OnStuckDataUpdate(double value)
+    {
+      if (-1 == simStuckValue)
+      {
+        simStuckValue = value;
+      }
+      if (value != simStuckValue)
+        simCon.SendPrimitive(simStuckId, simStuckValue);
     }
   }
 }

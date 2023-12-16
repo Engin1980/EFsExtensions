@@ -29,7 +29,7 @@ namespace FailuresModule.Types.Run.Sustainers
       if (!isRegistered)
         Register();
 
-      this.requestId = this.SimCon.RequestPrimitive(this.typeId);
+      this.SimCon.RequestPrimitive(this.typeId, out this.requestId);
     }
 
     private const string DEFAULT_UNIT = "Number"; // taken from https://github.com/kanaron/RandFailuresFS2020/blob/ab2cb278df8ede6739bcfe60a7f34c9f97b8f5ba/RandFailuresFS2020/RandFailuresFS2020/Simcon.cs

@@ -141,12 +141,17 @@ namespace SimDataCapturer
 
     private void btnSimVar_Click(object sender, RoutedEventArgs e)
     {
-      simConManager.FailPartialPanelAltimeter();
-        }
+      simConManager.FailEngineFire();
+    }
 
     private void btnLeak_Click(object sender, RoutedEventArgs e)
     {
       simConManager.FailLeak();
+    }
+
+    private void btnStuck_Click(object sender, RoutedEventArgs e)
+    {
+      simConManager.FailStuck();
     }
   }
 }

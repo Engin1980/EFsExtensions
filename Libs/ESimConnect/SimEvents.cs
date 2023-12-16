@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ESimConnect
 {
-  public static class SimEvents
+  public static partial class SimEvents
   {
     public static class System
     {

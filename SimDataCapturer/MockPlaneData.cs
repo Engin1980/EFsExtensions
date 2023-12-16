@@ -12,12 +12,26 @@ namespace SimDataCapturer
   public struct MockPlaneData
   {
     #region Fields
+    [DataDefinition(SimVars.Aircraft.Engine.ENG_ON_FIRE__index + "1")]
+    public int ENG_ON_FIRE__index;
+
+    [DataDefinition(SimVars.Aircraft.Control.FLAPS_HANDLE_INDEX__index + "1")]
+    public int FLAPS_HANDLE_INDEX__index;
+
+    [DataDefinition(SimVars.Aircraft.Control.TRAILING_EDGE_FLAPS_LEFT_INDEX)]
+    public int TRAILING_EDGE_FLAPS_LEFT_INDEX;
+
+    [DataDefinition(SimVars.Aircraft.Control.LEADING_EDGE_FLAPS_LEFT_PERCENT)]
+    public double LEADING_EDGE_FLAPS_LEFT_PERCENT;
+
+    [DataDefinition(SimVars.Aircraft.Control.TRAILING_EDGE_FLAPS_LEFT_PERCENT)]
+    public double TRAILING_EDGE_FLAPS_LEFT_PERCENT;
 
     [DataDefinition(SimVars.Aircraft.Engine.ENG_COMBUSTION__index + "1")]
     public int engineOneCombustion;
 
-    //[DataDefinition(SimVars.Aircraft.Fuel.FUELSYSTEM_TANK_LEVEL__index + "1")]
-    //public double fuelLevel1;
+    [DataDefinition(SimVars.Aircraft.Fuel.FUELSYSTEM_TANK_LEVEL__index + "1")]
+    public double fuelLevel1;
 
     [DataDefinition(SimVars.Aircraft.Fuel.FUEL_TANK_LEFT_MAIN_LEVEL)]
     public double fuelLevelLeftMain;
