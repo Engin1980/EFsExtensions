@@ -16,6 +16,8 @@
         <Button x:Name="btnSimVar" Content="Fail SimVar (airspeed panel)" Click="btnSimVar_Click"/>
         <Button x:Name="btnLeak" Content="Fail Leak (left fuel)" Click="btnLeak_Click" />
         <Button x:Name="btnStuck" Content="Fail stuck (flaps)" Click="btnStuck_Click"/>
+        <Button x:Name="btnExternalEvent" Content="External event test" Click="btnExternalEvent_Click"/>
+        <Button x:Name="btnExternalSet" Content="LVAR SET" Click="btnExternalSet_Click" />
       </StackPanel>
       <DockPanel>
         <Label DockPanel.Dock="Left" Content="Target file:" />

@@ -49,6 +49,10 @@ namespace SimDataCapturer
 
     private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
     {
+      if (e.RequestId == lVarRequestId)
+      {
+        double value = (double)e.Data;
+      }
       if (e.RequestId == simLeakRequestId)
       {
         double value = (double)e.Data;
@@ -163,6 +167,24 @@ namespace SimDataCapturer
       }
       if (value != simStuckValue)
         simCon.SendPrimitive(simStuckId, simStuckValue);
+    }
+
+    int lVarTypeId;
+    int lVarRequestId;
+    private const int clientDataId = 1234;
+    internal void TestExternal()
+    {
+      //customEventId = simCon.RegisterCustomEvent("LVAR_ACCESS.EFIS"); // A32NX.FCU_SPD_INC_434");
+      // simCon.RegisterCustomPrimitive<double>("EFIS_CDA", clientDataId); // A32NX_TRANSPONDER_MODE", clientDataId);
+      //lVarTypeId = simCon.RegisterPrimitive<double>("L:A32NX_COND_PACK_FLOW_1", "Number", "FLOAT64");
+      lVarTypeId = simCon.RegisterPrimitive<double>("L:LIGHTING_LANDING_2", "Number", "FLOAT64");
+      simCon.RequestPrimitive(lVarTypeId, out lVarRequestId);
+    }
+
+    internal void TestExternalSet()
+    {
+      double val = 1;
+      simCon.SendPrimitive<double>(lVarTypeId, val);
     }
   }
 }

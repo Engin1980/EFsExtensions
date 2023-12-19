@@ -153,5 +153,15 @@ namespace SimDataCapturer
     {
       simConManager.FailStuck();
     }
+
+    private void btnExternalEvent_Click(object sender, RoutedEventArgs e)
+    {
+      simConManager.TestExternal();
+    }
+
+    private void btnExternalSet_Click(object sender, RoutedEventArgs e)
+    {
+      simConManager.TestExternalSet();
+    }
   }
 }

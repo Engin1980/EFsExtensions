@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
@@ -109,19 +110,56 @@ namespace ESimConnect
         ex => new InternalException("Failed to register windows queue handler.", ex));
 
       Try(() =>
-        {
-          this.simConnect = new SimConnect("ESimConnect", winHandleManager.Handle, WinHandleManager.WM_USER_SIMCONNECT, null, 0);
-          this.simConnect.OnRecvOpen += SimConnect_OnRecvOpen;
-          this.simConnect.OnRecvQuit += SimConnect_OnRecvQuit;
-          this.simConnect.OnRecvException += SimConnect_OnRecvException;
-          this.simConnect.OnRecvSimobjectDataBytype += SimConnect_OnRecvSimobjectDataBytype;
-          this.simConnect.OnRecvSimobjectData += SimConnect_OnRecvSimobjectData;
-          this.simConnect.OnRecvEvent += SimConnect_OnRecvEvent;
-          this.winHandleManager.SimConnect = this.simConnect;
-        },
+      {
+        this.simConnect = new SimConnect("ESimConnect", winHandleManager.Handle, WinHandleManager.WM_USER_SIMCONNECT, null, 0);
+        this.simConnect.OnRecvOpen += SimConnect_OnRecvOpen;
+        this.simConnect.OnRecvQuit += SimConnect_OnRecvQuit;
+        this.simConnect.OnRecvException += SimConnect_OnRecvException;
+        this.simConnect.OnRecvSimobjectDataBytype += SimConnect_OnRecvSimobjectDataBytype;
+        this.simConnect.OnRecvSimobjectData += SimConnect_OnRecvSimobjectData;
+        this.simConnect.OnRecvEvent += SimConnect_OnRecvEvent;
+        this.winHandleManager.SimConnect = this.simConnect;
+      },
         ex => new InternalException("Unable to open connection to FS2020.", ex));
 
       Logger.LogMethodEnd();
+    }
+
+
+    public static class TypeSize<T>
+    {
+      public readonly static int Size;
+
+      static TypeSize()
+      {
+        var dm = new DynamicMethod("SizeOfType", typeof(int), new Type[] { });
+        ILGenerator il = dm.GetILGenerator();
+        il.Emit(OpCodes.Sizeof, typeof(T));
+        il.Emit(OpCodes.Ret);
+        Size = (int)dm.Invoke(null, null)!;
+      }
+    }
+
+    private const uint SIMCONNECT_CLIENTDATAOFFSET_AUTO = uint.MaxValue;
+    private const uint SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_CHANGED = 0x00000001;
+    private const uint SIMCONNECT_GROUP_PRIORITY_HIGHEST = 1;
+
+    public int RegisterCustomPrimitive<T>(string simVarName, int clientDataId)
+    {
+      Logger.LogMethodStart();
+      EnsureConnected();
+
+      int size = TypeSize<T>.Size;
+      EEnum eTypeId = IdProvider.GetNextAsEnum();
+      EEnum eClientDataId = (EEnum)clientDataId;
+
+      simConnect!.MapClientDataNameToID(simVarName, eTypeId);
+      simConnect!.AddToClientDataDefinition(eTypeId, SIMCONNECT_CLIENTDATAOFFSET_AUTO, (uint)size, 0f, SimConnect.SIMCONNECT_UNUSED);
+      simConnect!.CreateClientData(eClientDataId, (uint)size, SIMCONNECT_CREATE_CLIENT_DATA_FLAG.DEFAULT);
+
+
+      Logger.LogMethodEnd();
+      return (int)eTypeId;
     }
 
     public int RegisterPrimitive<T>(string simVarName, string unit, string simTypeName, int epsilon = 0, bool validate = false)
@@ -160,12 +198,26 @@ namespace ESimConnect
 
       EEnum eRequestId = IdProvider.GetNextAsEnum();
       Try(() =>
-        {
-          this.simConnect!.SubscribeToSystemEvent(eRequestId, eventName);
-          this.eventManager.Register(eRequestId, eventName);
-        },
+      {
+        this.simConnect!.SubscribeToSystemEvent(eRequestId, eventName);
+        this.eventManager.Register(eRequestId, eventName);
+      },
         ex => new InternalException($"Failed to register sim-event listener for '{eventName}'.", ex));
       Logger.LogMethodEnd();
+    }
+
+    public int RegisterCustomEvent(string customEventName)
+    {
+      EnsureConnected();
+
+      EEnum eRequestId = IdProvider.GetNextAsEnum();
+      EEnum eGroupId = IdProvider.GetNextAsEnum();
+
+      simConnect!.MapClientEventToSimEvent(eRequestId, customEventName);
+      simConnect!.AddClientEventToNotificationGroup(eGroupId, eRequestId, true);
+      simConnect!.SetNotificationGroupPriority(eGroupId, SIMCONNECT_GROUP_PRIORITY_HIGHEST);
+
+      return (int) eRequestId;
     }
 
     public void RegisterType<T>(bool validate = false) where T : struct
