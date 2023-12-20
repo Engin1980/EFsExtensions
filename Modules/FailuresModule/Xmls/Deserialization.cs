@@ -83,14 +83,14 @@ namespace FailuresModule.Xmls
     private static IElementDeserializer CreateFailGroupDeserializer()
     {
       ObjectElementDeserializer ret = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(Fail))
+        .WithCustomTargetType(typeof(FailGroup))
         .WithCustomPropertyDeserialization(
           nameof(FailGroup.Items),
           EXmlHelper.List.CreateForFlat<Fail>(
             new EXmlHelper.List.DT[]
             {
               new EXmlHelper.List.DT("failure", typeof(FailId)),
-              new EXmlHelper.List.DT("failGroup", typeof(Fail))
+              new EXmlHelper.List.DT("failGroup", typeof(FailGroup))
              }));
       return ret;
     }
@@ -135,7 +135,7 @@ namespace FailuresModule.Xmls
             new EXmlHelper.List.DT("trigger", typeof(Trigger))))
         .WithCustomPropertyDeserialization(
           nameof(IncidentDefinition.FailGroup),
-          EXmlHelper.Property.Create("failures", typeof(Fail)));
+          EXmlHelper.Property.Create("failures", typeof(FailGroup)));
 
       return ret;
     }

@@ -25,7 +25,7 @@ namespace EXmlLib
         try
         {
           var ctor = targetType.GetConstructor(Array.Empty<Type>());
-          ret = ctor.Invoke(Array.Empty<object>());
+          ret = ctor!.Invoke(Array.Empty<object>());
         }
         catch (Exception ex)
         {
