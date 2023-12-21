@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FailuresModule.Types.Run.Sustainers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,6 +32,13 @@ namespace FailuresModule
     {
       this.context = context;
       this.DataContext = context;
+    }
+
+    private void btnToggleSustainerActive_Click(object sender, RoutedEventArgs e)
+    {
+      Button btn = (Button)sender;
+      FailureSustainer fs = (FailureSustainer)btn.Tag;
+      fs.Toggle();
     }
   }
 }

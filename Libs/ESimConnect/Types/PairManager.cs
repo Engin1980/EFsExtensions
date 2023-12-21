@@ -67,8 +67,10 @@ namespace ESimConnect.Types
     public string GetEvent(EEnum id) => base.TryGet(id)
       .OrThrow(() => new InvalidRequestException($"Event with id {id} not registered."));
 
-    public EEnum GetId(string @event) => base.TryGet(@event)
+    public EEnum GetId(string @event) => this.TryGet(@event)
       .OrThrow(() => new InvalidRequestException($"Event {@event} not registered."));
+
+    internal EEnum? TryGetId(string @event) => base.TryGet(@event).OrElse(null);
   }
 
   internal class Optional<T>
@@ -84,6 +86,16 @@ namespace ESimConnect.Types
         throw exceptionProducer.Invoke();
       else
         return Value;
+    }
+
+    internal T? OrElse(T defaultValue)
+    {
+      return HasValue ? Value : defaultValue;
+    }
+
+    internal T? OrElse(Func<T> producer)
+    {
+      return HasValue ? Value : producer.Invoke();
     }
 
     private Optional() { }

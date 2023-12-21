@@ -34,12 +34,14 @@ namespace ESimConnect
 
     public class ESimConnectEventInvokedEventArgs
     {
-      public string Event { get; set; }
+      public int RequestId { get; }
+      public string Event { get; }
 
-      public uint Value { get; set; }
+      public uint Value { get; }
 
-      public ESimConnectEventInvokedEventArgs(string @event, uint value)
+      public ESimConnectEventInvokedEventArgs(int requestId, string @event, uint value)
       {
+        RequestId = requestId;
         Event = @event;
         Value = value;
       }
@@ -191,19 +193,29 @@ namespace ESimConnect
 
     public void RegisterSystemEvent(string eventName, bool validate = false)
     {
+      RegisterSystemEvent(eventName, out int _, validate);
+    }
+
+    public void RegisterSystemEvent(string eventName, out int requestId, bool validate = false)
+    {
       Logger.LogMethodStart();
       EnsureConnected();
 
       if (validate) ValidateSystemEventName(eventName);
 
-      EEnum eRequestId = IdProvider.GetNextAsEnum();
-      Try(() =>
+      EEnum? eRequestId = this.eventManager.TryGetId(eventName);
+      if (eRequestId == null)
       {
-        this.simConnect!.SubscribeToSystemEvent(eRequestId, eventName);
-        this.eventManager.Register(eRequestId, eventName);
-      },
-        ex => new InternalException($"Failed to register sim-event listener for '{eventName}'.", ex));
+        eRequestId = IdProvider.GetNextAsEnum();
+        Try(() =>
+        {
+          this.simConnect!.SubscribeToSystemEvent(eRequestId, eventName);
+          this.eventManager.Register(eRequestId.Value, eventName);
+        },
+          ex => new InternalException($"Failed to register sim-event listener for '{eventName}'.", ex));
+      }
       Logger.LogMethodEnd();
+      requestId = (int)eRequestId;
     }
 
     public int RegisterCustomEvent(string customEventName)
@@ -217,7 +229,7 @@ namespace ESimConnect
       simConnect!.AddClientEventToNotificationGroup(eGroupId, eRequestId, true);
       simConnect!.SetNotificationGroupPriority(eGroupId, SIMCONNECT_GROUP_PRIORITY_HIGHEST);
 
-      return (int) eRequestId;
+      return (int)eRequestId;
     }
 
     public void RegisterType<T>(bool validate = false) where T : struct
@@ -577,7 +589,7 @@ namespace ESimConnect
       string @event = eventManager.GetEvent(iRequest);
       uint value = data.dwData;
 
-      ESimConnectEventInvokedEventArgs e = new(@event, value);
+      ESimConnectEventInvokedEventArgs e = new((int) iRequest, @event, value);
       this.EventInvoked?.Invoke(this, e);
     }
 

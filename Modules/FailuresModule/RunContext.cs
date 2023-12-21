@@ -17,14 +17,9 @@ namespace FailuresModule
 {
   public class RunContext : NotifyPropertyChangedBase
   {
-    public const int STUCK_TIMER_INITIAL_DELAY = 1000;
-    public const int STUCK_TIMER_PERIOD = 250;
-
     private readonly Random random = new();
     private readonly SimConManagerWrapper simConWrapper;
     private List<RunIncidentDefinition>? _IncidentDefinitions = null;
-    private System.Threading.Timer? stuckTimer;
-    private readonly object sustainerLock = new object();
 
     public List<FailureDefinition> FailureDefinitions { get; }
     public List<RunIncident> Incidents { get; }
@@ -45,10 +40,9 @@ namespace FailuresModule
     {
       FailureDefinitions = failureDefinitions;
       Incidents = incidents;
-      Sustainers = new();
+      Sustainers = failureDefinitions.Select(q => FailureSustainerFactory.Create(q)).ToList();
 
       simConWrapper = new();
-      simConWrapper.SimSecondElapsed += SimConWrapper_SimSecondElapsed;
       simConWrapper.SimErrorRaised += SimConWrapper_SimErrorRaised;
       Logger.RegisterSender(simConWrapper, Logger.GetSenderName(this) + ".SimConWrapper");
     }
@@ -68,12 +62,11 @@ namespace FailuresModule
     public void Start()
     {
       this.simConWrapper.StartAsync();
-      this.stuckTimer = new System.Threading.Timer(stuckTimer_Tick, null, STUCK_TIMER_INITIAL_DELAY, STUCK_TIMER_PERIOD);
     }
 
     internal void Init()
     {
-      throw new NotImplementedException();
+      //throw new NotImplementedException();
     }
 
     private List<RunIncidentDefinition> CalculateFlatIncidentDefinitions(List<RunIncident> incidents)
@@ -224,35 +217,6 @@ namespace FailuresModule
       if (ex is SimConManagerWrapper.StartFailedException sfe)
       {
         throw new ApplicationException("Failed to start sim readout.", sfe);
-      }
-    }
-
-    private void SimConWrapper_SimSecondElapsed()
-    {
-      lock (sustainerLock)
-      {
-        EvaluateAndFireFailures();
-        RunActiveFailures();
-      }
-    }
-
-    private void RunActiveFailures()
-    {
-      foreach (var sustainer in this.Sustainers)
-      {
-        if (sustainer is StuckFailureSustainer) continue; // handled separately using custom timer tick
-        sustainer.Tick(SimData);
-      }
-    }
-
-    private void stuckTimer_Tick(object? state)
-    {
-      lock (sustainerLock)
-      {
-        this.Sustainers
-          .Where(q => q is StuckFailureSustainer)
-          .Cast<StuckFailureSustainer>()
-          .ForEach(q => q.Tick(SimData));
       }
     }
   }

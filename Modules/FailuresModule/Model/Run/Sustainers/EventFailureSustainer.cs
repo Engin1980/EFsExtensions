@@ -28,11 +28,6 @@ namespace FailuresModule.Types.Run.Sustainers
       SendEvent();
     }
 
-    protected override void TickInternal(SimData simData)
-    {
-      // intentionally blank
-    }
-
     private void SendEvent()
     {
       string @event = this.Failure.SimConPoint.SimPointName;

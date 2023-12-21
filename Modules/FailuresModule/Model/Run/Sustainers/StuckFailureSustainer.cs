@@ -1,69 +1,68 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
+using FailuresModule.Model.Run.Sustainers;
 using FailuresModule.Model.Sim;
 
 namespace FailuresModule.Types.Run.Sustainers
 {
-  internal class StuckFailureSustainer : FailureSustainer
+  internal class StuckFailureSustainer : SimVarBasedFailureSustainer
   {
-    private bool isRegistered = false;
+    private const int UPDATE_TIMER_INTERVAL_MS = 100;
     private double? stuckValue = null;
-    private int typeId = -1;
-    private int requestId = -1;
+    private bool isRunning = false;
+    private Timer updateTimer;
 
     public StuckFailureSustainer(StuckFailureDefinition failure) : base(failure)
     {
+      this.updateTimer = new Timer(UPDATE_TIMER_INTERVAL_MS);
+      this.updateTimer.Elapsed += UpdateTimer_Elapsed;
+      base.DataReceived += StuckFailureSustainer_DataReceived;
+    }
+
+    private void StuckFailureSustainer_DataReceived(double data)
+    {
+      if (this.stuckValue == null && isRunning)
+      {
+        lock (this)
+        {
+          if (this.stuckValue == null)
+          {
+            this.stuckValue = data;
+            updateTimer.Start();
+          }
+        }
+      }
     }
 
     protected override void ResetInternal()
     {
-      this.stuckValue = null;
+      lock (this)
+      {
+        this.updateTimer.Enabled = false;
+        this.isRunning = false;
+        this.stuckValue = null;
+      }
     }
 
     protected override void StartInternal()
     {
-      if (!isRegistered)
-        Register();
-
-      this.SimCon.RequestPrimitive(this.typeId, out this.requestId);
+      this.isRunning = true;
+      RequestData();
     }
 
-    private const string DEFAULT_UNIT = "Number"; // taken from https://github.com/kanaron/RandFailuresFS2020/blob/ab2cb278df8ede6739bcfe60a7f34c9f97b8f5ba/RandFailuresFS2020/RandFailuresFS2020/Simcon.cs
-    private const string DEFAULT_TYPE = "FLOAT64";
-
-    private void Register()
+    private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
-      this.SimCon.DataReceived += SimCon_DataReceived;
-
-      string name = this.Failure.SimConPoint.SimPointName;
-      this.typeId = this.SimCon.RegisterPrimitive<double>(name, DEFAULT_UNIT, DEFAULT_TYPE);
-      this.isRegistered = true;
-    }
-
-    private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
-    {
-      if (e.RequestId == this.requestId)
+      lock (this)
       {
-        double val = (double)e.Data;
-        this.stuckValue = val;
+        Debug.Assert(this.stuckValue != null);
+        base.SendData(this.stuckValue.Value);
       }
-    }
-
-    protected override void TickInternal(SimData simData)
-    {
-      if (stuckValue == null) return;
-      // set stuck-value
-      throw new NotImplementedException();
-      /*
-       * sc.SetDataOnSimObject(eDef, SimConnect.SIMCONNECT_OBJECT_ID_USER, SIMCONNECT_DATA_SET_FLAG.DEFAULT, dValue);
-       * https://github.com/kanaron/RandFailuresFS2020/blob/ab2cb278df8ede6739bcfe60a7f34c9f97b8f5ba/RandFailuresFS2020/RandFailuresFS2020/Simcon.cs
-       * line 165
-       * 
-       * */
     }
   }
 }

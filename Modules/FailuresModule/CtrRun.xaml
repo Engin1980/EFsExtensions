@@ -125,6 +125,29 @@
           </TreeView.Resources>
         </TreeView>
       </TabItem>
+      <TabItem Header="Failures (debug)">
+        <ScrollViewer>
+          <ListView ItemsSource="{Binding Sustainers}">
+            <ListView.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Orientation="Horizontal">
+                  <Label>
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding Failure.Title}" />
+                      <TextBlock Text=" (id="/>
+                      <TextBlock Text="{Binding Failure.Id}"/>
+                      <TextBlock Text=", active="/>
+                      <TextBlock Text="{Binding IsActive}" />
+                      <TextBlock Text=")" />
+                    </StackPanel>
+                  </Label>
+                  <Button Tag="{Binding}" x:Name="btnToggleSustainerActive" Click="btnToggleSustainerActive_Click" Content="Toggle" />
+                </StackPanel>
+              </DataTemplate>
+            </ListView.ItemTemplate>
+          </ListView>
+        </ScrollViewer>
+      </TabItem>
     </TabControl>
   </DockPanel>
 </UserControl>

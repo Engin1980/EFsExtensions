@@ -1,4 +1,5 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
+using FailuresModule.Model.Run.Sustainers;
 using FailuresModule.Model.Sim;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace FailuresModule.Types.Run.Sustainers
 {
-  internal class SimVarFailureSustainer : FailureSustainer
+  internal class SimVarFailureSustainer : SimVarBasedFailureSustainer
   {
     private const uint OK = 0; // from flightsimulator API
     private const uint FAILED = 1;
@@ -29,17 +30,7 @@ namespace FailuresModule.Types.Run.Sustainers
 
     private void SendEvent(uint arg)
     {
-      // toto je pro eventy, takhle je to blbe
-      throw new NotImplementedException();
-
-      string @event = base.Failure.SimConPoint.SimPointName;
-      base.SimCon.SendClientEvent(@event, new uint[] { arg }, true);
-    }
-
-    protected override void TickInternal(SimData simData)
-    {
-      // intentionally blank
-      //TODO enforece each tick?
+      base.SendData(arg);
     }
   }
 }
