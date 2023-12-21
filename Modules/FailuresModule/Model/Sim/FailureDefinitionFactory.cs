@@ -88,7 +88,7 @@ namespace FailuresModule.Model.Sim
         {
             List<FailureDefinition> ret = new();
 
-            for (int i = 0; i < ENGINES_COUNT; i++)
+            for (int i = 1; i <= ENGINES_COUNT; i++)
             {
                 EventFailureDefinition tmp = new($"eng{i}", $"Engine {i} Failure", new EventSimConPoint($"TOGGLE_ENGINE{i}_FAILURE"));
                 ret.Add(tmp);

@@ -38,13 +38,14 @@ namespace FailuresModule
     }
     public RunContext(List<FailureDefinition> failureDefinitions, List<RunIncident> incidents)
     {
+      simConWrapper = new();
+      simConWrapper.SimErrorRaised += SimConWrapper_SimErrorRaised;
+      Logger.RegisterSender(simConWrapper, Logger.GetSenderName(this) + ".SimConWrapper");
+
       FailureDefinitions = failureDefinitions;
       Incidents = incidents;
       Sustainers = failureDefinitions.Select(q => FailureSustainerFactory.Create(q)).ToList();
 
-      simConWrapper = new();
-      simConWrapper.SimErrorRaised += SimConWrapper_SimErrorRaised;
-      Logger.RegisterSender(simConWrapper, Logger.GetSenderName(this) + ".SimConWrapper");
     }
 
     public static RunContext Create(List<FailureDefinition> failureDefinitions, IncidentTopGroup failureSet)

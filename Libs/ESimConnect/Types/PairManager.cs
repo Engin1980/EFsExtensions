@@ -70,7 +70,7 @@ namespace ESimConnect.Types
     public EEnum GetId(string @event) => this.TryGet(@event)
       .OrThrow(() => new InvalidRequestException($"Event {@event} not registered."));
 
-    internal EEnum? TryGetId(string @event) => base.TryGet(@event).OrElse(null);
+    internal EEnum? TryGetId(string @event) => base.TryGet(@event).OrElseDefault();
   }
 
   internal class Optional<T>
@@ -96,6 +96,14 @@ namespace ESimConnect.Types
     internal T? OrElse(Func<T> producer)
     {
       return HasValue ? Value : producer.Invoke();
+    }
+
+    internal T? OrElseDefault()
+    {
+      if (HasValue)
+        return Value;
+      else
+        return default(T);
     }
 
     private Optional() { }

@@ -22,11 +22,12 @@ namespace FailuresModule.Types.Run.Sustainers
       private set => base.UpdateProperty(nameof(IsActive), value);
     }
     private static ESimConnect.ESimConnect simCon = null!;
-    protected ESimConnect.ESimConnect SimCon { get => FailureSustainer.simCon; }
+    protected ESimConnect.ESimConnect SimCon { get => simCon; }
 
-    public static void InitSimCon(ESimConnect.ESimConnect simCon)
+    static FailureSustainer()
     {
-      FailureSustainer.simCon = simCon ?? throw new ArgumentNullException(nameof(simCon));
+      simCon = new ESimConnect.ESimConnect();
+      simCon.Open();
     }
 
     protected FailureSustainer(FailureDefinition failure)

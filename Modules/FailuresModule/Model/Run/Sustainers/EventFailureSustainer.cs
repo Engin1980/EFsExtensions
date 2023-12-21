@@ -32,7 +32,7 @@ namespace FailuresModule.Types.Run.Sustainers
     {
       string @event = this.Failure.SimConPoint.SimPointName;
       uint arg = 0;
-      base.SimCon.SendClientEvent(@event, new uint[] { arg }, true);
+      base.SimCon.SendClientEvent(@event, new uint[] { }, true);
     }
   }
 }
