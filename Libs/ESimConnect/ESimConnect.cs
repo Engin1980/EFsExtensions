@@ -203,14 +203,14 @@ namespace ESimConnect
 
       if (validate) ValidateSystemEventName(eventName);
 
-      EEnum? eRequestId = this.eventManager.TryGetId(eventName);
-      if (eRequestId == null)
+      EEnum eRequestId = this.eventManager.TryGetId(eventName);
+      if (eRequestId == EEnum.Unused)
       {
         eRequestId = IdProvider.GetNextAsEnum();
         Try(() =>
         {
           this.simConnect!.SubscribeToSystemEvent(eRequestId, eventName);
-          this.eventManager.Register(eRequestId.Value, eventName);
+          this.eventManager.Register(eRequestId, eventName);
         },
           ex => new InternalException($"Failed to register sim-event listener for '{eventName}'.", ex));
       }

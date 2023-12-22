@@ -45,7 +45,6 @@ namespace FailuresModule
       FailureDefinitions = failureDefinitions;
       Incidents = incidents;
       Sustainers = failureDefinitions.Select(q => FailureSustainerFactory.Create(q)).ToList();
-
     }
 
     public static RunContext Create(List<FailureDefinition> failureDefinitions, IncidentTopGroup failureSet)
