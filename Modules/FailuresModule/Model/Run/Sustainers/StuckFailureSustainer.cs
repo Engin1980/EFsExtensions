@@ -13,10 +13,27 @@ namespace FailuresModule.Types.Run.Sustainers
 {
   internal class StuckFailureSustainer : SimVarBasedFailureSustainer
   {
+    #region Fields
+
     private const int UPDATE_TIMER_INTERVAL_MS = 100;
-    private double? stuckValue = null;
+
     private bool isRunning = false;
+
     private Timer updateTimer;
+
+    #endregion Fields
+
+    #region Properties
+
+    public double? StuckValue
+    {
+      get => base.GetProperty<double?>(nameof(StuckValue))!;
+      set => base.UpdateProperty(nameof(StuckValue), value);
+    }
+
+    #endregion Properties
+
+    #region Constructors
 
     public StuckFailureSustainer(StuckFailureDefinition failure) : base(failure)
     {
@@ -25,19 +42,13 @@ namespace FailuresModule.Types.Run.Sustainers
       base.DataReceived += StuckFailureSustainer_DataReceived;
     }
 
-    private void StuckFailureSustainer_DataReceived(double data)
+    #endregion Constructors
+
+    #region Methods
+
+    protected override void InitInternal()
     {
-      if (this.stuckValue == null && isRunning)
-      {
-        lock (this)
-        {
-          if (this.stuckValue == null)
-          {
-            this.stuckValue = data;
-            updateTimer.Start();
-          }
-        }
-      }
+      base.InitInternal();
     }
 
     protected override void ResetInternal()
@@ -46,7 +57,7 @@ namespace FailuresModule.Types.Run.Sustainers
       {
         this.updateTimer.Enabled = false;
         this.isRunning = false;
-        this.stuckValue = null;
+        this.StuckValue = null;
       }
     }
 
@@ -56,13 +67,29 @@ namespace FailuresModule.Types.Run.Sustainers
       RequestData();
     }
 
+    private void StuckFailureSustainer_DataReceived(double data)
+    {
+      if (this.StuckValue == null && isRunning)
+      {
+        lock (this)
+        {
+          if (this.StuckValue == null)
+          {
+            this.StuckValue = data;
+            updateTimer.Start();
+          }
+        }
+      }
+    }
     private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
       lock (this)
       {
-        Debug.Assert(this.stuckValue != null);
-        base.SendData(this.stuckValue.Value);
+        Debug.Assert(this.StuckValue != null);
+        base.SendData(this.StuckValue.Value);
       }
     }
+
+    #endregion Methods
   }
 }

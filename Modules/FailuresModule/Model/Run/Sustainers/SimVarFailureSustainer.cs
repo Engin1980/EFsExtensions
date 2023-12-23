@@ -18,6 +18,11 @@ namespace FailuresModule.Types.Run.Sustainers
     {
     }
 
+    protected override void InitInternal()
+    {
+      base.InitInternal();
+    }
+
     protected override void ResetInternal()
     {
       SendEvent(OK);

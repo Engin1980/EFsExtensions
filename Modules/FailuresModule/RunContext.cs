@@ -8,44 +8,65 @@ using FailuresModule.Types.Run;
 using FailuresModule.Types.Run.Sustainers;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Printing;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace FailuresModule
 {
   public class RunContext : NotifyPropertyChangedBase
   {
+    #region Fields
+
     private readonly Random random = new();
     private readonly SimConManagerWrapper simConWrapper;
     private List<RunIncidentDefinition>? _IncidentDefinitions = null;
+    private bool isRunning = false;
+
+    #endregion Fields
+
+    #region Properties
 
     public List<FailureDefinition> FailureDefinitions { get; }
     public List<RunIncident> Incidents { get; }
     public SimData SimData { get => this.simConWrapper.SimData; }
-    public List<FailureSustainer> Sustainers { get; }
+    public BindingList<FailureSustainer> Sustainers { get; }
     internal List<RunIncidentDefinition> IncidentDefinitions
     {
       get
       {
         if (_IncidentDefinitions == null)
         {
-          _IncidentDefinitions = CalculateFlatIncidentDefinitions(Incidents);
+          _IncidentDefinitions = FlattenIncidentDefinitions(Incidents);
         }
         return _IncidentDefinitions;
       }
     }
+
+    #endregion Properties
+
+    #region Constructors
+
     public RunContext(List<FailureDefinition> failureDefinitions, List<RunIncident> incidents)
     {
-      simConWrapper = new();
-      simConWrapper.SimErrorRaised += SimConWrapper_SimErrorRaised;
+      ESimConnect.ESimConnect eSimCon = new();
+      simConWrapper = new(eSimCon);
       Logger.RegisterSender(simConWrapper, Logger.GetSenderName(this) + ".SimConWrapper");
+      simConWrapper.SimSecondElapsed += SimConWrapper_SimSecondElapsed;
+      simConWrapper.SimErrorRaised += SimConWrapper_SimErrorRaised;
 
+      FailureSustainer.SetSimCon(eSimCon);
       FailureDefinitions = failureDefinitions;
       Incidents = incidents;
-      Sustainers = failureDefinitions.Select(q => FailureSustainerFactory.Create(q)).ToList();
+      Sustainers = new();
     }
+
+    #endregion Constructors
+
+    #region Methods
 
     public static RunContext Create(List<FailureDefinition> failureDefinitions, IncidentTopGroup failureSet)
     {
@@ -62,14 +83,10 @@ namespace FailuresModule
     public void Start()
     {
       this.simConWrapper.StartAsync();
+      isRunning = true;
     }
 
-    internal void Init()
-    {
-      //throw new NotImplementedException();
-    }
-
-    private List<RunIncidentDefinition> CalculateFlatIncidentDefinitions(List<RunIncident> incidents)
+    private static List<RunIncidentDefinition> FlattenIncidentDefinitions(List<RunIncident> incidents)
     {
       List<RunIncidentDefinition> ret = new();
 
@@ -77,7 +94,7 @@ namespace FailuresModule
       {
         if (incident is RunIncidentGroup rig)
         {
-          var tmp = CalculateFlatIncidentDefinitions(rig.Incidents);
+          var tmp = FlattenIncidentDefinitions(rig.Incidents);
           ret.AddRange(tmp);
         }
         else if (incident is RunIncidentDefinition rid)
@@ -120,7 +137,7 @@ namespace FailuresModule
       }
     }
 
-    private List<FailId> FlatterFailGroup(Fail failItem)
+    private static List<FailId> FlattenFailGroup(Fail failItem)
     {
       void DoFlattening(Fail fi, List<FailId> lst)
       {
@@ -141,14 +158,15 @@ namespace FailuresModule
       foreach (var failure in failures)
       {
         if (this.Sustainers.Any(q => q.Failure == failure)) continue;
-        FailureSustainer fs = FailureSustainerFactory.Create(failure);
+        FailureSustainer fs = FailureSustainerFactory.Create(failure);        
         this.Sustainers.Add(fs);
+        fs.Start();
       }
     }
 
     private bool IsTriggerConditionTrue(IStateCheckItem condition)
     {
-      StateCheckEvaluator sce = new StateCheckEvaluator(this.SimData);
+      StateCheckEvaluator sce = new(this.SimData);
       bool ret = sce.Evaluate(condition);
       return ret;
     }
@@ -169,7 +187,7 @@ namespace FailuresModule
           ret = new List<FailId>();
           break;
         case FailGroup.ESelection.All:
-          ret = FlatterFailGroup(root);
+          ret = FlattenFailGroup(root);
           break;
         case FailGroup.ESelection.One:
           Fail tmp = PickRandomFailItem(root.Items);
@@ -219,5 +237,13 @@ namespace FailuresModule
         throw new ApplicationException("Failed to start sim readout.", sfe);
       }
     }
+
+    private void SimConWrapper_SimSecondElapsed()
+    {
+      if (isRunning)
+        EvaluateAndFireFailures();
+    }
+
+    #endregion Methods
   }
 }

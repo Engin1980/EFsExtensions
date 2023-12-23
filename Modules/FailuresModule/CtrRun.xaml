@@ -7,9 +7,14 @@
              xmlns:modelApp ="clr-namespace:FailuresModule.Model.App"
              xmlns:modelSim="clr-namespace:FailuresModule.Model.Sim"
              xmlns:modelRun ="clr-namespace:FailuresModule.Types.Run"
+             xmlns:modelRunSus ="clr-namespace:FailuresModule.Types.Run.Sustainers"
              xmlns:converters="clr-namespace:FailuresModule.Converters"             
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+  <UserControl.Resources>
+    <converters:FailureDefinitionActiveToBoolConverter x:Key="FailureDefinitionActiveToBoolConverter" />
+    <converters:DoubleToStringConverter x:Key="DoubleToStringConverter" />
+  </UserControl.Resources>
   <DockPanel>
     <TabControl>
       <TabItem Header="Overview">
@@ -127,17 +132,20 @@
       </TabItem>
       <TabItem Header="Failures (debug)">
         <ScrollViewer>
-          <ListView ItemsSource="{Binding Sustainers}">
+          <ListView ItemsSource="{Binding FailureDefinitions}">
             <ListView.ItemTemplate>
               <DataTemplate>
                 <StackPanel Orientation="Horizontal">
                   <Label>
                     <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="{Binding Failure.Title}" />
+                      <TextBlock Text="{Binding Title}" />
                       <TextBlock Text=" (id="/>
-                      <TextBlock Text="{Binding Failure.Id}"/>
-                      <TextBlock Text=", active="/>
-                      <TextBlock Text="{Binding IsActive}" />
+                      <TextBlock Text="{Binding Id}"/>
+                      <TextBlock Text=", state="/>
+                      <TextBlock Text="{Binding Id, 
+                        Converter={StaticResource FailureDefinitionActiveToBoolConverter},
+                        ConverterParameter='Active|Inactive',
+                        Mode=OneWay}" />
                       <TextBlock Text=")" />
                     </StackPanel>
                   </Label>
@@ -145,6 +153,70 @@
                 </StackPanel>
               </DataTemplate>
             </ListView.ItemTemplate>
+          </ListView>
+        </ScrollViewer>
+      </TabItem>
+      <TabItem Header="Active failures">
+        <ScrollViewer>
+          <ListView ItemsSource="{Binding Sustainers}">
+            <ListView.Resources>
+              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:EventFailureSustainer}">
+                <StackPanel Orientation="Horizontal">
+                  <Label>
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding Failure.Title}" />
+                      <TextBlock Text=" (event, id=" />
+                      <TextBlock Text="{Binding Failure.Id}" />
+                      <TextBlock Text=")" />
+                    </StackPanel>
+                  </Label>
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:LeakFailureSustainer}">
+                <StackPanel Orientation="Horizontal">
+                  <Label>
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding Failure.Title}" />
+                      <TextBlock Text=" (leak, id=" />
+                      <TextBlock Text="{Binding Failure.Id}" />
+                      <TextBlock Text=", initial=" />
+                      <TextBlock Text="{Binding InitialValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter='N3'}" />
+                      <TextBlock Text=", current=" />
+                      <TextBlock Text="{Binding CurrentValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter='N3'}" />
+                      <TextBlock Text=", leak/tick=" />
+                      <TextBlock Text="{Binding LeakPerTick, Converter={StaticResource DoubleToStringConverter}, ConverterParameter='N5'}" />
+                      <TextBlock Text=")" />
+                    </StackPanel>
+                  </Label>
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:SimVarFailureSustainer}">
+                <StackPanel Orientation="Horizontal">
+                  <Label>
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding Failure.Title}" />
+                      <TextBlock Text=" (simVar, id=" />
+                      <TextBlock Text="{Binding Failure.Id}" />
+                      <TextBlock Text=")" />
+                    </StackPanel>
+                  </Label>
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:StuckFailureSustainer}">
+                <StackPanel Orientation="Horizontal">
+                  <Label>
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding Failure.Title}" />
+                      <TextBlock Text=" (stuck, id=" />
+                      <TextBlock Text="{Binding Failure.Id}" />
+                      <TextBlock Text=", stuckValue=" />
+                      <TextBlock Text="{Binding StuckValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter='N5'}" />
+                      <TextBlock Text=")" />
+                    </StackPanel>
+                  </Label>
+                </StackPanel>
+              </HierarchicalDataTemplate>
+            </ListView.Resources>
           </ListView>
         </ScrollViewer>
       </TabItem>

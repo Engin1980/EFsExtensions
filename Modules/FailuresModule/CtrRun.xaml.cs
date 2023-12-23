@@ -1,4 +1,6 @@
-﻿using FailuresModule.Types.Run.Sustainers;
+﻿using FailuresModule.Converters;
+using FailuresModule.Model.Sim;
+using FailuresModule.Types.Run.Sustainers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +23,7 @@ namespace FailuresModule
   /// </summary>
   public partial class CtrRun : UserControl
   {
-    private RunContext context;
+    private RunContext context = null!;
 
     public CtrRun()
     {
@@ -32,13 +34,25 @@ namespace FailuresModule
     {
       this.context = context;
       this.DataContext = context;
+      FailureDefinitionActiveToBoolConverter.SetActiveSustainers(context.Sustainers);
     }
 
     private void btnToggleSustainerActive_Click(object sender, RoutedEventArgs e)
     {
       Button btn = (Button)sender;
-      FailureSustainer fs = (FailureSustainer)btn.Tag;
-      fs.Toggle();
+      FailureDefinition fd = (FailureDefinition)btn.Tag;
+      FailureSustainer? fs = context.Sustainers.FirstOrDefault(q => q.Failure.Equals(fd));
+      if (fs != null)
+      {
+        fs.Reset();
+        context.Sustainers.Remove(fs);
+      }
+      else
+      {
+        fs = FailureSustainerFactory.Create(fd);
+        context.Sustainers.Add(fs);
+        fs.Start();
+      }
     }
   }
 }

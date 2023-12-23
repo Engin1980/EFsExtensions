@@ -14,6 +14,15 @@ namespace FailuresModule.Types.Run.Sustainers
 {
   public abstract class FailureSustainer : NotifyPropertyChangedBase
   {
+    #region Fields
+
+    private static ESimConnect.ESimConnect simCon = null!;
+    private bool initialized = false;
+
+    #endregion Fields
+
+    #region Properties
+
     public FailureDefinition Failure { get; }
 
     public bool IsActive
@@ -21,29 +30,20 @@ namespace FailuresModule.Types.Run.Sustainers
       get => base.GetProperty<bool>(nameof(IsActive))!;
       private set => base.UpdateProperty(nameof(IsActive), value);
     }
-    private static ESimConnect.ESimConnect simCon = null!;
     protected ESimConnect.ESimConnect SimCon { get => simCon; }
 
-    static FailureSustainer()
-    {
-      simCon = new ESimConnect.ESimConnect();
-      simCon.Open();
-    }
+    #endregion Properties
+
+    #region Constructors
 
     protected FailureSustainer(FailureDefinition failure)
     {
       this.Failure = failure ?? throw new ArgumentNullException(nameof(failure));
     }
 
-    public void Start()
-    {
-      if (SimCon == null) throw new ApplicationException("SimCon is null.");
-      if (!IsActive)
-      {
-        this.StartInternal();
-        this.IsActive = true;
-      }
-    }
+    #endregion Constructors
+
+    #region Methods
 
     public void Reset()
     {
@@ -55,6 +55,19 @@ namespace FailuresModule.Types.Run.Sustainers
       }
     }
 
+    public void Start()
+    {
+      if (SimCon == null) throw new ApplicationException("SimCon is null.");
+      if (!initialized)
+        Init();
+
+      if (!IsActive)
+      {
+        this.StartInternal();
+        this.IsActive = true;
+      }
+    }
+
     public void Toggle()
     {
       if (!IsActive)
@@ -63,7 +76,23 @@ namespace FailuresModule.Types.Run.Sustainers
         Reset();
     }
 
-    protected abstract void StartInternal();
+    internal static void SetSimCon(ESimConnect.ESimConnect eSimConnect)
+    {
+      FailureSustainer.simCon = eSimConnect;
+    }
+
+    protected abstract void InitInternal();
+
     protected abstract void ResetInternal();
+
+    protected abstract void StartInternal();
+
+    private void Init()
+    {
+      InitInternal();
+      initialized = true;
+    }
+
+    #endregion Methods
   }
 }

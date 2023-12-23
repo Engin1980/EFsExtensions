@@ -11,59 +11,96 @@ namespace FailuresModule.Types.Run.Sustainers
 {
   internal class LeakFailureSustainer : SimVarBasedFailureSustainer
   {
+    #region Fields
+
     private const int MAXIMAL_EXPECTED_NUMBER_OF_TICKS_BEFORE_LEAK_OUT = 100 * 60;
     private const int MINIMAL_EXPECTED_NUMBER_OF_TICKS_BEFORE_LEAK_OUT = 5 * 60;
     private readonly int expectedNumberOfTicksBeforeLeakOut;
-    private double? leakPerTick;
-    private double? currentValue;
+
     private int simSecondElapsedRequestId;
+
+    #endregion Fields
+
+    #region Properties
+
+    public double? CurrentValue
+    {
+      get => base.GetProperty<double?>(nameof(CurrentValue))!;
+      private set => base.UpdateProperty(nameof(CurrentValue), value);
+    }
+
+    public double? InitialValue
+    {
+      get => base.GetProperty<double?>(nameof(InitialValue))!;
+      private set => base.UpdateProperty(nameof(InitialValue), value);
+    }
+
+    public double? LeakPerTick
+    {
+      get => base.GetProperty<double?>(nameof(LeakPerTick))!;
+      private set => base.UpdateProperty(nameof(LeakPerTick), value);
+    }
+
+    #endregion Properties
+
+    #region Constructors
 
     public LeakFailureSustainer(LeakFailureDefinition failure) : base(failure)
     {
       expectedNumberOfTicksBeforeLeakOut = new Random().Next(MINIMAL_EXPECTED_NUMBER_OF_TICKS_BEFORE_LEAK_OUT, MAXIMAL_EXPECTED_NUMBER_OF_TICKS_BEFORE_LEAK_OUT);
       ResetInternal();
       base.DataReceived += LeakFailureSustainer_DataReceived;
-      base.SimCon.RegisterSystemEvent(ESimConnect.SimEvents.System._1sec, out this.simSecondElapsedRequestId);
       base.SimCon.EventInvoked += SimCon_EventInvoked;
     }
 
-    private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)
-    {
-      if (e.RequestId == simSecondElapsedRequestId && currentValue != null && base.IsSimPaused == false)
-        ApplyLeak();
-    }
+    #endregion Constructors
 
-    private void ApplyLeak()
-    {
-      this.currentValue -= this.leakPerTick;
-      if (this.currentValue < 0) this.currentValue = 0;
-      base.SendData(this.currentValue!.Value);
-    }
+    #region Methods
 
-    private void LeakFailureSustainer_DataReceived(double value)
+    protected override void InitInternal()
     {
-      if (currentValue == null)
-      {
-        lock (this)
-        {
-          if (currentValue == null)
-          {
-            currentValue = value;
-            leakPerTick = currentValue / expectedNumberOfTicksBeforeLeakOut;
-          }
-        }
-      }
+      base.InitInternal();
+      base.SimCon.RegisterSystemEvent(ESimConnect.SimEvents.System._1sec, out this.simSecondElapsedRequestId);
     }
 
     protected override void ResetInternal()
     {
-      leakPerTick = null;
-      currentValue = null;
+      LeakPerTick = CurrentValue = InitialValue = null;
     }
 
     protected override void StartInternal()
     {
       RequestData();
     }
+
+    private void ApplyLeak()
+    {
+      this.CurrentValue -= this.LeakPerTick;
+      if (this.CurrentValue < 0) this.CurrentValue = 0;
+      base.SendData(this.CurrentValue!.Value);
+    }
+
+    private void LeakFailureSustainer_DataReceived(double value)
+    {
+      if (InitialValue == null)
+      {
+        lock (this)
+        {
+          if (InitialValue == null)
+          {
+            InitialValue = CurrentValue = value;
+            LeakPerTick = CurrentValue / expectedNumberOfTicksBeforeLeakOut;
+          }
+        }
+      }
+    }
+
+    private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)
+    {
+      if (e.RequestId == simSecondElapsedRequestId && CurrentValue != null && base.IsSimPaused == false)
+        ApplyLeak();
+    }
+
+    #endregion Methods
   }
 }

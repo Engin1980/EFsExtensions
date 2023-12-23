@@ -18,6 +18,11 @@ namespace FailuresModule.Types.Run.Sustainers
       // intentionally blank
     }
 
+    protected override void InitInternal()
+    {
+      // intentionally blank
+    }
+
     protected override void ResetInternal()
     {
       SendEvent();

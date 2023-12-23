@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace FailuresModule
 {
@@ -25,7 +26,7 @@ namespace FailuresModule
       }
     }
 
-    private readonly ISimConManager simConManager;
+    private readonly SimConManager simConManager;
     public delegate void SimConManagerWrapperDelegate();
     public event SimConManagerWrapperDelegate? SimSecondElapsed;
     public event SimConManagerWrapperDelegate? SimConnected;
@@ -39,9 +40,9 @@ namespace FailuresModule
 
     public bool IsRunning { get; private set; }
 
-    public SimConManagerWrapper()
+    public SimConManagerWrapper(ESimConnect.ESimConnect simConnect)
     {
-      this.simConManager = new SimConManager();
+      this.simConManager = new SimConManager(simConnect);
       this.simConManager.SimSecondElapsed += Sim_SimSecondElapsed;
     }
 
@@ -58,31 +59,26 @@ namespace FailuresModule
 
     public void StartAsync()
     {
-      this.connectionTimer = new System.Timers.Timer(INITIAL_CONNECTION_TIMER_INTERVAL)
-      {
-        AutoReset = true,
-        Enabled = true
-      };
+      this.connectionTimer = new System.Timers.Timer(INITIAL_CONNECTION_TIMER_INTERVAL);
       this.connectionTimer.Elapsed += ConnectionTimer_Elapsed;
+      this.connectionTimer.AutoReset = false;
+      this.connectionTimer.Start();
     }
 
     private void ConnectionTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
     {
-      if (this.connectionTimer!.Interval == INITIAL_CONNECTION_TIMER_INTERVAL)
-        this.connectionTimer!.Interval = REPEATED_CONNECTION_TIMER_INTERVAL;
       try
       {
         Log(LogLevel.VERBOSE, "Opening connection");
         this.simConManager.Open();
         Log(LogLevel.VERBOSE, "Opening connection - done");
-        this.connectionTimer!.Stop();
-        this.connectionTimer = null;
       }
       catch (Exception ex)
       {
         Log(LogLevel.WARNING, "Failed to connect to FS2020, will try it again in a few seconds...");
         Log(LogLevel.WARNING, "Fail reason: " + ex.GetFullMessage());
         this.SimErrorRaised?.Invoke(new ConnectionFailedException(ex));
+        this.connectionTimer!.Interval = REPEATED_CONNECTION_TIMER_INTERVAL; // this autostarts the timer
       }
       try
       {

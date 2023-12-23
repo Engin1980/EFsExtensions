@@ -18,44 +18,40 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
     public event ISimConManager.SimSecondElapsedDelegate? SimSecondElapsed;
 
     private readonly NewLogHandler logHandler;
-    private ESimConnect.ESimConnect? simCon = null;
+    private readonly ESimConnect.ESimConnect simCon;
     private bool isStarted = false;
 
     public SimData SimData { get; } = new();
-    public SimConManager()
+
+    public SimConManager(ESimConnect.ESimConnect? simConnect)
     {
+      this.simCon = simConnect ?? new ESimConnect.ESimConnect();
+      this.simCon.DataReceived += Simcon_DataReceived;
+      this.simCon.EventInvoked += Simcon_EventInvoked;
+
       this.logHandler = Logger.RegisterSender(this);
     }
 
+    public SimConManager() : this(null) { }
+
     public void Close()
     {
-      if (simCon != null)
-      {
-        this.simCon.Close();
-        this.simCon.Dispose();
-        this.simCon = null;
-      }
+      Log(LogLevel.VERBOSE, "Closing simconnect");
+      this.simCon.Close();
+      Log(LogLevel.INFO, "Closed simconnect.");
     }
 
     public void Open()
     {
-      if (simCon != null) return;
-
       Log(LogLevel.INFO, "Connecting to FS2020");
-      ESimConnect.ESimConnect tmp = new();
       try
       {
-        Log(LogLevel.VERBOSE, "Connecting simconnect handlers");
-        tmp.DataReceived += Simcon_DataReceived;
-        tmp.EventInvoked += Simcon_EventInvoked;
         Log(LogLevel.VERBOSE, "Opening simconnect");
-        tmp.Open();
+        this.simCon.Open();
         Log(LogLevel.VERBOSE, "Simconnect ready");
-        this.simCon = tmp;
       }
       catch (Exception ex)
       {
-        tmp.Close();
         throw new Exception("Failed to open connection to FS2020", ex);
       }
     }

@@ -21,9 +21,13 @@ namespace FailuresModule.Model.Run.Sustainers
 
     protected SimVarBasedFailureSustainer(FailureDefinition failure) : base(failure)
     {
+      base.SimCon.EventInvoked += SimCon_EventInvoked;
+    }
+
+    protected override void InitInternal()
+    {
       base.SimCon.RegisterSystemEvent(ESimConnect.SimEvents.System.Paused);
       base.SimCon.RegisterSystemEvent(ESimConnect.SimEvents.System.Unpaused);
-      base.SimCon.EventInvoked += SimCon_EventInvoked;
     }
 
     private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)
