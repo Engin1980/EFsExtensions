@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
 {
-  public class SimData : NotifyPropertyChangedBase, IPlaneData
+  public class SimData : NotifyPropertyChangedBase
   {
     private const int SECONDS_PER_MINUTE = 60;
 

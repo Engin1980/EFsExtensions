@@ -1,5 +1,7 @@
-﻿using ELogging;
+﻿using ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions;
+using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using ESystem.Asserting;
 using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
@@ -17,8 +19,22 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
   public class StateCheckEvaluator : LogIdAble
   {
+    #region Public Classes
+
     public class HistoryRecord
     {
+      #region Public Properties
+
+      public IStateCheckItem Item { get; set; }
+
+      public string Message { get; set; }
+
+      public bool Result { get; set; }
+
+      #endregion Public Properties
+
+      #region Public Constructors
+
       public HistoryRecord(IStateCheckItem item, bool result, string message)
       {
         Item = item ?? throw new ArgumentNullException(nameof(item));
@@ -26,10 +42,12 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         Message = message ?? throw new ArgumentNullException(nameof(message));
       }
 
-      public IStateCheckItem Item { get; set; }
-      public bool Result { get; set; }
-      public string Message { get; set; }
+      #endregion Public Constructors
     }
+
+    #endregion Public Classes
+
+    #region Private Enums
 
     private enum EPassingState
     {
@@ -37,26 +55,38 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       Below
     }
 
+    #endregion Private Enums
+
+    #region Private Fields
+
+    private static Random random = new();
+    private readonly Dictionary<StateCheckProperty, double> extractedValues = new();
     private readonly Dictionary<StateCheckDelay, int> historyCounter = new();
-    private readonly Dictionary<StateCheckProperty, EPassingState> passingPropertiesStates = new();
-    private readonly IPlaneData planeData;
     private readonly NewLogHandler logHandler;
+    private readonly Dictionary<StateCheckProperty, EPassingState> passingPropertiesStates = new();
+    private readonly Dictionary<string, double> propertyValues;
+    private readonly Dictionary<string, double> variableValues;
     private List<HistoryRecord>? evaluationHistoryContext;
 
-    public StateCheckEvaluator(IPlaneData planeData)
+    #endregion Private Fields
+
+    #region Public Constructors
+
+    public StateCheckEvaluator(Dictionary<string, double> variableValues, Dictionary<string, double> propertyValues)
     {
-      this.planeData = planeData;
+      EAssert.Argument.IsNotNull(variableValues, nameof(variableValues));
+      EAssert.Argument.IsNotNull(propertyValues, nameof(propertyValues));
+
+      this.variableValues = variableValues;
+      this.propertyValues = propertyValues;
+
       this.logHandler = Logger.RegisterSender(this);
       this.logHandler.Invoke(LogLevel.INFO, "Created");
     }
 
-    private int ResolveEngineStarted(StateCheckProperty property)
-    {
-      Trace.Assert(property.Name == StateCheckPropertyName.EngineStarted);
-      int index = property.NameIndex - 1;
-      int ret = planeData.EngineCombustion[index] ? 1 : 0;
-      return ret;
-    }
+    #endregion Public Constructors
+
+    #region Public Methods
 
     public bool Evaluate(IStateCheckItem item)
     {
@@ -78,20 +108,22 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       return ret;
     }
 
-    private bool EvaluateItem(IStateCheckItem item)
+    public void Reset()
     {
-      string msg;
-      bool ret = item switch
-      {
-        StateCheckCondition condition => EvaluateCondition(condition, out msg),
-        StateCheckDelay delay => EvaluateDelay(delay, out msg),
-        StateCheckProperty property => EvaluateProperty(property, out msg),
-        StateCheckTrueFalse trueFalse => EvalauteTrueFalse(trueFalse, out msg),
-        _ => throw new NotImplementedException(),
-      };
+      this.historyCounter.Clear();
+      this.passingPropertiesStates.Clear();
+    }
 
-      Log(item, msg, ret);
-      evaluationHistoryContext?.Add(new HistoryRecord(item, ret, msg));
+    #endregion Public Methods
+
+    #region Private Methods
+
+    private double ApplyPropertyRandomness(StateCheckProperty property, double value)
+    {
+      var randomness = property.Randomness;
+      double absUpper = randomness.Above.GetValue(value);
+      double absLower = randomness.Below.GetValue(value);
+      double ret = random.NextDouble(absLower, absUpper);
       return ret;
     }
 
@@ -136,23 +168,26 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       return ret;
     }
 
+    private bool EvaluateItem(IStateCheckItem item)
+    {
+      string msg;
+      bool ret = item switch
+      {
+        StateCheckCondition condition => EvaluateCondition(condition, out msg),
+        StateCheckDelay delay => EvaluateDelay(delay, out msg),
+        StateCheckProperty property => EvaluateProperty(property, out msg),
+        StateCheckTrueFalse trueFalse => EvalauteTrueFalse(trueFalse, out msg),
+        _ => throw new NotImplementedException(),
+      };
+
+      Log(item, msg, ret);
+      evaluationHistoryContext?.Add(new HistoryRecord(item, ret, msg));
+      return ret;
+    }
     private bool EvaluateProperty(StateCheckProperty property, out string message)
     {
-      double expected = property.RandomizedValue;
-      double actual = property.Name switch
-      {
-        StateCheckPropertyName.Altitude => planeData.Altitude,
-        StateCheckPropertyName.IAS => planeData.IndicatedSpeed,
-        StateCheckPropertyName.GS => planeData.GroundSpeed,
-        StateCheckPropertyName.Height => planeData.Height,
-        StateCheckPropertyName.Bank => planeData.BankAngle,
-        StateCheckPropertyName.ParkingBrakeSet => planeData.ParkingBrakeSet ? 1 : 0,
-        StateCheckPropertyName.VerticalSpeed => planeData.VerticalSpeed,
-        StateCheckPropertyName.PushbackTugConnected => planeData.PushbackTugConnected ? 1 : 0,
-        StateCheckPropertyName.Acceleration => planeData.Acceleration,
-        StateCheckPropertyName.EngineStarted => ResolveEngineStarted(property),
-        _ => throw new NotImplementedException()
-      };
+      double expected = ExtractExpectedPropertyValue(property, true);
+      double actual = ResolveRealPropertyValue(property.Name);
 
       bool ret;
       switch (property.Direction)
@@ -166,9 +201,10 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
           message = $"act < exp => {actual:N2} < {expected:N2}";
           break;
         case StateCheckPropertyDirection.Exactly:
-          double epsilon = property.SensitivityEpsilon;
-          ret = Math.Abs(actual - expected) < epsilon;
-          message = $"abs(act-exp)<eps => Math.Abs({actual:N2} - {expected:N2}) < {epsilon:N2}";
+          double min, max;
+          (min, max) = ExtractPropertySensitivity(property, expected);
+          ret = min <= actual && actual <= max;
+          message = $"expMin<=act<=expMax => {min:N2} <= {actual:N2} <= {max:N2}";
           break;
         case StateCheckPropertyDirection.Passing:
         case StateCheckPropertyDirection.PassingDown:
@@ -207,15 +243,59 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       return ret;
     }
 
+    private double ExtractExpectedPropertyValue(StateCheckProperty property, bool applyRandomness)
+    {
+      double ret;
+      if (extractedValues.ContainsKey(property))
+        ret = extractedValues[property];
+      else
+      {
+        if (property.IsVariableBased == false)
+          ret = property.GetExpressionAsDouble();
+        else
+        {
+          var variableName = property.GetExpressionAsVariableName();
+          if (!this.variableValues.TryGetValue(variableName, out ret))
+            throw new StateCheckException($"Unable resolve value of variable '{variableName}'.");
+        }
+        if (applyRandomness) ret = ApplyPropertyRandomness(property, ret);
+        extractedValues[property] = ret;
+      }
+      return ret;
+    }
+
+    private (double, double) ExtractPropertySensitivity(StateCheckProperty property, double value)
+    {
+      double max = property.Sensitivity.Above.GetValue(value);
+      double min = property.Sensitivity.Below.GetValue(value);
+      return (min, max);
+    }
     private void Log(IStateCheckItem property, string msg, bool ret)
     {
       this.logHandler.Invoke(LogLevel.INFO, $"EVAL {property.DisplayString} \t {msg} \t {ret}");
     }
 
-    public void Reset()
+    private double ResolveRealPropertyValue(string propertyName)
     {
-      this.historyCounter.Clear();
-      this.passingPropertiesStates.Clear();
+      if (propertyValues.ContainsKey(propertyName) == false)
+        throw new ApplicationException($"Property {propertyName} not found in property-value dictionary.");
+      double ret = propertyValues[propertyName];
+      return ret;
+    }
+
+    #endregion Private Methods
+
+    public static void UpdateDictionaryByObject(object source, Dictionary<string, double> target)
+    {
+      var props = source.GetType().GetProperties().Where(q=>q.PropertyType == typeof(double));
+      foreach (var prop in props)
+      {
+        object? obj = prop.GetValue(source, null);
+        if (obj is double d)
+        {
+          target[prop.Name] = d;
+        }
+      }
     }
   }
 }

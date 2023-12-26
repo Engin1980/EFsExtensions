@@ -24,6 +24,8 @@ namespace FailuresModule
     private readonly Random random = new();
     private readonly SimConManagerWrapper simConWrapper;
     private List<RunIncidentDefinition>? _IncidentDefinitions = null;
+    private readonly Dictionary<string, double> variableValues = new();
+    private readonly Dictionary<string, double> propertyValues = new();
     private bool isRunning = false;
 
     #endregion Fields
@@ -166,7 +168,7 @@ namespace FailuresModule
 
     private bool IsTriggerConditionTrue(IStateCheckItem condition)
     {
-      StateCheckEvaluator sce = new(this.SimData);
+      StateCheckEvaluator sce = new(this.variableValues, this.propertyValues);
       bool ret = sce.Evaluate(condition);
       return ret;
     }

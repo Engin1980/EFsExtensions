@@ -22,23 +22,4 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     PassingUp
   }
 
-  public enum StateCheckPropertyName
-  {
-    Altitude,
-    Height,
-    GS,
-    IAS,
-    Bank,
-    ParkingBrakeSet,
-    PushbackTugConnected,
-    EngineStarted,
-    VerticalSpeed,
-    Acceleration,
-    RealTimeHour,
-    RealTimeHourLastDigit,
-    RealTimeMinute,
-    RealTimeMinuteLastDigit,
-    RealTimeSecond,
-    RealTimeSecondLastDigit
-  }
 }

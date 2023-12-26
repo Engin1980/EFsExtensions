@@ -1,4 +1,6 @@
-﻿using EXmlLib;
+﻿using ChlaotModuleBase.ModuleUtils.StateChecking;
+using ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions;
+using EXmlLib;
 using EXmlLib.Deserializers;
 using System;
 using System.Linq;
@@ -31,7 +33,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         "and" or "or" => DeserializeConditionFromElement(element, targetType, context),
         "for" => DeserializeDelayfromElement(element, context),
         "true" or "false" => DeserializeTrueFalseFromElement(element),
-        _ => throw new NotSupportedException($"Unknown element name '{elementName}'."),
+        _ => throw new StateCheckDeserializationException($"Unknown/Unexpected element name '{elementName}'."),
       };
       return ret;
     }
@@ -46,7 +48,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     private StateCheckDelay DeserializeDelayfromElement(XElement element, EXmlContext context)
     {
       string s = element.Attribute("seconds")?.Value
-        ?? throw new ArgumentNullException("Argument 'seconds' is missing.");
+                 ?? throw new StateCheckDeserializationException("Argument 'seconds' is missing.");
       int seconds = int.Parse(s);
 
       IStateCheckItem val = DeserializeElement(element.Elements().First(), typeof(IStateCheckItem), context);
@@ -85,14 +87,14 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         .WithCustomPropertyDeserialization("randomize", (e, t, p, c) =>
         {
           string tmp = e.Attribute("randomize")?.Value ?? "0";
-          StateCheckPropertyValueDeviation scpvd = new(tmp);
-          EXmlHelper.SetPropertyValue(p, t, scpvd);
+          StateCheckPropertyDeviation scpd = StateCheckPropertyDeviation.Parse(tmp);
+          EXmlHelper.SetPropertyValue(p, t, scpd);
         })
         .WithCustomPropertyDeserialization("sensitivity", (e, t, p, c) =>
         {
           string tmp = e.Attribute("sensitivity")?.Value ?? "0";
-          StateCheckPropertyValueDeviation scpvd = new(tmp);
-          EXmlHelper.SetPropertyValue(p, t, scpvd);
+          StateCheckPropertyDeviation scpd = StateCheckPropertyDeviation.Parse(tmp);
+          EXmlHelper.SetPropertyValue(p, t, scpd);
         });
       StateCheckProperty ret = (StateCheckProperty)EXmlHelper.Deserialize(
         element, typeof(StateCheckProperty), deser, context);

@@ -178,9 +178,9 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           checkStateCheckItem(std.Item);
         else if (sti is StateCheckProperty stp)
         {
-          if (stp.Value == null)
+          if (stp.Expression == null)
           {
-            throw new ApplicationException($"Value of checked property {stp.DisplayName} not set." +
+            throw new ApplicationException($"Expression of checked property {stp.DisplayString} not set." +
               $"Location: {string.Join(" ==> ", stck.Reverse().ToList().Select(q => q.DisplayString))}");
           }
         }

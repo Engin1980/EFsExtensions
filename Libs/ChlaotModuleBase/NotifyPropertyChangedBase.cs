@@ -32,7 +32,7 @@ namespace Eng.Chlaot.ChlaotModuleBase
       PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 
-    protected void UpdateProperty<T>(string propertyName, T value)
+    protected void UpdateProperty<T>(string propertyName, T value, bool suppressChangeNotification = false)
     {
       T? previousValue = GetProperty<T?>(propertyName);
       if (previousValue == null)
@@ -42,7 +42,8 @@ namespace Eng.Chlaot.ChlaotModuleBase
       else if (previousValue.Equals(value)) return;
 
       propertyValues[propertyName] = value;
-      InvokePropertyChanged(propertyName);
+      if (!suppressChangeNotification)
+        InvokePropertyChanged(propertyName);
     }
   }
 }

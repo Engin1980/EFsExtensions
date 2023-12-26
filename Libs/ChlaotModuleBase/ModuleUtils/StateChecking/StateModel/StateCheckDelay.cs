@@ -9,8 +9,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
   public class StateCheckDelay : IStateCheckItem
   {
     public int Seconds { get; set; }
-    public IStateCheckItem Item { get; set; }
-
+    public IStateCheckItem Item { get; set; } = null!;
     public string DisplayString => $"(delay={Seconds} {Item.DisplayString})";
   }
 }

@@ -15,7 +15,7 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types
     public Speech Speech { get; set; }
     public IStateCheckItem When { get; set; }
     public IStateCheckItem ReactivateWhen { get; set; }
-    public List<Variable> Variables { get; set; } = new();
+    public List<UserVariable> Variables { get; set; } = new();
 #pragma warning restore CS8618
 
     /*

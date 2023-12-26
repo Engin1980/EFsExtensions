@@ -39,7 +39,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       public AutoplayChecklistEvaluator(RunContext parent)
       {
         this.parent = parent;
-        this.evaluator = new StateCheckEvaluator(this.parent.simConManager.SimData);
+        this.evaluator = new StateCheckEvaluator(parent.variableValues, parent.propertyValues);
       }
 
       public bool EvaluateIfShouldPlay(CheckList checkList)
@@ -250,6 +250,9 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     private int keyHookSkipNextId = -1;
     private int keyHookSkipPrevId = -1;
 
+    private readonly Dictionary<string, double> propertyValues = new();
+    private readonly Dictionary<string, double> variableValues = new();
+
     private KeyHookWrapper? keyHookWrapper;
 
     public List<CheckListView> CheckListViews
@@ -430,6 +433,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
       if (playback.IsWaitingForNextChecklist == false) return;
       CheckList checkList = playback.GetCurrentChecklist();
+      UpdatePropertyValues();
       bool shouldPlay = this.settings.UseAutoplay
         && this.autoplayEvaluator.EvaluateIfShouldPlay(checkList);
       if (shouldPlay)
@@ -437,6 +441,11 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         autoplayEvaluator.SuppressAutoplayForCurrentChecklist();
         this.playback.TogglePlay();
       }
+    }
+
+    private void UpdatePropertyValues()
+    {
+      StateCheckEvaluator.UpdateDictionaryByObject(SimData, propertyValues);
     }
   }
 }

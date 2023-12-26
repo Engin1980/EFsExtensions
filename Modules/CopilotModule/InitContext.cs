@@ -26,6 +26,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
   {
     private readonly NewLogHandler logHandler;
     private readonly Action<bool> setIsReadyFlagAction;
+    private readonly Dictionary<UserVariable, SpeechDefinition> variableToSpeechDefinitionMapping = new();
 
     public CopilotSet Set
     {
@@ -117,7 +118,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         else if (sti is StateCheckProperty stp)
         {
           if (stp.Expression == null)
-            throw new ApplicationException($"Expression of checked property {stp.DisplayName} not set." +
+            throw new ApplicationException($"Expression of checked property {stp.DisplayString} not set." +
               $"Location: {string.Join(" ==> ", stck.Reverse().ToList().Select(q => q.DisplayString))}");
         }
         else if (sti is StateCheckTrueFalse sttf)
@@ -135,7 +136,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private void UpdateReadyFlag()
     {
-      bool ready = this.Set != null && this.Set.SpeechDefinitions.SelectMany(q => q.Variables).All(q => q.HasValue);
+      bool ready = this.Set != null && this.Set.SpeechDefinitions.SelectMany(q => q.Variables).All(q => !double.IsNaN(q.Value));
       this.setIsReadyFlagAction(ready);
     }
 
@@ -143,50 +144,39 @@ namespace Eng.Chlaot.Modules.CopilotModule
     {
       foreach (var sd in set.SpeechDefinitions)
       {
-        sd.Variables.ForEach(q => q.Parent = sd);
-
-        sd.Speech.GetUsedVariables()
+        var tmp = sd.Speech.GetUsedVariables()
           .Except(sd.Variables.Select(q => q.Name))
-          .ToList()
-          .ForEach(q => sd.Variables.Add(new Variable()
+          .Select(q => new UserVariable()
           {
             Name = q,
-            DefaultValue = 0,
-            Info = "(not provided)",
-            Parent = sd
-          }));
+            DefaultValue = 0
+          });
+
+        tmp.ForEach(q => variableToSpeechDefinitionMapping[q] = sd);
+        sd.Variables.AddRange(tmp);
 
         ExtractVariablePairsFromStateChecks(sd)
           .Select(q => q.Item1)
           .Except(sd.Variables.Select(q => q.Name))
           .ToList()
-          .ForEach(q => sd.Variables.Add(new Variable()
+          .ForEach(q => sd.Variables.Add(new UserVariable()
           {
             Name = q,
-            DefaultValue = null,
-            Info = "(not provided)",
-            Parent = sd
+            DefaultValue = 0
           }));
         sd.Variables.ForEach(q => q.PropertyChanged += Variable_PropertyChanged);
-        sd.Variables.ForEach(q => q.Value = q.DefaultValue);
       }
     }
 
     private void Variable_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-      Variable variable = (Variable)sender!;
-      SpeechDefinition sd = variable.Parent
-        ?? throw new ApplicationException($"Variable '{variable.Name}' not paired with its parent."); ;
+      UserVariable variable = (UserVariable)sender!;
+      SpeechDefinition sd = variableToSpeechDefinitionMapping[variable];
       if (sd.Speech.Type == Speech.SpeechType.Speech
         && sd.Speech.GetUsedVariables().Any(q => q == variable.Name))
       {
         BuildSpeech(sd, new(), new Synthetizer(this.Settings.Synthetizer), "");
       }
-
-      ExtractVariablePairsFromStateChecks(sd)
-        .Where(q => q.Item1 == variable.Name)
-        .ToList()
-        .ForEach(q => q.Item2.Value = variable.Value);
 
       UpdateReadyFlag();
     }
@@ -205,8 +195,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
           scic.Items.ForEach(q => stack.Push(q));
         else if (sci is StateCheckDelay scid)
           stack.Push(scid.Item);
-        else if ((sci is StateCheckProperty scip) && scip.VariableName != null)
-          ret.Add((scip.VariableName, scip));
+        else if ((sci is StateCheckProperty scip) && scip.IsVariableBased)
+          ret.Add((scip.GetExpressionAsVariableName(), scip));
       }
       return ret;
     }

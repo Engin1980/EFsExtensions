@@ -65,6 +65,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
     private readonly Settings settings;
     private readonly NewLogHandler logHandler;
     private readonly ISimConManager simConManager;
+    private readonly Dictionary<string, double> variableValues = new();
+    private readonly Dictionary<string, double> propertyValues = new();
     private System.Timers.Timer? connectionTimer = null;
 
     public RunContext(InitContext initContext)
@@ -78,7 +80,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
       this.simConManager = new SimConManager();
       //this.simConManager = SimConManagerMock.CreateTakeOff();
 #endif
-      this.evaluator = new(this.simConManager.SimData);
+      this.evaluator = new(variableValues, propertyValues);
 
       this.Set.SpeechDefinitions.ForEach(q => Infos.Add(new SpeechDefinitionInfo(q)));
     }
@@ -102,6 +104,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private void EvaluateForSpeeches()
     {
+      StateCheckEvaluator.UpdateDictionaryByObject(SimData, propertyValues);
+
       if (this.settings.EvalDebugEnabled)
         this.Infos.ToList().ForEach(q =>
         {
