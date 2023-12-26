@@ -8,12 +8,21 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
   public class StateCheckProperty : IStateCheckItem
   {
+    #region Fields
+
     public const string EXPRESSION_REGEX = "(^\\{[a-zA-Z][a-zA-Z0-9\\-_]*\\}$)|(^[+-]?\\d+\\.?\\d*$)";
     public const string RANGE_STRING_REGEX = "([+-]{0,2})(\\d+\\.?\\d*)(\\%?)";
 
+    public string? _Expression = null;
     private static readonly Random random = new();
+    private double? _Value = null;
     private double randomizedValue = double.NaN;
     private double sensitivityEpsilon = double.NaN;
+
+    #endregion Fields
+
+    #region Properties
+
     public StateCheckPropertyDirection Direction { get; set; }
     public string DisplayName
     {
@@ -26,7 +35,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       }
     }
     public string DisplayString => $"({DisplayName} {Direction.ToString().ToLower()} {Expression ?? "(null)"})";
-    public string? _Expression = null;
     public string? Expression
     {
       get => this._Expression;
@@ -36,15 +44,12 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         EnsureExpressionIsValid();
       }
     }
-    private void EnsureExpressionIsValid()
-    {
-      if (this.Expression == null || Regex.IsMatch(this.Expression, EXPRESSION_REGEX) == false)
-        throw new ApplicationException(
-          $"{nameof(StateCheckProperty)}.{nameof(Expression)} is not valid for '{DisplayString}'. It must match regex '{EXPRESSION_REGEX}')");
-    }
     public StateCheckPropertyName Name { get; set; }
+
     public int NameIndex { get; set; } = 0;
+
     public string? Randomize { get; set; } = "0";
+
     public double RandomizedValue
     {
       get
@@ -55,6 +60,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     }
 
     public string? Sensitivity { get; set; } = "+-10%";
+
     public double SensitivityEpsilon
     {
       get
@@ -64,7 +70,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       }
     }
 
-    private double? _Value = null;
     public double? Value
     {
       get
@@ -101,6 +106,10 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
           return null;
       }
     }
+
+    #endregion Properties
+
+    #region Methods
 
     private static (double lower, double upper, bool isPercentage) ExpandRangeString(string rangeString)
     {
@@ -162,5 +171,14 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         $"{this.DisplayString} adjusted sensitivity, str={Sensitivity}" +
         $", randomizedValue={randomizedValue}, epsilon={sensitivityEpsilon}");
     }
+
+    private void EnsureExpressionIsValid()
+    {
+      if (this.Expression == null || Regex.IsMatch(this.Expression, EXPRESSION_REGEX) == false)
+        throw new ApplicationException(
+          $"{nameof(StateCheckProperty)}.{nameof(Expression)} is not valid for '{DisplayString}'. It must match regex '{EXPRESSION_REGEX}')");
+    }
+
+    #endregion Methods
   }
 }
