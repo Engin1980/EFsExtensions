@@ -1,0 +1,25 @@
+﻿<failureDefinitions
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://chlaot.org/failures.xsd"
+        xsi:noNamespaceSchemaLocation="file://./Xsds/FailureSchema.xsd">
+  <metaInfo>
+    <label>Test failure for 1engine plane</label>
+    <author>Marek Vajgl</author>
+    <description></description>
+  </metaInfo>
+  <group title="Failures">
+    <incident title="bird-strike" repetitive="false">
+      <variables>
+        <randomVariable name="vFail" minimum="40" maximum="60"/>
+      </variables>
+      <triggers>
+        <trigger probability="1.00" repetitive="false">
+          <property name="ias" direction="passing" expression="{vFail}"/>
+        </trigger>
+      </triggers>
+      <failures selection="one">
+        <failure id="eng1"/>
+      </failures>
+    </incident>
+  </group>
+</failureDefinitions>

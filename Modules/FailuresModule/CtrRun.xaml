@@ -8,20 +8,20 @@
              xmlns:modelSim="clr-namespace:FailuresModule.Model.Sim"
              xmlns:modelRun ="clr-namespace:FailuresModule.Types.Run"
              xmlns:modelRunSus ="clr-namespace:FailuresModule.Types.Run.Sustainers"
-             xmlns:modelVars="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking"
+             xmlns:modelVars="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;assembly=ChlaotModuleBase"
              xmlns:converters="clr-namespace:FailuresModule.Converters"             
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
-    <!--<converters:FailureDefinitionActiveToBoolConverter x:Key="FailureDefinitionActiveToBoolConverter" />
-    <converters:DoubleToStringConverter x:Key="DoubleToStringConverter" />-->
+    <converters:FailureDefinitionActiveToBoolConverter x:Key="FailureDefinitionActiveToBoolConverter" />
+    <converters:DoubleToStringConverter x:Key="DoubleToStringConverter" />
   </UserControl.Resources>
   <DockPanel>
     <TabControl>
       <TabItem Header="Overview">
         <TreeView ItemsSource="{Binding Incidents}">
           <TreeView.Resources>
-            <!--<HierarchicalDataTemplate DataType="{x:Type modelRun:RunIncidentGroup}" ItemsSource="{Binding Incidents}">
+            <HierarchicalDataTemplate DataType="{x:Type modelRun:RunIncidentGroup}" ItemsSource="{Binding Incidents}">
               <StackPanel Orientation="Horizontal" Margin="2">
                 <TextBlock Text="{Binding Title}" />
                 <TextBlock Text=" (set)" />
@@ -127,7 +127,7 @@
                   <TextBlock Text=")" />
                 </StackPanel>
               </Label>
-            </HierarchicalDataTemplate>-->
+            </HierarchicalDataTemplate>
           </TreeView.Resources>
         </TreeView>
       </TabItem>
@@ -136,7 +136,7 @@
           <ListView ItemsSource="{Binding FailureDefinitions}">
             <ListView.ItemTemplate>
               <DataTemplate>
-                <!--<StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal">
                   <Label>
                     <StackPanel Orientation="Horizontal">
                       <TextBlock Text="{Binding Title}" />
@@ -151,7 +151,7 @@
                     </StackPanel>
                   </Label>
                   <Button Tag="{Binding}" x:Name="btnToggleSustainerActive" Click="btnToggleSustainerActive_Click" Content="Toggle" />
-                </StackPanel>-->
+                </StackPanel>
               </DataTemplate>
             </ListView.ItemTemplate>
           </ListView>
@@ -161,7 +161,7 @@
         <ScrollViewer>
           <ListView ItemsSource="{Binding Sustainers}">
             <ListView.Resources>
-              <!--<HierarchicalDataTemplate DataType="{x:Type modelRunSus:EventFailureSustainer}">
+              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:EventFailureSustainer}">
                 <StackPanel Orientation="Horizontal">
                   <Label>
                     <StackPanel Orientation="Horizontal">
@@ -172,8 +172,8 @@
                     </StackPanel>
                   </Label>
                 </StackPanel>
-              </HierarchicalDataTemplate>-->
-              <!--<HierarchicalDataTemplate DataType="{x:Type modelRunSus:LeakFailureSustainer}">
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:LeakFailureSustainer}">
                 <StackPanel Orientation="Horizontal">
                   <Label>
                     <StackPanel Orientation="Horizontal">
@@ -216,7 +216,7 @@
                     </StackPanel>
                   </Label>
                 </StackPanel>
-              </HierarchicalDataTemplate>-->
+              </HierarchicalDataTemplate>
             </ListView.Resources>
           </ListView>
         </ScrollViewer>

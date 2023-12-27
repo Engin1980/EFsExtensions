@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ namespace ESystem.Asserting
         throw new EAssertException(message);
     }
 
-    public static void IsNotNull(object value, string message = "Value is null.")
+    public static void IsNotNull([NotNull] object? value, string message = "Value is null.")
     {
       if (value == null)
         throw new EAssertException(message);

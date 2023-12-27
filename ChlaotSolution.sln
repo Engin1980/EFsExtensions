@@ -42,6 +42,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Checklist", "Checklist", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Failures", "Failures", "{10F6197D-30D2-4517-9B58-04E7A9451A95}"
 	ProjectSection(SolutionItems) = preProject
+		Failures-test.fail.xml = Failures-test.fail.xml
 		Xmls\Failures\Failures.fail.xml = Xmls\Failures\Failures.fail.xml
 	EndProjectSection
 EndProject
@@ -80,7 +81,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{AE4A982F
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimDataCapturer", "SimDataCapturer\SimDataCapturer.csproj", "{8624398A-1DD4-4CE9-93BE-C16F604BBA8F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ESystem", "ESystem\ESystem.csproj", "{D47B932B-D907-431E-9FBE-A9446FB0A4D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESystem", "ESystem\ESystem.csproj", "{D47B932B-D907-431E-9FBE-A9446FB0A4D5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

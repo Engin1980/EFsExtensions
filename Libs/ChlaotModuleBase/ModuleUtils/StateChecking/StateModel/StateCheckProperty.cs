@@ -25,7 +25,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel
     public string DisplayString => $"({Name} {Direction.ToString().ToLower()} {Expression ?? "(null)"})";
     public string Expression { get; set; } = null!;
     public string Name { get; set; } = null!;
-    public StateCheckPropertyDeviation Randomness { get; set; } = StateCheckPropertyDeviation.Parse("0");
+    public StateCheckPropertyDeviation Randomness { get; set; } = StateCheckPropertyDeviation.Parse("+-0");
     public StateCheckPropertyDeviation Sensitivity { get; set; } = StateCheckPropertyDeviation.Parse("+-10%");
     public bool IsVariableBased { get => Expression[0] == '{'; }
 

@@ -1,6 +1,7 @@
 ﻿using ChlaotModuleBase.ModuleUtils.SimConWrapping.Exceptions;
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using FailuresModule.Model.App;
 using FailuresModule.Model.Sim;
@@ -22,7 +23,7 @@ namespace FailuresModule
     #region Fields
 
     private readonly Random random = new();
-    private readonly SimConWrapperForFailures simConWrapper;
+    private readonly SimConWrapperWithSimData simConWrapper;
     private List<RunIncidentDefinition>? _IncidentDefinitions = null;
     private readonly Dictionary<string, double> variableValues = new();
     private readonly Dictionary<string, double> propertyValues = new();
@@ -55,7 +56,6 @@ namespace FailuresModule
     {
       ESimConnect.ESimConnect eSimCon = new();
       simConWrapper = new(eSimCon);
-      Logger.RegisterSender(simConWrapper, Logger.GetSenderName(this) + ".SimConWrapper");
       simConWrapper.SimSecondElapsed += SimConWrapper_SimSecondElapsed;
       simConWrapper.SimConErrorRaised += SimConWrapper_SimConErrorRaised;
 
@@ -86,10 +86,24 @@ namespace FailuresModule
       this.simConWrapper.OpenAsync(
         () =>
         {
+          SetVariableValues();
           this.simConWrapper.Start();
           this.isRunning = true;
         },
         ex => { });
+    }
+
+    private void SetVariableValues()
+    {
+      foreach (var runIncidentDefinition in this.IncidentDefinitions)
+      {
+        Dictionary<string, double> tmp = runIncidentDefinition.IncidentDefinition.Variables
+          .ToDictionary(
+          k => k.Name,
+          v => v.Value);
+        StateCheckEvaluator sce = new(tmp, propertyValues);
+        incidentEvaluators[runIncidentDefinition] = sce;
+      }
     }
 
     private static List<RunIncidentDefinition> FlattenIncidentDefinitions(List<RunIncident> incidents)
@@ -112,14 +126,15 @@ namespace FailuresModule
       return ret;
     }
 
+    private readonly Dictionary<RunIncidentDefinition, StateCheckEvaluator> incidentEvaluators = new();
     private void EvaluateAndFireFailures()
     {
-      foreach (var incident in this.IncidentDefinitions)
+      foreach (var runIncidentDefinition in this.IncidentDefinitions)
       {
-        EvaluateIncidentDefinition(incident, out bool isActivated);
+        EvaluateIncidentDefinition(runIncidentDefinition, out bool isActivated);
         if (!isActivated) continue;
 
-        List<FailId> failItems = PickFailItems(incident);
+        List<FailId> failItems = PickFailItems(runIncidentDefinition);
         List<FailureDefinition> failDefs = failItems.Select(q => this.FailureDefinitions.First(p => q.Id == p.Id)).ToList();
         InitializeFailures(failDefs);
       }
@@ -131,14 +146,16 @@ namespace FailuresModule
       foreach (var trigger in incident.IncidentDefinition.Triggers)
       {
         if (incident.OneShotTriggersInvoked.Contains(trigger)) continue;
-        if (trigger.Repetitive == false)
-          incident.OneShotTriggersInvoked.Add(trigger);
 
-        bool isConditionTrue = IsTriggerConditionTrue(trigger.Condition);
+        StateCheckEvaluator sce = incidentEvaluators[incident];
+
+        bool isConditionTrue = IsTriggerConditionTrue(sce, trigger.Condition);
         if (isConditionTrue)
         {
           double prob = random.NextDouble();
           isActivated = prob <= trigger.Probability;
+          if (trigger.Repetitive == false)
+            incident.OneShotTriggersInvoked.Add(trigger);
         }
       }
     }
@@ -170,10 +187,9 @@ namespace FailuresModule
       }
     }
 
-    private bool IsTriggerConditionTrue(IStateCheckItem condition)
+    private bool IsTriggerConditionTrue(StateCheckEvaluator stateCheckEvaluator, IStateCheckItem condition)
     {
-      StateCheckEvaluator sce = new(this.variableValues, this.propertyValues);
-      bool ret = sce.Evaluate(condition);
+      bool ret = stateCheckEvaluator.Evaluate(condition);
       return ret;
     }
 
@@ -241,7 +257,14 @@ namespace FailuresModule
     private void SimConWrapper_SimSecondElapsed()
     {
       if (isRunning)
+      {
+        StateCheckEvaluator.UpdateDictionaryByObject(this.simConWrapper.SimData, propertyValues);
+        DateTime now = DateTime.Now;
+        propertyValues["realTimeSecond"] = now.Second;
+        propertyValues["realTimeMinute"] = now.Minute;
+        propertyValues["realTimeMinuteLastDigit"] = now.Minute % 10;
         EvaluateAndFireFailures();
+      }
     }
 
     #endregion Methods

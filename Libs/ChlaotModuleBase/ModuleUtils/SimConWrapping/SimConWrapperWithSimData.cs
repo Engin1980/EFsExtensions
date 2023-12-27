@@ -39,7 +39,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping
 
     protected override void StartProtected()
     {
-      base.Start();
+      base.StartProtected();
 
       base.simCon.RegisterType<CommonDataStruct>();
       base.simCon.RequestDataRepeatedly<CommonDataStruct>(Microsoft.FlightSimulator.SimConnect.SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);

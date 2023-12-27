@@ -15,6 +15,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media.TextFormatting;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
+using System.IO.IsolatedStorage;
+using System.Reflection;
+using ChlaotModuleBase.ModuleUtils.StateChecking;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
@@ -286,15 +289,45 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 
     #endregion Private Methods
 
+    private static Type[] updatedTypesNumerical =
+    {
+      typeof(int), typeof(double), typeof(bool)
+    };
     public static void UpdateDictionaryByObject(object source, Dictionary<string, double> target)
     {
-      var props = source.GetType().GetProperties().Where(q=>q.PropertyType == typeof(double));
+      var props = source.GetType().GetProperties();
       foreach (var prop in props)
       {
-        object? obj = prop.GetValue(source, null);
-        if (obj is double d)
+        var propType = prop.PropertyType;
+        var att = prop.GetCustomAttribute<StateCheckNameAttribute>();
+        var propName = att != null ? att.Name : prop.Name;
+        if (updatedTypesNumerical.Contains(propType))
         {
-          target[prop.Name] = d;
+          object? obj = prop.GetValue(source, null);
+          EAssert.IsNotNull(obj);
+          if (obj is double d)
+            target[propName] = d;
+          else if (obj is int i)
+            target[propName] = (double)i;
+          else if (obj is bool b)
+            target[propName] = b ? 1 : 0;
+        }
+        else if (propType.IsArray)
+        {
+          Array? arr = (Array?)prop.GetValue(source, null);
+          EAssert.IsNotNull(arr);
+          for (int i = 0; i < arr.Length; i++)
+          {
+            string indexPropName = $"{propName}:{i + 1}";
+            object? obj = arr.GetValue(i);
+            EAssert.IsNotNull(obj);
+            if (obj is double d)
+              target[indexPropName] = d;
+            else if (obj is int _i)
+              target[indexPropName] = (double)_i;
+            else if (obj is bool b)
+              target[indexPropName] = b ? 1 : 0;
+          }
         }
       }
     }

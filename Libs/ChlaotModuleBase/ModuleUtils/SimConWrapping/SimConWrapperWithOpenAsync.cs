@@ -20,9 +20,12 @@ namespace ChlaotModuleBase.ModuleUtils.SimConWrapping
     private Action<SimConWrapperOpenException> onError = null!;
     public SimConWrapperWithOpenAsync(ESimConnect.ESimConnect simCon) : base(simCon)
     {
-      connectionTimer = new();
+      connectionTimer = new()
+      {
+        AutoReset = false,
+        Enabled = false
+      };
       connectionTimer.Elapsed += ConnectionTimer_Elapsed;
-      connectionTimer.Enabled = false;
     }
 
     private void ConnectionTimer_Elapsed(object? sender, ElapsedEventArgs e)
@@ -36,6 +39,7 @@ namespace ChlaotModuleBase.ModuleUtils.SimConWrapping
       {
         onError.Invoke(ex);
         connectionTimer.Interval = REPEATED_CONNECTION_DELAY; // also resets timer countdown
+        connectionTimer.Start();
       }
       catch (Exception ex)
       {
@@ -51,6 +55,7 @@ namespace ChlaotModuleBase.ModuleUtils.SimConWrapping
       this.onError = onError;
 
       connectionTimer.Interval = INITIAL_CONNECTION_DELAY;
+      connectionTimer.Start();
     }
 
     protected override void StartProtected()
