@@ -2,6 +2,8 @@
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using Eng.Chlaot.Modules.CopilotModule.Types;
 using EXmlLib;

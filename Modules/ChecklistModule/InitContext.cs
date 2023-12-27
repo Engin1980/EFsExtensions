@@ -18,6 +18,7 @@ using ELogging;
 using Eng.Chlaot.Modules.ChecklistModule.Types;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -32,7 +33,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(ChecklistSet), value);
     }
 
-    public Settings Settings { get; private set; }
+    public Settings Settings { get; private set; } = null!;
 
     public InitContext(Settings settings, Action<bool> setIsReadyFlagAction)
     {

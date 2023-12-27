@@ -3,7 +3,6 @@ using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
 using Eng.Chlaot.Modules.ChecklistModule.Types;
 using Eng.Chlaot.Modules.ChecklistModule.Types.RunViews;
 using Microsoft.VisualBasic.Logging;
@@ -20,10 +19,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
-  public class RunContext : NotifyPropertyChangedBase
+    public class RunContext : NotifyPropertyChangedBase
   {
     public class AutoplayChecklistEvaluator
     {
@@ -34,7 +35,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       private CheckList? prevList = null;
 
 
-      public SimData SimData => this.parent.simConManager.SimData;
+      public SimData SimData => this.parent.simConWrapper.SimData;
 
       public AutoplayChecklistEvaluator(RunContext parent)
       {
@@ -231,9 +232,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       }
     }
 
-    private const int INITIAL_CONNECTION_TIMER_INTERVAL = 2000;
-    private const int REPEATED_CONNECTION_TIMER_INTERVAL = 10000;
-
     private readonly AutoplayChecklistEvaluator autoplayEvaluator;
 
     private readonly NewLogHandler logHandler;
@@ -242,9 +240,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     private readonly Settings settings;
 
-    private readonly ISimConManager simConManager;
-
-    private System.Timers.Timer? connectionTimer = null;
+    private readonly SimConWrapperWithSimData simConWrapper;
 
     private int keyHookPlayPauseId = -1;
     private int keyHookSkipNextId = -1;
@@ -267,7 +263,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(CheckSet), value);
     }
 
-    public SimData SimData => this.simConManager.SimData;
+    public SimData SimData => this.simConWrapper.SimData;
 
     public RunContext(InitContext initContext)
     {
@@ -291,12 +287,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         .ToList();
 
       this.playback = new PlaybackManager(this);
-#if USE_MOCK
-      this.simConManager = SimConManagerMock.CreateTakeOff();
-#else
-      this.simConManager = new SimConManager();
-#endif
-      this.simConManager.SimSecondElapsed += Sim_SimSecondElapsed;
+      this.simConWrapper= new SimConWrapperWithSimData(new ESimConnect.ESimConnect());
+      this.simConWrapper.SimSecondElapsed += Sim_SimSecondElapsed;
       this.autoplayEvaluator = new AutoplayChecklistEvaluator(this);
     }
 
@@ -312,19 +304,17 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       ConnectKeyHooks();
 
       logHandler?.Invoke(LogLevel.VERBOSE, "Starting connection timer");
-      this.connectionTimer = new System.Timers.Timer(INITIAL_CONNECTION_TIMER_INTERVAL)
-      {
-        AutoReset = true,
-        Enabled = true
-      };
-      this.connectionTimer.Elapsed += ConnectionTimer_Elapsed;
+
+      this.simConWrapper.OpenAsync(
+        () => this.simConWrapper.Start(),
+        ex => this.Log(LogLevel.WARNING, "Failed to connect to FS2020, will try it again..."));
 
       logHandler?.Invoke(LogLevel.VERBOSE, "Run done");
     }
 
     internal void Stop()
     {
-      this.simConManager.Close();
+      throw new NotImplementedException();
     }
 
     private static KeyHookInfo ConvertShortcutToKeyHookInfo(Settings.KeyShortcut shortcut)
@@ -335,28 +325,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         shortcut.Shift,
         shortcut.Key);
       return ret;
-    }
-
-    private void ConnectionTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
-    {
-      if (this.connectionTimer!.Interval == INITIAL_CONNECTION_TIMER_INTERVAL)
-        this.connectionTimer!.Interval = REPEATED_CONNECTION_TIMER_INTERVAL;
-      try
-      {
-        Log(LogLevel.VERBOSE, "Opening connection");
-        this.simConManager.Open();
-        Log(LogLevel.VERBOSE, "Opening connection - done");
-        this.connectionTimer!.Stop();
-        this.connectionTimer = null;
-
-        this.simConManager.Start();
-        Log(LogLevel.INFO, "Connected to FS2020, starting updates");
-      }
-      catch (Exception ex)
-      {
-        Log(LogLevel.WARNING, "Failed to connect to FS2020, will try it again in a few seconds...");
-        Log(LogLevel.WARNING, "Fail reason: " + ex.GetFullMessage());
-      }
     }
 
     private void ConnectKeyHooks()
@@ -401,7 +369,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       this.keyHookWrapper.KeyHookInvoked += keyHookWrapper_KeyHookInvoked;
     }
 
-    [SuppressMessage("", "IDE1006")]
     private void keyHookWrapper_KeyHookInvoked(int hookId, KeyHookInfo keyHookInfo)
     {
       if (hookId == this.keyHookPlayPauseId)
@@ -429,8 +396,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     private void Sim_SimSecondElapsed()
     {
-      if (this.SimData.IsSimPaused) return;
-
       if (playback.IsWaitingForNextChecklist == false) return;
       CheckList checkList = playback.GetCurrentChecklist();
       UpdatePropertyValues();

@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions
 {
     public class StateCheckException : ApplicationException
     {

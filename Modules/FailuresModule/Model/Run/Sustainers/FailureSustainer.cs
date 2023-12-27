@@ -1,5 +1,4 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
 using ESimConnect;
 using FailuresModule.Model.Sim;
 using System;

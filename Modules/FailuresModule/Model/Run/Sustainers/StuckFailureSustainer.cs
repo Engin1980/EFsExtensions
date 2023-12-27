@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
 using FailuresModule.Model.Run.Sustainers;
 using FailuresModule.Model.Sim;
 

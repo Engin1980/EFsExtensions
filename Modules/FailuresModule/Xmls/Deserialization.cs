@@ -1,5 +1,6 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using FailuresModule.Model.App;

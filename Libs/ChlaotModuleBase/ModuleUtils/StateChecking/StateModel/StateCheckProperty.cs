@@ -1,5 +1,5 @@
-﻿using ChlaotModuleBase.ModuleUtils.StateChecking;
-using ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions;
 using ELogging;
 using ESystem.Asserting;
 using ESystem.ValidityChecking;
@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Media.Animation;
 using static ESimConnect.SimUnits;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel
 {
   public class StateCheckProperty : IStateCheckItem, IValidable
   {

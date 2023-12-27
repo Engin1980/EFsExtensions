@@ -33,4 +33,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="ModuleUtils\StateCheckingSimConnection\Mock\" />
+  </ItemGroup>
+
 </Project>

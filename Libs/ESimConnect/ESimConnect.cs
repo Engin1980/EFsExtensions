@@ -288,6 +288,12 @@ namespace ESimConnect
       Logger.LogMethodEnd();
     }
 
+    public void RequestDataRepeatedly<T>(SIMCONNECT_PERIOD period, bool sendOnlyOnChange = true,
+      int initialDelayFrames = 0, int skipBetweenFrames = 0, int numberOfReturnedFrames = 0)
+    {
+      RequestDataRepeatedly<T>(out int _, period, sendOnlyOnChange, initialDelayFrames, skipBetweenFrames, numberOfReturnedFrames);
+    }
+
     public void RequestDataRepeatedly<T>(out int requestId, SIMCONNECT_PERIOD period, bool sendOnlyOnChange = true,
       int initialDelayFrames = 0, int skipBetweenFrames = 0, int numberOfReturnedFrames = 0)
     {
@@ -589,7 +595,7 @@ namespace ESimConnect
       string @event = eventManager.GetEvent(iRequest);
       uint value = data.dwData;
 
-      ESimConnectEventInvokedEventArgs e = new((int) iRequest, @event, value);
+      ESimConnectEventInvokedEventArgs e = new((int)iRequest, @event, value);
       this.EventInvoked?.Invoke(this, e);
     }
 

@@ -1,24 +1,24 @@
-﻿using ELogging;
-using ESimConnect;
-using Microsoft.FlightSimulator.SimConnect;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿//using ELogging;
+//using ESimConnect;
+//using Microsoft.FlightSimulator.SimConnect;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
-{
-  public interface ISimConManager
-  {
-    public delegate void SimSecondElapsedDelegate();
-    public event SimSecondElapsedDelegate? SimSecondElapsed;
-    public SimData SimData { get; }
+//namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
+//{
+//    public interface ISimConManager
+//    {
+//        public delegate void SimSecondElapsedDelegate();
+//        public event SimSecondElapsedDelegate? SimSecondElapsed;
+//        public SimData SimData { get; }
 
-    public void Close();
+//        public void Close();
 
-    public void Open();
+//        public void Open();
 
-    public void Start();
-  }
-}
+//        public void Start();
+//    }
+//}

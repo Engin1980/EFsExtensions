@@ -1,4 +1,5 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -2,9 +2,9 @@
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection.Mock;
 using Eng.Chlaot.Modules.CopilotModule.Types;
 using System;
 using System.Collections.Generic;
@@ -19,18 +19,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
 {
   public class RunContext : NotifyPropertyChangedBase
   {
-    private const int INITIAL_CONNECTION_TIMER_INTERVAL = 1500;
-    private const int REPEATED_CONNECTION_TIMER_INTERVAL = 10500;
+    #region Public Classes
 
     public class SpeechDefinitionInfo : NotifyPropertyChangedBase
     {
-      public SpeechDefinitionInfo(SpeechDefinition speechDefinition)
-      {
-        SpeechDefinition = speechDefinition ?? throw new ArgumentNullException(nameof(speechDefinition));
-        this.IsActive = true;
-      }
-
-      public SpeechDefinition SpeechDefinition { get; set; }
+      #region Public Properties
 
       public bool IsActive
       {
@@ -38,21 +31,48 @@ namespace Eng.Chlaot.Modules.CopilotModule
         set => base.UpdateProperty(nameof(IsActive), value);
       }
 
+      public List<StateCheckEvaluator.HistoryRecord>? ReactivationEvaluationHistory
+      {
+        get => base.GetProperty<List<StateCheckEvaluator.HistoryRecord>?>(nameof(ReactivationEvaluationHistory))!;
+        set => base.UpdateProperty(nameof(ReactivationEvaluationHistory), value);
+      }
+
+      public SpeechDefinition SpeechDefinition { get; set; }
+
       public List<StateCheckEvaluator.HistoryRecord>? WhenEvaluationHistory
       {
         get => base.GetProperty<List<StateCheckEvaluator.HistoryRecord>?>(nameof(WhenEvaluationHistory))!;
         set => base.UpdateProperty(nameof(WhenEvaluationHistory), value);
       }
 
-      public List<StateCheckEvaluator.HistoryRecord>? ReactivationEvaluationHistory
+      #endregion Public Properties
+
+      #region Public Constructors
+
+      public SpeechDefinitionInfo(SpeechDefinition speechDefinition)
       {
-        get => base.GetProperty<List<StateCheckEvaluator.HistoryRecord>?>(nameof(ReactivationEvaluationHistory))!;
-        set => base.UpdateProperty(nameof(ReactivationEvaluationHistory), value);
+        SpeechDefinition = speechDefinition ?? throw new ArgumentNullException(nameof(speechDefinition));
+        this.IsActive = true;
       }
+
+      #endregion Public Constructors
     }
 
-    public CopilotSet Set { get; private set; }
-    public SimData SimData => this.simConManager.SimData;
+    #endregion Public Classes
+
+    #region Private Fields
+
+    private readonly object evaluatingLock = new();
+    private readonly StateCheckEvaluator evaluator;
+    private readonly NewLogHandler logHandler;
+    private readonly Dictionary<string, double> propertyValues = new();
+    private readonly Settings settings;
+    private readonly SimConWrapperWithSimData simConWrapper;
+    private readonly Dictionary<string, double> variableValues = new();
+
+    #endregion Private Fields
+
+    #region Public Properties
 
     public SpeechDefinitionInfo? DebugEvalHistorySource
     {
@@ -61,66 +81,60 @@ namespace Eng.Chlaot.Modules.CopilotModule
     }
 
     public BindingList<SpeechDefinitionInfo> Infos { get; set; } = new();
-    private readonly StateCheckEvaluator evaluator;
-    private readonly Settings settings;
-    private readonly NewLogHandler logHandler;
-    private readonly ISimConManager simConManager;
-    private readonly Dictionary<string, double> variableValues = new();
-    private readonly Dictionary<string, double> propertyValues = new();
-    private System.Timers.Timer? connectionTimer = null;
+    public CopilotSet Set { get; private set; }
+    public SimData SimData { get => this.simConWrapper.SimData; }
+
+    #endregion Public Properties
+
+    #region Public Constructors
 
     public RunContext(InitContext initContext)
     {
       this.Set = initContext.Set;
       this.settings = initContext.Settings;
       this.logHandler = Logger.RegisterSender(this, "[Copilot.RunContext]");
-#if USE_MOCK
-      this.simConManager = SimConManagerMock.CreateTakeOff();
-#else
-      this.simConManager = new SimConManager();
-      //this.simConManager = SimConManagerMock.CreateTakeOff();
-#endif
+
+      ESimConnect.ESimConnect simCon = new();
+      this.simConWrapper = new(simCon);
+
       this.evaluator = new(variableValues, propertyValues);
 
       this.Set.SpeechDefinitions.ForEach(q => Infos.Add(new SpeechDefinitionInfo(q)));
     }
 
-    private readonly object evaluatingLock = new object();
-    private void SimConManager_SimSecondElapsed()
+    #endregion Public Constructors
+
+    #region Internal Methods
+
+    internal void Run()
     {
-      if (this.simConManager.SimData.IsSimPaused) return;
-      this.logHandler.Invoke(LogLevel.VERBOSE, "SimSecondElapsed (non-paused)");
+      Log(LogLevel.INFO, "Run");
+      this.simConWrapper.SimSecondElapsed += SimConWrapper_SimSecondElapsed;
 
-      if (Monitor.TryEnter(evaluatingLock) == false)
-      {
-        this.logHandler.Invoke(LogLevel.WARNING, "SimSecondElapsed took longer than sim-second! Performance issue?");
-        return;
-      }
-
-      EvaluateForSpeeches();
-
-      Monitor.Exit(evaluatingLock);
-    }
-
-    private void EvaluateForSpeeches()
-    {
-      StateCheckEvaluator.UpdateDictionaryByObject(SimData, propertyValues);
-
-      if (this.settings.EvalDebugEnabled)
-        this.Infos.ToList().ForEach(q =>
+      logHandler.Invoke(LogLevel.VERBOSE, "Starting connection timer");
+      this.simConWrapper.OpenAsync(
+        () =>
         {
-          q.WhenEvaluationHistory = null;
-          q.ReactivationEvaluationHistory = null;
+          this.simConWrapper.Start();
+          Log(LogLevel.INFO, "Connected to FS2020, starting updates");
+        },
+        ex =>
+        {
+          Log(LogLevel.WARNING, "Failed to connect to FS2020, will try it again in a few seconds...");
+          Log(LogLevel.WARNING, "Fail reason: " + ex.GetFullMessage());
         });
-
-      var readys = this.Infos.Where(q => q.IsActive);
-      this.logHandler.Invoke(LogLevel.VERBOSE, $"Evaluating {readys.Count()} readys");
-      EvaluateActives(readys);
-
-      var waits = this.Infos.Where(q => !q.IsActive);
-      this.logHandler.Invoke(LogLevel.VERBOSE, $"Evaluating {waits.Count()} waits");
-      EvaluateInactives(waits);
     }
+
+    internal void Stop()
+    {
+      throw new NotImplementedException();
+      //this.simConManager.SimSecondElapsed -= SimConManager_SimSecondElapsed;
+      //Log(LogLevel.INFO, "Stopped");
+    }
+
+    #endregion Internal Methods
+
+    #region Private Methods
 
     private void EvaluateActives(IEnumerable<SpeechDefinitionInfo> readys)
     {
@@ -149,12 +163,24 @@ namespace Eng.Chlaot.Modules.CopilotModule
       }
     }
 
-    private List<StateCheckEvaluator.HistoryRecord>? GetHistoryListIfRequired()
+    private void EvaluateForSpeeches()
     {
-      List<StateCheckEvaluator.HistoryRecord>? ret = this.settings.EvalDebugEnabled
-            ? new List<StateCheckEvaluator.HistoryRecord>()
-            : null;
-      return ret;
+      StateCheckEvaluator.UpdateDictionaryByObject(SimData, propertyValues);
+
+      if (this.settings.EvalDebugEnabled)
+        this.Infos.ToList().ForEach(q =>
+        {
+          q.WhenEvaluationHistory = null;
+          q.ReactivationEvaluationHistory = null;
+        });
+
+      var readys = this.Infos.Where(q => q.IsActive);
+      this.logHandler.Invoke(LogLevel.VERBOSE, $"Evaluating {readys.Count()} readys");
+      EvaluateActives(readys);
+
+      var waits = this.Infos.Where(q => !q.IsActive);
+      this.logHandler.Invoke(LogLevel.VERBOSE, $"Evaluating {waits.Count()} waits");
+      EvaluateInactives(waits);
     }
 
     private void EvaluateInactives(IEnumerable<SpeechDefinitionInfo> waits)
@@ -175,51 +201,35 @@ namespace Eng.Chlaot.Modules.CopilotModule
         });
     }
 
+    private List<StateCheckEvaluator.HistoryRecord>? GetHistoryListIfRequired()
+    {
+      List<StateCheckEvaluator.HistoryRecord>? ret = this.settings.EvalDebugEnabled
+            ? new List<StateCheckEvaluator.HistoryRecord>()
+            : null;
+      return ret;
+    }
+
     private void Log(LogLevel level, string message)
     {
       logHandler.Invoke(level, "[RunContext] :: " + message);
     }
 
-    internal void Stop()
+    private void SimConWrapper_SimSecondElapsed()
     {
-      this.simConManager.SimSecondElapsed -= SimConManager_SimSecondElapsed;
-      Log(LogLevel.INFO, "Stopped");
-    }
+      if (this.simConWrapper.IsSimPaused) return;
+      this.logHandler.Invoke(LogLevel.VERBOSE, "SimSecondElapsed (non-paused)");
 
-    internal void Run()
-    {
-      Log(LogLevel.INFO, "Run");
-      this.simConManager.SimSecondElapsed += SimConManager_SimSecondElapsed;
-
-      logHandler.Invoke(LogLevel.VERBOSE, "Starting connection timer");
-      this.connectionTimer = new System.Timers.Timer(INITIAL_CONNECTION_TIMER_INTERVAL)
+      if (Monitor.TryEnter(evaluatingLock) == false)
       {
-        AutoReset = true,
-        Enabled = true
-      };
-      this.connectionTimer.Elapsed += ConnectionTimer_Elapsed;
-    }
-
-    private void ConnectionTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
-    {
-      if (this.connectionTimer!.Interval == INITIAL_CONNECTION_TIMER_INTERVAL)
-        this.connectionTimer!.Interval = REPEATED_CONNECTION_TIMER_INTERVAL;
-      try
-      {
-        Log(LogLevel.VERBOSE, "Opening connection");
-        this.simConManager.Open();
-        Log(LogLevel.VERBOSE, "Opening connection - done");
-        this.connectionTimer!.Stop();
-        this.connectionTimer = null;
-
-        this.simConManager.Start();
-        Log(LogLevel.INFO, "Connected to FS2020, starting updates");
+        this.logHandler.Invoke(LogLevel.WARNING, "SimSecondElapsed took longer than sim-second! Performance issue?");
+        return;
       }
-      catch (Exception ex)
-      {
-        Log(LogLevel.WARNING, "Failed to connect to FS2020, will try it again in a few seconds...");
-        Log(LogLevel.WARNING, "Fail reason: " + ex.GetFullMessage());
-      }
+
+      EvaluateForSpeeches();
+
+      Monitor.Exit(evaluatingLock);
     }
+
+    #endregion Private Methods
   }
 }

@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Eng.Chlaot.Modules.CopilotModule"
              xmlns:types="clr-namespace:Eng.Chlaot.Modules.CopilotModule.Types"
              xmlns:converters="clr-namespace:Eng.Chlaot.Modules.CopilotModule.Converters"
-             xmlns:sct ="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;assembly=ChlaotModuleBase" 
+             xmlns:sct ="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;assembly=ChlaotModuleBase" 
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>

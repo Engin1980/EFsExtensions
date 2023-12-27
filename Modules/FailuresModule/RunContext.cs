@@ -1,7 +1,7 @@
-﻿using ELogging;
+﻿using ChlaotModuleBase.ModuleUtils.SimConWrapping.Exceptions;
+using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection;
 using FailuresModule.Model.App;
 using FailuresModule.Model.Sim;
 using FailuresModule.Types.Run;
@@ -22,7 +22,7 @@ namespace FailuresModule
     #region Fields
 
     private readonly Random random = new();
-    private readonly SimConManagerWrapper simConWrapper;
+    private readonly SimConWrapperForFailures simConWrapper;
     private List<RunIncidentDefinition>? _IncidentDefinitions = null;
     private readonly Dictionary<string, double> variableValues = new();
     private readonly Dictionary<string, double> propertyValues = new();
@@ -34,7 +34,6 @@ namespace FailuresModule
 
     public List<FailureDefinition> FailureDefinitions { get; }
     public List<RunIncident> Incidents { get; }
-    public SimData SimData { get => this.simConWrapper.SimData; }
     public BindingList<FailureSustainer> Sustainers { get; }
     internal List<RunIncidentDefinition> IncidentDefinitions
     {
@@ -58,7 +57,7 @@ namespace FailuresModule
       simConWrapper = new(eSimCon);
       Logger.RegisterSender(simConWrapper, Logger.GetSenderName(this) + ".SimConWrapper");
       simConWrapper.SimSecondElapsed += SimConWrapper_SimSecondElapsed;
-      simConWrapper.SimErrorRaised += SimConWrapper_SimErrorRaised;
+      simConWrapper.SimConErrorRaised += SimConWrapper_SimConErrorRaised;
 
       FailureSustainer.SetSimCon(eSimCon);
       FailureDefinitions = failureDefinitions;
@@ -84,8 +83,13 @@ namespace FailuresModule
 
     public void Start()
     {
-      this.simConWrapper.StartAsync();
-      isRunning = true;
+      this.simConWrapper.OpenAsync(
+        () =>
+        {
+          this.simConWrapper.Start();
+          this.isRunning = true;
+        },
+        ex => { });
     }
 
     private static List<RunIncidentDefinition> FlattenIncidentDefinitions(List<RunIncident> incidents)
@@ -160,7 +164,7 @@ namespace FailuresModule
       foreach (var failure in failures)
       {
         if (this.Sustainers.Any(q => q.Failure == failure)) continue;
-        FailureSustainer fs = FailureSustainerFactory.Create(failure);        
+        FailureSustainer fs = FailureSustainerFactory.Create(failure);
         this.Sustainers.Add(fs);
         fs.Start();
       }
@@ -228,16 +232,10 @@ namespace FailuresModule
       return ret;
     }
 
-    private void SimConWrapper_SimErrorRaised(Exception ex)
+    private void SimConWrapper_SimConErrorRaised(SimConWrapperSimConException ex)
     {
-      if (this.simConWrapper.IsRunning)
-        this.simConWrapper.StopAsync();
-
       //TODO resolve
-      if (ex is SimConManagerWrapper.StartFailedException sfe)
-      {
-        throw new ApplicationException("Failed to start sim readout.", sfe);
-      }
+      throw new ApplicationException("Failed sim-con-wrapper-for-failure.", ex);
     }
 
     private void SimConWrapper_SimSecondElapsed()

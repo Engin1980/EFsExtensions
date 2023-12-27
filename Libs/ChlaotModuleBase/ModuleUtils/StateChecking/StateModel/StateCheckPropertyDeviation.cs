@@ -1,5 +1,5 @@
-﻿using ChlaotModuleBase.ModuleUtils.StateChecking;
-using ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions;
 using ESystem;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel
 {
   public class StateCheckPropertyDeviation
   {
