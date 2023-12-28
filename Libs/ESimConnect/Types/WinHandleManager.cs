@@ -99,9 +99,11 @@ namespace ESimConnect.Types
       List<string> tmp = new();
       while (ex != null)
       {
-        tmp.Add(ex.Message);
-        tmp.Add("\n\t");
-        tmp.Add(ex.StackTrace ?? "");
+        StringBuilder sb = new StringBuilder();
+        sb.Append(ex.Message);
+        sb.Append("\n\t");
+        sb.Append(ex.StackTrace ?? "");
+        tmp.Add(ex.ToString());
         ex = ex.InnerException!;
       }
       string ret = string.Join("\n\n", tmp);

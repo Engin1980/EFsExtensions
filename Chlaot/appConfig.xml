@@ -4,6 +4,7 @@
     <LogRule Regex=".+" Verbose="true" Info="true" Warning="true" Error="true" />
   </LogFileLogRules>
   <WindowLogRules>
+    <LogRule Regex=".+StateCheckEvaluator.+" Verbose="false" Info="false" Warning="true" Error="true" />
     <LogRule Regex=".+" Verbose="false" Info="true" Warning="true" Error="true" />
   </WindowLogRules>
   <ModuleRules />

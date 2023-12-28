@@ -25,7 +25,6 @@ namespace FailuresModule
     private readonly Random random = new();
     private readonly SimConWrapperWithSimData simConWrapper;
     private List<RunIncidentDefinition>? _IncidentDefinitions = null;
-    private readonly Dictionary<string, double> variableValues = new();
     private readonly Dictionary<string, double> propertyValues = new();
     private bool isRunning = false;
 
@@ -36,6 +35,12 @@ namespace FailuresModule
     public List<FailureDefinition> FailureDefinitions { get; }
     public List<RunIncident> Incidents { get; }
     public BindingList<FailureSustainer> Sustainers { get; }
+
+    public int SustainersCount
+    {
+      get => base.GetProperty<int>(nameof(SustainersCount))!;
+      set => base.UpdateProperty(nameof(SustainersCount), value);
+    }
     internal List<RunIncidentDefinition> IncidentDefinitions
     {
       get
@@ -63,6 +68,7 @@ namespace FailuresModule
       FailureDefinitions = failureDefinitions;
       Incidents = incidents;
       Sustainers = new();
+      Sustainers.ListChanged += (s,e)=>this.SustainersCount=Sustainers.Count;
     }
 
     #endregion Constructors

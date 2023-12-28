@@ -140,14 +140,18 @@
                   <Label>
                     <StackPanel Orientation="Horizontal">
                       <TextBlock Text="{Binding Title}" />
-                      <TextBlock Text=" (id="/>
-                      <TextBlock Text="{Binding Id}"/>
-                      <TextBlock Text=", state="/>
+                      <TextBlock Text=" (id="  FontSize="12"/>
+                      <TextBlock Text="{Binding Id}"  FontSize="12"/>
+                      <TextBlock Text=", type="  FontSize="12"/>
+                      <TextBlock Text="{Binding Type}"  FontSize="12"/>
+                      <TextBlock Text=", sim="  FontSize="12"/>
+                      <TextBlock Text="{Binding SimConPoint.SimVar}" FontSize="12"/>
+                      <TextBlock Text=", state="  FontSize="12"/>
                       <TextBlock Text="{Binding Id, 
                         Converter={StaticResource FailureDefinitionActiveToBoolConverter},
                         ConverterParameter='Active|Inactive',
-                        Mode=OneWay}" />
-                      <TextBlock Text=")" />
+                        Mode=OneWay}"  FontSize="12"/>
+                      <TextBlock Text=")"  FontSize="12"/>
                     </StackPanel>
                   </Label>
                   <Button Tag="{Binding}" x:Name="btnToggleSustainerActive" Click="btnToggleSustainerActive_Click" Content="Toggle" />
@@ -157,7 +161,14 @@
           </ListView>
         </ScrollViewer>
       </TabItem>
-      <TabItem Header="Active failures">
+      <TabItem>
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Active Failures (" />
+            <TextBlock Text="{Binding SustainersCount}" />
+            <TextBlock Text=")" />
+          </StackPanel>
+        </TabItem.Header>
         <ScrollViewer>
           <ListView ItemsSource="{Binding Sustainers}">
             <ListView.Resources>

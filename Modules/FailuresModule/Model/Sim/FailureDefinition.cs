@@ -20,14 +20,8 @@ namespace FailuresModule.Model.Sim
     public string Id { get; }
     public string Title { get; }
     public SimConPoint SimConPoint { get; set; }
+    public abstract string Type { get; }
 
     public string TypeName => GetType().Name;
-  }
-
-  public class LeakFailureDefinition : FailureDefinition
-  {
-    public LeakFailureDefinition(string id, string title, SimConPoint simConPoint) : base(id, title, simConPoint)
-    {
-    }
   }
 }

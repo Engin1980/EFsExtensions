@@ -15,6 +15,8 @@ namespace FailuresModule.Converters
       double d;
       if ((value is int) || (value is long) || (value is double))
         d = (double)value;
+      else if (value == null)
+        d = Double.NaN;
       else
         throw new NotImplementedException($"Expected type is double/long/int, provided ${value.GetType().Name}.");
 

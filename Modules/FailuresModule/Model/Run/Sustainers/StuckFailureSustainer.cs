@@ -18,7 +18,7 @@ namespace FailuresModule.Types.Run.Sustainers
 
     private bool isRunning = false;
 
-    private Timer updateTimer;
+    private readonly Timer updateTimer;
 
     #endregion Fields
 
