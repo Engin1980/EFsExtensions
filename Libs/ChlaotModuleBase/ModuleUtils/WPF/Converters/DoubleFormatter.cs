@@ -6,9 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace FailuresModule.Converters
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters
 {
-  internal class DoubleToStringConverter : IValueConverter
+  public class DoubleFormatter : IValueConverter
   {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {

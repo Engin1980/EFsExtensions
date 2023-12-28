@@ -1,4 +1,5 @@
-﻿using FailuresModule.Model.App;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;
+using FailuresModule.Model.App;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

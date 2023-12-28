@@ -1,11 +1,14 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
-using SimVarTestModule;
+﻿using ELogging;
+using Eng.Chlaot.ChlaotModuleBase;
+using ESystem;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using static ESystem.Functions;
 
 namespace Eng.Chlaot.Modules.SimVarTestModule
 {
@@ -41,30 +44,51 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
       simConWrapper.OpenAsync(() => { }, ex => { });
 
       simCon.DataReceived += SimCon_DataReceived;
+      simCon.ThrowsException += SimCon_ThrowsException;
+    }
+
+    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_EXCEPTION ex)
+    {
+      Logger.Log(this, LogLevel.ERROR, $"SimCon throws error - {ex}");
     }
 
     private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
     {
       SimVarId sid = SimVarIds.First(q => q.RequestId == e.RequestId);
       SimVarCase svc = sid.Case;
-      svc.Value = (double) e.Data;
+      svc.Value = (double)e.Data;
     }
 
-    private const int CLIENT_DATA_ID = 1;
-
-    internal void RegisterNewSimVar(string name)
+    internal void RegisterNewSimVar(string name, bool validateName)
     {
+      int typeId;
+      try
+      {
+        typeId = simCon.RegisterPrimitive<double>(name, validate: validateName);
+      }
+      catch (Exception ex)
+      {
+        Logger.Log(this, LogLevel.ERROR, $"Unable register '{name}'. {ex.Message}");
+        return;
+      }
+
+      simCon.RequestPrimitiveRepeatedly(typeId, out int requestId, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_PERIOD.SECOND, true, 0, 0, 0);
+
       SimVarCase svc = new()
       {
         SimVar = name,
         Value = Double.NaN
       };
-
-      this.Cases.Add(svc);
-      int typeId = simCon.RegisterPrimitive<double>(name);
-      simCon.RequestPrimitiveRepeatedly(typeId, out int requestId, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_PERIOD.SECOND, true, 0, 0, 0);
       SimVarId sid = new(typeId, requestId, svc);
       SimVarIds.Add(sid);
+      this.Cases.Add(svc);
+
+    }
+
+    internal void SetValue(SimVarCase simVarCase, double newValue)
+    {
+      SimVarId sid = SimVarIds.First(q => q.Case == simVarCase);
+      simCon.SendPrimitive<double>(sid.TypeId, newValue);
     }
   }
 }

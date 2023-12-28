@@ -5,17 +5,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimVarTestModule
+namespace Eng.Chlaot.Modules.SimVarTestModule
 {
   public class SimVarCase : NotifyPropertyChangedBase
   {
-
     public string SimVar
     {
       get => base.GetProperty<string>(nameof(SimVar))!;
       set => base.UpdateProperty(nameof(SimVar), value);
     }
-
 
     public double Value
     {

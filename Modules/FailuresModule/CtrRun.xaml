@@ -10,11 +10,12 @@
              xmlns:modelRunSus ="clr-namespace:FailuresModule.Types.Run.Sustainers"
              xmlns:modelVars="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;assembly=ChlaotModuleBase"
              xmlns:converters="clr-namespace:FailuresModule.Converters"             
+             xmlns:globalConverters="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"             
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <converters:FailureDefinitionActiveToBoolConverter x:Key="FailureDefinitionActiveToBoolConverter" />
-    <converters:DoubleToStringConverter x:Key="DoubleToStringConverter" />
+    <globalConverters:DoubleFormatter x:Key="DoubleToStringConverter" />
   </UserControl.Resources>
   <DockPanel>
     <TabControl>

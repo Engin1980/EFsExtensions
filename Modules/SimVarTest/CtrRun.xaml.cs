@@ -1,4 +1,4 @@
-﻿using SimVarTestModule;
+﻿using Eng.Chlaot.Modules.SimVarTestModule.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +21,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
   /// </summary>
   public partial class CtrRun : UserControl
   {
-    private readonly Context context;    
+    private readonly Context context;
 
     public CtrRun()
     {
@@ -33,7 +33,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
       this.context = context;
       this.DataContext = context;
 
-      this.context.Connect();      
+      this.context.Connect();
     }
 
     private void btnNewSimVar_Click(object sender, RoutedEventArgs e)
@@ -41,7 +41,16 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
       string name = txtNewSimVar.Text;
       txtNewSimVar.Text = "";
 
-      this.context.RegisterNewSimVar(name);
+      bool validate = chkNewSimVarValidate.IsChecked == true;
+
+      this.context.RegisterNewSimVar(name, validate);
+    }
+
+    private void NewValue_NewValueRequested(NewValue sender, double newValue)
+    {
+      SimVarCase simVarCase = (SimVarCase)sender.Tag;
+
+      this.context.SetValue(simVarCase, newValue);
     }
   }
 }

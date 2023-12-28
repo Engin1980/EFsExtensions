@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
-using System.Windows.Forms;
 
-namespace FailuresModule.Converters
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters
 {
   public abstract class TypedConverter<TSource, TTarget> : IValueConverter
   {

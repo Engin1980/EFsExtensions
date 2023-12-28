@@ -4,12 +4,25 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Eng.Chlaot.Modules.SimVarTestModule"
+             xmlns:controls="clr-namespace:Eng.Chlaot.Modules.SimVarTestModule.Controls"
+             xmlns:globalConverters="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+  <UserControl.Resources>
+    <globalConverters:DoubleFormatter x:Key="DoubleFormatter" />
+  </UserControl.Resources>
   <DockPanel>
     <DockPanel DockPanel.Dock="Top" >
       <Label DockPanel.Dock="Left">SimVar name:</Label>
       <Button DockPanel.Dock="Right" x:Name="btnNewSimVar" Click="btnNewSimVar_Click" Padding="16,0,16,0">Append</Button>
+      <Label DockPanel.Dock="Right">
+        <StackPanel Orientation="Horizontal">
+          <Grid>
+            <CheckBox x:Name="chkNewSimVarValidate" IsChecked="True" Content="Validate">
+            </CheckBox>
+          </Grid>
+        </StackPanel>
+      </Label>
       <TextBox x:Name="txtNewSimVar" />
     </DockPanel>
     <ScrollViewer>
@@ -19,8 +32,10 @@
             <StackPanel Orientation="Horizontal">
               <Label Content="{Binding SimVar}" />
               <Label Content="=" />
-              <Label Content="{Binding Value}" />
-            </StackPanel>
+              <Label Content="{Binding Value, Converter={StaticResource DoubleFormatter}, ConverterParameter=N7}" />
+              <controls:NewValue Tag="{Binding}"  NewValueRequested="NewValue_NewValueRequested" />
+              <Button x:Name="btnDelete" Tag="{Binding}" Content=" (X) " Margin="8,0,0,0" Click="btnDelete_Click" />
+            </StackPanel> 
           </DataTemplate>
         </ListView.ItemTemplate>
       </ListView>
