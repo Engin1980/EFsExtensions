@@ -16,7 +16,7 @@ namespace FailuresModule.Types.Run.Sustainers
     private const int MINIMAL_EXPECTED_NUMBER_OF_TICKS_BEFORE_LEAK_OUT = 5 * 60;
     private readonly int expectedNumberOfTicksBeforeLeakOut;
 
-    private int simSecondElapsedRequestId;
+    private int simSecondElapsedEventId;
 
     #endregion Fields
 
@@ -59,7 +59,7 @@ namespace FailuresModule.Types.Run.Sustainers
     protected override void InitInternal()
     {
       base.InitInternal();
-      base.SimCon.RegisterSystemEvent(ESimConnect.SimEvents.System._1sec, out this.simSecondElapsedRequestId);
+      this.simSecondElapsedEventId = base.SimCon.RegisterSystemEvent(ESimConnect.SimEvents.System._1sec);
     }
 
     protected override void ResetInternal()
@@ -96,7 +96,7 @@ namespace FailuresModule.Types.Run.Sustainers
 
     private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)
     {
-      if (e.RequestId == simSecondElapsedRequestId && CurrentValue != null && base.IsSimPaused == false)
+      if (e.RequestId == simSecondElapsedEventId && CurrentValue != null && base.IsSimPaused == false)
         ApplyLeak();
     }
 

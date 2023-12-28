@@ -18,11 +18,41 @@ namespace ESimConnect
 {
   public class ESimConnect : IDisposable
   {
+    #region Classes + Structs
+
+    public static class TypeSize<T>
+    {
+      #region Fields
+
+      public readonly static int Size;
+
+      #endregion Fields
+
+      #region Constructors
+
+      static TypeSize()
+      {
+        var dm = new DynamicMethod("SizeOfType", typeof(int), new Type[] { });
+        ILGenerator il = dm.GetILGenerator();
+        il.Emit(OpCodes.Sizeof, typeof(T));
+        il.Emit(OpCodes.Ret);
+        Size = (int)dm.Invoke(null, null)!;
+      }
+
+      #endregion Constructors
+    }
+
     public class ESimConnectDataReceivedEventArgs
     {
+      #region Properties
+
       public object Data { get; set; }
       public int? RequestId { get; set; }
       public Type Type { get; set; }
+
+      #endregion Properties
+
+      #region Constructors
 
       public ESimConnectDataReceivedEventArgs(int? requestId, Type type, object data)
       {
@@ -30,14 +60,21 @@ namespace ESimConnect
         this.Type = type ?? throw new ArgumentNullException(nameof(type));
         this.Data = data ?? throw new ArgumentNullException(nameof(data));
       }
+
+      #endregion Constructors
     }
 
     public class ESimConnectEventInvokedEventArgs
     {
-      public int RequestId { get; }
-      public string Event { get; }
+      #region Properties
 
+      public string Event { get; }
+      public int RequestId { get; }
       public uint Value { get; }
+
+      #endregion Properties
+
+      #region Constructors
 
       public ESimConnectEventInvokedEventArgs(int requestId, string @event, uint value)
       {
@@ -45,7 +82,13 @@ namespace ESimConnect
         Event = @event;
         Value = value;
       }
+
+      #endregion Constructors
     }
+
+    #endregion Classes + Structs
+
+    #region Delegates
 
     public delegate void ESimConnectDataReceived(ESimConnect sender, ESimConnectDataReceivedEventArgs e);
 
@@ -54,6 +97,10 @@ namespace ESimConnect
     public delegate void ESimConnectEventInvoked(ESimConnect sender, ESimConnectEventInvokedEventArgs e);
 
     public delegate void ESimConnectExceptionDelegate(ESimConnect sender, SIMCONNECT_EXCEPTION ex);
+
+    #endregion Delegates
+
+    #region Events
 
     public event ESimConnectDelegate? Connected;
 
@@ -65,7 +112,15 @@ namespace ESimConnect
 
     public event ESimConnectExceptionDelegate? ThrowsException;
 
-    private readonly Types.EventManager eventManager = new();
+    #endregion Events
+
+    #region Fields
+
+    private const uint SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_CHANGED = 0x00000001;
+    private const uint SIMCONNECT_CLIENTDATAOFFSET_AUTO = uint.MaxValue;
+    private const uint SIMCONNECT_GROUP_PRIORITY_HIGHEST = 1;
+    private record EventIdName(EEnum EventId, string EventName);
+    private readonly List<EventIdName> eventManager = new();
     private readonly PrimitiveManager primitiveManager = new();
     private readonly RequestDataManager requestDataManager = new();
     private readonly RequestExceptionManager requestExceptionManager = new();
@@ -74,7 +129,15 @@ namespace ESimConnect
     private EEnum GROUP_ID_PRIORITY_STANDARD = (EEnum)1900000000;
     private SimConnect? simConnect;
 
+    #endregion Fields
+
+    #region Properties
+
     public bool IsOpened { get => this.simConnect != null; }
+
+    #endregion Properties
+
+    #region Constructors
 
     public ESimConnect()
     {
@@ -82,6 +145,10 @@ namespace ESimConnect
       winHandleManager.FsExitDetected += (() => ResolveExitedFS2020());
       Logger.LogMethodEnd();
     }
+
+    #endregion Constructors
+
+    #region Methods
 
     public void Close()
     {
@@ -127,44 +194,7 @@ namespace ESimConnect
       Logger.LogMethodEnd();
     }
 
-
-    public static class TypeSize<T>
-    {
-      public readonly static int Size;
-
-      static TypeSize()
-      {
-        var dm = new DynamicMethod("SizeOfType", typeof(int), new Type[] { });
-        ILGenerator il = dm.GetILGenerator();
-        il.Emit(OpCodes.Sizeof, typeof(T));
-        il.Emit(OpCodes.Ret);
-        Size = (int)dm.Invoke(null, null)!;
-      }
-    }
-
-    private const uint SIMCONNECT_CLIENTDATAOFFSET_AUTO = uint.MaxValue;
-    private const uint SIMCONNECT_CLIENT_DATA_REQUEST_FLAG_CHANGED = 0x00000001;
-    private const uint SIMCONNECT_GROUP_PRIORITY_HIGHEST = 1;
-
-    public int RegisterCustomPrimitive<T>(string simVarName, int clientDataId)
-    {
-      Logger.LogMethodStart();
-      EnsureConnected();
-
-      int size = TypeSize<T>.Size;
-      EEnum eTypeId = IdProvider.GetNextAsEnum();
-      EEnum eClientDataId = (EEnum)clientDataId;
-
-      simConnect!.MapClientDataNameToID(simVarName, eTypeId);
-      simConnect!.AddToClientDataDefinition(eTypeId, SIMCONNECT_CLIENTDATAOFFSET_AUTO, (uint)size, 0f, SimConnect.SIMCONNECT_UNUSED);
-      simConnect!.CreateClientData(eClientDataId, (uint)size, SIMCONNECT_CREATE_CLIENT_DATA_FLAG.DEFAULT);
-
-
-      Logger.LogMethodEnd();
-      return (int)eTypeId;
-    }
-
-    public int RegisterPrimitive<T>(string simVarName, string unit, string simTypeName, int epsilon = 0, bool validate = false)
+    public int RegisterPrimitive<T>(string simVarName, string unit = "Number", string simTypeName = "FLOAT64", int epsilon = 0, bool validate = false)
     {
       Logger.LogMethodStart();
       EnsureConnected();
@@ -191,48 +221,32 @@ namespace ESimConnect
       return (int)eTypeId;
     }
 
-    public void RegisterSystemEvent(string eventName, bool validate = false)
-    {
-      RegisterSystemEvent(eventName, out int _, validate);
-    }
-
-    public void RegisterSystemEvent(string eventName, out int requestId, bool validate = false)
+    public int RegisterSystemEvent(string eventName, bool validate = false)
     {
       Logger.LogMethodStart();
       EnsureConnected();
 
       if (validate) ValidateSystemEventName(eventName);
 
-      EEnum eRequestId = this.eventManager.TryGetId(eventName);
-      if (eRequestId == EEnum.Unused)
+      EEnum eEventId;
+      var tmp = this.eventManager.FirstOrDefault(q => q.EventName == eventName);
+      if (tmp == null)
       {
-        eRequestId = IdProvider.GetNextAsEnum();
+        eEventId = IdProvider.GetNextAsEnum();
         Try(() =>
         {
-          this.simConnect!.SubscribeToSystemEvent(eRequestId, eventName);
-          this.eventManager.Register(eRequestId, eventName);
+          this.simConnect!.SubscribeToSystemEvent(eEventId, eventName);
+          this.eventManager.Add(new EventIdName(eEventId, eventName));
         },
           ex => new InternalException($"Failed to register sim-event listener for '{eventName}'.", ex));
       }
+      else
+        eEventId = tmp.EventId;
       Logger.LogMethodEnd();
-      requestId = (int)eRequestId;
+      return (int)eEventId;
     }
 
-    public int RegisterCustomEvent(string customEventName)
-    {
-      EnsureConnected();
-
-      EEnum eRequestId = IdProvider.GetNextAsEnum();
-      EEnum eGroupId = IdProvider.GetNextAsEnum();
-
-      simConnect!.MapClientEventToSimEvent(eRequestId, customEventName);
-      simConnect!.AddClientEventToNotificationGroup(eGroupId, eRequestId, true);
-      simConnect!.SetNotificationGroupPriority(eGroupId, SIMCONNECT_GROUP_PRIORITY_HIGHEST);
-
-      return (int)eRequestId;
-    }
-
-    public void RegisterType<T>(bool validate = false) where T : struct
+    public int RegisterType<T>(bool validate = false) where T : struct
     {
       Logger.LogMethodStart();
       EnsureConnected();
@@ -257,6 +271,8 @@ namespace ESimConnect
         ex => new InternalException("Failed to invoke 'simConnect.RegisterDataDefineStruct<T>(...)'.", ex));
       this.typeManager.Register((int)eTypeId, t);
       Logger.LogMethodEnd();
+
+      return (int)eTypeId;
     }
 
     public void RequestData<T>(out int requestId)
@@ -330,8 +346,35 @@ namespace ESimConnect
       Logger.LogMethodEnd();
     }
 
+    public void RequestPrimitive(int typeId, out int requestId)
+      => RequestPrimitive(typeId, 0, SIMCONNECT_SIMOBJECT_TYPE.USER, out requestId);
+
+    public void RequestPrimitive(int typeId, uint radius, SIMCONNECT_SIMOBJECT_TYPE simObjectType, out int requestId)
+    {
+      requestId = IdProvider.GetNext();
+      RequestPrimitive(typeId, requestId, radius, simObjectType);
+    }
+
+    public int RequestPrimitive(int typeId, int customRequestId)
+      => RequestPrimitive(typeId, customRequestId, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
+
+    public int RequestPrimitive(int typeId, int customRequestId, uint radius, SIMCONNECT_SIMOBJECT_TYPE simObjectType)
+    {
+      Logger.LogMethodStart(new object?[] { typeId, customRequestId, radius });
+      EnsureConnected();
+
+      EnsurePrimitiveTypeIdExists(typeId);
+      EEnum eTypeId = (EEnum)typeId;
+      Type t = primitiveManager.GetType(typeId);
+      EEnum eRequestId = IdProvider.GetNextAsEnum();
+      this.simConnect!.RequestDataOnSimObjectType(eRequestId, eTypeId, radius, simObjectType);
+      requestDataManager.Register(customRequestId, t, eRequestId);
+      Logger.LogMethodEnd();
+      return (int)customRequestId;
+    }
+
     public void RequestPrimitiveRepeatedly(int typeId, out int requestId, SIMCONNECT_PERIOD period, bool sendOnlyOnChange = true,
-      int initialDelayFrames = 0, int skipBetweenFrames = 0, int numberOfReturnedFrames = 0)
+                      int initialDelayFrames = 0, int skipBetweenFrames = 0, int numberOfReturnedFrames = 0)
     {
       requestId = IdProvider.GetNext();
       RequestPrimitiveRepeatedly(typeId, requestId, period, sendOnlyOnChange, initialDelayFrames, skipBetweenFrames, numberOfReturnedFrames);
@@ -364,39 +407,6 @@ namespace ESimConnect
         ex => new InternalException($"Failed to invoke 'RequestDataOnSimObject(...)'.", ex));
       this.requestDataManager.Register(customRequestId, type, eRequestId);
       Logger.LogMethodEnd();
-    }
-
-    private void EnsurePrimitiveTypeIdExists(int typeId)
-    {
-      if (!this.primitiveManager.IsRegistered(typeId))
-        throw new Exception($"Primitive typeId={typeId} is not registered.");
-    }
-
-    public void RequestPrimitive(int typeId, out int requestId)
-      => RequestPrimitive(typeId, 0, SIMCONNECT_SIMOBJECT_TYPE.USER, out requestId);
-
-    public void RequestPrimitive(int typeId, uint radius, SIMCONNECT_SIMOBJECT_TYPE simObjectType, out int requestId)
-    {
-      requestId = IdProvider.GetNext();
-      RequestPrimitive(typeId, requestId, radius, simObjectType);
-    }
-
-    public int RequestPrimitive(int typeId, int customRequestId)
-      => RequestPrimitive(typeId, customRequestId, 0, SIMCONNECT_SIMOBJECT_TYPE.USER);
-
-    public int RequestPrimitive(int typeId, int customRequestId, uint radius, SIMCONNECT_SIMOBJECT_TYPE simObjectType)
-    {
-      Logger.LogMethodStart(new object?[] { typeId, customRequestId, radius });
-      EnsureConnected();
-
-      EnsurePrimitiveTypeIdExists(typeId);
-      EEnum eTypeId = (EEnum)typeId;
-      Type t = primitiveManager.GetType(typeId);
-      EEnum eRequestId = IdProvider.GetNextAsEnum();
-      this.simConnect!.RequestDataOnSimObjectType(eRequestId, eTypeId, radius, simObjectType);
-      requestDataManager.Register(customRequestId, t, eRequestId);
-      Logger.LogMethodEnd();
-      return (int)customRequestId;
     }
 
     public void SendClientEvent(string eventName, uint[]? parameters = null, bool validate = false)
@@ -498,76 +508,6 @@ namespace ESimConnect
       }
     }
 
-    private void ValidateSimVarName(string simVarName)
-    {
-      string unindexSimVarName(string simVarName)
-      {
-        string ret;
-        int index = simVarName.IndexOf(':');
-        ret = index < 0 ? simVarName : simVarName.Substring(0, index + 1);
-        return ret;
-      }
-      bool findSimVar(string simVarName, Type? cls = null)
-      {
-        bool ret;
-        if (cls == null) cls = typeof(SimVars);
-
-        ret = cls.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-          .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
-          .Select(q => q.GetValue(null))
-          .Any(q => Equals(q, simVarName));
-        if (!ret)
-        {
-          var classes = cls.GetNestedTypes();
-          foreach (var c in classes)
-          {
-            ret = findSimVar(simVarName, c);
-            if (ret) break;
-          }
-        }
-
-        return ret;
-      };
-
-      string tmp = unindexSimVarName(simVarName);
-      bool exists = findSimVar(tmp);
-      if (!exists)
-      {
-        throw new Exception($"SimVar '{simVarName}' check failed. SimVar not found in known values.");
-      }
-    }
-
-    private void ValidateSystemEventName(string eventName)
-    {
-      bool findEvent(string simVarName, Type? cls = null)
-      {
-        bool ret;
-        if (cls == null) cls = typeof(SimEvents);
-
-        ret = cls.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-          .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
-          .Select(q => q.GetValue(null))
-          .Any(q => Equals(q, simVarName));
-        if (!ret)
-        {
-          var classes = cls.GetNestedTypes();
-          foreach (var c in classes)
-          {
-            ret = findEvent(simVarName, c);
-            if (ret) break;
-          }
-        }
-
-        return ret;
-      };
-
-      bool exists = findEvent(eventName);
-      if (!exists)
-      {
-        throw new Exception($"SystemEvent '{eventName}' check failed. SystemEvent name not found in known values.");
-      }
-    }
-
     private void EnsureConnected()
     {
       if (this.simConnect == null) throw new NotConnectedException();
@@ -578,6 +518,12 @@ namespace ESimConnect
       if (this.simConnect != null) throw new InvalidRequestException("SimConnect already opened.");
     }
 
+    private void EnsurePrimitiveTypeIdExists(int typeId)
+    {
+      if (!this.primitiveManager.IsRegistered(typeId))
+        throw new Exception($"Primitive typeId={typeId} is not registered.");
+    }
+   
     private void ResolveExitedFS2020()
     {
       if (this.simConnect != null)
@@ -591,11 +537,11 @@ namespace ESimConnect
     private void SimConnect_OnRecvEvent(SimConnect sender, SIMCONNECT_RECV_EVENT data)
     {
       Logger.LogInvokedEvent(this, nameof(SimConnect_OnRecvEvent), data);
-      EEnum iRequest = (EEnum)data.uEventID;
-      string @event = eventManager.GetEvent(iRequest);
+      EEnum eEventId = (EEnum)data.uEventID;
+      string eventName = eventManager.First(q => q.EventId == eEventId).EventName;
       uint value = data.dwData;
 
-      ESimConnectEventInvokedEventArgs e = new((int)iRequest, @event, value);
+      ESimConnectEventInvokedEventArgs e = new((int)eEventId, eventName, value);
       this.EventInvoked?.Invoke(this, e);
     }
 
@@ -668,5 +614,77 @@ namespace ESimConnect
       }
       return ret;
     }
+
+    private void ValidateSimVarName(string simVarName)
+    {
+      string unindexSimVarName(string simVarName)
+      {
+        string ret;
+        int index = simVarName.IndexOf(':');
+        ret = index < 0 ? simVarName : simVarName.Substring(0, index + 1);
+        return ret;
+      }
+      bool findSimVar(string simVarName, Type? cls = null)
+      {
+        bool ret;
+        if (cls == null) cls = typeof(SimVars);
+
+        ret = cls.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+          .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
+          .Select(q => q.GetValue(null))
+          .Any(q => Equals(q, simVarName));
+        if (!ret)
+        {
+          var classes = cls.GetNestedTypes();
+          foreach (var c in classes)
+          {
+            ret = findSimVar(simVarName, c);
+            if (ret) break;
+          }
+        }
+
+        return ret;
+      };
+
+      string tmp = unindexSimVarName(simVarName);
+      bool exists = findSimVar(tmp);
+      if (!exists)
+      {
+        throw new Exception($"SimVar '{simVarName}' check failed. SimVar not found in known values.");
+      }
+    }
+
+    private void ValidateSystemEventName(string eventName)
+    {
+      bool findEvent(string simVarName, Type? cls = null)
+      {
+        bool ret;
+        if (cls == null) cls = typeof(SimEvents);
+
+        ret = cls.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+          .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
+          .Select(q => q.GetValue(null))
+          .Any(q => Equals(q, simVarName));
+        if (!ret)
+        {
+          var classes = cls.GetNestedTypes();
+          foreach (var c in classes)
+          {
+            ret = findEvent(simVarName, c);
+            if (ret) break;
+          }
+        }
+
+        return ret;
+      };
+
+      bool exists = findEvent(eventName);
+      if (!exists)
+      {
+        throw new Exception($"SystemEvent '{eventName}' check failed. SystemEvent name not found in known values.");
+      }
+    }
+
+    #endregion Methods
   }
 }

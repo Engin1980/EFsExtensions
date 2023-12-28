@@ -61,8 +61,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
       };
 
       this.Cases.Add(svc);
-      int typeId = simCon.RegisterCustomPrimitive<double>(name, CLIENT_DATA_ID);
-
+      int typeId = simCon.RegisterPrimitive<double>(name);
       simCon.RequestPrimitiveRepeatedly(typeId, out int requestId, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_PERIOD.SECOND, true, 0, 0, 0);
       SimVarId sid = new(typeId, requestId, svc);
       SimVarIds.Add(sid);
