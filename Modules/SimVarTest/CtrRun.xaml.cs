@@ -52,5 +52,10 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
 
       this.context.SetValue(simVarCase, newValue);
     }
+
+    private void btnDelete_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
   }
 }

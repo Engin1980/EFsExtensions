@@ -54,7 +54,10 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
 
     private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
     {
-      SimVarId sid = SimVarIds.First(q => q.RequestId == e.RequestId);
+      SimVarId? sid = SimVarIds.FirstOrDefault(q => q.RequestId == e.RequestId);
+      if (sid == null) // probably deleted one
+        return;
+
       SimVarCase svc = sid.Case;
       svc.Value = (double)e.Data;
     }
@@ -89,6 +92,12 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
     {
       SimVarId sid = SimVarIds.First(q => q.Case == simVarCase);
       simCon.SendPrimitive<double>(sid.TypeId, newValue);
+    }
+
+    internal void DeleteSimVar(SimVarCase svc)
+    {
+      SimVarId sid = SimVarIds.First(q=>q.Case == svc);
+      SimVarIds.Remove(sid);
     }
   }
 }
