@@ -83,6 +83,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimDataCapturer", "SimDataC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESystem", "ESystem\ESystem.csproj", "{D47B932B-D907-431E-9FBE-A9446FB0A4D5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimVarTestModule", "Modules\SimVarTest\SimVarTestModule.csproj", "{EE75BBC5-848C-4E39-AB49-F4922FC1626F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -137,6 +139,10 @@ Global
 		{D47B932B-D907-431E-9FBE-A9446FB0A4D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D47B932B-D907-431E-9FBE-A9446FB0A4D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D47B932B-D907-431E-9FBE-A9446FB0A4D5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE75BBC5-848C-4E39-AB49-F4922FC1626F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE75BBC5-848C-4E39-AB49-F4922FC1626F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE75BBC5-848C-4E39-AB49-F4922FC1626F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE75BBC5-848C-4E39-AB49-F4922FC1626F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -156,6 +162,7 @@ Global
 		{C728BFD9-4FD3-484B-B4D9-F5DF5F43DBA7} = {56EA1EB7-0FB0-42D6-B301-9BFE7061088D}
 		{ABE7AD3D-4576-45B6-8446-E205765120F5} = {50476E83-616C-4626-99B3-011038C60496}
 		{D47B932B-D907-431E-9FBE-A9446FB0A4D5} = {BDA214A5-916B-47DD-AAC4-51A85D016FAE}
+		{EE75BBC5-848C-4E39-AB49-F4922FC1626F} = {50476E83-616C-4626-99B3-011038C60496}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {635265FD-4132-4AE6-BFE3-2E4C9A812E0B}

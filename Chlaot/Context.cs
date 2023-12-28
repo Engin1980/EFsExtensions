@@ -41,6 +41,10 @@ namespace Chlaot
       module = new Eng.Chlaot.Modules.FailuresModule.FailuresModule();
       TryAddModule(module);
 
+      logHandler.Invoke(LogLevel.INFO, "Loading sim-var-test module...");
+      module = new Eng.Chlaot.Modules.SimVarTestModule.SimVarTestModule();
+      TryAddModule(module);
+
 
       logHandler.Invoke(LogLevel.INFO, "Setting up modules...");
       Modules.ToList().ForEach(q => q.SetUp(

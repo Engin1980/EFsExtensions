@@ -25,6 +25,7 @@
     <ProjectReference Include="..\Modules\ChecklistModule\ChecklistModule.csproj" />
     <ProjectReference Include="..\Modules\CopilotModule\CopilotModule.csproj" />
     <ProjectReference Include="..\Modules\FailuresModule\FailuresModule.csproj" />
+    <ProjectReference Include="..\Modules\SimVarTest\SimVarTestModule.csproj" />
   </ItemGroup>
 
   <ItemGroup>
