@@ -55,7 +55,10 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
 
     private void btnDelete_Click(object sender, RoutedEventArgs e)
     {
+      Button btn = (Button)sender;
+      SimVarCase svc = (SimVarCase)btn.Tag;
 
+      this.context.DeleteSimVar(svc);
     }
   }
 }
