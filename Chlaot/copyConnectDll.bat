@@ -1,0 +1,1 @@
+copy ..\DLLs\SimConnect.dll .\bin\Debug\net6.0-windows\
