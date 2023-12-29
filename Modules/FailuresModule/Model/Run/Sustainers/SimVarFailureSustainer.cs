@@ -11,11 +11,22 @@ namespace FailuresModule.Types.Run.Sustainers
 {
   internal class SimVarFailureSustainer : SimVarBasedFailureSustainer
   {
-    private const uint OK = 0; // from flightsimulator API
-    private const uint FAILED = 1;
+    #region Private Fields
+
+    private readonly SimVarFailureDefinition failure;
+
+    #endregion Private Fields
+
+    #region Public Constructors
+
     public SimVarFailureSustainer(SimVarFailureDefinition failure) : base(failure)
     {
+      this.failure = failure;
     }
+
+    #endregion Public Constructors
+
+    #region Protected Methods
 
     protected override void InitInternal()
     {
@@ -24,17 +35,23 @@ namespace FailuresModule.Types.Run.Sustainers
 
     protected override void ResetInternal()
     {
-      SendEvent(OK);
+      SendEvent(failure.OkValue); // Expected to be 0 typically
     }
 
     protected override void StartInternal()
     {
-      SendEvent(FAILED);
+      SendEvent(failure.FailValue); // Expected to be 1 typically
     }
 
-    private void SendEvent(uint arg)
+    #endregion Protected Methods
+
+    #region Private Methods
+
+    private void SendEvent(double arg)
     {
       base.SendData(arg);
     }
+
+    #endregion Private Methods
   }
 }

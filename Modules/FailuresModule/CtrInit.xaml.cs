@@ -71,7 +71,7 @@ namespace FailuresModule
 
       e.Accepted = fd.Title.ToLower().Contains(filterText)
         || fd.Id.ToLower().Contains(filterText)
-        || fd.SimConPoint.SimPointName.ToLower().Contains(filterText);
+        || fd.SimConPoint.ToLower().Contains(filterText);
     }
 
     private void txtFilter_TextChanged(object sender, TextChangedEventArgs e)

@@ -12,7 +12,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <CollectionViewSource x:Name="cvsFailures" x:Key="cvsFailures" 
-                          Source="{Binding FailureDefinitions}"
+                          Source="{Binding FailureDefinitionsFlat}"
                           Filter="CollectionViewSource_Filter">
     </CollectionViewSource>
     <converters:PercentageToIntConverter x:Key="PercentageToIntConverter" />
@@ -118,7 +118,28 @@
           </TreeView.Resources>
         </TreeView>
       </TabItem>
-      <TabItem Header="Failure Definitions">
+      <TabItem Header="Failure Definitions (tree)">
+        <TreeView ItemsSource="{Binding FailureDefinitions}" >
+          <TreeView.Resources>
+            <HierarchicalDataTemplate DataType="{x:Type modelSim:FailureDefinitionGroup}" ItemsSource="{Binding Items}">
+              <TextBlock Text="{Binding Name}" />
+            </HierarchicalDataTemplate>
+            <HierarchicalDataTemplate DataType="{x:Type modelSim:FailureDefinition}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Title}" />
+                <TextBlock Text=" (id=" />
+                <TextBlock Text="{Binding Id}" />
+                <TextBlock Text=", type=" />
+                <TextBlock Text="{Binding Type}" />
+                <TextBlock Text=", sim-point=" />
+                <TextBlock Text="{Binding SimConPoint}" />
+                <TextBlock Text=")" />
+              </StackPanel>
+            </HierarchicalDataTemplate>
+          </TreeView.Resources>
+        </TreeView>
+      </TabItem>
+      <TabItem Header="Failure Definitions (list)">
         <DockPanel>
           <DockPanel DockPanel.Dock="Top" Margin="0 4 0 4">
             <Label DockPanel.Dock="Left" Content="Filter:" />
@@ -128,8 +149,8 @@
             <DataGrid.Columns>
               <DataGridTextColumn Header="ID" Binding="{Binding Id,Mode=OneWay}" />
               <DataGridTextColumn Header="Label" Binding="{Binding Title,Mode=OneTime}" />
-              <DataGridTextColumn Header="Type" Binding="{Binding TypeName,FallbackValue=N/A}" />
-              <DataGridTextColumn Header="Sim-Point" Binding="{Binding SimConPoint.SimPointName,FallbackValue=N/A}" />
+              <DataGridTextColumn Header="Type" Binding="{Binding Type,FallbackValue=N/A}" />
+              <DataGridTextColumn Header="Sim-Point" Binding="{Binding SimConPoint,FallbackValue=N/A}" />
             </DataGrid.Columns>
           </DataGrid>
         </DockPanel>

@@ -44,7 +44,7 @@ namespace FailuresModule.Model.Run.Sustainers
 
       this.SimCon.DataReceived += SimCon_DataReceived;
 
-      string name = this.Failure.SimConPoint.SimPointName;
+      string name = this.Failure.SimConPoint;
       this.typeId = this.SimCon.RegisterPrimitive<double>(name, DEFAULT_UNIT, DEFAULT_TYPE);
       this.isRegistered = true;
     }

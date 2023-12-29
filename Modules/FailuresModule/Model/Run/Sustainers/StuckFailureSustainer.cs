@@ -14,11 +14,9 @@ namespace FailuresModule.Types.Run.Sustainers
   {
     #region Fields
 
-    private const int UPDATE_TIMER_INTERVAL_MS = 100;
-
     private bool isRunning = false;
-
     private readonly Timer updateTimer;
+    private StuckFailureDefinition failure;
 
     #endregion Fields
 
@@ -36,9 +34,11 @@ namespace FailuresModule.Types.Run.Sustainers
 
     public StuckFailureSustainer(StuckFailureDefinition failure) : base(failure)
     {
-      this.updateTimer = new Timer(UPDATE_TIMER_INTERVAL_MS);
+      this.failure = failure;
+      this.updateTimer = new Timer(this.failure.RefreshIntervalInMs);
       this.updateTimer.Elapsed += UpdateTimer_Elapsed;
       base.DataReceived += StuckFailureSustainer_DataReceived;
+      //TODO is not using "onlyWhenChanged" flag
     }
 
     #endregion Constructors

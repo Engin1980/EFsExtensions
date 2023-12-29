@@ -1,4 +1,5 @@
 ﻿using ESimConnect;
+using ESystem;
 using System;
 using System.Collections.Generic;
 using System.IO.IsolatedStorage;
@@ -18,7 +19,21 @@ namespace FailuresModule.Model.Sim
   {
     private static int ENGINES_COUNT = 4;
 
-    public static List<FailureDefinition> BuildFailures()
+    public static FailureDefinitionGroup BuildFailures()
+    {
+      //List<FailureDefinition> ret = BuildFailuresByCode();
+      FailureDefinitionGroup ret = BuildFailuresFromXml();
+      return ret;
+    }
+
+    private static FailureDefinitionGroup BuildFailuresFromXml()
+    {
+      FailureDefinitionDeserializer des = new FailureDefinitionDeserializer();
+      var ret = des.Deserialize(".\\Xmls\\FailureDefinitions.xml");
+      return ret;
+    }
+
+    private static List<FailureDefinition> BuildFailuresByCode()
     {
       List<FailureDefinition> ret = new();
 
@@ -42,6 +57,7 @@ namespace FailuresModule.Model.Sim
           throw new ApplicationException($"Failed to invoke building method {fun.Name}.", ex);
         }
       }
+
       return ret;
     }
 
@@ -51,7 +67,7 @@ namespace FailuresModule.Model.Sim
 
       for (int i = 1; i <= ENGINES_COUNT; i++)
       {
-        SimVarFailureDefinition f = new($"engFire{i}", $"Engine {i} fire", new VarSimConPoint($"ENG ON FIRE:{i}"));
+        SimVarFailureDefinition f = new($"engFire{i}", $"Engine {i} fire", $"ENG ON FIRE:{i}");
         ret.Add(f);
       }
 
@@ -64,7 +80,7 @@ namespace FailuresModule.Model.Sim
 
       for (int i = 1; i <= ENGINES_COUNT; i++)
       {
-        SimVarFailureDefinition f = new($"engTurbo{i}", $"Engine {i} TurboChanger", new VarSimConPoint($"RECIP ENG TURBOCHARGER FAILED:{i}"));
+        SimVarFailureDefinition f = new($"engTurbo{i}", $"Engine {i} TurboChanger", $"RECIP ENG TURBOCHARGER FAILED:{i}");
         ret.Add(f);
       }
 
@@ -77,7 +93,7 @@ namespace FailuresModule.Model.Sim
 
       for (int i = 1; i <= ENGINES_COUNT; i++)
       {
-        LeakFailureDefinition f = new($"engCoolant{i}", $"Engine {i} Coolant Reservoir", new VarSimConPoint($"RECIP ENG COOLANT RESERVOIR PERCENT:{i}"));
+        LeakFailureDefinition f = new($"engCoolant{i}", $"Engine {i} Coolant Reservoir", $"RECIP ENG COOLANT RESERVOIR PERCENT:{i}");
         ret.Add(f);
       }
 
@@ -90,7 +106,7 @@ namespace FailuresModule.Model.Sim
 
       for (int i = 1; i <= ENGINES_COUNT; i++)
       {
-        EventFailureDefinition tmp = new($"eng{i}", $"Engine {i} Failure", new EventSimConPoint($"TOGGLE_ENGINE{i}_FAILURE"));
+        EventFailureDefinition tmp = new($"eng{i}", $"Engine {i} Failure", $"TOGGLE_ENGINE{i}_FAILURE");
         ret.Add(tmp);
       }
 
@@ -110,7 +126,7 @@ namespace FailuresModule.Model.Sim
       };
 
       var ret = tmp
-        .Select(q => new EventFailureDefinition(q.Id, q.Name, new EventSimConPoint(q.Sim)))
+        .Select(q => new EventFailureDefinition(q.Id, q.Name, q.Sim))
         .Cast<FailureDefinition>()
         .ToList();
 
@@ -137,7 +153,7 @@ namespace FailuresModule.Model.Sim
       };
 
       var ret = vars.ToList()
-        .Select(q => new SimVarFailureDefinition(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+        .Select(q => new SimVarFailureDefinition(q.Id, q.Name, q.Sim))
         .Cast<FailureDefinition>()
         .ToList();
 
@@ -154,7 +170,7 @@ namespace FailuresModule.Model.Sim
       };
 
       var ret = tmp.ToList()
-        .Select(q => new EventFailureDefinition(q.Id, q.Name, new EventSimConPoint(q.Sim)))
+        .Select(q => new EventFailureDefinition(q.Id, q.Name, q.Sim))
         .Cast<FailureDefinition>()
         .ToList();
 
@@ -171,7 +187,7 @@ namespace FailuresModule.Model.Sim
       };
 
       var ret = tmp
-         .Select(q => new LeakFailureDefinition(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+         .Select(q => new LeakFailureDefinition(q.Id, q.Name, q.Sim))
          .Cast<FailureDefinition>()
          .ToList();
 
@@ -188,10 +204,10 @@ namespace FailuresModule.Model.Sim
       };
 
       var ret = tmp.ToList()
-        .Select(q => new StuckFailureDefinition(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+        .Select(q => new StuckFailureDefinition(q.Id, q.Name, q.Sim))
         .Cast<FailureDefinition>()
         .ToList();
-        
+
       return ret;
     }
 
@@ -204,7 +220,7 @@ namespace FailuresModule.Model.Sim
       };
 
       var ret = tmp.ToList()
-        .Select(q => new StuckFailureDefinition(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+        .Select(q => new StuckFailureDefinition(q.Id, q.Name, q.Sim))
         .Cast<FailureDefinition>()
         .ToList();
 
@@ -224,7 +240,7 @@ namespace FailuresModule.Model.Sim
       };
 
       var ret = tmp.ToList()
-        .Select(q => new StuckFailureDefinition(q.Id, q.Name, new VarSimConPoint(q.Sim)))
+        .Select(q => new StuckFailureDefinition(q.Id, q.Name, q.Sim))
         .Cast<FailureDefinition>()
         .ToList();
 

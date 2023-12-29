@@ -12,11 +12,10 @@ namespace FailuresModule.Types.Run.Sustainers
   {
     #region Fields
 
-    private const int MAXIMAL_EXPECTED_NUMBER_OF_TICKS_BEFORE_LEAK_OUT = 100 * 60;
-    private const int MINIMAL_EXPECTED_NUMBER_OF_TICKS_BEFORE_LEAK_OUT = 5 * 60;
     private readonly int expectedNumberOfTicksBeforeLeakOut;
 
     private int simSecondElapsedEventId;
+    private LeakFailureDefinition failure;
 
     #endregion Fields
 
@@ -46,10 +45,13 @@ namespace FailuresModule.Types.Run.Sustainers
 
     public LeakFailureSustainer(LeakFailureDefinition failure) : base(failure)
     {
-      expectedNumberOfTicksBeforeLeakOut = new Random().Next(MINIMAL_EXPECTED_NUMBER_OF_TICKS_BEFORE_LEAK_OUT, MAXIMAL_EXPECTED_NUMBER_OF_TICKS_BEFORE_LEAK_OUT);
+      this.failure = failure;
+
+      expectedNumberOfTicksBeforeLeakOut = new Random().Next(failure.MinimumLeakTicks, failure.MaximumLeakTicks);
       ResetInternal();
       base.DataReceived += LeakFailureSustainer_DataReceived;
-      base.SimCon.EventInvoked += SimCon_EventInvoked;
+      base.SimCon.EventInvoked += SimCon_EventInvoked; 
+      //TODO not using custom refresh leak-tick-ms interval
     }
 
     #endregion Constructors

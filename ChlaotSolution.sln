@@ -29,6 +29,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xsds", "Xsds", "{404576BE-5
 	ProjectSection(SolutionItems) = preProject
 		Xmls\Xsds\ChecklistSchema.xsd = Xmls\Xsds\ChecklistSchema.xsd
 		Xmls\Xsds\CopilotSchema.xsd = Xmls\Xsds\CopilotSchema.xsd
+		Xmls\Xsds\FailureDefinitionSchema.xsd = Xmls\Xsds\FailureDefinitionSchema.xsd
 		Xmls\Xsds\FailureSchema.xsd = Xmls\Xsds\FailureSchema.xsd
 		Xmls\Xsds\Global.xsd = Xmls\Xsds\Global.xsd
 	EndProjectSection
@@ -42,7 +43,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Checklist", "Checklist", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Failures", "Failures", "{10F6197D-30D2-4517-9B58-04E7A9451A95}"
 	ProjectSection(SolutionItems) = preProject
-		Failures-test.fail.xml = Failures-test.fail.xml
+		Xmls\Failures\FailureDefinitions.xml = Xmls\Failures\FailureDefinitions.xml
+		Xmls\Failures\Failures-test.fail.xml = Xmls\Failures\Failures-test.fail.xml
 		Xmls\Failures\Failures.fail.xml = Xmls\Failures\Failures.fail.xml
 	EndProjectSection
 EndProject

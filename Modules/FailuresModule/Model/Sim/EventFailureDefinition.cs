@@ -2,7 +2,7 @@
 {
   public class EventFailureDefinition : FailureDefinition
   {
-    public EventFailureDefinition(string id, string title, SimConPoint simConPoint) : base(id, title, simConPoint)
+    public EventFailureDefinition(string id, string title, string simConPoint) : base(id, title, simConPoint)
     {
     }
 

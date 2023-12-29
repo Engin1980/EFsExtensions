@@ -1,5 +1,6 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using ESystem;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using FailuresModule.Model.App;
@@ -26,11 +27,12 @@ namespace FailuresModule
     {
       this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
-      this.FailureDefinitions = new();
+      this.FailureDefinitionsFlat = new();
       this.BuildFailures();
     }
 
-    public List<FailureDefinition> FailureDefinitions { get; set; }
+    public List<FailureDefinition> FailureDefinitionsFlat { get; set; }
+    public List<FailureDefinitionBase> FailureDefinitions { get; set; }
 
     public IncidentTopGroup FailureSet
     {
@@ -40,7 +42,12 @@ namespace FailuresModule
 
     internal void BuildFailures()
     {
-      this.FailureDefinitions = FailureDefinitionFactory.BuildFailures();
+      var fdg = FailureDefinitionFactory.BuildFailures();
+      FailureDefinitions = fdg.Items;
+      FailureDefinitionsFlat = FailureDefinitions
+        .FlattenRecursively((FailureDefinitionGroup q) => q.Items)
+        .Cast<FailureDefinition>()
+        .ToList();
     }
 
     public void LoadFile(string xmlFile)
@@ -55,7 +62,7 @@ namespace FailuresModule
         try
         {
           doc = XDocument.Load(xmlFile, LoadOptions.SetLineInfo);
-          EXml<IncidentTopGroup> exml = Deserialization.CreateDeserializer(this.FailureDefinitions, this.logHandler);
+          EXml<IncidentTopGroup> exml = Deserialization.CreateDeserializer(this.FailureDefinitionsFlat, this.logHandler);
           tmp = exml.Deserialize(doc);
         }
         catch (Exception ex)
@@ -66,7 +73,7 @@ namespace FailuresModule
         logHandler.Invoke(LogLevel.INFO, $"Checking sanity");
         try
         {
-          SanityChecker.CheckSanity(tmp, this.FailureDefinitions);
+          SanityChecker.CheckSanity(tmp, this.FailureDefinitionsFlat);
         }
         catch (Exception ex)
         {
