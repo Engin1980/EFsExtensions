@@ -5,40 +5,95 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Eng.Chlaot.Modules.SimVarTestModule"
              xmlns:controls="clr-namespace:Eng.Chlaot.Modules.SimVarTestModule.Controls"
+             xmlns:localModel="clr-namespace:SimVarTestModule.Model"
              xmlns:globalConverters="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <globalConverters:DoubleFormatter x:Key="DoubleFormatter" />
   </UserControl.Resources>
-  <DockPanel>
-    <DockPanel DockPanel.Dock="Top" >
-      <Label DockPanel.Dock="Left">SimVar name:</Label>
-      <Button DockPanel.Dock="Right" x:Name="btnNewSimVar" Click="btnNewSimVar_Click" Padding="16,0,16,0">Append</Button>
-      <Label DockPanel.Dock="Right">
-        <StackPanel Orientation="Horizontal">
-          <Grid>
-            <CheckBox x:Name="chkNewSimVarValidate" IsChecked="True" Content="Validate">
-            </CheckBox>
-          </Grid>
-        </StackPanel>
-      </Label>
-      <TextBox x:Name="txtNewSimVar" />
-    </DockPanel>
-    <ScrollViewer>
-      <ListView ItemsSource="{Binding Cases}" >
-        <ListView.ItemTemplate>
-          <DataTemplate>
-            <StackPanel Orientation="Horizontal" Margin="32">
-              <TextBlock Text="{Binding SimVar}" />
-              <TextBlock Text="=" />
-              <TextBlock Text="{Binding Value, Converter={StaticResource DoubleFormatter}, ConverterParameter=N7}" />
-              <controls:NewValue Tag="{Binding}"  NewValueRequested="NewValue_NewValueRequested" />
-              <Button x:Name="btnDelete" Tag="{Binding}" Content=" (X) " Margin="8,0,0,0" Click="btnDelete_Click" />
+  <TabControl x:Name="tab">
+    <TabItem Header="SimVars" x:Name="tabSimVars" >
+      <DockPanel>
+        <DockPanel DockPanel.Dock="Top" >
+          <Label DockPanel.Dock="Left">SimVar name:</Label>
+          <Button DockPanel.Dock="Right" x:Name="btnNewSimVar" Click="btnNewSimVar_Click" Padding="16,0,16,0">Append</Button>
+          <Label DockPanel.Dock="Right">
+            <StackPanel Orientation="Horizontal">
+              <Grid>
+                <CheckBox x:Name="chkNewSimVarValidate" IsChecked="True" Content="Validate">
+                </CheckBox>
+              </Grid>
             </StackPanel>
-          </DataTemplate>
-        </ListView.ItemTemplate>
-      </ListView>
-    </ScrollViewer>
-  </DockPanel>
+          </Label>
+          <TextBox x:Name="txtNewSimVar" />
+        </DockPanel>
+        <ScrollViewer>
+          <ListView ItemsSource="{Binding Cases}" >
+            <ListView.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Orientation="Horizontal" Margin="32">
+                  <TextBlock Text="{Binding SimVar}" />
+                  <TextBlock Text="=" />
+                  <TextBlock Text="{Binding Value, Converter={StaticResource DoubleFormatter}, ConverterParameter=N7}" />
+                  <controls:NewValue Tag="{Binding}"  NewValueRequested="NewValue_NewValueRequested" />
+                  <Button x:Name="btnDelete" Tag="{Binding}" Content=" (X) " Margin="8,0,0,0" Click="btnDelete_Click" />
+                </StackPanel>
+              </DataTemplate>
+            </ListView.ItemTemplate>
+          </ListView>
+        </ScrollViewer>
+      </DockPanel>
+    </TabItem>
+    <TabItem Header="Predefined SimVars" >
+      <TreeView ItemsSource="{Binding PredefinedSimVars}">
+        <TreeView.Resources>
+          <HierarchicalDataTemplate DataType="{x:Type localModel:StringGroupList}" ItemsSource="{Binding Items}">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="{Binding Title}" />
+            </StackPanel>
+          </HierarchicalDataTemplate>
+          <HierarchicalDataTemplate DataType="{x:Type localModel:StringGroupValue}">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock x:Name="txtSimVarValue" Text="{Binding Value}" MouseDown="txtSimVarValue_MouseDown" />
+            </StackPanel>
+          </HierarchicalDataTemplate>
+        </TreeView.Resources>
+      </TreeView>
+    </TabItem>
+    <TabItem Header="SimEvents" x:Name="tabSimEvents">
+      <DockPanel>
+        <DockPanel DockPanel.Dock="Top">
+          <Label DockPanel.Dock="Left" Content="SimEvent:" />
+          <Button x:Name="btnSendSimEvent" DockPanel.Dock="Right" Content="Send" Click="btnSendSimEvent_Click" />
+          <TextBox x:Name="txtSimEvent" />
+        </DockPanel>
+        <ScrollViewer>
+          <ListView x:Name="lstAppliedSimEvents" ItemsSource="{Binding AppliedSimEvents}">
+            <ListView.ItemTemplate>
+              <DataTemplate>
+                <TextBlock x:Name="txtAppliedSimVar" Text="{Binding}" MouseDown="txtAppliedSimVar_MouseDown" />
+              </DataTemplate>
+            </ListView.ItemTemplate>
+          </ListView>
+        </ScrollViewer>
+      </DockPanel>
+    </TabItem>
+    <TabItem Header="Predefined SimEvents" >
+      <TreeView ItemsSource="{Binding PredefinedSimEvents}">
+        <TreeView.Resources>
+          <HierarchicalDataTemplate DataType="{x:Type localModel:StringGroupList}" ItemsSource="{Binding Items}">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="{Binding Title}" />
+            </StackPanel>
+          </HierarchicalDataTemplate>
+          <HierarchicalDataTemplate DataType="{x:Type localModel:StringGroupValue}">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock x:Name="txtSimEventValue" Text="{Binding Value}" MouseDown="txtSimEventValue_MouseDown" />
+            </StackPanel>
+          </HierarchicalDataTemplate>
+        </TreeView.Resources>
+      </TreeView>
+    </TabItem>
+  </TabControl>
 </UserControl>

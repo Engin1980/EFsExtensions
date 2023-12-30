@@ -60,5 +60,36 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
 
       this.context.DeleteSimVar(svc);
     }
+
+    private void txtSimEventValue_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+      if (e.RightButton != MouseButtonState.Pressed) return;
+      TextBlock txt = (TextBlock)sender;
+      txtSimEvent.Text = txt.Text;
+      tab.SelectedIndex = 2;
+    }
+
+    private void txtSimVarValue_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+      if (e.RightButton != MouseButtonState.Pressed) return;
+      TextBlock txt = (TextBlock)sender;
+      txtNewSimVar.Text = txt.Text;
+      tab.SelectedItem = tabSimVars;
+    }
+
+    private void txtAppliedSimVar_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+      if (e.RightButton != MouseButtonState.Pressed) return;
+      TextBlock txt = (TextBlock)sender;
+      txtSimEvent.Text = txt.Text;
+      tab.SelectedIndex = 0;
+    }
+
+    private void btnSendSimEvent_Click(object sender, RoutedEventArgs e)
+    {
+      TextBlock txt = (TextBlock)sender;
+      this.context.SendEvent(txt.Text);
+      this.context.AppliedSimEvents.Add(txt.Text);
+    }
   }
 }

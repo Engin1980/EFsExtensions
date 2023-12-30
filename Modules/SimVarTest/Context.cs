@@ -1,9 +1,14 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using ESimConnect;
 using ESystem;
+using ESystem.Exceptions;
+using Microsoft.Windows.Themes;
+using SimVarTestModule.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -14,6 +19,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
 {
   public class Context : NotifyPropertyChangedBase
   {
+
     private readonly Action onReadySet;
     private ESimConnect.ESimConnect simCon = null!;
     private Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.SimConWrapperWithSimSecond simConWrapper = null!;
@@ -21,6 +27,11 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
     private readonly List<SimVarId> SimVarIds = new();
 
     public BindingList<SimVarCase> Cases { get; } = new();
+    public List<IStringGroupItem> PredefinedSimVars { get; private set; }
+    public List<IStringGroupItem> PredefinedSimEvents { get; private set; }
+
+    public BindingList<string> AppliedSimEvents { get; } = new();
+
 
     public bool? IsEnabled
     {
@@ -35,6 +46,35 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
     public Context(Action onReadySet)
     {
       this.onReadySet = onReadySet;
+      this.PredefinedSimVars = DecodePredefinedSimVarSet(typeof(SimVars));
+      this.PredefinedSimEvents = DecodePredefinedSimVarSet(typeof(SimEvents));
+    }
+
+    private static List<IStringGroupItem> DecodePredefinedSimVarSet(Type baseType)
+    {
+      List<IStringGroupItem> ret = new();
+      void analyseClass(Type type, List<IStringGroupItem> lst)
+      {
+        var nestedTypes = type.GetNestedTypes().Where(q => q.IsClass);
+        foreach (var nestedType in nestedTypes)
+        {
+          StringGroupList sgl = new StringGroupList() { Title = nestedType.Name };
+          analyseClass(nestedType, sgl.Items);
+          ret.Add(sgl);
+        }
+
+        var constFields = type.GetFields().Where(q => q.IsLiteral && q.FieldType == typeof(string));
+        foreach (var constField in constFields)
+        {
+          var val = constField.GetValue(null) ?? throw new UnexpectedNullException();
+          string s = (string)val;
+          lst.Add(new StringGroupValue(s));
+        }
+      };
+
+      analyseClass(baseType, ret);
+
+      return ret;
     }
 
     public void Connect()
@@ -96,9 +136,14 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
 
     internal void DeleteSimVar(SimVarCase svc)
     {
-      SimVarId sid = SimVarIds.First(q=>q.Case == svc);
+      SimVarId sid = SimVarIds.First(q => q.Case == svc);
       SimVarIds.Remove(sid);
-      this.Cases.Remove(svc); 
+      this.Cases.Remove(svc);
+    }
+
+    internal void SendEvent(string eventName)
+    {
+      this.simCon.SendClientEvent(eventName);
     }
   }
 }
