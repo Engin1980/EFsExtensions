@@ -1,5 +1,7 @@
 ﻿using FailuresModule.Converters;
+using FailuresModule.Model.App;
 using FailuresModule.Model.Sim;
+using FailuresModule.Types.Run;
 using FailuresModule.Types.Run.Sustainers;
 using System;
 using System.Collections.Generic;
@@ -53,6 +55,42 @@ namespace FailuresModule
         context.Sustainers.Add(fs);
         fs.Start();
       }
+    }
+
+    private void btnFireIncident_Click(object sender, RoutedEventArgs e)
+    {
+      Button btn = (Button)sender;
+      RunIncidentDefinition runIncidentDefinition = (RunIncidentDefinition)btn.Tag;
+      this.context.FireIncidentDefinition(runIncidentDefinition);
+    }
+
+    private void btnFireFailure_Click(object sender, RoutedEventArgs e)
+    {
+      Button btn = (Button)sender;
+      FailId f = (FailId)btn.Tag;
+      context.FireFail(f);
+    }
+
+    private void btnFailureCancel_Click(object sender, RoutedEventArgs e)
+    {
+      Button btn = (Button)sender;
+      FailureSustainer fs = (FailureSustainer)btn.Tag;
+      context.CancelFailure(fs);
+    }
+
+    private void btnLeakFailureCancel_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void btnSimVarFailureCancel_Click(object sender, RoutedEventArgs e)
+    {
+
+    }
+
+    private void btnStuckFailureCancel_Click(object sender, RoutedEventArgs e)
+    {
+
     }
   }
 }

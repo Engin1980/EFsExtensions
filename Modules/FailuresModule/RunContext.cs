@@ -142,7 +142,7 @@ namespace FailuresModule
 
         List<FailId> failItems = PickFailItems(runIncidentDefinition);
         List<FailureDefinition> failDefs = failItems.Select(q => this.FailureDefinitions.First(p => q.Id == p.Id)).ToList();
-        InitializeFailures(failDefs);
+        StartFailures(failDefs);
       }
     }
 
@@ -184,7 +184,7 @@ namespace FailuresModule
       return ret;
     }
 
-    private void InitializeFailures(List<FailureDefinition> failures)
+    private void StartFailures(List<FailureDefinition> failures)
     {
       foreach (var failure in failures)
       {
@@ -273,6 +273,31 @@ namespace FailuresModule
         propertyValues["realTimeMinuteLastDigit"] = now.Minute % 10;
         EvaluateAndFireFailures();
       }
+    }
+
+    internal void FireIncidentDefinition(RunIncidentDefinition runIncidentDefinition)
+    {
+      var tmp = PickFailItems(runIncidentDefinition);
+      var lst = tmp
+        .Select(q => this.FailureDefinitions.First(p => q.Id == p.Id))
+        .ToList();
+      StartFailures(lst);
+    }
+
+    internal void FireFail(FailId f)
+    {
+      FailureDefinition fd = this.FailureDefinitions.First(q => q.Id == f.Id);
+      List<FailureDefinition> fds = new()
+      {
+        fd
+      };
+      StartFailures(fds);
+    }
+
+    internal void CancelFailure(FailureSustainer fs)
+    {
+      fs.Reset();
+      this.Sustainers.Remove(fs);
     }
 
     #endregion Methods

@@ -38,7 +38,7 @@
                       <TextBlock Text="Inactive" />
                     </StackPanel>
                   </Label>
-                  <Button Content="Toggle state" />
+                  <Button x:Name="btnFireIncident" Content="Fire" Tag="{Binding}" Click="btnFireIncident_Click" />
                 </StackPanel>
                 <TreeViewItem ItemsSource="{Binding IncidentDefinition.Variables}" Foreground="Green">
                   <TreeViewItem.Header>
@@ -126,6 +126,7 @@
                   <TextBlock Text=", weight=" />
                   <TextBlock Text="{Binding Weight}" />
                   <TextBlock Text=")" />
+                  <Button x:Name="btnFireFailure" Content="Fire" Tag="{Binding}" Click="btnFireFailure_Click" />
                 </StackPanel>
               </Label>
             </HierarchicalDataTemplate>
@@ -146,7 +147,7 @@
                       <TextBlock Text=", type="  FontSize="12"/>
                       <TextBlock Text="{Binding Type}"  FontSize="12"/>
                       <TextBlock Text=", sim="  FontSize="12"/>
-                      <TextBlock Text="{Binding SimConPoint.SimVar}" FontSize="12"/>
+                      <TextBlock Text="{Binding SimConPoint}" FontSize="12"/>
                       <TextBlock Text=", state="  FontSize="12"/>
                       <TextBlock Text="{Binding Id, 
                         Converter={StaticResource FailureDefinitionActiveToBoolConverter},
@@ -180,7 +181,8 @@
                       <TextBlock Text="{Binding Failure.Title}" />
                       <TextBlock Text=" (event, id=" />
                       <TextBlock Text="{Binding Failure.Id}" />
-                      <TextBlock Text=")" />
+                      <TextBlock Text=") " />
+                      <Button x:Name="btnEventFailureCancel" Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
                     </StackPanel>
                   </Label>
                 </StackPanel>
@@ -198,7 +200,8 @@
                       <TextBlock Text="{Binding CurrentValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter='N3'}" />
                       <TextBlock Text=", leak/tick=" />
                       <TextBlock Text="{Binding LeakPerTick, Converter={StaticResource DoubleToStringConverter}, ConverterParameter='N5'}" />
-                      <TextBlock Text=")" />
+                      <TextBlock Text=") " />
+                      <Button x:Name="btnLeakFailureCancel" Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
                     </StackPanel>
                   </Label>
                 </StackPanel>
@@ -210,7 +213,8 @@
                       <TextBlock Text="{Binding Failure.Title}" />
                       <TextBlock Text=" (simVar, id=" />
                       <TextBlock Text="{Binding Failure.Id}" />
-                      <TextBlock Text=")" />
+                      <TextBlock Text=") " />
+                      <Button x:Name="btnSimVarFailureCancel" Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
                     </StackPanel>
                   </Label>
                 </StackPanel>
@@ -224,7 +228,8 @@
                       <TextBlock Text="{Binding Failure.Id}" />
                       <TextBlock Text=", stuckValue=" />
                       <TextBlock Text="{Binding StuckValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter='N5'}" />
-                      <TextBlock Text=")" />
+                      <TextBlock Text=") " />
+                      <Button x:Name="btnStuckFailureCancel" Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
                     </StackPanel>
                   </Label>
                 </StackPanel>
