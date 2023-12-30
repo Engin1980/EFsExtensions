@@ -43,7 +43,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Checklist", "Checklist", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Failures", "Failures", "{10F6197D-30D2-4517-9B58-04E7A9451A95}"
 	ProjectSection(SolutionItems) = preProject
+		Xmls\Failures\Baron_SteamGauge.fail.xml = Xmls\Failures\Baron_SteamGauge.fail.xml
 		Xmls\Failures\FailureDefinitions.xml = Xmls\Failures\FailureDefinitions.xml
+		Xmls\Failures\C172_gauge.fail.xml = Xmls\Failures\C172_gauge.fail.xml
 		Xmls\Failures\Failures-test.fail.xml = Xmls\Failures\Failures-test.fail.xml
 		Xmls\Failures\Failures.fail.xml = Xmls\Failures\Failures.fail.xml
 	EndProjectSection
@@ -85,7 +87,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimDataCapturer", "SimDataC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESystem", "ESystem\ESystem.csproj", "{D47B932B-D907-431E-9FBE-A9446FB0A4D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimVarTestModule", "Modules\SimVarTest\SimVarTestModule.csproj", "{EE75BBC5-848C-4E39-AB49-F4922FC1626F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimVarTestModule", "Modules\SimVarTest\SimVarTestModule.csproj", "{EE75BBC5-848C-4E39-AB49-F4922FC1626F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -27,7 +27,7 @@ namespace FailuresModule.Model.App
 
         public override string ToString()
         {
-            return (int)(value * 100) + "%";
+            return (value * 100) + "%";
         }
     }
 }

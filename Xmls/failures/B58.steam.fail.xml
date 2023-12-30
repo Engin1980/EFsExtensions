@@ -1,0 +1,111 @@
+<failureDefinitions
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://chlaot.org/failures.xsd"
+        xmlns:g ="http://chlaot.org/global.xsd"
+        xsi:noNamespaceSchemaLocation="file://./Xsds/FailureSchema.xsd">
+  <metaInfo>
+    <g:label>Default failures for SteamGauge Baron G58</g:label>
+    <g:author>Marek Vajgl</g:author>
+    <g:description></g:description>
+  </metaInfo>
+  <group title="Failures">
+    <incident title="bird-strike" repetitive="false">
+      <variables>
+        <g:randomVariable name="vFail" minimum="30" maximum="110"/>
+      </variables>
+      <triggers>
+        <trigger probability="0.05" repetitive="false">
+          <g:property name="ias" direction="passing" expression="{vFail}"/>
+        </trigger>
+      </triggers>
+      <failures selection="one">
+        <failure id="eng1"/>
+        <failure id="eng2"/>
+        <failures selection="all" weight="0.1">
+          <failure id="eng1" />
+          <failure id="eng2" />
+        </failures>
+      </failures>
+    </incident>
+    <group title="Common failures">
+      <group title="System failures">
+        <incident title="Internal systems" repetitive="true">
+          <variables>
+            <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
+            <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
+          </variables>
+          <triggers>
+            <trigger probability="0.0005" repetitive="true">
+              <g:and>
+                <g:property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
+                <g:property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
+              </g:and>
+            </trigger>
+          </triggers>
+          <failures selection="one">
+            <failure id="vacuum"/>
+            <failure id="electrical"/>
+            <failure id="pitot"/>
+            <failure id="static_port"/>
+            <failure id="hydraulics"/>
+          </failures>
+        </incident>
+      </group>
+      <group title="Panel failures">
+        <incident title="Panel failure" repetitive="true">
+          <variables>
+            <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
+            <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
+          </variables>
+          <triggers>
+            <trigger probability="0.0005" repetitive="true">
+              <g:and>
+                <g:property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
+                <g:property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
+              </g:and>
+            </trigger>
+          </triggers>
+          <failures selection="one">
+            <failure id="pnlAirspeed"/>
+            <failure id="pnlAltimeter"/>
+            <failure id="pnlAttitude"/>
+            <failure id="pnlCompass"/>
+            <failure id="pnlVS"/>
+          </failures>
+        </incident>
+      </group>
+      <incident title="Brake failures" repetitive="false">
+        <triggers>
+          <trigger probability="0.05" repetitive="false">
+            <g:property name="height" direction="passingDown" expression="100"/>
+          </trigger>
+        </triggers>
+        <failures selection="one">
+          <failure id="brakeAll"/>
+          <failure id="brakeLeft"/>
+          <failure id="brakeRight"/>
+        </failures>
+      </incident>
+      <incident title="Gear failure" repetitive="false">
+        <triggers>
+          <trigger probability="0.03" repetitive="true">
+            <g:or>
+              <g:property name="ias" direction="passingUp" expression="50"/>
+              <g:property name="height" direction="passingDown" expression="2500"/>
+            </g:or>
+          </trigger>
+        </triggers>
+        <failures selection="one">
+          <failure id="gearLeft"/>
+          <failure id="gearRight"/>
+          <failure id="gearCenter"/>
+          <failures selection="all">
+            <failure id="gearLeft"/>
+            <failure id="gearRight"/>
+            <failure id="gearCenter"/>
+          </failures>
+        </failures>
+      </incident>
+    </group>
+  </group>
+</failureDefinitions>

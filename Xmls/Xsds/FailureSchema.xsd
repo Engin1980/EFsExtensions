@@ -58,7 +58,7 @@
   <xsd:complexType name="failGroup">
     <xsd:choice>
       <xsd:element name="failure" type="failure" minOccurs="0" maxOccurs="unbounded"/>
-      <xsd:element name="failGroup" type="failGroup" minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="failures" type="failGroup" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:choice>
     <xsd:attribute name="selection" type="failGroupSelector" use="required"/>
     <xsd:attribute name="weight" type="xsd:double" use="optional"/>
