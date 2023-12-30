@@ -75,8 +75,8 @@
     <xsd:attribute name="name" type="stateCheckPropertyName" use="required"/>
     <xsd:attribute name="nameIndex" type="xsd:integer" use="optional" />
     <xsd:attribute name="direction" type="stateCheckPropertyDirection" use="required" />
-    <xsd:attribute name="value" type="stateCheckPropertyValue" use="optional"/>
-    <xsd:attribute name="randomize" type="stateCheckPropertyValueDeviation" use="optional"/>
+    <xsd:attribute name="expression" type="stateCheckPropertyValue" use="optional"/>
+    <xsd:attribute name="randomness" type="stateCheckPropertyValueDeviation" use="optional"/>
     <xsd:attribute name="sensitivity" type="stateCheckPropertyValueDeviation" use="optional" />
   </xsd:complexType>
 
@@ -136,6 +136,7 @@
     <xsd:attribute name="minimum" type="xsd:double" use="required"/>
     <xsd:attribute name="maximum" type="xsd:double" use="required"/>
     <xsd:attribute name="description" type="xsd:string" use="optional" />
+    <xsd:attribute name="isInteger" type="xsd:boolean" use="optional" default="false" />
   </xsd:complexType>
 
   <xsd:complexType name="userVariable">

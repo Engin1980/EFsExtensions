@@ -1,6 +1,7 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions;
 using ESystem;
+using ESystem.Asserting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,8 +20,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel
       internal double GetValue(double value)
       {
         double ret = IsPercentage
-          ? value * ((100 + this.Value) / 100)
-          : value;
+          ? value * this.Value / 100
+          : this.Value;
         return ret;
       }
     }
@@ -49,6 +50,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel
     {
       Above = above ?? throw new ArgumentNullException(nameof(above));
       Below = below ?? throw new ArgumentNullException(nameof(below));
+      EAssert.IsTrue(Above.Value >= 0);
+      EAssert.IsTrue(Below.Value >= 0);
     }
 
     public static StateCheckPropertyDeviation Parse(string text)

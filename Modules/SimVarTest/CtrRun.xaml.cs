@@ -82,14 +82,14 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
       if (e.RightButton != MouseButtonState.Pressed) return;
       TextBlock txt = (TextBlock)sender;
       txtSimEvent.Text = txt.Text;
-      tab.SelectedIndex = 0;
+      tab.SelectedIndex = 2;
     }
 
     private void btnSendSimEvent_Click(object sender, RoutedEventArgs e)
     {
-      TextBlock txt = (TextBlock)sender;
-      this.context.SendEvent(txt.Text);
-      this.context.AppliedSimEvents.Add(txt.Text);
+      string txt = txtSimEvent.Text;
+      this.context.SendEvent(txt);
+      this.context.AppliedSimEvents.Add(txt);
     }
   }
 }

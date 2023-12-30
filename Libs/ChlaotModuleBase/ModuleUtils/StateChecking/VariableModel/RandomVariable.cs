@@ -12,6 +12,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel
     public double Minimum { get; set; }
     public double Maximum { get; set; }
 
+    public bool IsInteger { get; set; } = false;
+
     public override double Value
     {
       get
@@ -20,6 +22,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel
         if (ret == null)
         {
           ret = Minimum + rnd.NextDouble() * (Maximum - Minimum);
+          if (IsInteger)
+            ret = Math.Round(ret.Value);
           base.UpdateProperty(nameof(Value), ret, true);
         }
         return ret.Value;

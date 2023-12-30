@@ -83,17 +83,16 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     private IStateCheckItem DeserializePropertyFromElement(XElement element, Type targetType, EXmlContext context)
     {
       var deser = new ObjectElementDeserializer()
-        .WithIgnoredProperty("DisplayName")
-        .WithIgnoredProperty("DisplayString")
-        .WithCustomPropertyDeserialization("randomize", (e, t, p, c) =>
+        .WithIgnoredProperty(nameof(StateCheckProperty.DisplayString))
+        .WithCustomPropertyDeserialization(nameof(StateCheckProperty.Randomness), (e, t, p, c) =>
         {
-          string tmp = e.Attribute("randomize")?.Value ?? "0";
+          string tmp = e.Attribute("randomness")?.Value ?? "+-0";
           StateCheckPropertyDeviation scpd = StateCheckPropertyDeviation.Parse(tmp);
           EXmlHelper.SetPropertyValue(p, t, scpd);
         })
-        .WithCustomPropertyDeserialization("sensitivity", (e, t, p, c) =>
+        .WithCustomPropertyDeserialization(nameof(StateCheckProperty.Sensitivity), (e, t, p, c) =>
         {
-          string tmp = e.Attribute("sensitivity")?.Value ?? "0";
+          string tmp = e.Attribute("sensitivity")?.Value ?? "+-10%";
           StateCheckPropertyDeviation scpd = StateCheckPropertyDeviation.Parse(tmp);
           EXmlHelper.SetPropertyValue(p, t, scpd);
         });

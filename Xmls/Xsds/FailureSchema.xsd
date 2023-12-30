@@ -11,7 +11,7 @@
   <xsd:element name="failureDefinitions">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="meta" minOccurs="1" maxOccurs="1" type="g:metaData"/>
+        <xsd:element name="metaInfo" minOccurs="1" maxOccurs="1" type="g:metaData"/>
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
           <xsd:element name="group" type="group"/>
           <xsd:element name="incident" type="incident"/>
@@ -19,8 +19,6 @@
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>
-
-  <xsd:element name="group" type="group"/>
 
   <xsd:complexType name="group">
     <xsd:choice minOccurs="0" maxOccurs="unbounded">
@@ -39,8 +37,6 @@
     <xsd:attribute name="title" type="g:nonemptyString" use="required"/>
     <xsd:attribute name="repetitive" type="xsd:boolean" use="required"/>
   </xsd:complexType>
-
-
 
   <xsd:complexType name="triggers">
     <xsd:sequence minOccurs="1" maxOccurs="unbounded">

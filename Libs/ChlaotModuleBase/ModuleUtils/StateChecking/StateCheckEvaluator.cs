@@ -125,8 +125,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     private double ApplyPropertyRandomness(StateCheckProperty property, double value)
     {
       var randomness = property.Randomness;
-      double absUpper = randomness.Above.GetValue(value);
-      double absLower = randomness.Below.GetValue(value);
+      double absUpper = value + randomness.Above.GetValue(value);
+      double absLower = value + randomness.Below.GetValue(value);
       double ret = random.NextDouble(absLower, absUpper);
       return ret;
     }
@@ -270,8 +270,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 
     private (double, double) ExtractPropertySensitivity(StateCheckProperty property, double value)
     {
-      double max = property.Sensitivity.Above.GetValue(value);
-      double min = property.Sensitivity.Below.GetValue(value);
+      double max = value + property.Sensitivity.Above.GetValue(value);
+      double min = value - property.Sensitivity.Below.GetValue(value);
       return (min, max);
     }
     private void Log(IStateCheckItem property, string msg, bool ret)

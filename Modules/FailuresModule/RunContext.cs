@@ -68,7 +68,7 @@ namespace FailuresModule
       FailureDefinitions = failureDefinitions;
       Incidents = incidents;
       Sustainers = new();
-      Sustainers.ListChanged += (s,e)=>this.SustainersCount=Sustainers.Count;
+      Sustainers.ListChanged += (s, e) => this.SustainersCount = Sustainers.Count;
     }
 
     #endregion Constructors
@@ -158,10 +158,12 @@ namespace FailuresModule
         bool isConditionTrue = IsTriggerConditionTrue(sce, trigger.Condition);
         if (isConditionTrue)
         {
-          double prob = random.NextDouble();
-          isActivated = prob <= trigger.Probability;
           if (trigger.Repetitive == false)
             incident.OneShotTriggersInvoked.Add(trigger);
+
+          double prob = random.NextDouble();
+          isActivated = prob <= trigger.Probability;
+          if (isActivated) return;
         }
       }
     }

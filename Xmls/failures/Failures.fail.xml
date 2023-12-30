@@ -32,13 +32,13 @@
       <group title="System failures">
         <incident title="Internal systems" repetitive="true">
           <variables>
-            <randomVariable minimum="0" maximum="59" name="secondValue" />
-            <randomVariable minimum="0" maximum="9" name="minuteValue" />
+            <randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true"/>
+            <randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
           </variables>
           <triggers>
             <trigger probability="0.0005" repetitive="true">
               <and xmlns="http://chlaot.org/global.xsd">
-                <property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
+                
                 <property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
               </and>
             </trigger>
