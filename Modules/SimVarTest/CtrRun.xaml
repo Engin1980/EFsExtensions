@@ -29,13 +29,13 @@
       <ListView ItemsSource="{Binding Cases}" >
         <ListView.ItemTemplate>
           <DataTemplate>
-            <StackPanel Orientation="Horizontal">
-              <Label Content="{Binding SimVar}" />
-              <Label Content="=" />
-              <Label Content="{Binding Value, Converter={StaticResource DoubleFormatter}, ConverterParameter=N7}" />
+            <StackPanel Orientation="Horizontal" Margin="32">
+              <TextBlock Text="{Binding SimVar}" />
+              <TextBlock Text="=" />
+              <TextBlock Text="{Binding Value, Converter={StaticResource DoubleFormatter}, ConverterParameter=N7}" />
               <controls:NewValue Tag="{Binding}"  NewValueRequested="NewValue_NewValueRequested" />
               <Button x:Name="btnDelete" Tag="{Binding}" Content=" (X) " Margin="8,0,0,0" Click="btnDelete_Click" />
-            </StackPanel> 
+            </StackPanel>
           </DataTemplate>
         </ListView.ItemTemplate>
       </ListView>

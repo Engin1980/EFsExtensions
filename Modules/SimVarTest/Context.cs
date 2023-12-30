@@ -98,6 +98,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
     {
       SimVarId sid = SimVarIds.First(q=>q.Case == svc);
       SimVarIds.Remove(sid);
+      this.Cases.Remove(svc); 
     }
   }
 }
