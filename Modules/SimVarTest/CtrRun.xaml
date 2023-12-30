@@ -32,7 +32,7 @@
           <ListView ItemsSource="{Binding Cases}" >
             <ListView.ItemTemplate>
               <DataTemplate>
-                <StackPanel Orientation="Horizontal" Margin="32">
+                <StackPanel Orientation="Horizontal">
                   <TextBlock Text="{Binding SimVar}" />
                   <TextBlock Text="=" />
                   <TextBlock Text="{Binding Value, Converter={StaticResource DoubleFormatter}, ConverterParameter=N7}" />

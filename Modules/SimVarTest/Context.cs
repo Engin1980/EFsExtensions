@@ -47,7 +47,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
     {
       this.onReadySet = onReadySet;
       this.PredefinedSimVars = DecodePredefinedSimVarSet(typeof(SimVars));
-      this.PredefinedSimEvents = DecodePredefinedSimVarSet(typeof(SimEvents));
+      this.PredefinedSimEvents = DecodePredefinedSimVarSet(typeof(SimClientEvents));
     }
 
     private static List<IStringGroupItem> DecodePredefinedSimVarSet(Type baseType)
@@ -60,7 +60,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
         {
           StringGroupList sgl = new StringGroupList() { Title = nestedType.Name };
           analyseClass(nestedType, sgl.Items);
-          ret.Add(sgl);
+          lst.Add(sgl);
         }
 
         var constFields = type.GetFields().Where(q => q.IsLiteral && q.FieldType == typeof(string));
