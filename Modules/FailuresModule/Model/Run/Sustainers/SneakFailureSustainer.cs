@@ -3,6 +3,7 @@ using Eng.Chlaot.ChlaotModuleBase;
 using FailuresModule.Model.Sim;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,28 +12,21 @@ namespace FailuresModule.Model.Run.Sustainers
 {
   internal class SneakFailureSustainer : SimVarBasedFailureSustainer
   {
-    private int simSecondElapsedEventId;
-    private readonly SneakFailureDefinition failure;
-    private readonly FailureDefinition finalFailure;
+    #region Events
 
     private event Action<SneakFailureSustainer>? Finished;
 
+    #endregion Events
 
-    public double LastSimValue
-    {
-      get => base.GetProperty<double>(nameof(LastSimValue))!;
-      set => base.UpdateProperty(nameof(LastSimValue), value);
-    }
+    #region Fields
 
+    private static Random rnd = new Random();
+    private readonly SneakFailureDefinition failure;
+    private int simSecondElapsedEventId;
 
-    public double LastForcedValue
-    {
-      get => base.GetProperty<double>(nameof(LastForcedValue))!;
-      set => base.UpdateProperty(nameof(LastForcedValue), value);
-    }
+    #endregion Fields
 
-    public double SneakAdjustPerTick { get; set; }
-
+    #region Properties
 
     public double CurrentSneak
     {
@@ -40,16 +34,42 @@ namespace FailuresModule.Model.Run.Sustainers
       set => base.UpdateProperty(nameof(CurrentSneak), value);
     }
 
+    public double LastForcedValue
+    {
+      get => base.GetProperty<double>(nameof(LastForcedValue))!;
+      set => base.UpdateProperty(nameof(LastForcedValue), value);
+    }
 
-    public SneakFailureSustainer(SneakFailureDefinition failure, FailureDefinition finalFailure) : base(failure)
+    public double LastSimValue
+    {
+      get => base.GetProperty<double>(nameof(LastSimValue))!;
+      set => base.UpdateProperty(nameof(LastSimValue), value);
+    }
+    public double SneakAdjustPerTick { get; set; }
+
+    #endregion Properties
+
+    #region Constructors
+
+    public SneakFailureSustainer(SneakFailureDefinition failure) : base(failure)
     {
       this.failure = failure;
-      this.finalFailure = finalFailure;
+      this.SneakAdjustPerTick = rnd.NextDouble(failure.MinimalSneakAdjustPerTick, failure.MaximalSneakAdjustPerTick);
 
       ResetInternal();
       base.DataReceived += SneakFailureSustainer_DataReceived;
-      base.SimCon.EventInvoked += SimCon_EventInvoked;
+      base.RequestDataRepeatedly();
       //TODO not using custom refresh leak-tick-ms interval
+    }
+
+    #endregion Constructors
+
+    #region Methods
+
+    protected override void InitInternal()
+    {
+      base.InitInternal();
+      this.simSecondElapsedEventId = base.SimCon.RegisterSystemEvent(ESimConnect.SimEvents.System._1sec);
     }
 
     protected override void ResetInternal()
@@ -58,8 +78,6 @@ namespace FailuresModule.Model.Run.Sustainers
       this.LastForcedValue = double.NaN;
       this.LastSimValue = double.NaN;
     }
-
-    private static Random rnd = new Random();
     protected override void StartInternal()
     {
       lock (this)
@@ -70,6 +88,9 @@ namespace FailuresModule.Model.Run.Sustainers
 
     private void SneakFailureSustainer_DataReceived(double value)
     {
+      if (double.IsNaN(CurrentSneak))
+        return;
+
       lock (this)
       {
         this.LastSimValue = value;
@@ -83,12 +104,18 @@ namespace FailuresModule.Model.Run.Sustainers
           if (failure.Direction == SneakFailureDefinition.EDirection.Up)
           {
             isFinished = value > failure.FinalValue;
-            LastForcedValue = value + CurrentSneak;
+            if (failure.IsPercentageBased)
+              LastForcedValue = value + value * CurrentSneak;
+            else
+              LastForcedValue = value + CurrentSneak;
           }
           else
           {
             isFinished = value < failure.FinalValue;
-            LastForcedValue = value - CurrentSneak;
+            if (failure.IsPercentageBased)
+              LastForcedValue = value - value * CurrentSneak;
+            else
+              LastForcedValue = value - CurrentSneak;
           }
 
           if (isFinished)
@@ -103,10 +130,6 @@ namespace FailuresModule.Model.Run.Sustainers
 
     }
 
-    private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)
-    {
-      if (e.RequestId == simSecondElapsedEventId && !double.IsNaN(CurrentSneak))
-        RequestData();
-    }
+    #endregion Methods
   }
 }

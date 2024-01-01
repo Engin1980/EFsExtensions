@@ -69,5 +69,11 @@ namespace FailuresModule.Model.Run.Sustainers
       RegisterIfRequired();
       this.SimCon.SendPrimitive(this.typeId, value);
     }
+
+    internal void RequestDataRepeatedly()
+    {
+      RegisterIfRequired();
+      this.SimCon.RequestPrimitiveRepeatedly(this.typeId, out this.requestId, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_PERIOD.SECOND);
+    }
   }
 }

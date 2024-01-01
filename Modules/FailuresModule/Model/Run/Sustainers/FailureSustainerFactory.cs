@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FailuresModule.Model.Run.Sustainers;
 using FailuresModule.Model.Sim;
 
 namespace FailuresModule.Types.Run.Sustainers
@@ -20,8 +21,16 @@ namespace FailuresModule.Types.Run.Sustainers
         ret = CreateStuck(sfd);
       else if (failItem is LeakFailureDefinition lfd)
         ret = CreateLeak(lfd);
+      else if (failItem is SneakFailureDefinition nfd)
+        ret = CreateSneak(nfd);
       else
         throw new NotImplementedException();
+      return ret;
+    }
+
+    private static FailureSustainer CreateSneak(SneakFailureDefinition nfd)
+    {
+      SneakFailureSustainer ret = new SneakFailureSustainer(nfd);
       return ret;
     }
 
