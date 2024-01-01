@@ -1,4 +1,5 @@
-﻿using ESystem;
+﻿using ChlaotModuleBase;
+using ESystem;
 using ESystem.Asserting;
 using ESystem.Exceptions;
 using System;
@@ -56,6 +57,10 @@ namespace FailuresModule.Model.Sim
             fdb = DeserializeValue(elm);
             targetList.Add(fdb);
             break;
+          case "simVarSneak":
+            fdb = DeserializeSneak(elm);
+            targetList.Add(fdb);
+            break;
           case "sequence":
             items = DeserializeSequence(elm);
             targetList.AddRange(items);
@@ -64,8 +69,39 @@ namespace FailuresModule.Model.Sim
             fdb = DeserializeGroup(elm);
             targetList.Add(fdb);
             break;
+          default:
+            throw new NotImplementedException();
         }
       }
+    }
+
+    private FailureDefinitionBase DeserializeSneak(XElement elm)
+    {
+      string id, title, scp;
+      (id, title, scp) = GetIdTitleScp(elm);
+      SneakFailureDefinition ret = new(id, title, scp);
+      ret.MinimalInitialSneakValue = GetAttribute(elm, "minimalInitialSneakValue").Pipe(ToDouble);
+      ret.MaximalInitialSneakValue = GetAttribute(elm, "maximalInitialSneakValue").Pipe(ToDouble);
+      ret.MinimalSneakAdjustPerTick = GetAttribute(elm, "minimalSneakAdjustPerTick").Pipe(ToDouble);
+      ret.MaximalSneakAdjustPerTick = GetAttribute(elm, "maximalSneakAdjustPerTick").Pipe(ToDouble);
+      ret.IsPercentageBased = GetAttribute(elm, "isPercentageBased").Pipe(bool.Parse);
+      ret.Direction = GetAttribute(elm, "direction").Pipe(q => Enum.Parse<SneakFailureDefinition.EDirection>(q, true));
+      ret.FinalValue = GetAttribute(elm, "finalValue").Pipe(ToDouble);
+      ret.FinalFailureId = GetAttribute(elm, "finalFailureId");
+      SetAttributeIfExists(elm, "tickIntervalInMs", q => int.Parse(q), q => ret.TickIntervalInMs = q);
+      ret.EnsureValid();
+
+      return ret;
+    }
+
+    private DoubleValueOrPercentage ToValueOrPercentage(string s)
+    {
+      DoubleValueOrPercentage ret;
+      if (s.EndsWith("%") || s.ToLower().EndsWith("p"))
+        ret = new(ToDouble(s[..^1]), true);
+      else
+        ret = new(ToDouble(s), false);
+      return ret;
     }
 
     private FailureDefinitionGroup DeserializeGroup(XElement elm)
@@ -103,7 +139,7 @@ namespace FailuresModule.Model.Sim
       {
         for (int i = 0; i < subLists[0].Count; i++)
         {
-          foreach(var subList in subLists)
+          foreach (var subList in subLists)
           {
             ret.Add(subList[i]);
           }
@@ -191,5 +227,6 @@ namespace FailuresModule.Model.Sim
       string ret = elm.Attribute(attributeName)?.Value ?? throw new ApplicationException($"Mandatory attribute '{attributeName}' not found.");
       return ret;
     }
+
   }
 }

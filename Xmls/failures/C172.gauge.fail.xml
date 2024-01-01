@@ -22,6 +22,26 @@
         <failure id="eng1"/>
       </failures>
     </incident>
+    <group title="Engine failures">
+      <incident title="Engine failure" repetitive="false">
+        <variables>
+          <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
+          <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
+        </variables>
+        <triggers>
+          <trigger probability="0.0005" repetitive="true">
+            <g:and>
+              <g:property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
+              <g:property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
+            </g:and>
+          </trigger>
+        </triggers>
+        <failures selection="one">
+          <failure id="engOilPressure1->eng1"/>
+          <failure id="engOilTemperature1->eng1"/>
+        </failures>
+      </incident>
+    </group>
     <group title="System failures">
       <incident title="Internal systems" repetitive="true">
         <variables>

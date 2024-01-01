@@ -8,10 +8,20 @@
   <definitions title="fs2020">
     <definitions title="engine">
       <sequence from="1" to="4" varRef="{i}">
-        <simEvent id="eng{i}" title="Engine {i}" simEvt="TOGGLE_ENGINE{i}_FAILURE" />
+        <simEvent id="eng{i}" title="Engine {i} failure" simEvt="TOGGLE_ENGINE{i}_FAILURE" />
         <simVarValue id="engFire{i}" title="Engine {i} fire" simVar="ENG_ON_FIRE:{i}" />
         <simVarValue id="engTurbo{i}" title="Engine {i} turbocharger" simVar="RECIP ENG TURBOCHARGER FAILED:{i}" />
         <simVarLeak id="engCoolantRes{i}" title="Engine {i} coolant reservoir" simVar="RECIP ENG COOLANT RESERVOIR PERCENT:{i}" />
+        <simVarSneak id="engOilTemperature{i}->eng1" title ="Engine {i} oil temperature -> eng {i} fail" simVar="GENERAL ENG OIL TEMPERATURE:{i}"
+                     minimalInitialSneakValue="0.05" maximalInitialSneakValue="0.3"
+                     minimalSneakAdjustPerTick="0" maximalSneakAdjustPerTick="0"
+                     direction="up" isPercentageBased="true" finalValue="500"
+                     finalFailureId="eng{i}" />
+        <simVarSneak id="engOilPressure{i}->eng{i}" title ="Engine {i} oil pressure -> eng {i} fail" simVar="GENERAL ENG OIL PRESSURE:{i}"
+                     minimalInitialSneakValue="0" maximalInitialSneakValue="0"
+                     minimalSneakAdjustPerTick="0.0001" maximalSneakAdjustPerTick="0.001"
+                     direction="down" isPercentageBased="true" finalValue="10000"
+                     finalFailureId="eng{i}"/>
       </sequence>
     </definitions>
     <definitions title="systems">

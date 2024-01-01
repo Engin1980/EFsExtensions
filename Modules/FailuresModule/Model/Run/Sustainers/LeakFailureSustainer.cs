@@ -13,9 +13,8 @@ namespace FailuresModule.Types.Run.Sustainers
     #region Fields
 
     private readonly int expectedNumberOfTicksBeforeLeakOut;
-
     private int simSecondElapsedEventId;
-    private LeakFailureDefinition failure;
+    private readonly LeakFailureDefinition failure;
 
     #endregion Fields
 

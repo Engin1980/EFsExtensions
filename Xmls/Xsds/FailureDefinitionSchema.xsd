@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xsd:schema id="Schema" 
+<xsd:schema id="Schema"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://chlaot.org/FailureDefinitions.xsd"            
+            xmlns="http://chlaot.org/FailureDefinitions.xsd"
             targetNamespace="http://chlaot.org/FailureDefinitions.xsd"
             elementFormDefault="qualified">
   <xsd:element name="definitions" type="definitions"/>
@@ -13,10 +13,33 @@
       <xsd:element name="simVarValue" type="simVarValueFailureDefinition"/>
       <xsd:element name="simVarLeak" type="simVarLeakFailureDefinition"/>
       <xsd:element name="simVarStuck" type="simVarStuckFailureDefinition"/>
+      <xsd:element name="simVarSneak" type="simVarSneakFailureDefinition" />
       <xsd:element name="sequence" type="sequenceGenerator"/>
     </xsd:choice>
     <xsd:attribute name="title" type="xsd:string" use="required"/>
   </xsd:complexType>
+
+  <xsd:complexType name="simVarSneakFailureDefinition">
+    <xsd:attribute name="simVar" type="xsd:string" use="required"/>
+    <xsd:attribute name="id" type="xsd:string" use="required" />
+    <xsd:attribute name="title" type="xsd:string" use="optional" />
+    <xsd:attribute name="minimalInitialSneakValue" type="xsd:double" use="required" />
+    <xsd:attribute name="maximalInitialSneakValue" type="xsd:double" use="required" />
+    <xsd:attribute name="minimalSneakAdjustPerTick" type="xsd:double" use="required" />
+    <xsd:attribute name="maximalSneakAdjustPerTick" type="xsd:double" use="required" />
+    <xsd:attribute name="finalValue" type="xsd:double" use="required" />
+    <xsd:attribute name="direction" type="directionType" use="required" />
+    <xsd:attribute name="finalFailureId" type="xsd:string" use="required" />
+    <xsd:attribute name="isPercentageBased" type="xsd:boolean" use="required" />
+    <xsd:attribute name="tickIntervalInMs" type="xsd:int" use="optional" default="1000"/>
+  </xsd:complexType>
+
+  <xsd:simpleType name="directionType">
+    <xsd:restriction base="xsd:string" >
+      <xsd:enumeration value="up"/>
+      <xsd:enumeration value="down"/>
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <xsd:complexType name="eventFailureDefinition">
     <xsd:attribute name="simEvt" type="xsd:string" use="required"/>

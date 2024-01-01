@@ -19,7 +19,7 @@ namespace ESystem.Asserting
           EAssert.IsNotNull(value, $"Argument '{argumentName}' is null.");
       }
 
-      internal static void IsTrue(bool value, string? argumentName = null)
+      public static void IsTrue(bool value, string? argumentName = null)
       {
         if (argumentName == null)
           EAssert.IsTrue(value, "Argument condition check to true failed.");
@@ -27,7 +27,7 @@ namespace ESystem.Asserting
           EAssert.IsTrue(value, $"Argument '{argumentName}' condition check to true failed.");
       }
 
-      internal static void IsNonEmptyString(string value, string? argumentName = null)
+      public static void IsNonEmptyString(string value, string? argumentName = null)
       {
         if (argumentName == null)
           EAssert.IsNonEmptyString(value, "Argument condition check to true failed.");

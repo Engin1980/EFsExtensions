@@ -61,69 +61,13 @@
       <xsd:element name="failures" type="failGroup" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:choice>
     <xsd:attribute name="selection" type="failGroupSelector" use="required"/>
-    <xsd:attribute name="weight" type="xsd:double" use="optional"/>
+    <xsd:attribute name="weight" type="xsd:double" use="optional" default="1"/>
   </xsd:complexType>
 
   <xsd:complexType name="failure">
-    <xsd:attribute name="id" type="failureIdString"/>
-    <xsd:attribute name="weight" type="xsd:double" use="optional"/>
+    <xsd:attribute name="id" type="xsd:string" use="required"/>
+    <xsd:attribute name="weight" type="xsd:double" use="optional" default="1"/>
   </xsd:complexType>
-
-  <xsd:simpleType name="failureIdString">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="engFire1"/>
-      <xsd:enumeration value="engFire2"/>
-      <xsd:enumeration value="engFire3"/>
-      <xsd:enumeration value="engFire4"/>
-      <xsd:enumeration value="engTurbo1"/>
-      <xsd:enumeration value="engTurbo2"/>
-      <xsd:enumeration value="engTurbo3"/>
-      <xsd:enumeration value="engTurbo4"/>
-      <xsd:enumeration value="engCoolant1"/>
-      <xsd:enumeration value="engCoolant2"/>
-      <xsd:enumeration value="engCoolant3"/>
-      <xsd:enumeration value="engCoolant4"/>
-      <xsd:enumeration value="eng1"/>
-      <xsd:enumeration value="eng2"/>
-      <xsd:enumeration value="eng3"/>
-      <xsd:enumeration value="eng4"/>
-      <xsd:enumeration value="vacuum"/>
-      <xsd:enumeration value="electrical"/>
-      <xsd:enumeration value="pitot"/>
-      <xsd:enumeration value="static_port"/>
-      <xsd:enumeration value="hydraulics"/>
-      <xsd:enumeration value="pnlAirspeed"/>
-      <xsd:enumeration value="pnlAltimeter"/>
-      <xsd:enumeration value="pnlAttitude"/>
-      <xsd:enumeration value="pnlCompass"/>
-      <xsd:enumeration value="pnlElectrical"/>
-      <xsd:enumeration value="pnlAvionics"/>
-      <xsd:enumeration value="pnlEngine"/>
-      <xsd:enumeration value="pnlFuel"/>
-      <xsd:enumeration value="pnlHeading"/>
-      <xsd:enumeration value="pnlVS"/>
-      <xsd:enumeration value="pnlPitot"/>
-      <xsd:enumeration value="pnlTurn"/>
-      <xsd:enumeration value="pnlVacuum"/>
-      <xsd:enumeration value="brakeAll"/>
-      <xsd:enumeration value="brakeRight"/>
-      <xsd:enumeration value="brakeLeft"/>
-      <xsd:enumeration value="fuelCenter"/>
-      <xsd:enumeration value="fuelLeft"/>
-      <xsd:enumeration value="fuelRight"/>
-      <xsd:enumeration value="gearCenter"/>
-      <xsd:enumeration value="gearLeft"/>
-      <xsd:enumeration value="gearRight"/>
-      <xsd:enumeration value="flapsLeft"/>
-      <xsd:enumeration value="flapsRight"/>
-      <xsd:enumeration value="rudderTrim"/>
-      <xsd:enumeration value="aileronTrim"/>
-      <xsd:enumeration value="elevatorTrim"/>
-      <xsd:enumeration value="elevator"/>
-      <xsd:enumeration value="aileron"/>
-      <xsd:enumeration value="rudder"/>
-    </xsd:restriction>
-  </xsd:simpleType>
 
   <xsd:simpleType name="failGroupSelector">
     <xsd:restriction base="xsd:string">
