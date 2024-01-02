@@ -155,6 +155,15 @@ namespace ESimConnect
       Logger.LogMethodStart();
       if (this.simConnect != null)
       {
+        var types = typeManager.GetRegisteredTypes();
+        types.ForEach(q => UnregisterType(q));
+
+        var primitiveTypeIds = primitiveManager.GetRegisteredTypesIds();
+        primitiveTypeIds.ForEach(q => UnregisterPrimitive(q));
+
+        var eventIds = eventManager.Select(q => q.EventId).Select(q => (int)q).ToList();
+        eventIds.ForEach(q => UnregisterSystemEvent(q));
+
         this.simConnect.Dispose();
         this.simConnect = null;
       }
@@ -462,17 +471,37 @@ namespace ESimConnect
       Logger.LogMethodEnd();
     }
 
+    public void UnregisterSystemEvent(int eventId)
+    {
+      EEnum eEventId = (EEnum)eventId;
+      Try(() =>
+      {
+        this.simConnect!.UnsubscribeFromSystemEvent(eEventId);
+        this.eventManager
+          .Where(q => (int)q.EventId == eventId)
+          .ToList()
+          .ForEach(q => this.eventManager.Remove(q));
+      },
+        ex => new InternalException($"Failed to unregister sim-event listener for event with id {eEventId}.", ex));
+
+    }
+
     public void UnregisterType<T>()
+    {
+      UnregisterType(typeof(T));
+    }
+
+    public void UnregisterType(Type t)
     {
       Logger.LogMethodStart();
       EnsureConnected();
 
-      EEnum eTypeId = typeManager.GetIdAsEnum(typeof(T));
+      EEnum eTypeId = typeManager.GetIdAsEnum(t);
 
       Try(
         () => this.simConnect!.ClearDataDefinition(eTypeId),
-        ex => new InternalException($"Failed to unregister type {typeof(T).Name}.", ex));
-      this.typeManager.Unregister(typeof(T));
+        ex => new InternalException($"Failed to unregister type {t.Name}.", ex));
+      this.typeManager.Unregister(t);
       Logger.LogMethodEnd();
     }
 
@@ -523,7 +552,7 @@ namespace ESimConnect
       if (!this.primitiveManager.IsRegistered(typeId))
         throw new Exception($"Primitive typeId={typeId} is not registered.");
     }
-   
+
     private void ResolveExitedFS2020()
     {
       if (this.simConnect != null)

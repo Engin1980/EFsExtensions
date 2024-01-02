@@ -24,17 +24,8 @@
     </incident>
     <group title="Engine failures">
       <incident title="Engine failure" repetitive="false">
-        <variables>
-          <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
-          <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
-        </variables>
         <triggers>
-          <trigger probability="0.0005" repetitive="true">
-            <g:and>
-              <g:property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
-              <g:property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
-            </g:and>
-          </trigger>
+          <timeTrigger interval="oncePerHour" probability="0.001" repetitive="true"/>
         </triggers>
         <failures selection="one">
           <failure id="engOilPressure1->eng1"/>
@@ -44,17 +35,8 @@
     </group>
     <group title="System failures">
       <incident title="Internal systems" repetitive="true">
-        <variables>
-          <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
-          <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
-        </variables>
         <triggers>
-          <trigger probability="0.0005" repetitive="true">
-            <g:and>
-              <g:property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
-              <g:property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
-            </g:and>
-          </trigger>
+          <timeTrigger interval="oncePerTenMinutes" probability="0.005" repetitive="true"/>
         </triggers>
         <failures selection="one">
           <failure id="vacuum"/>
@@ -67,17 +49,8 @@
     </group>
     <group title="Panel failures">
       <incident title="Panel failure" repetitive="true">
-        <variables>
-          <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
-          <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
-        </variables>
         <triggers>
-          <trigger probability="0.0005" repetitive="true">
-            <g:and>
-              <g:property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
-              <g:property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
-            </g:and>
-          </trigger>
+          <timeTrigger interval="oncePerTenMinutes" probability="0.005" repetitive="true"/>
         </triggers>
         <failures selection="one">
           <!--<failure id="pnlAirspeed"/> prý nefunguje na C172-gauge-->
@@ -91,7 +64,7 @@
     </group>
     <incident title="Brake failures" repetitive="false">
       <triggers>
-        <trigger probability="0.05" repetitive="false">
+        <trigger probability="0.03" repetitive="false">
           <g:property name="height" direction="passingDown" expression="100"/>
         </trigger>
       </triggers>
@@ -102,17 +75,8 @@
       </failures>
     </incident>
     <incident title="Fuel leak" repetitive="false">
-      <variables>
-        <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
-        <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
-      </variables>
       <triggers>
-        <trigger probability="0.05" repetitive="false">
-          <g:and>
-            <g:property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
-            <g:property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
-          </g:and>
-        </trigger>
+        <timeTrigger interval="oncePerHour" probability="0.005" repetitive="true"/>
       </triggers>
       <failures selection="one">
         <failure id="fuelLeft"/>
@@ -120,17 +84,8 @@
       </failures>
     </incident>
     <incident title="Flaps stuck" repetitive="false">
-      <variables>
-        <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
-        <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
-      </variables>
       <triggers>
-        <trigger probability="0.05" repetitive="false">
-          <g:and>
-            <g:property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
-            <g:property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
-          </g:and>
-        </trigger>
+        <timeTrigger interval="oncePerHour" probability="0.005" repetitive="true"/>
       </triggers>
       <failures selection="one">
         <failure id="flapsLeft"/>

@@ -4,10 +4,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FailuresModule"
+             xmlns:ctrl="clr-namespace:FailuresModule.Controls"
              xmlns:modelApp ="clr-namespace:FailuresModule.Model.App"
              xmlns:modelSim="clr-namespace:FailuresModule.Model.Sim"
              xmlns:modelVar="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;assembly=ChlaotModuleBase"
              xmlns:converters="clr-namespace:FailuresModule.Converters"
+             xmlns:globalConverters ="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
@@ -16,6 +18,7 @@
                           Filter="CollectionViewSource_Filter">
     </CollectionViewSource>
     <converters:PercentageToIntConverter x:Key="PercentageToIntConverter" />
+    <converters:PercentageFormatter x:Key="PercentageFormatter" />
   </UserControl.Resources>
   <DockPanel>
     <DockPanel DockPanel.Dock="Top">
@@ -85,16 +88,28 @@
                 <TextBlock Text=")" />
               </StackPanel>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelApp:Trigger}">
+            <HierarchicalDataTemplate DataType="{x:Type modelApp:CheckStateTrigger}">
               <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Trigger (prob=" />
-                <TextBlock Text="{Binding Probability}" />
+                <TextBlock Text="{Binding Probability, Converter={StaticResource PercentageFormatter}, ConverterParameter=N2}" />
+                <ctrl:ProbabilityUpDown Margin="3,0,3,0" Value="{Binding Probability, Mode=TwoWay}" />
                 <TextBlock Text=", rpt=" />
                 <TextBlock Text="{Binding Repetitive}" />
                 <TextBlock Text=", cond=" />
                 <TextBlock Text="{Binding Condition.DisplayString}" />
                 <TextBlock Text=") " />
-                <Slider Minimum="0" Maximum="100" Value="{Binding Probability, Converter={StaticResource PercentageToIntConverter}}" Width="400" />
+              </StackPanel>
+            </HierarchicalDataTemplate>
+            <HierarchicalDataTemplate DataType="{x:Type modelApp:FuncTrigger}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Trigger (prob=" />
+                <TextBlock Text="{Binding Probability, Converter={StaticResource PercentageFormatter}, ConverterParameter=N2}" />
+                <ctrl:ProbabilityUpDown Margin="3,0,3,0" Value="{Binding Probability, Mode=TwoWay}" />
+                <TextBlock Text=", rpt=" />
+                <TextBlock Text="{Binding Repetitive}" />
+                <TextBlock Text=", interval=" />
+                <TextBlock Text="{Binding Interval}" />
+                <TextBlock Text=") " />
               </StackPanel>
             </HierarchicalDataTemplate>
             <HierarchicalDataTemplate DataType="{x:Type modelApp:FailGroup}" ItemsSource="{Binding Items}">

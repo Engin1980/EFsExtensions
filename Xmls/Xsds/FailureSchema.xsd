@@ -39,9 +39,25 @@
   </xsd:complexType>
 
   <xsd:complexType name="triggers">
-    <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+    <xsd:choice minOccurs="1" maxOccurs="1">
       <xsd:element name="trigger" type="trigger" minOccurs="1" maxOccurs="unbounded"/>
-    </xsd:sequence>
+      <xsd:element name="timeTrigger" type="timeTrigger" />
+    </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:complexType name="timeTrigger">
+    <xsd:attribute name="interval" use="required">
+      <xsd:simpleType>
+        <xsd:restriction base="xsd:string">
+          <xsd:enumeration value="oncePerTenSeconds" />
+          <xsd:enumeration value="oncePerMinute" />
+          <xsd:enumeration value="oncePerTenMinutes" />
+          <xsd:enumeration value="oncePerHour" />
+        </xsd:restriction>
+      </xsd:simpleType>
+    </xsd:attribute>
+    <xsd:attribute name="probability" type="xsd:double" use="required"/>
+    <xsd:attribute name="repetitive" type="xsd:boolean" use="required"/>
   </xsd:complexType>
 
   <xsd:complexType name="trigger">

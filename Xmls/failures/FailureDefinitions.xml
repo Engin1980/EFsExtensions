@@ -14,7 +14,7 @@
         <simVarLeak id="engCoolantRes{i}" title="Engine {i} coolant reservoir" simVar="RECIP ENG COOLANT RESERVOIR PERCENT:{i}" />
         <simVarSneak id="engOilTemperature{i}->eng1" title ="Engine {i} oil temperature -> eng {i} fail" simVar="GENERAL ENG OIL TEMPERATURE:{i}"
                      minimalInitialSneakValue="0.0005" maximalInitialSneakValue="0.003"
-                     minimalSneakAdjustPerTick="0" maximalSneakAdjustPerTick="0"
+                     minimalSneakAdjustPerTick="0.0001" maximalSneakAdjustPerTick="0.003"
                      direction="up" isPercentageBased="true" finalValue="500"
                      finalFailureId="eng{i}" />
         <simVarSneak id="engOilPressure{i}->eng{i}" title ="Engine {i} oil pressure -> eng {i} fail" simVar="GENERAL ENG OIL PRESSURE:{i}"

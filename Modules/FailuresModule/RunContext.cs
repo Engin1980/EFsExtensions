@@ -155,9 +155,17 @@ namespace FailuresModule
       {
         if (incident.OneShotTriggersInvoked.Contains(trigger)) continue;
 
-        StateCheckEvaluator sce = incidentEvaluators[incident];
+        bool isConditionTrue;
+        if (trigger is FuncTrigger ft)
+          isConditionTrue = ft.EvaluatingFunction();
+        else if (trigger is CheckStateTrigger csct)
+        {
+          StateCheckEvaluator sce = incidentEvaluators[incident];
+          isConditionTrue = IsTriggerConditionTrue(sce, csct.Condition);
+        }
+        else
+          throw new ApplicationException($"Unsupported type of trigger: {trigger.GetType().Name}.");
 
-        bool isConditionTrue = IsTriggerConditionTrue(sce, trigger.Condition);
         if (isConditionTrue)
         {
           if (trigger.Repetitive == false)

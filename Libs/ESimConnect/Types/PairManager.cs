@@ -30,6 +30,11 @@ namespace ESimConnect.Types
     {
       return inner.ContainsKey(id);
     }
+
+    internal List<int> GetRegisteredTypesIds()
+    {
+      return inner.Keys.ToList();
+    }
   }
 
   internal class TypeManager : PairManager<int, Type>
@@ -54,6 +59,11 @@ namespace ESimConnect.Types
     }
 
     internal new void Unregister(Type type) => base.Unregister(type);
+
+    internal List<Type> GetRegisteredTypes()
+    {
+      return this.GetAllBs();
+    }
   }
 
   internal class EventManager : PairManager<EEnum, string>
@@ -127,6 +137,9 @@ namespace ESimConnect.Types
     }
 
     private readonly List<Record> inner = new();
+
+    protected List<Tb> GetAllBs() => inner.Select(q => q.b).ToList();
+    protected List<Ta> GetAllAs() => inner.Select(q => q.a).ToList();
     protected void Register(Ta a, Tb b)
     {
       if (a == null || b == null)
