@@ -7,7 +7,7 @@
              xmlns:modelApp ="clr-namespace:FailuresModule.Model.App"
              xmlns:modelSim="clr-namespace:FailuresModule.Model.Sim"
              xmlns:modelRun ="clr-namespace:FailuresModule.Types.Run"
-             xmlns:modelRunSus ="clr-namespace:FailuresModule.Types.Run.Sustainers"
+             xmlns:modelRunSus ="clr-namespace:FailuresModule.Model.Run.Sustainers"
              xmlns:modelVars="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;assembly=ChlaotModuleBase"
              xmlns:converters="clr-namespace:FailuresModule.Converters"             
              xmlns:globalConverters="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"             
@@ -174,6 +174,19 @@
         <ScrollViewer>
           <ListView ItemsSource="{Binding Sustainers}">
             <ListView.Resources>
+              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:SneakFailureSustainer}">
+                <StackPanel Orientation="Horizontal">
+                  <Label>
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding Failure.Title}" />
+                      <TextBlock Text=" (event, id=" />
+                      <TextBlock Text="{Binding Failure.Id}" />
+                      <TextBlock Text=") " />
+                      <Button x:Name="btnEventFailureCancel" Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
+                    </StackPanel>
+                  </Label>
+                </StackPanel>
+              </HierarchicalDataTemplate>
               <HierarchicalDataTemplate DataType="{x:Type modelRunSus:EventFailureSustainer}">
                 <StackPanel Orientation="Horizontal">
                   <Label>

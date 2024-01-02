@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using FailuresModule.Model.Run.Sustainers;
 using FailuresModule.Model.Sim;
 
-namespace FailuresModule.Types.Run.Sustainers
+namespace FailuresModule.Model.Run.Sustainers
 {
   internal class LeakFailureSustainer : SimVarBasedFailureSustainer
   {

@@ -82,13 +82,13 @@ namespace FailuresModule.Model.Sim
       SneakFailureDefinition ret = new(id, title, scp);
       ret.MinimalInitialSneakValue = GetAttribute(elm, "minimalInitialSneakValue").Pipe(ToDouble);
       ret.MaximalInitialSneakValue = GetAttribute(elm, "maximalInitialSneakValue").Pipe(ToDouble);
-      ret.MinimalSneakAdjustPerTick = GetAttribute(elm, "minimalSneakAdjustPerTick").Pipe(ToDouble);
-      ret.MaximalSneakAdjustPerTick = GetAttribute(elm, "maximalSneakAdjustPerTick").Pipe(ToDouble);
+      ret.MinimalSneakAdjustPerSecond = GetAttribute(elm, "minimalSneakAdjustPerSecond").Pipe(ToDouble);
+      ret.MaximalSneakAdjustPerSecond = GetAttribute(elm, "maximalSneakAdjustPerSecond").Pipe(ToDouble);
       ret.IsPercentageBased = GetAttribute(elm, "isPercentageBased").Pipe(bool.Parse);
       ret.Direction = GetAttribute(elm, "direction").Pipe(q => Enum.Parse<SneakFailureDefinition.EDirection>(q, true));
       ret.FinalValue = GetAttribute(elm, "finalValue").Pipe(ToDouble);
       ret.FinalFailureId = GetAttribute(elm, "finalFailureId");
-      SetAttributeIfExists(elm, "tickIntervalInMs", q => int.Parse(q), q => ret.TickIntervalInMs = q);
+      SetAttributeIfExists(elm, "tickIntervalInMS", q => int.Parse(q), q => ret.TickIntervalInMS = q);
       ret.EnsureValid();
 
       return ret;

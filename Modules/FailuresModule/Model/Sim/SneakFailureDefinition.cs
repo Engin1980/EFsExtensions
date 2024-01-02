@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 
 namespace FailuresModule.Model.Sim
 {
@@ -33,10 +34,10 @@ namespace FailuresModule.Model.Sim
     public string FinalFailureId { get; set; } = string.Empty;
     public double FinalValue { get; set; } = double.NaN;
     public double MaximalInitialSneakValue { get; set; } = double.NaN;
-    public double MaximalSneakAdjustPerTick { get; set; } = double.NaN;
+    public double MaximalSneakAdjustPerSecond { get; set; } = double.NaN;
     public double MinimalInitialSneakValue { get; set; } = double.NaN;
-    public double MinimalSneakAdjustPerTick { get; set; } = double.NaN;
-    public double TickIntervalInMs { get; set; } = DEFAULT_TICK_INTERVAL_IN_MS;
+    public double MinimalSneakAdjustPerSecond { get; set; } = double.NaN;
+    public double TickIntervalInMS { get; set; } = DEFAULT_TICK_INTERVAL_IN_MS;
     public bool IsPercentageBased { get; set; }
     public override string Type => "Sneak";
 
@@ -55,14 +56,21 @@ namespace FailuresModule.Model.Sim
     public void EnsureValid()
     {
       EAssert.IsTrue(!double.IsNaN(MaximalInitialSneakValue));
-      EAssert.IsTrue(!double.IsNaN(MaximalSneakAdjustPerTick));
+      EAssert.IsTrue(!double.IsNaN(MaximalSneakAdjustPerSecond));
       EAssert.IsTrue(!double.IsNaN(MinimalInitialSneakValue));
-      EAssert.IsTrue(!double.IsNaN(MinimalSneakAdjustPerTick));
+      EAssert.IsTrue(!double.IsNaN(MinimalSneakAdjustPerSecond));
       EAssert.IsTrue(!double.IsNaN(FinalValue));
       EAssert.IsTrue(MinimalInitialSneakValue <= MaximalInitialSneakValue);
-      EAssert.IsTrue(MinimalSneakAdjustPerTick <= MaximalSneakAdjustPerTick);
+      EAssert.IsTrue(MinimalSneakAdjustPerSecond <= MaximalSneakAdjustPerSecond);
       EAssert.IsNonEmptyString(this.FinalFailureId);
-      EAssert.IsTrue(this.TickIntervalInMs > 50);
+      EAssert.IsTrue(this.TickIntervalInMS > 50);
+    }
+
+    internal override void ExpandVariableIfExists(string varRef, int variableValue)
+    {
+      base.ExpandVariableIfExists(varRef, variableValue);
+      if (this.FinalFailureId.Contains(varRef))
+        this.FinalFailureId = this.FinalFailureId.Replace(varRef, variableValue.ToString());
     }
 
     #endregion Public Methods

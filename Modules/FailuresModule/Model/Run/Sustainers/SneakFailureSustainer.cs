@@ -7,6 +7,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 
 namespace FailuresModule.Model.Run.Sustainers
 {
@@ -20,8 +21,8 @@ namespace FailuresModule.Model.Run.Sustainers
 
     #region Fields
 
-    private static Random rnd = new Random();
-    private int simSecondElapsedEventId;
+    private readonly static Random rnd = new Random();
+    private readonly Timer updateTimer;
 
     #endregion Fields
 
@@ -54,12 +55,20 @@ namespace FailuresModule.Model.Run.Sustainers
     public SneakFailureSustainer(SneakFailureDefinition failure) : base(failure)
     {
       this.Failure = failure;
-      this.SneakAdjustPerTick = rnd.NextDouble(failure.MinimalSneakAdjustPerTick, failure.MaximalSneakAdjustPerTick);
+      this.SneakAdjustPerTick = rnd.NextDouble(failure.MinimalSneakAdjustPerSecond, failure.MaximalSneakAdjustPerSecond);
+      this.updateTimer = new Timer();
+      this.updateTimer.AutoReset = true;
+      this.updateTimer.Elapsed += UpdateTimer_Elapsed;
 
       ResetInternal();
       base.DataReceived += SneakFailureSustainer_DataReceived;
       base.RequestDataRepeatedly();
-      //TODO not using custom refresh leak-tick-ms interval
+    }
+
+    private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
+    {
+      if (double.IsNaN(LastForcedValue) == false)
+        base.SendData(this.LastForcedValue);
     }
 
     #endregion Constructors
@@ -69,11 +78,11 @@ namespace FailuresModule.Model.Run.Sustainers
     protected override void InitInternal()
     {
       base.InitInternal();
-      this.simSecondElapsedEventId = base.SimCon.RegisterSystemEvent(ESimConnect.SimEvents.System._1sec);
     }
 
     protected override void ResetInternal()
     {
+      this.updateTimer.Enabled = false;
       this.CurrentSneak = double.NaN;
       this.LastForcedValue = double.NaN;
       this.LastSimValue = double.NaN;
@@ -84,6 +93,8 @@ namespace FailuresModule.Model.Run.Sustainers
       {
         CurrentSneak = rnd.NextDouble(Failure.MinimalInitialSneakValue, Failure.MaximalInitialSneakValue);
       }
+      this.updateTimer.Interval = this.Failure.TickIntervalInMS;
+      this.updateTimer.Enabled = true;
     }
 
     private void SneakFailureSustainer_DataReceived(double value)
@@ -115,16 +126,15 @@ namespace FailuresModule.Model.Run.Sustainers
             if (Failure.IsPercentageBased)
               LastForcedValue = value - value * CurrentSneak;
             else
-              LastForcedValue = value - CurrentSneak;
+              LastForcedValue = value - CurrentSneak; 
           }
+          // value is set via this.updateTimer
 
           if (isFinished)
           {
             this.Reset();
             Finished?.Invoke(this);
           }
-          else
-            base.SendData(LastForcedValue);
         }
       }
 

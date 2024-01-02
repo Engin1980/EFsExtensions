@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Types.Run.Sustainers
+namespace FailuresModule.Model.Run.Sustainers
 {
   public abstract class FailureSustainer : NotifyPropertyChangedBase
   {

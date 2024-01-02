@@ -25,13 +25,13 @@
     <xsd:attribute name="title" type="xsd:string" use="optional" />
     <xsd:attribute name="minimalInitialSneakValue" type="xsd:double" use="required" />
     <xsd:attribute name="maximalInitialSneakValue" type="xsd:double" use="required" />
-    <xsd:attribute name="minimalSneakAdjustPerTick" type="xsd:double" use="required" />
-    <xsd:attribute name="maximalSneakAdjustPerTick" type="xsd:double" use="required" />
+    <xsd:attribute name="minimalSneakAdjustPerSecond" type="xsd:double" use="required" />
+    <xsd:attribute name="maximalSneakAdjustPerSecond" type="xsd:double" use="required" />
     <xsd:attribute name="finalValue" type="xsd:double" use="required" />
     <xsd:attribute name="direction" type="directionType" use="required" />
     <xsd:attribute name="finalFailureId" type="xsd:string" use="required" />
     <xsd:attribute name="isPercentageBased" type="xsd:boolean" use="required" />
-    <xsd:attribute name="tickIntervalInMs" type="xsd:int" use="optional" default="1000"/>
+    <xsd:attribute name="tickIntervalInMS" type="xsd:int" use="optional" default="1000"/>
   </xsd:complexType>
 
   <xsd:simpleType name="directionType">

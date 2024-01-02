@@ -25,7 +25,7 @@ namespace FailuresModule.Model.Sim
 
     public string TypeName => GetType().Name;
 
-    internal void ExpandVariableIfExists(string varRef, int variableValue)
+    internal virtual void ExpandVariableIfExists(string varRef, int variableValue)
     {
       Id = ExpandVariable(Id, varRef, variableValue);
       Title = ExpandVariable(Title, varRef, variableValue);
