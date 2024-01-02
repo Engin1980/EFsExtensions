@@ -4,6 +4,7 @@ using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using FailuresModule.Model.App;
+using FailuresModule.Model.Run.Sustainers;
 using FailuresModule.Model.Sim;
 using FailuresModule.Types.Run;
 using FailuresModule.Types.Run.Sustainers;
@@ -15,6 +16,7 @@ using System.Printing;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Documents;
 
 namespace FailuresModule
 {
@@ -190,9 +192,21 @@ namespace FailuresModule
       {
         if (this.Sustainers.Any(q => q.Failure == failure)) continue;
         FailureSustainer fs = FailureSustainerFactory.Create(failure);
+        if (fs is SneakFailureSustainer sfs)
+          sfs.Finished += SneakFailureSustainer_Finished;
         this.Sustainers.Add(fs);
         fs.Start();
       }
+    }
+
+    private void SneakFailureSustainer_Finished(SneakFailureSustainer sustainer)
+    {
+      this.Sustainers.Remove(sustainer);
+      FailureDefinition finalFailure = FailureDefinitions.First(q => q.Id == sustainer.Failure.FinalFailureId);
+      if (this.Sustainers.Any(q => q.Failure == finalFailure)) return;
+      FailureSustainer fs = FailureSustainerFactory.Create(finalFailure);
+      this.Sustainers.Add(fs);
+      fs.Start();
     }
 
     private bool IsTriggerConditionTrue(StateCheckEvaluator stateCheckEvaluator, IStateCheckItem condition)

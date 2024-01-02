@@ -14,14 +14,13 @@ namespace FailuresModule.Model.Run.Sustainers
   {
     #region Events
 
-    private event Action<SneakFailureSustainer>? Finished;
+    public event Action<SneakFailureSustainer>? Finished;
 
     #endregion Events
 
     #region Fields
 
     private static Random rnd = new Random();
-    private readonly SneakFailureDefinition failure;
     private int simSecondElapsedEventId;
 
     #endregion Fields
@@ -46,6 +45,7 @@ namespace FailuresModule.Model.Run.Sustainers
       set => base.UpdateProperty(nameof(LastSimValue), value);
     }
     public double SneakAdjustPerTick { get; set; }
+    public new SneakFailureDefinition Failure { get; private set; }
 
     #endregion Properties
 
@@ -53,7 +53,7 @@ namespace FailuresModule.Model.Run.Sustainers
 
     public SneakFailureSustainer(SneakFailureDefinition failure) : base(failure)
     {
-      this.failure = failure;
+      this.Failure = failure;
       this.SneakAdjustPerTick = rnd.NextDouble(failure.MinimalSneakAdjustPerTick, failure.MaximalSneakAdjustPerTick);
 
       ResetInternal();
@@ -82,7 +82,7 @@ namespace FailuresModule.Model.Run.Sustainers
     {
       lock (this)
       {
-        CurrentSneak = rnd.NextDouble(failure.MinimalInitialSneakValue, failure.MaximalInitialSneakValue);
+        CurrentSneak = rnd.NextDouble(Failure.MinimalInitialSneakValue, Failure.MaximalInitialSneakValue);
       }
     }
 
@@ -101,18 +101,18 @@ namespace FailuresModule.Model.Run.Sustainers
         {
           CurrentSneak += SneakAdjustPerTick;
           bool isFinished;
-          if (failure.Direction == SneakFailureDefinition.EDirection.Up)
+          if (Failure.Direction == SneakFailureDefinition.EDirection.Up)
           {
-            isFinished = value > failure.FinalValue;
-            if (failure.IsPercentageBased)
+            isFinished = value > Failure.FinalValue;
+            if (Failure.IsPercentageBased)
               LastForcedValue = value + value * CurrentSneak;
             else
               LastForcedValue = value + CurrentSneak;
           }
           else
           {
-            isFinished = value < failure.FinalValue;
-            if (failure.IsPercentageBased)
+            isFinished = value < Failure.FinalValue;
+            if (Failure.IsPercentageBased)
               LastForcedValue = value - value * CurrentSneak;
             else
               LastForcedValue = value - CurrentSneak;
