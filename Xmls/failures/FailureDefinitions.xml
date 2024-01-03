@@ -63,12 +63,23 @@
       <simVarStuck id="flapsRight" title="Right Flaps" simVar="TRAILING EDGE FLAPS RIGHT PERCENT" refreshIntervalInMs="100" />
     </definitions>
     <definitions title="surfaces">
-      <simVarStuck id="rudderTrim" title="Rudder Trim" simVar="RUDDER TRIM PCT" onlyOnDetectecChange="true" />
-      <simVarStuck id="aileronTrim" title="Aileron Trim" simVar="AILERON TRIM PCT" onlyOnDetectecChange="true" />
-      <simVarStuck id="elevatorTrim" title="Elevator Trim" simVar="ELEVATOR TRIM POSITION" onlyOnDetectecChange="true" />
-      <simVarStuck id="elevator" title="Elevator" simVar="ELEVATOR POSITION" onlyOnDetectecChange="true" />
-      <simVarStuck id="aileron" title="Aileron" simVar="AILERON POSITION" onlyOnDetectecChange="true" />
-      <simVarStuck id="rudder" title="Rudder" simVar="RUDDER POSITION" onlyOnDetectecChange="true" />
+      <simVarStuck id="rudderTrim" title="Rudder Trim" simVar="RUDDER TRIM PCT" onlyOnDetectedChange="true" />
+      <simVarStuck id="aileronTrim" title="Aileron Trim" simVar="AILERON TRIM PCT" onlyOnDetectedChange="true" />
+      <simVarStuck id="elevatorTrim" title="Elevator Trim" simVar="ELEVATOR TRIM POSITION" onlyOnDetectedChange="true" />
+      <simVarStuck id="elevator" title="Elevator" simVar="ELEVATOR POSITION" onlyOnDetectedChange="true" />
+      <simVarStuck id="aileron" title="Aileron" simVar="AILERON POSITION" onlyOnDetectedChange="true" />
+      <simVarStuck id="rudder" title="Rudder" simVar="RUDDER POSITION" onlyOnDetectedChange="true" />
+    </definitions>
+  </definitions>
+  <definitions title="fbw320">
+    <simVarStuck id="fbw320FlapsHandleStuck" title="FBW A320 Flaps handle stuck" simVar="L:A32NX_FLAPS_HANDLE_INDEX" onlyOnDetectedChange="true" />
+    <simVarValue id="fbw320MasterWarn" title="FBW A320 Master Warning On" simVar="L:A32NX_MASTER_WARNING" okValue="0" failValue="1" />
+    <definitions title="fuel">
+      <simVarLeak id="fbw320fuelLeft" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_LEFT_PRE" />
+      <!--<simVarLeak id="fbw320fuelLeftAux" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_AUX_LEFT_PRE" />-->
+      <simVarLeak id="fbw320fuelRight" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_RIGHT_PRE" />
+      <!--<simVarLeak id="fbw320fuelRightAux" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_AUX_RIGHT_PRE" />-->
+      <simVarLeak id="fbw320fuelCenter" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_CENTER_PRE" />
     </definitions>
   </definitions>
 </definitions>

@@ -1,0 +1,89 @@
+<failureDefinitions
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://chlaot.org/failures.xsd"
+        xmlns:g ="http://chlaot.org/global.xsd"
+        xsi:noNamespaceSchemaLocation="file://./Xsds/FailureSchema.xsd">
+  <metaInfo>
+    <g:label>Default failures for C172 with steam gauges</g:label>
+    <g:author>Marek Vajgl</g:author>
+    <g:description></g:description>
+  </metaInfo>
+  <group title="Failures">
+    <incident title="Bird-strike" repetitive="false">
+      <variables>
+        <g:randomVariable name="vFail" minimum="70" maximum="180"/>
+      </variables>
+      <triggers>
+        <trigger probability="0.05" repetitive="false">
+          <g:property name="ias" direction="passing" expression="{vFail}"/>
+        </trigger>
+      </triggers>
+      <failures selection="one">
+        <failures selection="all">
+          <failure id="eng1" />
+          <failure id="engFire1" />
+          <failure id="fbw320MasterWarn" />
+        </failures>
+        <failures selection="all">
+          <failure id="eng2" />
+          <failure id="engFire2" />
+          <failure id="fbw320MasterWarn" />
+        </failures> 
+      </failures>
+    </incident>
+    <group title="System failures">
+      <incident title="Internal systems" repetitive="true">
+        <triggers>
+          <timeTrigger interval="oncePerTenMinutes" probability="0.005" repetitive="true"/>
+        </triggers>
+        <failures selection="one">
+          <failure id="pitot"/>
+          <failure id="static_port"/>
+        </failures>
+      </incident>
+    </group>
+    <group title="Panel failures">
+      <incident title="Panel failure" repetitive="true">
+        <triggers>
+          <timeTrigger interval="oncePerTenMinutes" probability="0.005" repetitive="true"/>
+        </triggers>
+        <failures selection="one">
+          <failure id="pnlAirspeed"/>
+          <failure id="pnlAltimeter"/>
+        </failures>
+      </incident>
+    </group>
+    <incident title="Brake failures" repetitive="false">
+      <triggers>
+        <trigger probability="0.03" repetitive="false">
+          <g:property name="height" direction="passingDown" expression="100"/>
+        </trigger>
+      </triggers>
+      <failures selection="one">
+        <failure id="brakeAll"/>
+        <failure id="brakeLeft"/>
+        <failure id="brakeRight"/>
+      </failures>
+    </incident>
+    <incident title="Fuel leak" repetitive="false">
+      <triggers>
+        <timeTrigger interval="oncePerHour" probability="0.005" repetitive="true"/>
+      </triggers>
+      <failures selection="one">
+        <failure id="fbw320fuelLeft"/>
+        <!--<failure id="fbw320fuelLeftAux"/>-->
+        <failure id="fbw320fuelRight"/>
+        <!--<failure id="fbw320fuelRightAux"/>-->
+        <failure id="fbw320fuelCenter"/>
+      </failures>
+    </incident>
+    <incident title="Flaps stuck" repetitive="false">
+      <triggers>
+        <timeTrigger interval="oncePerHour" probability="0.005" repetitive="true"/>
+      </triggers>
+      <failures selection="one">
+        <failure id="fbw320FlapsHandleStuck"/>
+      </failures>
+    </incident>
+  </group>
+</failureDefinitions>

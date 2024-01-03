@@ -155,7 +155,7 @@ namespace FailuresModule.Model.Sim
       (id, title, scp) = GetIdTitleScp(elm);
       StuckFailureDefinition ret = new(id, title, scp);
       SetAttributeIfExists(elm, "refreshIntervalInMs", q => int.Parse(q), q => ret.RefreshIntervalInMs = q);
-      SetAttributeIfExists(elm, "onlyOnDetectedChange", q => q == "0" ? false : q == "1" ? true : throw new ApplicationException($"Unexpected value '{q}' (expected O/1)."), q => ret.OnlyUpdateOnDetectedChange = q);
+      SetAttributeIfExists(elm, "onlyOnDetectedChange", q => bool.Parse(q), q => ret.OnlyUpdateOnDetectedChange = q);
       ret.EnsureValid();
 
       return ret;
