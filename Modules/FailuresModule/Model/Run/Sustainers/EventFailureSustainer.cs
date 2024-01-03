@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace FailuresModule.Types.Run.Sustainers
+namespace FailuresModule.Model.Run.Sustainers
 {
   internal class EventFailureSustainer : FailureSustainer
   {

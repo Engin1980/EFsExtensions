@@ -7,7 +7,7 @@ using System.Printing;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Types.Run.Sustainers
+namespace FailuresModule.Model.Run.Sustainers
 {
   internal class SimVarFailureSustainer : SimVarBasedFailureSustainer
   {
