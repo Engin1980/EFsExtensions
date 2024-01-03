@@ -9,7 +9,7 @@
     <definitions title="engine">
       <sequence from="1" to="4" varRef="{i}">
         <simEvent id="eng{i}" title="Engine {i} failure" simEvt="TOGGLE_ENGINE{i}_FAILURE" />
-        <simVarValue id="engFire{i}" title="Engine {i} fire" simVar="ENG_ON_FIRE:{i}" />
+        <simVarValue id="engFire{i}" title="Engine {i} fire" simVar="ENG ON FIRE:{i}" />
         <simVarValue id="engTurbo{i}" title="Engine {i} turbocharger" simVar="RECIP ENG TURBOCHARGER FAILED:{i}" />
         <simVarLeak id="engCoolantRes{i}" title="Engine {i} coolant reservoir" simVar="RECIP ENG COOLANT RESERVOIR PERCENT:{i}" />
         <simVarSneak id="engOilTemperature{i}->eng1" title ="Engine {i} oil temperature -> eng {i} fail" simVar="GENERAL ENG OIL TEMPERATURE:{i}"

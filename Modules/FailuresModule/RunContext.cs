@@ -182,8 +182,8 @@ namespace FailuresModule
     {
       void DoFlattening(Fail fi, List<FailId> lst)
       {
-        if (fi is Fail fg)
-          DoFlattening(fg, lst);
+        if (fi is FailGroup fg)
+          fg.Items.ForEach(q => DoFlattening(q, lst));
         else if (fi is FailId f)
           lst.Add(f);
         else
@@ -232,6 +232,7 @@ namespace FailuresModule
 
     private List<FailId> PickFailItems(FailGroup root)
     {
+      //TOTO this is not correct as multiple nested gorups with combination of all/one will not be selected correctly
       List<FailId> ret;
       switch (root.Selection)
       {

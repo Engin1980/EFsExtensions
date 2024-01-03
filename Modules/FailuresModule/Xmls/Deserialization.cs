@@ -140,7 +140,7 @@ namespace FailuresModule.Xmls
             new EXmlHelper.List.DT[]
             {
               new EXmlHelper.List.DT("failure", typeof(FailId)),
-              new EXmlHelper.List.DT("failGroup", typeof(FailGroup))
+              new EXmlHelper.List.DT("failures", typeof(FailGroup))
              }));
       return ret;
     }
