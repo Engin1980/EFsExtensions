@@ -15,6 +15,7 @@
       <and>
         <property name="height" direction="above" expression="0" />
         <property name="verticalSpeed" direction="above" expression="100" />
+        <property name="ias" direction="above" expression="40" />
       </and>
     </when>
     <reactivateWhen>
@@ -37,7 +38,9 @@
         <property name="ias" direction="above" expression="{speed}" />
       </for>
     </reactivateWhen>
-    <variable name="speed" defaultValue="80" info="Speed in kts" />
+    <variables>
+      <userVariable name="speed" defaultValue="80" description="Speed in kts" />
+    </variables>
   </speechDefinition>
   <speechDefinition title="Deceleration announcement (60)kts">
     <speech type="speech" value="{speed} knots" />
@@ -53,7 +56,9 @@
         <property name="ias" direction="above" expression="{speed}" />
       </for>
     </reactivateWhen>
-    <variable name="speed" defaultValue="60" info="Speed in kts" />
+    <variables>
+      <userVariable name="speed" defaultValue="60" description="Speed in kts" />
+    </variables>
   </speechDefinition>
   <speechDefinition title="Transition Altitude">
     <speech type="speech" value="Transition altitude" />
@@ -68,7 +73,9 @@
         <true />
       </for>
     </reactivateWhen>
-    <variable name="transition_altitude" defaultValue="5000" info="Transition altitude" />
+    <variables>
+      <userVariable name="transition_altitude" defaultValue="5000" description="Transition altitude" />
+    </variables>
   </speechDefinition>
   <speechDefinition title="Transition Level">
     <speech type="speech" value="Transition level" />
@@ -83,7 +90,9 @@
         <true />
       </for>
     </reactivateWhen>
-    <variable name="transition_level" defaultValue="5000" info="Transition level" />
+    <variables>
+      <userVariable name="transition_level" defaultValue="5000" description="Transition level" />
+    </variables>
   </speechDefinition>
   <speechDefinition title="FL100 pass">
     <speech type="speech" value="Passing ten thousand feet" />

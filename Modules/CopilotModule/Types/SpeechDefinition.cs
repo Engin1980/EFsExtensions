@@ -15,7 +15,7 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types
     public Speech Speech { get; set; } = null!;
     public IStateCheckItem When { get; set; } = null!;
     public IStateCheckItem ReactivateWhen { get; set; } = null!;
-    public List<UserVariable> Variables { get; } = new();
+    public List<UserVariable> Variables { get; set; } = new();
 
     /*
      * This is here because I need those values to be as collections for WPF TreeView

@@ -47,9 +47,9 @@ namespace EXmlLib
       }
 
       public static ObjectElementDeserializer.PropertyDeserializeHandler CreateForNested<T>(
-      string collectionPath,
-      DT[] elementTypeMappings,
-      Producer<List<T>>? defaultProducerIfCollectionPathNotFound = null)
+        string collectionPath,
+        DT[] elementTypeMappings,
+        Producer<List<T>>? defaultProducerIfCollectionPathNotFound = null)
       {
         ObjectElementDeserializer.PropertyDeserializeHandler ret = (e, t, f, c) =>
         {
@@ -96,6 +96,7 @@ namespace EXmlLib
         foreach (var mapping in mappings)
         {
           var tmp = LoadListFromElements<T>(mapping, listElement, c);
+          //tmp.ForEach(q => ret.Add(q));
           ret.AddRange(tmp);
         }
         return ret;

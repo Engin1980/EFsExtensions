@@ -218,7 +218,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
         .WithCustomTargetType(typeof(SpeechDefinition))
         .WithCustomPropertyDeserialization(
           nameof(SpeechDefinition.Variables),
-          EXmlHelper.List.CreateForFlat<Variable>("variable"));
+          EXmlHelper.List.CreateForNested<UserVariable>(
+            "variables",
+            new EXmlHelper.List.DT[] {
+              new EXmlHelper.List.DT("userVariable", typeof(UserVariable))},
+            () => new List<UserVariable>()));
       ret.Context.ElementDeserializers.Insert(0, oed);
 
       oed = new ObjectElementDeserializer()

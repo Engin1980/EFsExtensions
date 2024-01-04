@@ -9,9 +9,7 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types
 {
   public class CopilotSet
   {
-#pragma warning disable CS8618
-    public ChlaotModuleBase.ModuleUtils.MetaInfo MetaInfo { get; set; }
-    public List<SpeechDefinition> SpeechDefinitions { get; set; }
-#pragma warning restore CS8618
+    public ChlaotModuleBase.ModuleUtils.MetaInfo MetaInfo { get; set; } = null!;
+    public List<SpeechDefinition> SpeechDefinitions { get; set; } = null!;
   }
 }

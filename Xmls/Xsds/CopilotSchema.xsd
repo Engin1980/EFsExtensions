@@ -27,11 +27,4 @@
     </xsd:sequence>
     <xsd:attribute name="title" type="g:nonemptyString" use="required"/>
   </xsd:complexType>
-
-  <xsd:complexType name="variableInfo">
-    <xsd:attribute name="name" type="g:nonemptyString" use="required"/>
-    <xsd:attribute name="defaultValue" type="xsd:int" use="optional"/>
-    <xsd:attribute name="info" type="xsd:string" use="optional"/>
-  </xsd:complexType>
-
 </xsd:schema>
