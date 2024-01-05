@@ -25,7 +25,6 @@ namespace FailuresModule.Xmls
   public class Deserialization
   {
     private const string FAILURES_KEY = "__failures";
-    private const string LOG_HANDLER_KEY = "__log_handler";
 
     private class PercentageDeserializer : IAttributeDeserializer
     {
@@ -46,13 +45,12 @@ namespace FailuresModule.Xmls
       }
     }
 
-    public static EXml<IncidentTopGroup> CreateDeserializer(List<FailureDefinition> failures, NewLogHandler logHandler)
+    public static EXml<IncidentTopGroup> CreateDeserializer(List<FailureDefinition> failures)
     {
       EXml<IncidentTopGroup> ret = new();
 
       Dictionary<string, FailureDefinition> failDict = failures.ToDictionary(q => q.Id, q => q);
       ret.Context.CustomData[FAILURES_KEY] = failDict;
-      ret.Context.CustomData[LOG_HANDLER_KEY] = logHandler;
       int index = 0;
       ret.Context.ElementDeserializers.Insert(index++, CreateIncidentSetDeserializer());
       ret.Context.ElementDeserializers.Insert(index++, CreateIncidentGroupDeserializer());

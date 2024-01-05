@@ -18,7 +18,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
       get => base.GetProperty<bool>(nameof(IsReady))!;
       private set => base.UpdateProperty(nameof(IsReady), value);
     }
-    private readonly NewLogHandler logHandler;
+    private readonly Logger logger;
 
     private CtrInit? _InitControl;
     private CtrRun? _RunControl;
@@ -26,7 +26,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
     public FailuresModule()
     {
       this.IsReady = false;
-      this.logHandler = Logger.RegisterSender(this);
+      this.logger = Logger.Create(this);
     }
 
     public Control InitControl => this._InitControl ?? throw new ApplicationException("InitControl is null.");
@@ -51,7 +51,8 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
     public void SetUp(ModuleSetUpInfo setUpInfo)
     {
-      InitContext = new InitContext(this.logHandler, q => this.IsReady = q);
+      InitContext = new InitContext(q => this.IsReady = q);
+      Logger.RegisterSenderName(InitContext, "FailuresModule.InitContext");
     }
 
     public void Stop()

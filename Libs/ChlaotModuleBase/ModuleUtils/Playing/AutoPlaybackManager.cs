@@ -8,20 +8,20 @@ using System.Text;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing
 {
-  public class AutoPlaybackManager : LogIdAble, IDisposable
+  public class AutoPlaybackManager : IDisposable
   {
     private readonly Queue<byte[]> queue = new();
     private bool isPlaying = false;
-    private readonly NewLogHandler logHandler;
+    private readonly Logger logger;
 
     public AutoPlaybackManager()
     {
-      this.logHandler = Logger.RegisterSender(this);
+      this.logger = Logger.Create(this);
     }
 
     public void ClearQueue()
     {
-      this.logHandler.Invoke(LogLevel.INFO, "ClearQueue() requested.");
+      this.logger.Log(LogLevel.INFO, "ClearQueue() requested.");
       this.queue.Clear();
     }
 
@@ -34,7 +34,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing
     public void Enqueue(byte[] bytes)
     {
       this.queue.Enqueue(bytes ?? throw new ArgumentNullException(nameof(bytes)));
-      this.logHandler.Invoke(LogLevel.INFO, $"Enqueueing {bytes.Length} bytes.");
+      this.logger.Log(LogLevel.INFO, $"Enqueueing {bytes.Length} bytes.");
       TryPlayNext();
     }
 
@@ -49,18 +49,18 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing
 
     private void TryPlayNext()
     {
-      this.logHandler.Invoke(LogLevel.INFO, $"TryPlayNext invoked.");
+      this.logger.Log(LogLevel.INFO, $"TryPlayNext invoked.");
       lock (queue)
       {
         if (isPlaying || queue.Count == 0)
         {
-          this.logHandler.Invoke(LogLevel.INFO, $"TryPlayNext - nothing to play, return.");
+          this.logger.Log(LogLevel.INFO, $"TryPlayNext - nothing to play, return.");
           return;
         }
 
         isPlaying = true;
         byte[] bytes = queue.Dequeue();
-        this.logHandler.Invoke(LogLevel.INFO, $"TryPlayNext - starting play of {bytes.Length}.");
+        this.logger.Log(LogLevel.INFO, $"TryPlayNext - starting play of {bytes.Length}.");
         Player player = new(bytes);
         player.PlaybackFinished += Ip_PlaybackFinished;
         player.PlayAsync();

@@ -20,7 +20,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
   {
     private const string SETTINGS_FILE = "affinity.sett.xml";
 
-    private readonly NewLogHandler logHandler;
+    private readonly Logger logger;
 
     private readonly Action<bool> setIsReadyFlagAction;
 
@@ -34,7 +34,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
         ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
       this.Settings = new();
       this.RuleBase = new();
-      this.logHandler = Logger.RegisterSender(this);
+      this.logger = Logger.Create(this);
     }
 
     public delegate void AdjustmentCompletedDelegate();
@@ -60,7 +60,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
       try
       {
-        logHandler.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
+        logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
           doc = XDocument.Load(xmlFile);
@@ -78,34 +78,34 @@ namespace Eng.Chlaot.Modules.AffinityModule
       catch (Exception ex)
       {
         this.setIsReadyFlagAction(false);
-        logHandler.Invoke(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage("\n\t"));
+        logger.Invoke(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage("\n\t"));
       }
     }
 
     public void LoadSettings()
     {
-      this.logHandler.Invoke(LogLevel.VERBOSE, "Loading settings");
+      this.logger.Invoke(LogLevel.VERBOSE, "Loading settings");
       try
       {
         this.Settings.Load(SETTINGS_FILE);
-        this.logHandler.Invoke(LogLevel.INFO, "Settings saved");
+        this.logger.Invoke(LogLevel.INFO, "Settings saved");
       }
       catch (Exception ex)
       {
-        this.logHandler.Invoke(LogLevel.ERROR, "Failed to load settings. " + ex.GetFullMessage("\n\t"));
+        this.logger.Invoke(LogLevel.ERROR, "Failed to load settings. " + ex.GetFullMessage("\n\t"));
       }
     }
     public void SaveSettings()
     {
-      this.logHandler.Invoke(LogLevel.VERBOSE, "Saving settings");
+      this.logger.Invoke(LogLevel.VERBOSE, "Saving settings");
       try
       {
         this.Settings.Save(SETTINGS_FILE);
-        this.logHandler.Invoke(LogLevel.INFO, "Settings saved");
+        this.logger.Invoke(LogLevel.INFO, "Settings saved");
       }
       catch (Exception ex)
       {
-        this.logHandler.Invoke(LogLevel.ERROR, "Failed to save settings. " + ex.GetFullMessage("\n\t"));
+        this.logger.Invoke(LogLevel.ERROR, "Failed to save settings. " + ex.GetFullMessage("\n\t"));
       }
     }
     internal void Run()

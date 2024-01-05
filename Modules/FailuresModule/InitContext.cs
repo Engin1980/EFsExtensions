@@ -20,12 +20,13 @@ namespace FailuresModule
 {
     public class InitContext : NotifyPropertyChangedBase
   {
-    private readonly NewLogHandler logHandler;
+    private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
 
-    public InitContext(NewLogHandler logHandler, Action<bool> setIsReadyFlagAction)
+    public InitContext(Action<bool> setIsReadyFlagAction)
     {
-      this.logHandler = logHandler ?? throw new ArgumentNullException(nameof(logHandler));
+      this.logger = Logger.Create(this);
+      this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
       this.FailureDefinitionsFlat = new();
       this.BuildFailures();
@@ -58,11 +59,11 @@ namespace FailuresModule
 
       try
       {
-        logHandler.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
+        logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
           doc = XDocument.Load(xmlFile, LoadOptions.SetLineInfo);
-          EXml<IncidentTopGroup> exml = Deserialization.CreateDeserializer(this.FailureDefinitionsFlat, this.logHandler);
+          EXml<IncidentTopGroup> exml = Deserialization.CreateDeserializer(this.FailureDefinitionsFlat);
           tmp = exml.Deserialize(doc);
         }
         catch (Exception ex)
@@ -70,7 +71,7 @@ namespace FailuresModule
           throw new ApplicationException("Unable to read/deserialize copilot-set from '{xmlFile}'. Invalid file content?", ex);
         }
 
-        logHandler.Invoke(LogLevel.INFO, $"Checking sanity");
+        logger.Invoke(LogLevel.INFO, $"Checking sanity");
         try
         {
           SanityChecker.CheckSanity(tmp, this.FailureDefinitionsFlat);
@@ -82,19 +83,19 @@ namespace FailuresModule
 
         this.FailureSet = tmp;
         UpdateReadyFlag();
-        logHandler.Invoke(LogLevel.INFO, $"Failure set file '{xmlFile}' successfully loaded.");
+        logger.Invoke(LogLevel.INFO, $"Failure set file '{xmlFile}' successfully loaded.");
         this.setIsReadyFlagAction(true);
       }
       catch (Exception ex)
       {
         this.setIsReadyFlagAction(false);
-        logHandler.Invoke(LogLevel.ERROR, $"Failed to load failure set from '{xmlFile}'." + ex.GetFullMessage());
+        logger.Invoke(LogLevel.ERROR, $"Failed to load failure set from '{xmlFile}'." + ex.GetFullMessage());
       }
     }
 
     private void UpdateReadyFlag()
     {
-      logHandler.Invoke(LogLevel.WARNING, "UpdateReadyFlag() NotImplemented");
+      logger.Invoke(LogLevel.WARNING, "UpdateReadyFlag() NotImplemented");
     }
   }
 }

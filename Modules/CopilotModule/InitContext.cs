@@ -26,7 +26,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 {
   public class InitContext : NotifyPropertyChangedBase
   {
-    private readonly NewLogHandler logHandler;
+    private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
     private readonly Dictionary<UserVariable, SpeechDefinition> variableToSpeechDefinitionMapping = new();
 
@@ -41,7 +41,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
     internal InitContext(Settings settings, Action<bool> setIsReadyFlagAction)
     {
       Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-      this.logHandler = Logger.RegisterSender(this, "[Copilot.InitContext]");
+      this.logger = Logger.Create(this, "Copilot.InitContext");
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
     }
 
@@ -53,7 +53,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
       try
       {
-        logHandler.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
+        logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
           doc = XDocument.Load(xmlFile);
@@ -65,7 +65,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
           throw new ApplicationException("Unable to read/deserialize copilot-set from '{xmlFile}'. Invalid file content?", ex);
         }
 
-        logHandler.Invoke(LogLevel.INFO, $"Checking sanity");
+        logger.Invoke(LogLevel.INFO, $"Checking sanity");
         try
         {
           CheckSanity(tmp);
@@ -75,7 +75,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
           throw new ApplicationException("Error loading checklist.", ex);
         }
 
-        logHandler.Invoke(LogLevel.INFO, $"Analysing variables");
+        logger.Invoke(LogLevel.INFO, $"Analysing variables");
         try
         {
           AnalyseForUsedVariables(tmp);
@@ -85,7 +85,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
           throw new ApplicationException("Error analysing variables.", ex);
         }
 
-        logHandler.Invoke(LogLevel.INFO, $"Loading/generating sounds");
+        logger.Invoke(LogLevel.INFO, $"Loading/generating sounds");
         try
         {
           InitializeSoundStreams(tmp, System.IO.Path.GetDirectoryName(xmlFile)!);
@@ -97,13 +97,13 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
         this.Set = tmp;
         UpdateReadyFlag();
-        logHandler.Invoke(LogLevel.INFO, $"Copilot set file '{xmlFile}' successfully loaded.");
+        logger.Invoke(LogLevel.INFO, $"Copilot set file '{xmlFile}' successfully loaded.");
 
       }
       catch (Exception ex)
       {
         this.setIsReadyFlagAction(false);
-        logHandler.Invoke(LogLevel.ERROR, $"Failed to load copilot set from '{xmlFile}'." + ex.GetFullMessage());
+        logger.Invoke(LogLevel.ERROR, $"Failed to load copilot set from '{xmlFile}'." + ex.GetFullMessage());
       }
     }
 

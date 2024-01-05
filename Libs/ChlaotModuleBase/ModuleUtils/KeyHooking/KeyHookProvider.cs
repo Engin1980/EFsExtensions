@@ -32,11 +32,11 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking
     private readonly Window window;
 
     private readonly IntPtr windowHandle;
-    private readonly NewLogHandler logHandler;
+    private readonly Logger logger;
 
     public KeyHookWrapper()
     {
-      this.logHandler = Logger.RegisterSender(this);
+      this.logger = Logger.Create(this);
       this.window = Application.Current.Windows.OfType<Window>().First(x => x.IsActive);
       this.windowHandle = new WindowInteropHelper(window).Handle;
       this.source = HwndSource.FromHwnd(this.windowHandle);
@@ -54,7 +54,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking
     public int RegisterKeyHook(KeyHookInfo keyHookInfo)
     {
       int id = KEY_HOOK_ID_BASE + nextKeyHookIdShift++;
-      this.logHandler.Invoke(LogLevel.INFO, $"Registering keyhook {keyHookInfo} as id={id}.");
+      this.logger.Log(LogLevel.INFO, $"Registering keyhook {keyHookInfo} as id={id}.");
       uint modifiers = keyHookInfo.GetWin32Modifiers();
       uint vkey = keyHookInfo.GetVirtualKey();
       bool res = RegisterHotKey(windowHandle, id, modifiers, vkey);
@@ -74,7 +74,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking
 
     public void UnregisterKeyHook(int id)
     {
-      this.logHandler.Invoke(LogLevel.INFO, $"UNRegistering keyhook id={id}.");
+      this.logger.Invoke(LogLevel.INFO, $"UNRegistering keyhook id={id}.");
       UnregisterHotKey(this.windowHandle, id);
       this.registeredHooks.Remove(id);
     }
@@ -84,6 +84,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking
 
     [DllImport("user32.dll")]
     private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
     private IntPtr HwndHook(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
       const int WM_HOTKEY = 0x0312;

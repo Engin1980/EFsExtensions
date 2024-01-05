@@ -24,7 +24,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 {
   public class InitContext : NotifyPropertyChangedBase
   {
-    private readonly NewLogHandler logHandler;
+    private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
 
     public CheckSet ChecklistSet
@@ -38,7 +38,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     public InitContext(Settings settings, Action<bool> setIsReadyFlagAction)
     {
       Settings = settings ?? throw new ArgumentNullException(nameof(settings));
-      this.logHandler = Logger.RegisterSender(this, "[Checklist.InitContext]");
+      this.logger = Logger.Create(this, "Checklist.InitContext");
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
     }
 
@@ -50,7 +50,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
       try
       {
-        logHandler.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
+        logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
           doc = XDocument.Load(xmlFile);
@@ -62,7 +62,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           throw new ApplicationException("Unable to read/deserialize checklist-set from '{xmlFile}'. Invalid file content?", ex);
         }
 
-        logHandler.Invoke(LogLevel.INFO, $"Checking sanity");
+        logger.Invoke(LogLevel.INFO, $"Checking sanity");
         try
         {
           CheckSanity(tmp);
@@ -72,7 +72,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           throw new ApplicationException("Error loading checklist.", ex);
         }
 
-        logHandler.Invoke(LogLevel.INFO, $"Binding checklist references");
+        logger.Invoke(LogLevel.INFO, $"Binding checklist references");
         try
         {
           BindNextChecklists(tmp);
@@ -82,7 +82,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           throw new ApplicationException("Error binding checklist references.", ex);
         }
 
-        logHandler.Invoke(LogLevel.INFO, $"Loading/generating sounds");
+        logger.Invoke(LogLevel.INFO, $"Loading/generating sounds");
         try
         {
           InitializeSoundStreams(tmp, System.IO.Path.GetDirectoryName(xmlFile)!);
@@ -94,13 +94,13 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
         this.ChecklistSet = tmp;
         this.setIsReadyFlagAction(true);
-        logHandler.Invoke(LogLevel.INFO, $"Checklist file '{xmlFile}' successfully loaded.");
+        logger.Invoke(LogLevel.INFO, $"Checklist file '{xmlFile}' successfully loaded.");
 
       }
       catch (Exception ex)
       {
         this.setIsReadyFlagAction(false);
-        logHandler.Invoke(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage("\n\t"));
+        logger.Invoke(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage("\n\t"));
       }
 
 

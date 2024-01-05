@@ -24,20 +24,20 @@ namespace AffinityModule
   /// </summary>
   public partial class CtrInit : System.Windows.Controls.UserControl
   {
-    public readonly NewLogHandler logHandler;
+    public readonly Logger logger;
     public readonly Context context;
     private string recentXmlFile = "";
 
     public CtrInit()
     {
       InitializeComponent();
-      this.logHandler = null!;
+      this.logger = null!;
       this.context = null!;
     }
 
     public CtrInit(Context context) : this()
     {
-      this.logHandler = Logger.RegisterSender(this);
+      this.logger = Logger.Create(this);
       this.context = context;
       this.DataContext = context;
     }

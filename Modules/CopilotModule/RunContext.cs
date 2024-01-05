@@ -64,7 +64,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private readonly object evaluatingLock = new();
     private readonly StateCheckEvaluator evaluator;
-    private readonly NewLogHandler logHandler;
+    private readonly Logger logger;
     private readonly Dictionary<string, double> propertyValues = new();
     private readonly Settings settings;
     private readonly SimConWrapperWithSimData simConWrapper;
@@ -92,7 +92,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
     {
       this.Set = initContext.Set;
       this.settings = initContext.Settings;
-      this.logHandler = Logger.RegisterSender(this, "[Copilot.RunContext]");
+      this.logger = Logger.Create(this, "Copilot.RunContext");
 
       ESimConnect.ESimConnect simCon = new();
       this.simConWrapper = new(simCon);
@@ -111,7 +111,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
       Log(LogLevel.INFO, "Run");
       this.simConWrapper.SimSecondElapsed += SimConWrapper_SimSecondElapsed;
 
-      logHandler.Invoke(LogLevel.VERBOSE, "Starting connection timer");
+      logger.Invoke(LogLevel.VERBOSE, "Starting connection timer");
       this.simConWrapper.OpenAsync(
         () =>
         {
@@ -158,7 +158,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         player.PlayAsync();
 
         activated.IsActive = false;
-        this.logHandler.Invoke(LogLevel.VERBOSE,
+        this.logger.Invoke(LogLevel.VERBOSE,
           $"Activated speech {activated.SpeechDefinition.Title}");
       }
     }
@@ -175,11 +175,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
         });
 
       var readys = this.Infos.Where(q => q.IsActive);
-      this.logHandler.Invoke(LogLevel.VERBOSE, $"Evaluating {readys.Count()} readys");
+      this.logger.Invoke(LogLevel.VERBOSE, $"Evaluating {readys.Count()} readys");
       EvaluateActives(readys);
 
       var waits = this.Infos.Where(q => !q.IsActive);
-      this.logHandler.Invoke(LogLevel.VERBOSE, $"Evaluating {waits.Count()} waits");
+      this.logger.Invoke(LogLevel.VERBOSE, $"Evaluating {waits.Count()} waits");
       EvaluateInactives(waits);
     }
 
@@ -196,7 +196,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         .ForEach(q =>
         {
           q.IsActive = true;
-          this.logHandler.Invoke(LogLevel.VERBOSE,
+          this.logger.Invoke(LogLevel.VERBOSE,
           $"Reactivated speech {q.SpeechDefinition.Title}");
         });
     }
@@ -211,17 +211,17 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private void Log(LogLevel level, string message)
     {
-      logHandler.Invoke(level, "[RunContext] :: " + message);
+      logger.Invoke(level, "[RunContext] :: " + message);
     }
 
     private void SimConWrapper_SimSecondElapsed()
     {
       if (this.simConWrapper.IsSimPaused) return;
-      this.logHandler.Invoke(LogLevel.VERBOSE, "SimSecondElapsed (non-paused)");
+      this.logger.Invoke(LogLevel.VERBOSE, "SimSecondElapsed (non-paused)");
 
       if (Monitor.TryEnter(evaluatingLock) == false)
       {
-        this.logHandler.Invoke(LogLevel.WARNING, "SimSecondElapsed took longer than sim-second! Performance issue?");
+        this.logger.Invoke(LogLevel.WARNING, "SimSecondElapsed took longer than sim-second! Performance issue?");
         return;
       }
 

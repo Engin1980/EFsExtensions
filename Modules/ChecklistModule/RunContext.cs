@@ -24,7 +24,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
-    public class RunContext : NotifyPropertyChangedBase
+  public class RunContext : NotifyPropertyChangedBase
   {
     public class AutoplayChecklistEvaluator
     {
@@ -48,7 +48,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         if (this.SimData.IsSimPaused) return false;
         if (Monitor.TryEnter(lck) == false) return false;
 
-        this.parent.logHandler.Invoke(LogLevel.VERBOSE, $"Evaluation started for {checkList.Id}");
+        this.parent.logger.Invoke(LogLevel.VERBOSE, $"Evaluation started for {checkList.Id}");
 
         if (prevList != checkList)
         {
@@ -63,7 +63,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         else
           ret = checkList.MetaInfo?.When != null && this.evaluator.Evaluate(checkList.MetaInfo.When);
 
-        this.parent.logHandler.Invoke(LogLevel.VERBOSE,
+        this.parent.logger.Invoke(LogLevel.VERBOSE,
           $"Evaluation finished for {checkList.Id} as={ret}, autoplaySupressed={autoplaySuppressed}");
         Monitor.Exit(lck);
         return ret;
@@ -234,7 +234,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     private readonly AutoplayChecklistEvaluator autoplayEvaluator;
 
-    private readonly NewLogHandler logHandler;
+    private readonly Logger logger;
 
     private readonly PlaybackManager playback;
 
@@ -269,7 +269,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     {
       this.CheckSet = initContext.ChecklistSet;
       this.settings = initContext.Settings;
-      this.logHandler = Logger.RegisterSender(this, "[CheckList.RunContext]");
+      this.logger = Logger.Create(this, "CheckList.RunContext");
 
       this.CheckListViews = CheckSet.Checklists
         .Select(q => new CheckListView()
@@ -287,29 +287,29 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         .ToList();
 
       this.playback = new PlaybackManager(this);
-      this.simConWrapper= new SimConWrapperWithSimData(new ESimConnect.ESimConnect());
+      this.simConWrapper = new SimConWrapperWithSimData(new ESimConnect.ESimConnect());
       this.simConWrapper.SimSecondElapsed += Sim_SimSecondElapsed;
       this.autoplayEvaluator = new AutoplayChecklistEvaluator(this);
     }
 
     internal void Run(KeyHookWrapper keyHookWrapper)
     {
-      logHandler?.Invoke(LogLevel.INFO, "Run");
+      logger?.Invoke(LogLevel.INFO, "Run");
 
-      logHandler?.Invoke(LogLevel.VERBOSE, "Resetting playback");
+      logger?.Invoke(LogLevel.VERBOSE, "Resetting playback");
       playback.Reset();
 
-      logHandler?.Invoke(LogLevel.VERBOSE, "Adding key hooks");
+      logger?.Invoke(LogLevel.VERBOSE, "Adding key hooks");
       this.keyHookWrapper = keyHookWrapper ?? throw new ArgumentNullException(nameof(keyHookWrapper));
       ConnectKeyHooks();
 
-      logHandler?.Invoke(LogLevel.VERBOSE, "Starting connection timer");
+      logger?.Invoke(LogLevel.VERBOSE, "Starting connection timer");
 
       this.simConWrapper.OpenAsync(
         () => this.simConWrapper.Start(),
         ex => this.Log(LogLevel.WARNING, "Failed to connect to FS2020, will try it again..."));
 
-      logHandler?.Invoke(LogLevel.VERBOSE, "Run done");
+      logger?.Invoke(LogLevel.VERBOSE, "Run done");
     }
 
     internal void Stop()
@@ -336,34 +336,34 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       try
       {
         s = settings.Shortcuts.PlayPause;
-        logHandler?.Invoke(LogLevel.INFO, "Assigning play-pause keyboard shortcut " + s);
+        logger?.Invoke(LogLevel.INFO, "Assigning play-pause keyboard shortcut " + s);
         this.keyHookPlayPauseId = this.keyHookWrapper.RegisterKeyHook(ConvertShortcutToKeyHookInfo(s));
       }
       catch (Exception ex)
       {
-        logHandler?.Invoke(LogLevel.ERROR, $"Failed to bind key-hook for shortcut {s}. Reason: {ex.GetFullMessage()}");
+        logger?.Invoke(LogLevel.ERROR, $"Failed to bind key-hook for shortcut {s}. Reason: {ex.GetFullMessage()}");
       }
 
       try
       {
         s = settings.Shortcuts.SkipToNext;
-        logHandler?.Invoke(LogLevel.INFO, "Assigning skip-to-next keyboard shortcut " + s);
+        logger?.Invoke(LogLevel.INFO, "Assigning skip-to-next keyboard shortcut " + s);
         this.keyHookSkipNextId = this.keyHookWrapper.RegisterKeyHook(ConvertShortcutToKeyHookInfo(s));
       }
       catch (Exception ex)
       {
-        logHandler?.Invoke(LogLevel.ERROR, $"Failed to bind key-hook for shortcut {s}. Reason: {ex.GetFullMessage()}");
+        logger?.Invoke(LogLevel.ERROR, $"Failed to bind key-hook for shortcut {s}. Reason: {ex.GetFullMessage()}");
       }
 
       try
       {
         s = settings.Shortcuts.SkipToPrevious;
-        logHandler?.Invoke(LogLevel.INFO, "Assigning skip-to-previous keyboard shortcut " + s);
+        logger?.Invoke(LogLevel.INFO, "Assigning skip-to-previous keyboard shortcut " + s);
         this.keyHookSkipPrevId = this.keyHookWrapper.RegisterKeyHook(ConvertShortcutToKeyHookInfo(s));
       }
       catch (Exception ex)
       {
-        logHandler?.Invoke(LogLevel.ERROR, $"Failed to bind key-hook for shortcut {s}. Reason: {ex.GetFullMessage()}");
+        logger?.Invoke(LogLevel.ERROR, $"Failed to bind key-hook for shortcut {s}. Reason: {ex.GetFullMessage()}");
       }
 
       this.keyHookWrapper.KeyHookInvoked += keyHookWrapper_KeyHookInvoked;
@@ -391,7 +391,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     private void Log(LogLevel level, string message)
     {
-      logHandler.Invoke(level, message);
+      logger.Invoke(level, message);
     }
 
     private void Sim_SimSecondElapsed()

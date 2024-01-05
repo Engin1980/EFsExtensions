@@ -16,15 +16,15 @@ namespace Eng.Chlaot.Modules.AffinityModule
 {
   internal class AffinityAdjuster : IDisposable
   {
-    private NewLogHandler logHandler;
     private bool isRunning = false;
     private readonly List<Rule> rules;
     private readonly List<ProcessInfo> processInfos;
     private readonly Action onAdjustmentCompleted;
+    private readonly Logger logger;
 
     public AffinityAdjuster(List<Rule> rules, List<ProcessInfo> processInfos, Action onAdjustmentCompleted)
     {
-      logHandler = Logger.RegisterSender(typeof(AffinityAdjuster));
+      this.logger = Logger.Create(this);
       this.rules = rules;
       this.processInfos = processInfos;
       this.onAdjustmentCompleted = onAdjustmentCompleted;
@@ -36,11 +36,11 @@ namespace Eng.Chlaot.Modules.AffinityModule
       {
         if (isRunning)
         {
-          logHandler.Invoke(LogLevel.INFO, "AdjustAffinityAsync() invoked, but the task is running yet.");
+          Logger.Log(this, LogLevel.INFO, "AdjustAffinityAsync() invoked, but the task is running yet.");
           return;
         }
 
-        logHandler.Invoke(LogLevel.INFO, "AdjustAffinityAsync() invoked.");
+        Logger.Log(this, LogLevel.INFO, "AdjustAffinityAsync() invoked.");
         isRunning = true;
         var currentTask = new Task(ApplyRules);
         currentTask.Start();
@@ -88,13 +88,13 @@ namespace Eng.Chlaot.Modules.AffinityModule
     private void ApplyRules()
     {
       Dictionary<Process, Rule?> mapping = MapNewProcessesToRules();
-      logHandler.Invoke(LogLevel.VERBOSE, $"Analysis completed, adjusting {mapping.Count} processes.");
+      logger.Invoke(LogLevel.VERBOSE, $"Analysis completed, adjusting {mapping.Count} processes.");
 
       foreach (var item in mapping)
       {
         Process process = item.Key;
         Rule? rule = item.Value;
-        logHandler.Invoke(LogLevel.VERBOSE, $"Adjusting process {process.Id}/{process.ProcessName}");
+        logger.Invoke(LogLevel.VERBOSE, $"Adjusting process {process.Id}/{process.ProcessName}");
         ProcessInfo pi = new()
         {
           Id = process.Id,
@@ -110,7 +110,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
         }
         else
         {
-          logHandler.Invoke(LogLevel.VERBOSE, $"No rule to cover '{pi.Name} ({pi.Id})', skipping.");
+          logger.Invoke(LogLevel.VERBOSE, $"No rule to cover '{pi.Name} ({pi.Id})', skipping.");
           pi.RuleTitle = "(none)";
         }
         GetAffinity(process, pi);
@@ -118,11 +118,11 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
         Application.Current.Dispatcher.Invoke(() => { this.processInfos.Add(pi); });
       }
-      logHandler.Invoke(LogLevel.INFO, $"Affinity adjustment completed, " +
+      logger.Invoke(LogLevel.INFO, $"Affinity adjustment completed, " +
         $"changed {processInfos.Count(q => q.AffinitySetResult == ProcessInfo.EResult.Ok)}, " +
         $"failed {processInfos.Count(q => q.AffinitySetResult == ProcessInfo.EResult.Failed)}, " +
         $"skipped {processInfos.Count(q => q.AffinitySetResult == ProcessInfo.EResult.Unchanged)}.");
-      logHandler.Invoke(LogLevel.INFO, $"Priority adjustment completed, " +
+      logger.Invoke(LogLevel.INFO, $"Priority adjustment completed, " +
         $"changed {processInfos.Count(q => q.PrioritySetResult == ProcessInfo.EResult.Ok)}, " +
         $"failed {processInfos.Count(q => q.PrioritySetResult == ProcessInfo.EResult.Failed)}, " +
         $"skipped {processInfos.Count(q => q.PrioritySetResult == ProcessInfo.EResult.Unchanged)}.");
@@ -160,7 +160,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
         catch (Exception ex)
         {
           pi.PrioritySetResult = ProcessInfo.EResult.Failed;
-          logHandler.Invoke(LogLevel.VERBOSE, $"Adjusting '{pi.Name} ({pi.Id})' priority failed. " +
+          logger.Invoke(LogLevel.VERBOSE, $"Adjusting '{pi.Name} ({pi.Id})' priority failed. " +
               $"Probably no rights to do this. {ex.Message}");
         }
       }
@@ -180,7 +180,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
         catch (Exception ex)
         {
           pi.AffinitySetResult = ProcessInfo.EResult.Failed;
-          logHandler.Invoke(LogLevel.VERBOSE, $"Adjusting '{pi.Name} ({pi.Id})' affinity failed. " +
+          logger.Invoke(LogLevel.VERBOSE, $"Adjusting '{pi.Name} ({pi.Id})' affinity failed. " +
             $"Probably no rights to do this. {ex.Message}");
         }
       }

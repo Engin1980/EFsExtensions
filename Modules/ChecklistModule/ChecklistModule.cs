@@ -22,7 +22,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     private InitContext? initContext;
     private RunContext? runContext;
-    private readonly NewLogHandler logHandler;
+    private readonly Logger logger;
 
     private Settings? settings;
 
@@ -37,7 +37,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     public ChecklistModule()
     {
       this.IsReady = false;
-      this.logHandler = Logger.RegisterSender(this);
+      this.logger = Logger.Create(this);
     }
 
 
@@ -46,11 +46,11 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       try
       {
         settings = Settings.Load();
-        logHandler.Invoke(LogLevel.INFO, "Settings loaded.");
+        logger.Invoke(LogLevel.INFO, "Settings loaded.");
       }
       catch (Exception ex)
       {
-        logHandler.Invoke(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
+        logger.Invoke(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
         settings = new Settings();
       }
     }

@@ -21,7 +21,7 @@ using ChlaotModuleBase.ModuleUtils.StateChecking;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
-  public class StateCheckEvaluator : LogIdAble
+  public class StateCheckEvaluator 
   {
     #region Public Classes
 
@@ -66,7 +66,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     private static Random random = new();
     private readonly Dictionary<StateCheckProperty, double> extractedValues = new();
     private readonly Dictionary<StateCheckDelay, int> historyCounter = new();
-    private readonly NewLogHandler logHandler;
+    private readonly Logger logger;
     private readonly Dictionary<StateCheckProperty, EPassingState> passingPropertiesStates = new();
     private readonly Dictionary<string, double> propertyValues;
     private readonly Dictionary<string, double> variableValues;
@@ -84,8 +84,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       this.variableValues = variableValues;
       this.propertyValues = propertyValues;
 
-      this.logHandler = Logger.RegisterSender(this);
-      this.logHandler.Invoke(LogLevel.INFO, "Created");
+      this.logger = Logger.Create(this);
+      this.logger.Invoke(LogLevel.INFO, "Created");
     }
 
     #endregion Public Constructors
@@ -99,7 +99,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 
     public bool Evaluate(IStateCheckItem item, List<HistoryRecord>? evaluationHistory)
     {
-      logHandler.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} started.");
+      logger.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} started.");
       if (item == null) throw new ArgumentNullException(nameof(item));
       bool ret;
       lock (this)
@@ -108,7 +108,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         ret = EvaluateItem(item);
         this.evaluationHistoryContext = null;
       }
-      logHandler.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} resulted in {ret}.");
+      logger.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} resulted in {ret}.");
       return ret;
     }
 
@@ -276,7 +276,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     }
     private void Log(IStateCheckItem property, string msg, bool ret)
     {
-      this.logHandler.Invoke(LogLevel.INFO, $"EVAL {property.DisplayString} \t {msg} \t {ret}");
+      this.logger.Invoke(LogLevel.INFO, $"EVAL {property.DisplayString} \t {msg} \t {ret}");
     }
 
     private double ResolveRealPropertyValue(string propertyName)

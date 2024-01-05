@@ -25,7 +25,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
     public Control RunControl => _RunControl ?? throw new ApplicationException("Control not provided.");
 
     public string Name => "Copilot";
-    private readonly NewLogHandler logHandler;
+    private readonly Logger logger;
     private InitContext? initContext;
     private RunContext? runContext;
     private Settings? settings;
@@ -33,7 +33,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
     public CopilotModule()
     {
       this.IsReady = false;
-      this.logHandler = Logger.RegisterSender(this);
+      this.logger = Logger.Create(this);
     }
 
     public void Init()
@@ -57,12 +57,12 @@ namespace Eng.Chlaot.Modules.CopilotModule
       try
       {
         settings = Settings.Load();
-        logHandler.Invoke(LogLevel.INFO, "Settings loaded.");
+        logger.Invoke(LogLevel.INFO, "Settings loaded.");
       }
       catch (Exception ex)
       {
-        logHandler.Invoke(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
-        logHandler.Invoke(LogLevel.INFO, "Default settings used.");
+        logger.Invoke(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
+        logger.Invoke(LogLevel.INFO, "Default settings used.");
         settings = new Settings();
       }
     }
