@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ELogging
+namespace ELogging.Model
 {
-  public class LogItem
+    public class LogItem
   {
     public class LogThreadInfo
     {

@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ELogging
+namespace EXmlLib.Interfaces
 {
-  public delegate void NewLogHandler(LogLevel level, string message);
+  public interface IXmlObjectPostDeserialize
+  {
+    public void PostDeserialize();
+  }
 }

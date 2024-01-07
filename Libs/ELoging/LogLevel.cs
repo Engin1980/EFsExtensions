@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace ELogging
 {
-  [Flags]
-  public enum LogLevel
-  {
-    Unused = 0,
-    VERBOSE = 1,
-    INFO = 2,
-    WARNING = 4,
-    ERROR = 8
-  }
+    [Flags]
+    public enum LogLevel
+    {
+        Unused = 0,
+        VERBOSE = 1,
+        INFO = 2,
+        WARNING = 4,
+        ERROR = 8
+    }
 }

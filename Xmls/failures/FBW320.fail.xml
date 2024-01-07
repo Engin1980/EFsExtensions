@@ -85,5 +85,16 @@
         <failure id="fbw320FlapsHandleStuck"/>
       </failures>
     </incident>
+    <incident title="Pressure lost" repetitive="false">
+      <triggers>
+        <timeTrigger interval="oncePerHour" probability="0.001" repetitive="false"/>
+      </triggers>
+      <failures selection="one">
+        <failure id="fbwExitOpen0"/>
+        <failure id="fbwExitOpen1"/>
+        <failure id="fbwExitOpen2"/>
+        <failure id="fbwExitOpen3"/>
+      </failures>
+    </incident>
   </group>
 </failureDefinitions>

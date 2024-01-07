@@ -1,4 +1,5 @@
-﻿using ESystem.Asserting;
+﻿using ELogging.Model;
+using ESystem.Asserting;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace ELogging
 {
-  public class Logger
+    public class Logger
   {
     private record NameInfo(string Name, bool AddId);
 

@@ -123,8 +123,7 @@ namespace FailuresModule.Xmls
             var deser = new StateCheckDeserializer();
             var val = deser.Deserialize(e, typeof(IStateCheckItem), c);
             EXmlHelper.SetPropertyValue(f, t, val);
-          })
-        .WithPostAction(nameof(CheckStateTrigger.EnsureValid));
+          });
       return ret;
     }
 

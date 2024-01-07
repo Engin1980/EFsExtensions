@@ -23,7 +23,7 @@ namespace Chlaot
       [XmlAttribute] public bool Warning { get; set; }
       [XmlAttribute] public bool Error { get; set; }
 
-      internal ELogging.LogRule ToELogRule()
+      internal ELogging.Model.LogRule ToELogRule()
       {
         LogLevel ll = LogLevel.Unused;
         if (this.Verbose) ll |= LogLevel.VERBOSE;
@@ -31,7 +31,7 @@ namespace Chlaot
         if (this.Warning) ll |= LogLevel.WARNING;
         if (this.Error) ll |= LogLevel.ERROR;
 
-        ELogging.LogRule ret = new ELogging.LogRule(this.Regex, ll);
+        ELogging.Model.LogRule ret = new ELogging.Model.LogRule(this.Regex, ll);
         return ret;
       }
     }

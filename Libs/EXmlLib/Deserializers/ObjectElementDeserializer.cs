@@ -1,6 +1,7 @@
 ﻿using ELogging;
 using EXmlLib.Attributes;
 using EXmlLib.Factories;
+using EXmlLib.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,7 +19,6 @@ namespace EXmlLib.Deserializers
     public delegate void PropertyDeserializeHandler(XElement element, object target, PropertyInfo propertyInfo, EXmlContext context);
     private readonly Dictionary<string, PropertyDeserializeHandler> customProperties = new();
     private Predicate<Type> predicate;
-    private string? postMethodActionName;
 
     public ObjectElementDeserializer WithCustomTargetType(Type type, bool includeInhreited = false)
     {
@@ -32,12 +32,6 @@ namespace EXmlLib.Deserializers
     public ObjectElementDeserializer WithCustomTargetTypeAcceptancy(Predicate<Type> targetTypePredicate)
     {
       this.predicate = targetTypePredicate ?? throw new ArgumentNullException(nameof(targetTypePredicate));
-      return this;
-    }
-
-    public ObjectElementDeserializer WithPostAction(string? postMethodName)
-    {
-      this.postMethodActionName = postMethodName;
       return this;
     }
 
@@ -156,25 +150,17 @@ namespace EXmlLib.Deserializers
         }
       }
 
-      if (this.postMethodActionName != null)
-        InvokePostMethod(ret);
+      if (ret is IXmlObjectPostDeserialize iopd)
+        try
+        {
+          iopd.PostDeserialize();
+        }
+        catch (Exception ex)
+        {
+          throw new EXmlException($"Invocation of post-deserialize of {iopd.GetType().Name} failed.", ex);
+        }
 
       return ret;
-    }
-
-    private void InvokePostMethod(object obj)
-    {
-      Type t = obj.GetType();
-      MethodInfo mi = t.GetMethod(this.postMethodActionName!) ??
-        throw new ApplicationException($"Unable to find post-action-method '{this.postMethodActionName}' for type '{t.Name}' defined in its deserializer.");
-      try
-      {
-        mi.Invoke(obj, Array.Empty<object>());
-      }
-      catch (Exception ex)
-      {
-        throw new ApplicationException($"Invocation of post-action-method of {t.Name}.{this.postMethodActionName} failed.", ex);
-      }
     }
   }
 }
