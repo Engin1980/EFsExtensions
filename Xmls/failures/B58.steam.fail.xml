@@ -27,6 +27,15 @@
         </failures>
       </failures>
     </incident>
+    <incident title="Engine fail" repetitive="true">
+      <triggers>
+        <timeTrigger interval="oncePerHour" probability="0.05" repetitive="true" />
+      </triggers>
+      <failures selection="one">
+        <failure id="b58eng1"/>
+        <failure id="b58eng2"/>
+      </failures>
+    </incident>
     <group title="Common failures">
       <group title="System failures">
         <incident title="Internal systems" repetitive="true">

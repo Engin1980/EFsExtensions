@@ -61,6 +61,10 @@ namespace FailuresModule.Model.Sim
             fdb = DeserializeSneak(elm);
             targetList.Add(fdb);
             break;
+          case "simVarValueViaEvent":
+            fdb = DeserializeValueViaEvent(elm);
+            targetList.Add(fdb);
+            break; 
           case "sequence":
             items = DeserializeSequence(elm);
             targetList.AddRange(items);
@@ -158,6 +162,17 @@ namespace FailuresModule.Model.Sim
       SetAttributeIfExists(elm, "onlyOnDetectedChange", q => bool.Parse(q), q => ret.OnlyUpdateOnDetectedChange = q);
       ret.EnsureValid();
 
+      return ret;
+    }
+
+    private FailureDefinition DeserializeValueViaEvent(XElement elm)
+    {
+      string id, title, svcp;
+      (id, title, svcp) = GetIdTitleScp(elm);
+      string secp = GetAttribute(elm, "simEvt");
+      SimVarViaEventFailureDefinition ret = new(id, title, svcp, secp);
+      SetAttributeIfExists(elm, "refreshIntervalInMs", q => int.Parse(q), q => ret.RefreshIntervalInMs = q);
+      SetAttributeIfExists(elm, "onlyOnDetectedChange", q => bool.Parse(q), q => ret.OnlyUpdateOnDetectedChange = q);
       return ret;
     }
 

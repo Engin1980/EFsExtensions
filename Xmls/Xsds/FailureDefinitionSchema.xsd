@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsd:schema id="Schema"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://chlaot.org/FailureDefinitions.xsd"
-            targetNamespace="http://chlaot.org/FailureDefinitions.xsd"
+            xmlns="http://chlaot.org/failureDefinitions.xsd"
+            targetNamespace="http://chlaot.org/failureDefinitions.xsd"
             elementFormDefault="qualified">
   <xsd:element name="definitions" type="definitions"/>
 
   <xsd:complexType name="definitions">
-    <xsd:choice>
+    <xsd:choice minOccurs="1" maxOccurs="unbounded">
       <xsd:element name="definitions" type="definitions"/>
       <xsd:element name="simEvent" type="eventFailureDefinition"/>
       <xsd:element name="simVarValue" type="simVarValueFailureDefinition"/>
       <xsd:element name="simVarLeak" type="simVarLeakFailureDefinition"/>
       <xsd:element name="simVarStuck" type="simVarStuckFailureDefinition"/>
       <xsd:element name="simVarSneak" type="simVarSneakFailureDefinition" />
+      <xsd:element name="simVarValueViaEvent" type="simVarValueViaEventFailureDefinition" />
       <xsd:element name="sequence" type="sequenceGenerator"/>
     </xsd:choice>
     <xsd:attribute name="title" type="xsd:string" use="required"/>
@@ -72,12 +73,24 @@
     <xsd:attribute name="onlyOnDetectedChange" type="xsd:boolean" use="optional" default="0"/>
   </xsd:complexType>
 
+  <xsd:complexType name="simVarValueViaEventFailureDefinition">
+    <xsd:attribute name="simVar" type="xsd:string" use="required"/>
+    <xsd:attribute name="simEvt" type="xsd:string" use="required"/>
+    <xsd:attribute name="id" type="xsd:string" use="required" />
+    <xsd:attribute name="title" type="xsd:string" use="optional" />
+    <xsd:attribute name="okValue" type="xsd:double" use="optional" default="0"/>
+    <xsd:attribute name="failValue" type="xsd:double" use="optional" default="1"/>
+    <xsd:attribute name="refreshIntervalInMs" type="xsd:int" use="optional" default="1000"/>
+  </xsd:complexType>
+
   <xsd:complexType name="sequenceGenerator">
-    <xsd:choice>
-      <xsd:element name="event" type="eventFailureDefinition"/>
+    <xsd:choice minOccurs="1" maxOccurs="unbounded">
+      <xsd:element name="simEvent" type="eventFailureDefinition"/>
       <xsd:element name="simVarValue" type="simVarValueFailureDefinition"/>
       <xsd:element name="simVarLeak" type="simVarLeakFailureDefinition"/>
       <xsd:element name="simVarStuck" type="simVarStuckFailureDefinition"/>
+      <xsd:element name="simVarSneak" type="simVarSneakFailureDefinition" />
+      <xsd:element name="simVarValueViaEvent" type="simVarValueViaEventFailureDefinition" />
     </xsd:choice>
     <xsd:attribute name="from" type="xsd:int" use="required"/>
     <xsd:attribute name="to" type="xsd:int" use="required"/>

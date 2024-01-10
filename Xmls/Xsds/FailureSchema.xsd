@@ -72,7 +72,7 @@
   <!-- tady dopsat trigger zanoření na properties -->
 
   <xsd:complexType name="failGroup">
-    <xsd:choice>
+    <xsd:choice minOccurs="1" maxOccurs="unbounded">
       <xsd:element name="failure" type="failure" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="failures" type="failGroup" minOccurs="0" maxOccurs="unbounded"/>
     </xsd:choice>

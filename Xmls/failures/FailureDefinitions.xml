@@ -20,8 +20,8 @@
         <simVarSneak id="engOilPressure{i}->eng{i}" title ="Engine {i} oil pressure -> eng {i} fail" simVar="GENERAL ENG OIL PRESSURE:{i}"
                      minimalInitialSneakValue="0" maximalInitialSneakValue="0"
                      minimalSneakAdjustPerSecond="0.001" maximalSneakAdjustPerSecond="0.03"
-                     direction="down" isPercentageBased="true" finalValue="50000"
-                     updateIntervalInMS="100" finalFailureId="eng{i}"/>
+                     direction="down" isPercentageBased="true" finalValue="100000"
+                     tickIntervalInMS="100" finalFailureId="eng{i}"/>
       </sequence>
     </definitions>
     <definitions title="systems">
@@ -71,7 +71,14 @@
       <simVarStuck id="rudder" title="Rudder" simVar="RUDDER POSITION" onlyOnDetectedChange="true" />
     </definitions>
   </definitions>
-  <definitions title="fbw320">
+  <definitions title="steamgauge.baron">
+    <sequence from="1" to="2" varRef="{i}">
+      <simVarValueViaEvent id="b58eng{i}" title="SG Baron 58 Eng {i} Failure" 
+                           simVar="ENG {I} FAILED" simEvt="TOGGLE_ENGINE{i}_FAILURE"
+                           failValue="1" refreshIntervalInMs="250" />
+    </sequence>
+  </definitions>
+  <definitions title="fbw.320">
     <simVarStuck id="fbw320FlapsHandleStuck" title="FBW A320 Flaps handle stuck" simVar="L:A32NX_FLAPS_HANDLE_INDEX" onlyOnDetectedChange="true" />
     <simVarValue id="fbw320MasterWarn" title="FBW A320 Master Warning On" simVar="L:A32NX_MASTER_WARNING" okValue="0" failValue="1" />
     <definitions title="fuel">

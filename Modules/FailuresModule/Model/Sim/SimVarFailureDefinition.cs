@@ -4,8 +4,8 @@
   {
     #region Private Fields
 
-    private const int DEFAULT_FAIL_VALUE = 1;
-    private const int DEFAULT_OK_VALUE = 0;
+    public const int DEFAULT_FAIL_VALUE = 1;
+    public const int DEFAULT_OK_VALUE = 0;
 
     #endregion Private Fields
 

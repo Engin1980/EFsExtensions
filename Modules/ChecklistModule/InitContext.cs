@@ -19,6 +19,7 @@ using Eng.Chlaot.Modules.ChecklistModule.Types;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -26,6 +27,12 @@ namespace Eng.Chlaot.Modules.ChecklistModule
   {
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
+
+    public MetaInfo MetaInfo
+    {
+      get => base.GetProperty<MetaInfo>(nameof(MetaInfo))!;
+      set => base.UpdateProperty(nameof(MetaInfo), value);
+    }
 
     public CheckSet ChecklistSet
     {
@@ -54,8 +61,13 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         try
         {
           doc = XDocument.Load(xmlFile);
+
+          this.MetaInfo = MetaInfo.Deserialize(doc);
+
           EXml<CheckSet> exml = CreateDeserializer();
           tmp = exml.Deserialize(doc);
+
+
         }
         catch (Exception ex)
         {

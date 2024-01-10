@@ -8,8 +8,8 @@ namespace FailuresModule.Model.Sim
   {
     #region Private Fields
 
-    private const bool DEFAULT_ONLY_UPDATE_ON_DETECTED_CHANGE = false;
-    private const int DEFAULT_REFRESH_INTERVAL_IN_MS = 1000;
+    public const bool DEFAULT_ONLY_UPDATE_ON_DETECTED_CHANGE = false;
+    public const int DEFAULT_REFRESH_INTERVAL_IN_MS = 1000;
 
     #endregion Private Fields
 
