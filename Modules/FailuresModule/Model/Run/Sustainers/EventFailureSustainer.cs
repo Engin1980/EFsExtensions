@@ -12,7 +12,7 @@ namespace FailuresModule.Model.Run.Sustainers
 {
   internal class EventFailureSustainer : FailureSustainer
   {
-    public EventFailureSustainer(EventFailureDefinition failure) : base(failure)
+    public EventFailureSustainer(SimEventFailureDefinition failure) : base(failure)
     {
       // intentionally blank
     }

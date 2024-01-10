@@ -13,7 +13,7 @@ namespace FailuresModule.Model.Run.Sustainers
     internal static FailureSustainer Create(FailureDefinition failItem)
     {
       FailureSustainer ret;
-      if (failItem is EventFailureDefinition efd)
+      if (failItem is SimEventFailureDefinition efd)
         ret = CreateEvent(efd);
       else if (failItem is SimVarFailureDefinition svfd)
         ret = CreateSimVar(svfd);
@@ -60,7 +60,7 @@ namespace FailuresModule.Model.Run.Sustainers
       return ret;
     }
 
-    private static FailureSustainer CreateEvent(EventFailureDefinition ifd)
+    private static FailureSustainer CreateEvent(SimEventFailureDefinition ifd)
     {
       EventFailureSustainer ret = new EventFailureSustainer(ifd);
       return ret;

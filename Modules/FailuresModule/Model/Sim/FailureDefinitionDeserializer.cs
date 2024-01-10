@@ -217,7 +217,7 @@ namespace FailuresModule.Model.Sim
     {
       string id, title, scp;
       (id, title, scp) = GetIdTitleScp(elm, "simEvt");
-      EventFailureDefinition ret = new(id, title, scp);
+      SimEventFailureDefinition ret = new(id, title, scp);
       return ret;
     }
 

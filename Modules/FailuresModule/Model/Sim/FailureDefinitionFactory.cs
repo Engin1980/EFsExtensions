@@ -106,7 +106,7 @@ namespace FailuresModule.Model.Sim
 
       for (int i = 1; i <= ENGINES_COUNT; i++)
       {
-        EventFailureDefinition tmp = new($"eng{i}", $"Engine {i} Failure", $"TOGGLE_ENGINE{i}_FAILURE");
+        SimEventFailureDefinition tmp = new($"eng{i}", $"Engine {i} Failure", $"TOGGLE_ENGINE{i}_FAILURE");
         ret.Add(tmp);
       }
 
@@ -126,7 +126,7 @@ namespace FailuresModule.Model.Sim
       };
 
       var ret = tmp
-        .Select(q => new EventFailureDefinition(q.Id, q.Name, q.Sim))
+        .Select(q => new SimEventFailureDefinition(q.Id, q.Name, q.Sim))
         .Cast<FailureDefinition>()
         .ToList();
 
@@ -170,7 +170,7 @@ namespace FailuresModule.Model.Sim
       };
 
       var ret = tmp.ToList()
-        .Select(q => new EventFailureDefinition(q.Id, q.Name, q.Sim))
+        .Select(q => new SimEventFailureDefinition(q.Id, q.Name, q.Sim))
         .Cast<FailureDefinition>()
         .ToList();
 
