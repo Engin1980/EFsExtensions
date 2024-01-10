@@ -1,4 +1,5 @@
-﻿using FailuresModule.Model.Sim;
+﻿using ELogging;
+using FailuresModule.Model.Sim;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -12,7 +13,6 @@ namespace FailuresModule.Model.Run.Sustainers
 {
   internal class SimVarViaEventFailureSustainer : SimVarBasedFailureSustainer
   {
-
     #region Private Fields
 
     private readonly SimVarViaEventFailureDefinition failure;
@@ -64,18 +64,25 @@ namespace FailuresModule.Model.Run.Sustainers
 
     private void StuckFailureSustainer_DataReceived(double data)
     {
+      Logger.Log(this, LogLevel.INFO, "ReceivedData");
       if (data != this.failure.FailValue && isRunning)
       {
+        Logger.Log(this, LogLevel.INFO, "Invoking event");
         base.SimCon.SendClientEvent(this.failure.SimEventConPoint, null, false);
       }
       this.isDataRequested = false;
     }
     private void UpdateTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
-      if (!isDataRequested)
+      lock (updateTimer)
       {
-        isDataRequested = true;
-        RequestData();
+        Logger.Log(this, LogLevel.INFO, "UpdateTimer_Elapsed");
+        if (!isDataRequested)
+        {
+          Logger.Log(this, LogLevel.INFO, "UpdateTimer_Elapsed - requesting data");
+          isDataRequested = true;
+          RequestData();
+        }
       }
     }
 

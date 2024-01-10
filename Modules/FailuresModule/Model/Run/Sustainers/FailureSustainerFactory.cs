@@ -23,8 +23,16 @@ namespace FailuresModule.Model.Run.Sustainers
         ret = CreateLeak(lfd);
       else if (failItem is SneakFailureDefinition nfd)
         ret = CreateSneak(nfd);
+      else if (failItem is SimVarViaEventFailureDefinition svvefd)
+        ret = CreateSimVarViaEvent(svvefd);
       else
         throw new NotImplementedException();
+      return ret;
+    }
+
+    private static FailureSustainer CreateSimVarViaEvent(SimVarViaEventFailureDefinition svvefd)
+    {
+      SimVarViaEventFailureSustainer ret = new(svvefd);
       return ret;
     }
 

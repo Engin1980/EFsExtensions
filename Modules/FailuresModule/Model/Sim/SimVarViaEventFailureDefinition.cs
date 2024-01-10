@@ -26,7 +26,7 @@ namespace FailuresModule.Model.Sim
 
     #region Public Constructors
 
-    public SimVarViaEventFailureDefinition(string id, string title, string simVarConPoint, string simEventConPoint) : base(id, title, simVarConPoint + "/@" + simEventConPoint)
+    public SimVarViaEventFailureDefinition(string id, string title, string simVarConPoint, string simEventConPoint) : base(id, title, simVarConPoint)
     {
       this.SimVarConPoint = simVarConPoint;
       this.SimEventConPoint = simEventConPoint;

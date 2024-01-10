@@ -74,8 +74,8 @@
   <definitions title="steamgauge.baron">
     <sequence from="1" to="2" varRef="{i}">
       <simVarValueViaEvent id="b58eng{i}" title="SG Baron 58 Eng {i} Failure" 
-                           simVar="ENG {I} FAILED" simEvt="TOGGLE_ENGINE{i}_FAILURE"
-                           failValue="1" refreshIntervalInMs="250" />
+                           simVar="ENG FAILED:{i}" simEvt="TOGGLE_ENGINE{i}_FAILURE"
+                           failValue="1" refreshIntervalInMs="500" />
     </sequence>
   </definitions>
   <definitions title="fbw.320">

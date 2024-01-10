@@ -9,6 +9,15 @@
     <g:description></g:description>
   </metaInfo>
   <group title="Failures">
+    <incident title="Test" repetitive="false">
+      <triggers>
+        <timeTrigger interval="oncePerMinute" probability="0.5" repetitive="false"/>        
+      </triggers>
+      <failures selection="one">
+        <failure id="b58eng1" />
+        <failure id="b58eng2" />
+      </failures>
+    </incident>
     <incident title="Bird-strike" repetitive="false">
       <variables>
         <g:randomVariable name="vFail" minimum="30" maximum="80"/>
