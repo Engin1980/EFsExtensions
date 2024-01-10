@@ -2,12 +2,22 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://chlaot.org/failures.xsd"
         xmlns:g ="http://chlaot.org/global.xsd"
+        xmlns:fd ="http://chlaot.org/failureDefinitions.xsd"
         xsi:noNamespaceSchemaLocation="file://./Xsds/FailureSchema.xsd">
   <metaInfo>
-    <g:label>Default failures for SteamGauge Baron G58</g:label>
+    <g:label>Default failures for SteamGauge Baron B58</g:label>
     <g:author>Marek Vajgl</g:author>
-    <g:description></g:description>
+    <g:description>
+      SteamGauge Baron B58 is not keeping engine failure and trying to reset the flag. Therefore eng{i} failure must be redefined.
+    </g:description>
   </metaInfo>
+  <definitions title="B58 failures">
+    <fd:sequence from="1" to="2" varRef="{i}">
+      <fd:simVarValueViaEvent id="eng{i}" title="SG Baron 58 Eng {i} Failure"
+                           simVar="ENG FAILED:{i}" simEvt="TOGGLE_ENGINE{i}_FAILURE"
+                           failValue="1" refreshIntervalInMs="500" />
+    </fd:sequence>
+  </definitions>
   <group title="Failures">
     <incident title="bird-strike" repetitive="false">
       <variables>
@@ -19,11 +29,11 @@
         </trigger>
       </triggers>
       <failures selection="one">
-        <failure id="eng1"/>
-        <failure id="eng2"/>
+        <failure id="b58eng1"/>
+        <failure id="b58eng2"/>
         <failures selection="all" weight="0.1">
-          <failure id="eng1" />
-          <failure id="eng2" />
+          <failure id="b58eng1" />
+          <failure id="b58eng2" />
         </failures>
       </failures>
     </incident>

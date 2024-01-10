@@ -4,14 +4,17 @@
             elementFormDefault="qualified"
             xmlns="http://chlaot.org/failures.xsd"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns:g ="http://chlaot.org/global.xsd"
+            xmlns:g  ="http://chlaot.org/global.xsd"
+            xmlns:fd ="http://chlaot.org/failureDefinitions.xsd"
 >
   <xsd:import namespace="http://chlaot.org/global.xsd" schemaLocation="Global.xsd" />
+  <xsd:import namespace="http://chlaot.org/failureDefinitions.xsd" schemaLocation="FailureDefinitionSchema.xsd" />
 
   <xsd:element name="failureDefinitions">
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="metaInfo" minOccurs="1" maxOccurs="1" type="g:metaData"/>
+        <xsd:element name="definitions" minOccurs="0" maxOccurs="1" type="fd:failureDefinitions" />
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
           <xsd:element name="group" type="group"/>
           <xsd:element name="incident" type="incident"/>

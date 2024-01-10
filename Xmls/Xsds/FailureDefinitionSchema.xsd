@@ -4,11 +4,11 @@
             xmlns="http://chlaot.org/failureDefinitions.xsd"
             targetNamespace="http://chlaot.org/failureDefinitions.xsd"
             elementFormDefault="qualified">
-  <xsd:element name="definitions" type="definitions"/>
+  <xsd:element name="definitions" type="failureDefinitions"/>
 
-  <xsd:complexType name="definitions">
+  <xsd:complexType name="failureDefinitions">
     <xsd:choice minOccurs="1" maxOccurs="unbounded">
-      <xsd:element name="definitions" type="definitions"/>
+      <xsd:element name="definitions" type="failureDefinitions"/>
       <xsd:element name="simEvent" type="eventFailureDefinition"/>
       <xsd:element name="simVarValue" type="simVarValueFailureDefinition"/>
       <xsd:element name="simVarLeak" type="simVarLeakFailureDefinition"/>
