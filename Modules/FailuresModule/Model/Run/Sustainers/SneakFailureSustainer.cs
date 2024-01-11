@@ -1,6 +1,6 @@
 ﻿using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase;
-using FailuresModule.Model.Sim;
+using FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;

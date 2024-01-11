@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using FailuresModule.Model.Run.Sustainers;
-using FailuresModule.Model.Sim;
+using FailuresModule.Model.Failures;
 
 namespace FailuresModule.Model.Run.Sustainers
 {

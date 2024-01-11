@@ -1,5 +1,5 @@
 ﻿using FailuresModule.Model.Run.Sustainers;
-using FailuresModule.Model.Sim;
+using FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,13 +13,13 @@ namespace FailuresModule.Model.Run.Sustainers
   {
     #region Private Fields
 
-    private readonly SimVarFailureDefinition failure;
+    private readonly SetFailureDefinition failure;
 
     #endregion Private Fields
 
     #region Public Constructors
 
-    public SimVarFailureSustainer(SimVarFailureDefinition failure) : base(failure)
+    public SimVarFailureSustainer(SetFailureDefinition failure) : base(failure)
     {
       this.failure = failure;
     }

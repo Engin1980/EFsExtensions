@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Model.Sim
+namespace FailuresModule.Model.Failures
 {
   public abstract class FailureDefinitionBase
   {

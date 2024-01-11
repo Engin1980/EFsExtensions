@@ -5,7 +5,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Model.App
+namespace FailuresModule.Model.Incidents
 {
     public class IncidentGroup : Incident
     {

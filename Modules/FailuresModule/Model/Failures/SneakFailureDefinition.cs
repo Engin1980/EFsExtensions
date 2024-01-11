@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
-namespace FailuresModule.Model.Sim
+namespace FailuresModule.Model.Failures
 {
-  public class SneakFailureDefinition : FailureDefinition
+  public class SneakFailureDefinition : WithSimVarFailureDefinition
   {
     #region Public Enums
 
@@ -40,21 +40,18 @@ namespace FailuresModule.Model.Sim
     public double TickIntervalInMS { get; set; } = DEFAULT_TICK_INTERVAL_IN_MS;
     public bool IsPercentageBased { get; set; }
     public override string Type => "Sneak";
+    public override string SimConPoint => SimVar;
 
     #endregion Public Properties
 
     #region Public Constructors
 
-    public SneakFailureDefinition(string id, string title, string simConPoint) : base(id, title, simConPoint)
-    {
-    }
-
     #endregion Public Constructors
 
     #region Public Methods
-
-    public void EnsureValid()
+    public override void PostDeserialize()
     {
+      base.PostDeserialize();
       EAssert.IsTrue(!double.IsNaN(MaximalInitialSneakValue));
       EAssert.IsTrue(!double.IsNaN(MaximalSneakAdjustPerSecond));
       EAssert.IsTrue(!double.IsNaN(MinimalInitialSneakValue));
@@ -64,6 +61,7 @@ namespace FailuresModule.Model.Sim
       EAssert.IsTrue(MinimalSneakAdjustPerSecond <= MaximalSneakAdjustPerSecond);
       EAssert.IsNonEmptyString(this.FinalFailureId);
       EAssert.IsTrue(this.TickIntervalInMS > 50);
+
     }
 
     internal override void ExpandVariableIfExists(string varRef, int variableValue)

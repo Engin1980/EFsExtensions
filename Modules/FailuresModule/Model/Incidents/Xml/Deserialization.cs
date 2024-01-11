@@ -1,28 +1,18 @@
-﻿using ELogging;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
-using EXmlLib;
 using EXmlLib.Deserializers;
-using FailuresModule.Model.App;
-using FailuresModule.Model.Sim;
+using EXmlLib;
+using FailuresModule.Model.Failures;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
 using System.Linq;
-using System.Printing;
-using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Xml.Linq;
 
-namespace FailuresModule.Xmls
+namespace FailuresModule.Model.Incidents.Xml
 {
-  public class Deserialization
+  internal static class Deserialization
   {
     private const string FAILURES_KEY = "__failures";
 

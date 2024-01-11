@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FailuresModule.Model.App
+namespace FailuresModule.Model.Incidents
 {
     public class FailGroup : Fail
     {

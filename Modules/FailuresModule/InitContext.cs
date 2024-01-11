@@ -3,10 +3,9 @@ using Eng.Chlaot.ChlaotModuleBase;
 using ESystem;
 using EXmlLib;
 using EXmlLib.Deserializers;
-using FailuresModule.Model.App;
-using FailuresModule.Model.Sim;
+using FailuresModule.Model.Incidents;
+using FailuresModule.Model.Failures;
 using FailuresModule.Types;
-using FailuresModule.Xmls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,7 +62,7 @@ namespace FailuresModule
         try
         {
           doc = XDocument.Load(xmlFile, LoadOptions.SetLineInfo);
-          EXml<IncidentTopGroup> exml = Deserialization.CreateDeserializer(this.FailureDefinitionsFlat);
+          EXml<IncidentTopGroup> exml = FailuresModule.Model.Incidents.Xml.Deserialization.CreateDeserializer(this.FailureDefinitionsFlat);
           tmp = exml.Deserialize(doc);
         }
         catch (Exception ex)

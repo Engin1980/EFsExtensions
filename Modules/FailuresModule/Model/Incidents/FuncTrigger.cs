@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FailuresModule.Model.App
+namespace FailuresModule.Model.Incidents
 {
   public class FuncTrigger : Trigger
   {

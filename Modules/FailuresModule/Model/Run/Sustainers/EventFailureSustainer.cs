@@ -1,5 +1,5 @@
 ﻿using ESimConnect;
-using FailuresModule.Model.Sim;
+using FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +12,7 @@ namespace FailuresModule.Model.Run.Sustainers
 {
   internal class EventFailureSustainer : FailureSustainer
   {
-    public EventFailureSustainer(SimEventFailureDefinition failure) : base(failure)
+    public EventFailureSustainer(ToggleFailureDefinition failure) : base(failure)
     {
       // intentionally blank
     }

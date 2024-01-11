@@ -1,6 +1,6 @@
 ﻿using EXmlLib.Attributes;
 
-namespace FailuresModule.Model.App
+namespace FailuresModule.Model.Incidents
 {
     public class FailId : Fail
     {

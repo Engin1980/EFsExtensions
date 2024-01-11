@@ -1,10 +1,10 @@
 ﻿using ESystem.Asserting;
+using FailuresModule.Model.Run.Sustainers;
 using System;
 
-namespace FailuresModule.Model.Sim
+namespace FailuresModule.Model.Failures
 {
-  //TODO remove types and replace by enum if not used in more complex way
-  public class StuckFailureDefinition : FailureDefinition
+  public class StuckFailureDefinition : WithSimVarFailureDefinition
   {
     #region Private Fields
 
@@ -18,17 +18,15 @@ namespace FailuresModule.Model.Sim
     public bool OnlyUpdateOnDetectedChange { get; set; } = DEFAULT_ONLY_UPDATE_ON_DETECTED_CHANGE;
     public int RefreshIntervalInMs { get; set; } = DEFAULT_REFRESH_INTERVAL_IN_MS;
     public override string Type => "Stuck";
+    public override string SimConPoint => SimVar;
 
     #endregion Public Properties
 
     #region Public Constructors
 
-    public StuckFailureDefinition(string id, string title, string simConPoint) : base(id, title, simConPoint)
+    public override void PostDeserialize()
     {
-    }
-
-    internal void EnsureValid()
-    {
+      base.PostDeserialize();
       EAssert.IsTrue(RefreshIntervalInMs > 50);
     }
 

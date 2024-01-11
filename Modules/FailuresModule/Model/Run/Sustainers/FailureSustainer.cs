@@ -1,6 +1,6 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase;
 using ESimConnect;
-using FailuresModule.Model.Sim;
+using FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.Linq;

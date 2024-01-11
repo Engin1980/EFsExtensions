@@ -2,7 +2,7 @@
 using ESystem.Asserting;
 using EXmlLib.Interfaces;
 
-namespace FailuresModule.Model.App
+namespace FailuresModule.Model.Incidents
 {
   public class CheckStateTrigger : Trigger, IXmlObjectPostDeserialize
   {

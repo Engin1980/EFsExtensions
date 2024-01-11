@@ -3,7 +3,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Model.App
+namespace FailuresModule.Model.Incidents
 {
   public abstract class Trigger
   {

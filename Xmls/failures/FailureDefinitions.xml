@@ -8,67 +8,69 @@
   <definitions title="fs2020">
     <definitions title="engine">
       <sequence from="1" to="4" varRef="{i}">
-        <simEvent id="eng{i}" title="Engine {i} failure" simEvt="TOGGLE_ENGINE{i}_FAILURE" />
-        <simVarValue id="engFire{i}" title="Engine {i} fire" simVar="ENG ON FIRE:{i}" />
-        <simVarValue id="engTurbo{i}" title="Engine {i} turbocharger" simVar="RECIP ENG TURBOCHARGER FAILED:{i}" />
-        <simVarLeak id="engCoolantRes{i}" title="Engine {i} coolant reservoir" simVar="RECIP ENG COOLANT RESERVOIR PERCENT:{i}" />
-        <simVarSneak id="engOilTemperature{i}->eng1" title ="Engine {i} oil temperature -> eng {i} fail" simVar="GENERAL ENG OIL TEMPERATURE:{i}"
-                     minimalInitialSneakValue="0.0005" maximalInitialSneakValue="0.003"
-                     minimalSneakAdjustPerSecond="0.00001" maximalSneakAdjustPerSecond="0.0001"
-                     direction="up" isPercentageBased="true" finalValue="500"
-                     finalFailureId="eng{i}" />
-        <simVarSneak id="engOilPressure{i}->eng{i}" title ="Engine {i} oil pressure -> eng {i} fail" simVar="GENERAL ENG OIL PRESSURE:{i}"
-                     minimalInitialSneakValue="0" maximalInitialSneakValue="0"
-                     minimalSneakAdjustPerSecond="0.001" maximalSneakAdjustPerSecond="0.03"
-                     direction="down" isPercentageBased="true" finalValue="100000"
-                     tickIntervalInMS="100" finalFailureId="eng{i}"/>
+        <toggle id="eng{i}" title="Engine {i} failure" simEvent="TOGGLE_ENGINE{i}_FAILURE" />
+        <set id="engFire{i}" title="Engine {i} fire" simVar="ENG ON FIRE:{i}" />
+        <set id="engTurbo{i}" title="Engine {i} turbocharger" simVar="RECIP ENG TURBOCHARGER FAILED:{i}" />
+        <leak id="engCoolantRes{i}" title="Engine {i} coolant reservoir" simVar="RECIP ENG COOLANT RESERVOIR PERCENT:{i}" />
+        <sneak id="engOilTemperature{i}->eng1" title ="Engine {i} oil temperature -> eng {i} fail"
+               simVar="GENERAL ENG OIL TEMPERATURE:{i}"
+               minimalInitialSneakValue="0.0005" maximalInitialSneakValue="0.003"
+               minimalSneakAdjustPerSecond="0.00001" maximalSneakAdjustPerSecond="0.0001"
+               direction="up" isPercentageBased="true" finalValue="500"
+               finalFailureId="eng{i}" />
+        <sneak id="engOilPressure{i}->eng{i}" title ="Engine {i} oil pressure -> eng {i} fail" 
+               simVar="GENERAL ENG OIL PRESSURE:{i}"
+               minimalInitialSneakValue="0" maximalInitialSneakValue="0"
+               minimalSneakAdjustPerSecond="0.001" maximalSneakAdjustPerSecond="0.03"
+               direction="down" isPercentageBased="true" finalValue="100000"
+               tickIntervalInMS="100" finalFailureId="eng{i}"/>
       </sequence>
     </definitions>
     <definitions title="systems">
-      <simEvent id="vacuum" title="Vacuum failure" simEvt="TOGGLE_VACUUM_FAILURE" />
-      <simEvent id="electrical" title="Electrical failure" simEvt="TOGGLE_ELECTRICAL_FAILURE" />
-      <simEvent id="pitot" title="Pitot blockage" simEvt="TOGGLE_PITOT_BLOCKAGE" />
-      <simEvent id="static_port" title="Static port blockage" simEvt="TOGGLE_STATIC_PORT_BLOCKAGE" />
-      <simEvent id="hydraulics" title="Hydraulics failure" simEvt="TOGGLE_HYDRAULIC_FAILURE" />
+      <toggle id="vacuum" title="Vacuum failure" simEvent="TOGGLE_VACUUM_FAILURE" />
+      <toggle id="electrical" title="Electrical failure" simEvent="TOGGLE_ELECTRICAL_FAILURE" />
+      <toggle id="pitot" title="Pitot blockage" simEvent="TOGGLE_PITOT_BLOCKAGE" />
+      <toggle id="static_port" title="Static port blockage" simEvent="TOGGLE_STATIC_PORT_BLOCKAGE" />
+      <toggle id="hydraulics" title="Hydraulics failure" simEvent="TOGGLE_HYDRAULIC_FAILURE" />
     </definitions>
     <definitions title="instruments">
-      <simVarValue id="pnlAirspeed" title="Airspeed (panel)" simVar="PARTIAL PANEL AIRSPEED" />
-      <simVarValue id="pnlAltimeter" title="Altimeter (panel)" simVar="PARTIAL PANEL ALTIMETER" />
-      <simVarValue id="pnlAttitude" title="Attitude (panel)" simVar="PARTIAL PANEL ATTITUDE" />
-      <simVarValue id="pnlCompass" title="Compass (panel)" simVar="PARTIAL PANEL COMPASS" />
-      <simVarValue id="pnlElectrical" title="Electrical (panel)" simVar="PARTIAL PANEL ELECTRICAL" />
-      <simVarValue id="pnlEngine" title="Engine (panel)" simVar="PARTIAL PANEL ENGINE" />
-      <simVarValue id="pnlHeading" title="Heading (panel)" simVar="PARTIAL PANEL HEADING" />
-      <simVarValue id="pnlVS" title="Vertical velocity (panel)" simVar="PARTIAL PANEL VERTICAL VELOCITY" />
-      <simVarValue id="pnlPitot" title="Pitot (panel)" simVar="PARTIAL PANEL PITOT" />
-      <simVarValue id="pnlVacuum" title="Vacuum (panel)" simVar="PARTIAL PANEL VACUUM" />
+      <set id="pnlAirspeed" title="Airspeed (panel)" simVar="PARTIAL PANEL AIRSPEED" />
+      <set id="pnlAltimeter" title="Altimeter (panel)" simVar="PARTIAL PANEL ALTIMETER" />
+      <set id="pnlAttitude" title="Attitude (panel)" simVar="PARTIAL PANEL ATTITUDE" />
+      <set id="pnlCompass" title="Compass (panel)" simVar="PARTIAL PANEL COMPASS" />
+      <set id="pnlElectrical" title="Electrical (panel)" simVar="PARTIAL PANEL ELECTRICAL" />
+      <set id="pnlEngine" title="Engine (panel)" simVar="PARTIAL PANEL ENGINE" />
+      <set id="pnlHeading" title="Heading (panel)" simVar="PARTIAL PANEL HEADING" />
+      <set id="pnlVS" title="Vertical velocity (panel)" simVar="PARTIAL PANEL VERTICAL VELOCITY" />
+      <set id="pnlPitot" title="Pitot (panel)" simVar="PARTIAL PANEL PITOT" />
+      <set id="pnlVacuum" title="Vacuum (panel)" simVar="PARTIAL PANEL VACUUM" />
     </definitions>
     <definitions title="fuel">
-      <simVarLeak id="fuelCenter" title="Center Fuel Tank" simVar="FUEL TANK CENTER LEVEL" />
-      <simVarLeak id="fuelLeft" title="Left Fuel Tank" simVar="FUEL TANK LEFT MAIN LEVEL" />
-      <simVarLeak id="fuelRight" title="Right Fuel Tank" simVar="FUEL TANK RIGHT MAIN LEVEL" />
+      <leak id="fuelCenter" title="Center Fuel Tank" simVar="FUEL TANK CENTER LEVEL" />
+      <leak id="fuelLeft" title="Left Fuel Tank" simVar="FUEL TANK LEFT MAIN LEVEL" />
+      <leak id="fuelRight" title="Right Fuel Tank" simVar="FUEL TANK RIGHT MAIN LEVEL" />
     </definitions>
     <definitions title="brakes">
-      <simEvent id="brakeAll" title="All brakes" simEvt="TOGGLE_TOTAL_BRAKE_FAILURE" />
-      <simEvent id="brakeLeft" title="Left brake" simEvt="TOGGLE_LEFT_BRAKE_FAILURE" />
-      <simEvent id="brakeRight" title="Right brake" simEvt="TOGGLE_RIGHT_BRAKE_FAILURE" />
+      <toggle id="brakeAll" title="All brakes" simEvent="TOGGLE_TOTAL_BRAKE_FAILURE" />
+      <toggle id="brakeLeft" title="Left brake" simEvent="TOGGLE_LEFT_BRAKE_FAILURE" />
+      <toggle id="brakeRight" title="Right brake" simEvent="TOGGLE_RIGHT_BRAKE_FAILURE" />
     </definitions>
     <definitions title="gear">
-      <simVarStuck id="gearCenter" title="Gear Center"  simVar="GEAR CENTER POSITION" refreshIntervalInMs="100" />
-      <simVarStuck id="gearLeft" title="Left Gear"  simVar="GEAR LEFT POSITION" refreshIntervalInMs="100" />
-      <simVarStuck id="gearRight" title="Right Gear" simVar="GEAR RIGHT POSITION" refreshIntervalInMs="100" />
+      <stuck id="gearCenter" title="Gear Center"  simVar="GEAR CENTER POSITION" refreshIntervalInMs="100" />
+      <stuck id="gearLeft" title="Left Gear"  simVar="GEAR LEFT POSITION" refreshIntervalInMs="100" />
+      <stuck id="gearRight" title="Right Gear" simVar="GEAR RIGHT POSITION" refreshIntervalInMs="100" />
     </definitions>
     <definitions title="flaps">
-      <simVarStuck id="flapsLeft" title="Left Flaps" simVar="TRAILING EDGE FLAPS LEFT PERCENT" refreshIntervalInMs="100" />
-      <simVarStuck id="flapsRight" title="Right Flaps" simVar="TRAILING EDGE FLAPS RIGHT PERCENT" refreshIntervalInMs="100" />
+      <stuck id="flapsLeft" title="Left Flaps" simVar="TRAILING EDGE FLAPS LEFT PERCENT" refreshIntervalInMs="100" />
+      <stuck id="flapsRight" title="Right Flaps" simVar="TRAILING EDGE FLAPS RIGHT PERCENT" refreshIntervalInMs="100" />
     </definitions>
     <definitions title="surfaces">
-      <simVarStuck id="rudderTrim" title="Rudder Trim" simVar="RUDDER TRIM PCT" onlyOnDetectedChange="true" />
-      <simVarStuck id="aileronTrim" title="Aileron Trim" simVar="AILERON TRIM PCT" onlyOnDetectedChange="true" />
-      <simVarStuck id="elevatorTrim" title="Elevator Trim" simVar="ELEVATOR TRIM POSITION" onlyOnDetectedChange="true" />
-      <simVarStuck id="elevator" title="Elevator" simVar="ELEVATOR POSITION" onlyOnDetectedChange="true" />
-      <simVarStuck id="aileron" title="Aileron" simVar="AILERON POSITION" onlyOnDetectedChange="true" />
-      <simVarStuck id="rudder" title="Rudder" simVar="RUDDER POSITION" onlyOnDetectedChange="true" />
+      <stuck id="rudderTrim" title="Rudder Trim" simVar="RUDDER TRIM PCT" onlyUpdateOnDetectedChange="true" />
+      <stuck id="aileronTrim" title="Aileron Trim" simVar="AILERON TRIM PCT" onlyUpdateOnDetectedChange="true" />
+      <stuck id="elevatorTrim" title="Elevator Trim" simVar="ELEVATOR TRIM POSITION" onlyUpdateOnDetectedChange="true" />
+      <stuck id="elevator" title="Elevator" simVar="ELEVATOR POSITION" onlyUpdateOnDetectedChange="true" />
+      <stuck id="aileron" title="Aileron" simVar="AILERON POSITION" onlyUpdateOnDetectedChange="true" />
+      <stuck id="rudder" title="Rudder" simVar="RUDDER POSITION" onlyUpdateOnDetectedChange="true" />
     </definitions>
   </definitions>
 </definitions>

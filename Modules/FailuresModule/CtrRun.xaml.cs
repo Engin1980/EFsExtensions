@@ -1,7 +1,7 @@
 ﻿using FailuresModule.Converters;
-using FailuresModule.Model.App;
-using FailuresModule.Model.Sim;
-using FailuresModule.Types.Run;
+using FailuresModule.Model.Incidents;
+using FailuresModule.Model.Failures;
+using FailuresModule.Model.RunTime;
 using FailuresModule.Model.Run.Sustainers;
 using System;
 using System.Collections.Generic;

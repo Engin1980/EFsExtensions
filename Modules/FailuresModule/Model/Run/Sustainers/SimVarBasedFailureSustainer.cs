@@ -1,4 +1,4 @@
-﻿using FailuresModule.Model.Sim;
+﻿using FailuresModule.Model.Failures;
 using FailuresModule.Model.Run.Sustainers;
 using System;
 using System.Collections.Generic;

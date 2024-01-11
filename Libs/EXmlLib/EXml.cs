@@ -39,6 +39,5 @@ namespace EXmlLib
       T ret = EXmlHelper.Cast<T>(tmp);
       return ret;
     }
-
   }
 }

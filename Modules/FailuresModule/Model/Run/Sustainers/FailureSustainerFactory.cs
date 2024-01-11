@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FailuresModule.Model.Run.Sustainers;
-using FailuresModule.Model.Sim;
+using FailuresModule.Model.Failures;
 
 namespace FailuresModule.Model.Run.Sustainers
 {
@@ -13,9 +13,9 @@ namespace FailuresModule.Model.Run.Sustainers
     internal static FailureSustainer Create(FailureDefinition failItem)
     {
       FailureSustainer ret;
-      if (failItem is SimEventFailureDefinition efd)
+      if (failItem is ToggleFailureDefinition efd)
         ret = CreateEvent(efd);
-      else if (failItem is SimVarFailureDefinition svfd)
+      else if (failItem is SetFailureDefinition svfd)
         ret = CreateSimVar(svfd);
       else if (failItem is StuckFailureDefinition sfd)
         ret = CreateStuck(sfd);
@@ -23,14 +23,14 @@ namespace FailuresModule.Model.Run.Sustainers
         ret = CreateLeak(lfd);
       else if (failItem is SneakFailureDefinition nfd)
         ret = CreateSneak(nfd);
-      else if (failItem is SimVarViaEventFailureDefinition svvefd)
+      else if (failItem is ToggleOnVarMismatchFailureDefinition svvefd)
         ret = CreateSimVarViaEvent(svvefd);
       else
         throw new NotImplementedException();
       return ret;
     }
 
-    private static FailureSustainer CreateSimVarViaEvent(SimVarViaEventFailureDefinition svvefd)
+    private static FailureSustainer CreateSimVarViaEvent(ToggleOnVarMismatchFailureDefinition svvefd)
     {
       SimVarViaEventFailureSustainer ret = new(svvefd);
       return ret;
@@ -42,7 +42,7 @@ namespace FailuresModule.Model.Run.Sustainers
       return ret;
     }
 
-    private static FailureSustainer CreateSimVar(SimVarFailureDefinition svfd)
+    private static FailureSustainer CreateSimVar(SetFailureDefinition svfd)
     {
       SimVarFailureSustainer ret = new SimVarFailureSustainer(svfd);
       return ret;
@@ -60,7 +60,7 @@ namespace FailuresModule.Model.Run.Sustainers
       return ret;
     }
 
-    private static FailureSustainer CreateEvent(SimEventFailureDefinition ifd)
+    private static FailureSustainer CreateEvent(ToggleFailureDefinition ifd)
     {
       EventFailureSustainer ret = new EventFailureSustainer(ifd);
       return ret;

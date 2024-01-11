@@ -6,21 +6,36 @@
             elementFormDefault="qualified">
   <xsd:element name="definitions" type="failureDefinitions"/>
 
+  <xsd:group name="failureDefinitionsGroup">
+    <xsd:choice>
+      <xsd:element name="toggle" type="toggleFailureDefinition"/>
+      <xsd:element name="set" type="setFailureDefinition"/>
+      <xsd:element name="leak" type="leakFailureDefinition"/>
+      <xsd:element name="stuck" type="stuckFailureDefinition"/>
+      <xsd:element name="sneak" type="sneakFailureDefinition" />
+      <xsd:element name="toggleOnVarMismatch" type="toggleVarMismatchFailureDefinition" />
+    </xsd:choice>
+  </xsd:group>
+
+  <xsd:complexType name="sequenceGenerator">
+    <xsd:choice minOccurs="1" maxOccurs="unbounded">
+      <xsd:group ref="failureDefinitionsGroup" />
+    </xsd:choice>
+    <xsd:attribute name="from" type="xsd:int" use="required"/>
+    <xsd:attribute name="to" type="xsd:int" use="required"/>
+    <xsd:attribute name="varRef" type="xsd:string" use="optional" default="{index}" />
+  </xsd:complexType>
+
   <xsd:complexType name="failureDefinitions">
     <xsd:choice minOccurs="1" maxOccurs="unbounded">
+      <xsd:group ref="failureDefinitionsGroup" />
       <xsd:element name="definitions" type="failureDefinitions"/>
-      <xsd:element name="simEvent" type="eventFailureDefinition"/>
-      <xsd:element name="simVarValue" type="simVarValueFailureDefinition"/>
-      <xsd:element name="simVarLeak" type="simVarLeakFailureDefinition"/>
-      <xsd:element name="simVarStuck" type="simVarStuckFailureDefinition"/>
-      <xsd:element name="simVarSneak" type="simVarSneakFailureDefinition" />
-      <xsd:element name="simVarValueViaEvent" type="simVarValueViaEventFailureDefinition" />
       <xsd:element name="sequence" type="sequenceGenerator"/>
     </xsd:choice>
     <xsd:attribute name="title" type="xsd:string" use="required"/>
   </xsd:complexType>
 
-  <xsd:complexType name="simVarSneakFailureDefinition">
+  <xsd:complexType name="sneakFailureDefinition">
     <xsd:attribute name="simVar" type="xsd:string" use="required"/>
     <xsd:attribute name="id" type="xsd:string" use="required" />
     <xsd:attribute name="title" type="xsd:string" use="optional" />
@@ -42,13 +57,13 @@
     </xsd:restriction>
   </xsd:simpleType>
 
-  <xsd:complexType name="eventFailureDefinition">
-    <xsd:attribute name="simEvt" type="xsd:string" use="required"/>
+  <xsd:complexType name="toggleFailureDefinition">
+    <xsd:attribute name="simEvent" type="xsd:string" use="required"/>
     <xsd:attribute name="id" type="xsd:string" use="required" />
     <xsd:attribute name="title" type="xsd:string" use="optional" />
   </xsd:complexType>
 
-  <xsd:complexType name="simVarValueFailureDefinition">
+  <xsd:complexType name="setFailureDefinition">
     <xsd:attribute name="id" type="xsd:string" use="required" />
     <xsd:attribute name="simVar" type="xsd:string" use="required"/>
     <xsd:attribute name="title" type="xsd:string" use="optional" />
@@ -56,44 +71,31 @@
     <xsd:attribute name="failValue" type="xsd:double" use="optional" default="1"/>
   </xsd:complexType>
 
-  <xsd:complexType name="simVarLeakFailureDefinition">
+  <xsd:complexType name="leakFailureDefinition">
     <xsd:attribute name="simVar" type="xsd:string" use="required"/>
     <xsd:attribute name="id" type="xsd:string" use="required" />
     <xsd:attribute name="title" type="xsd:string" use="optional" />
-    <xsd:attribute name="minLeakTicks" type="xsd:int" use="optional" default="5"/>
-    <xsd:attribute name="maxLeakTicks" type="xsd:int" use="optional" default="100"/>
+    <xsd:attribute name="minimalLeakTicks" type="xsd:int" use="optional" default="5"/>
+    <xsd:attribute name="maximalLeakTicks" type="xsd:int" use="optional" default="100"/>
     <xsd:attribute name="tickIntervalInMs" type="xsd:int" use="optional" default="1000"/>
   </xsd:complexType>
 
-  <xsd:complexType name="simVarStuckFailureDefinition">
+  <xsd:complexType name="stuckFailureDefinition">
     <xsd:attribute name="simVar" type="xsd:string" use="required"/>
     <xsd:attribute name="id" type="xsd:string" use="required" />
     <xsd:attribute name="title" type="xsd:string" use="optional" />
     <xsd:attribute name="refreshIntervalInMs" type="xsd:int" use="optional" default="1000"/>
-    <xsd:attribute name="onlyOnDetectedChange" type="xsd:boolean" use="optional" default="0"/>
+    <xsd:attribute name="onlyUpdateOnDetectedChange" type="xsd:boolean" use="optional" default="0"/>
   </xsd:complexType>
 
-  <xsd:complexType name="simVarValueViaEventFailureDefinition">
+  <xsd:complexType name="toggleVarMismatchFailureDefinition">
     <xsd:attribute name="simVar" type="xsd:string" use="required"/>
-    <xsd:attribute name="simEvt" type="xsd:string" use="required"/>
+    <xsd:attribute name="simEvent" type="xsd:string" use="required"/>
     <xsd:attribute name="id" type="xsd:string" use="required" />
     <xsd:attribute name="title" type="xsd:string" use="optional" />
-    <xsd:attribute name="okValue" type="xsd:double" use="optional" default="0"/>
     <xsd:attribute name="failValue" type="xsd:double" use="optional" default="1"/>
     <xsd:attribute name="refreshIntervalInMs" type="xsd:int" use="optional" default="1000"/>
+    <xsd:attribute name="onlyUpdateOnDetectedChange" type="xsd:boolean" use="optional" default="0"/>
   </xsd:complexType>
 
-  <xsd:complexType name="sequenceGenerator">
-    <xsd:choice minOccurs="1" maxOccurs="unbounded">
-      <xsd:element name="simEvent" type="eventFailureDefinition"/>
-      <xsd:element name="simVarValue" type="simVarValueFailureDefinition"/>
-      <xsd:element name="simVarLeak" type="simVarLeakFailureDefinition"/>
-      <xsd:element name="simVarStuck" type="simVarStuckFailureDefinition"/>
-      <xsd:element name="simVarSneak" type="simVarSneakFailureDefinition" />
-      <xsd:element name="simVarValueViaEvent" type="simVarValueViaEventFailureDefinition" />
-    </xsd:choice>
-    <xsd:attribute name="from" type="xsd:int" use="required"/>
-    <xsd:attribute name="to" type="xsd:int" use="required"/>
-    <xsd:attribute name="varRef" type="xsd:string" use="optional" default="{index}" />
-  </xsd:complexType>
 </xsd:schema>

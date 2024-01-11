@@ -1,5 +1,5 @@
 ﻿using ELogging;
-using FailuresModule.Model.Sim;
+using FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,7 +15,7 @@ namespace FailuresModule.Model.Run.Sustainers
   {
     #region Private Fields
 
-    private readonly SimVarViaEventFailureDefinition failure;
+    private readonly ToggleOnVarMismatchFailureDefinition failure;
     private readonly Timer updateTimer;
     private bool isRunning = false;
     private bool isDataRequested = false;
@@ -24,7 +24,7 @@ namespace FailuresModule.Model.Run.Sustainers
 
     #region Public Constructors
 
-    public SimVarViaEventFailureSustainer(SimVarViaEventFailureDefinition failure) : base(failure)
+    public SimVarViaEventFailureSustainer(ToggleOnVarMismatchFailureDefinition failure) : base(failure)
     {
       this.failure = failure;
       this.updateTimer = new Timer(this.failure.RefreshIntervalInMs);
@@ -68,7 +68,7 @@ namespace FailuresModule.Model.Run.Sustainers
       if (data != this.failure.FailValue && isRunning)
       {
         Logger.Log(this, LogLevel.INFO, "Invoking event");
-        base.SimCon.SendClientEvent(this.failure.SimEventConPoint, null, false);
+        base.SimCon.SendClientEvent(this.failure.SimEvent, null, false);
       }
       this.isDataRequested = false;
     }

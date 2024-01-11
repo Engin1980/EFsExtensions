@@ -19,6 +19,19 @@ namespace EXmlLib.Deserializers
     public delegate void PropertyDeserializeHandler(XElement element, object target, PropertyInfo propertyInfo, EXmlContext context);
     private readonly Dictionary<string, PropertyDeserializeHandler> customProperties = new();
     private Predicate<Type> predicate;
+    private Action? preAction;
+    private Action<object>? postAction;
+
+    public ObjectElementDeserializer WithPreAction(Action preAction)
+    {
+      this.preAction = preAction;
+      return this;
+    }
+    public ObjectElementDeserializer WithPostAction(Action<object> postAction)
+    {
+      this.postAction = postAction;
+      return this;
+    }
 
     public ObjectElementDeserializer WithCustomTargetType(Type type, bool includeInhreited = false)
     {
@@ -32,6 +45,24 @@ namespace EXmlLib.Deserializers
     public ObjectElementDeserializer WithCustomTargetTypeAcceptancy(Predicate<Type> targetTypePredicate)
     {
       this.predicate = targetTypePredicate ?? throw new ArgumentNullException(nameof(targetTypePredicate));
+      return this;
+    }
+
+    public ObjectElementDeserializer WithCustomPropertyMapping(string propertyName, string xmlName)
+    {
+      void handler(XElement e, object t, PropertyInfo f, EXmlContext c)
+      {
+        PropertyInfo propertyInfo = t.GetType().GetProperty(propertyName)
+        ?? throw new ApplicationException($"Trying to find property '{propertyName}' on type '{t.GetType().Name}', which should be here, but not found.");
+        DeserializeProperty(e, t, propertyInfo, c, xmlName);
+      };
+      this.WithCustomPropertyDeserialization(propertyName, handler);
+      return this;
+    }
+
+    public ObjectElementDeserializer WithCustomPropertyMapping(PropertyInfo propertyInfo, string xmlName)
+    {
+      this.WithCustomPropertyMapping(propertyInfo.Name, xmlName);
       return this;
     }
 
@@ -71,9 +102,17 @@ namespace EXmlLib.Deserializers
       return predicate.Invoke(type);
     }
 
-    protected void DeserializeProperty(XElement element, object target, PropertyInfo propertyInfo, EXmlContext context)
+    private void DeserializeProperty(
+      XElement element, object target, string propertyName, EXmlContext context, string customXmlName)
     {
-      var propName = context.ResolvePropertyName(propertyInfo);
+
+    }
+
+    protected void DeserializeProperty(
+      XElement element, object target, PropertyInfo propertyInfo, EXmlContext context,
+      string? customXmlName = null)
+    {
+      var propName = customXmlName ?? context.ResolvePropertyName(propertyInfo);
       XElement? elm = Utils.TryGetElementByName(element, propName);
       XAttribute? attr = Utils.TryGetAttributeByName(element, propName);
       if (elm != null || attr != null)
@@ -111,6 +150,17 @@ namespace EXmlLib.Deserializers
 
     public object Deserialize(XElement element, Type targetType, EXmlContext context)
     {
+      if (preAction != null)
+      {
+        try
+        {
+          this.preAction();
+        }
+        catch (Exception ex)
+        {
+          throw new EXmlException($"{targetType.Name} pre-action throws an exception.", ex);
+        }
+      }
       IXmlLineInfo xmlLineInfo = element;
       Logger.Log(this, LogLevel.INFO, $"Loading {targetType.FullName} from {element.Name} (row {xmlLineInfo.LineNumber})");
       object ret;
@@ -159,6 +209,18 @@ namespace EXmlLib.Deserializers
         {
           throw new EXmlException($"Invocation of post-deserialize of {iopd.GetType().Name} failed.", ex);
         }
+
+      if (postAction != null)
+      {
+        try
+        {
+          this.postAction(ret);
+        }
+        catch (Exception ex)
+        {
+          throw new EXmlException($"{targetType.Name} post-action throws an exception.", ex);
+        }
+      }
 
       return ret;
     }

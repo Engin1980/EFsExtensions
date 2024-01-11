@@ -1,8 +1,8 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
-using FailuresModule.Model.App;
-using FailuresModule.Model.Sim;
+using FailuresModule.Model.Incidents;
+using FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
