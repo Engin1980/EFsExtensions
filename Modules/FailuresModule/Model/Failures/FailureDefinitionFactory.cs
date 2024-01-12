@@ -20,8 +20,6 @@ namespace FailuresModule.Model.Failures
 
   public class FailureDefinitionFactory
   {
-    private static int ENGINES_COUNT = 4;
-
     public static FailureDefinitionGroup BuildFailures()
     {
       //List<FailureDefinition> ret = BuildFailuresByCode();

@@ -1,11 +1,15 @@
-﻿using ESystem.Asserting;
+﻿using Eng.Chlaot.ChlaotModuleBase;
+using ESystem;
+using ESystem.Asserting;
 using EXmlLib.Attributes;
 using EXmlLib.Interfaces;
+using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Text;
 using System.Linq;
 using System.Net.Mail;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
@@ -42,6 +46,59 @@ namespace FailuresModule.Model.Failures
       }
       else
         ret = txt;
+      return ret;
+    }
+
+    internal static void MergeFailureDefinitions(List<FailureDefinitionBase> original, FailureDefinitionGroup extending)
+    {
+      var originalTree = BuildExtendingTree(original);
+      var extendingTree = BuildExtendingTree(extending.Items);
+      foreach (var key in extendingTree.Keys)
+      {
+        if (originalTree.ContainsKey(key) == false) continue;
+
+        var oldItem = originalTree[key].Where(q => q is FailureDefinition).Cast<FailureDefinition>().Single(q => q.Id == key);
+        var newItem = extendingTree[key].Where(q => q is FailureDefinition).Cast<FailureDefinition>().Single(q => q.Id == key);
+        originalTree[key].Remove(oldItem);
+        originalTree[key].Add(newItem);
+        extendingTree[key].Remove(newItem);
+      }
+      original.Add(extending);
+      CleanUpEmptyGroups(original);
+    }
+
+    internal static void CleanUpEmptyGroups(List<FailureDefinitionBase> grp)
+    {
+      var fdgs = grp.Where(q => q is FailureDefinitionGroup).Cast<FailureDefinitionGroup>().ToList();
+      fdgs.Where(q => q.Items.Count == 0).ToList().ForEach(q => grp.Remove(q));
+      fdgs.ForEach(q => CleanUpEmptyGroups(q.Items));
+    }
+
+    private static Dictionary<string, List<FailureDefinitionBase>> BuildExtendingTree(List<FailureDefinitionBase> items)
+    {
+      Dictionary<string, List<FailureDefinitionBase>> ret = new();
+
+      void processList(List<FailureDefinitionBase> lst)
+      {
+        foreach (var l in lst)
+        {
+          if (l is FailureDefinition fd)
+            ret[fd.Id] = lst;
+          else if (l is FailureDefinitionGroup fdg)
+            processList(fdg.Items);
+        }
+      }
+
+      processList(items);
+      return ret;
+    }
+
+    internal static List<FailureDefinition> Flatten(List<FailureDefinitionBase> items)
+    {
+      var ret = items
+              .FlattenRecursively((FailureDefinitionGroup q) => q.Items)
+              .Cast<FailureDefinition>()
+              .ToList();
       return ret;
     }
   }

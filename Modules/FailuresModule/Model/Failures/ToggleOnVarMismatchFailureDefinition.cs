@@ -18,7 +18,7 @@ namespace FailuresModule.Model.Failures
     public override string SimConPoint => $"{SimVar}/@{SimEvent}";
     public string SimEvent { get; set; } = null!;
 
-    public override string Type => "StuckViaEvent";
+    public override string Type => "Toggle on var-miss";
     #endregion Public Properties
 
     #region Public Constructors

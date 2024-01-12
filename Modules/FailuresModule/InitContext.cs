@@ -17,7 +17,7 @@ using System.Xml.Serialization;
 
 namespace FailuresModule
 {
-    public class InitContext : NotifyPropertyChangedBase
+  public class InitContext : NotifyPropertyChangedBase
   {
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
@@ -44,10 +44,7 @@ namespace FailuresModule
     {
       var fdg = FailureDefinitionFactory.BuildFailures();
       FailureDefinitions = fdg.Items;
-      FailureDefinitionsFlat = FailureDefinitions
-        .FlattenRecursively((FailureDefinitionGroup q) => q.Items)
-        .Cast<FailureDefinition>()
-        .ToList();
+      FailureDefinitionsFlat = FailureDefinition.Flatten(fdg.Items);
     }
 
     public void LoadFile(string xmlFile)
@@ -62,8 +59,13 @@ namespace FailuresModule
         try
         {
           doc = XDocument.Load(xmlFile, LoadOptions.SetLineInfo);
-          EXml<IncidentTopGroup> exml = FailuresModule.Model.Incidents.Xml.Deserialization.CreateDeserializer(this.FailureDefinitionsFlat);
-          tmp = exml.Deserialize(doc);
+          tmp = FailuresModule.Model.Incidents.Xml.Deserialization.Deserialize(doc.Root!, this.FailureDefinitionsFlat);
+          if (doc.Root!.LElementOrNull("definitions")  is XElement elm) //non-null check
+          {
+            var failDefs = FailuresModule.Model.Failures.Xml.Deserialization.Deserialize(elm);
+            FailureDefinition.MergeFailureDefinitions(this.FailureDefinitions, failDefs);
+            FailureDefinitionsFlat = FailureDefinition.Flatten(this.FailureDefinitions);
+          }
         }
         catch (Exception ex)
         {

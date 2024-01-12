@@ -6,7 +6,7 @@ namespace FailuresModule.Model.Failures
 {
   public class ToggleFailureDefinition : FailureDefinition
   {
-    public override string Type => "Event";
+    public override string Type => "Toggle";
     public string SimEvent { get; set; } = null!;
     public override string SimConPoint => SimEvent;
 

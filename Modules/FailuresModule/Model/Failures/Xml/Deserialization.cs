@@ -19,6 +19,14 @@ namespace FailuresModule.Model.Failures.Xml
 {
   internal static class Deserialization
   {
+
+    public static FailureDefinitionGroup Deserialize(XElement src)
+    {
+      var deser = CreateDeserializer();
+      FailureDefinitionGroup ret = deser.Deserialize(src);
+      return ret;
+    }
+
     public static EXml<FailureDefinitionGroup> CreateDeserializer()
     {
       int index = 0;
