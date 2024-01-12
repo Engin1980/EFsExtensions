@@ -10,9 +10,9 @@ using System.Transactions;
 
 namespace FailuresModule.Model.Run.Sustainers
 {
-  internal class EventFailureSustainer : FailureSustainer
+  internal class ToggleFailureSustainer : FailureSustainer
   {
-    public EventFailureSustainer(ToggleFailureDefinition failure) : base(failure)
+    public ToggleFailureSustainer(ToggleFailureDefinition failure) : base(failure)
     {
       // intentionally blank
     }

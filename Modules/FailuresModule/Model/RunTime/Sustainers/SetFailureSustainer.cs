@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace FailuresModule.Model.Run.Sustainers
 {
-  internal class SimVarFailureSustainer : SimVarBasedFailureSustainer
+  internal class SetFailureSustainer : SimVarBasedFailureSustainer
   {
     #region Private Fields
 
@@ -19,7 +19,7 @@ namespace FailuresModule.Model.Run.Sustainers
 
     #region Public Constructors
 
-    public SimVarFailureSustainer(SetFailureDefinition failure) : base(failure)
+    public SetFailureSustainer(SetFailureDefinition failure) : base(failure)
     {
       this.failure = failure;
     }

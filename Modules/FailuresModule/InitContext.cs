@@ -1,6 +1,7 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using ESystem;
+using static ESystem.Functions;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using FailuresModule.Model.Incidents;
@@ -28,7 +29,7 @@ namespace FailuresModule
       this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
       this.FailureDefinitionsFlat = new();
-      this.BuildFailures();
+      this.LoadDefaultFailures();
     }
 
     public List<FailureDefinition> FailureDefinitionsFlat { get; set; }
@@ -40,47 +41,40 @@ namespace FailuresModule
       set => base.UpdateProperty(nameof(FailureSet), value);
     }
 
-    internal void BuildFailures()
+    internal void LoadDefaultFailures()
     {
-      var fdg = FailureDefinitionFactory.BuildFailures();
+      this.logger.Log(LogLevel.INFO, "Loading default failures...");
+      var fdg = FailuresModule.Model.Failures.Xml.Deserialization.Deserialize(@".\Xmls\FailureDefinitions.xml");
       FailureDefinitions = fdg.Items;
       FailureDefinitionsFlat = FailureDefinition.Flatten(fdg.Items);
+      this.logger.Log(LogLevel.INFO, "Loading default failures - done...");
     }
 
     public void LoadFile(string xmlFile)
     {
-      var factory = new XmlSerializerFactory();
-      IncidentTopGroup tmp;
-      XDocument doc;
-
       try
       {
         logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
-        try
-        {
-          doc = XDocument.Load(xmlFile, LoadOptions.SetLineInfo);
-          tmp = FailuresModule.Model.Incidents.Xml.Deserialization.Deserialize(doc.Root!, this.FailureDefinitionsFlat);
-          if (doc.Root!.LElementOrNull("definitions")  is XElement elm) //non-null check
+        XDocument doc = Try(() => XDocument.Load(xmlFile, LoadOptions.SetLineInfo),
+          ex => throw new ApplicationException($"Unable to load xml file '{xmlFile}'.", ex));
+
+        IncidentTopGroup tmp = Try(() => FailuresModule.Model.Incidents.Xml.Deserialization.Deserialize(doc.Root!, this.FailureDefinitionsFlat),
+          ex => throw new ApplicationException("Unable to read/deserialize copilot-set from '{xmlFile}'. Invalid file content?", ex));
+
+        logger.Invoke(LogLevel.INFO, $"Aplying file-defined failure definitions");
+        if (doc.Root!.LElementOrNull("definitions") is XElement elm) //non-null check
+          Try(() =>
           {
             var failDefs = FailuresModule.Model.Failures.Xml.Deserialization.Deserialize(elm);
             FailureDefinition.MergeFailureDefinitions(this.FailureDefinitions, failDefs);
             FailureDefinitionsFlat = FailureDefinition.Flatten(this.FailureDefinitions);
-          }
-        }
-        catch (Exception ex)
-        {
-          throw new ApplicationException("Unable to read/deserialize copilot-set from '{xmlFile}'. Invalid file content?", ex);
-        }
+          }, 
+          ex => throw new ApplicationException("Failed to analyse or apply file-defined failures.", ex));
 
         logger.Invoke(LogLevel.INFO, $"Checking sanity");
-        try
-        {
-          SanityChecker.CheckSanity(tmp, this.FailureDefinitionsFlat);
-        }
-        catch (Exception ex)
-        {
-          throw new ApplicationException("Error loading failures.", ex);
-        }
+        Try(
+          () => SanityChecker.CheckSanity(tmp, this.FailureDefinitionsFlat),
+          ex => throw new ApplicationException("Error loading failures.", ex));
 
         this.FailureSet = tmp;
         UpdateReadyFlag();

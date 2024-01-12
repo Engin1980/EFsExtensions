@@ -14,9 +14,9 @@ namespace FailuresModule.Model.Run.Sustainers
     {
       FailureSustainer ret;
       if (failItem is ToggleFailureDefinition efd)
-        ret = CreateEvent(efd);
+        ret = CreateToggle(efd);
       else if (failItem is SetFailureDefinition svfd)
-        ret = CreateSimVar(svfd);
+        ret = CreateSet(svfd);
       else if (failItem is StuckFailureDefinition sfd)
         ret = CreateStuck(sfd);
       else if (failItem is LeakFailureDefinition lfd)
@@ -24,15 +24,15 @@ namespace FailuresModule.Model.Run.Sustainers
       else if (failItem is SneakFailureDefinition nfd)
         ret = CreateSneak(nfd);
       else if (failItem is ToggleOnVarMismatchFailureDefinition svvefd)
-        ret = CreateSimVarViaEvent(svvefd);
+        ret = CreateToggleOnVarMismatch(svvefd);
       else
         throw new NotImplementedException();
       return ret;
     }
 
-    private static FailureSustainer CreateSimVarViaEvent(ToggleOnVarMismatchFailureDefinition svvefd)
+    private static FailureSustainer CreateToggleOnVarMismatch(ToggleOnVarMismatchFailureDefinition svvefd)
     {
-      SimVarViaEventFailureSustainer ret = new(svvefd);
+      ToggleOnVarMismatchFailureSustainer ret = new(svvefd);
       return ret;
     }
 
@@ -42,9 +42,9 @@ namespace FailuresModule.Model.Run.Sustainers
       return ret;
     }
 
-    private static FailureSustainer CreateSimVar(SetFailureDefinition svfd)
+    private static FailureSustainer CreateSet(SetFailureDefinition svfd)
     {
-      SimVarFailureSustainer ret = new SimVarFailureSustainer(svfd);
+      SetFailureSustainer ret = new SetFailureSustainer(svfd);
       return ret;
     }
 
@@ -60,9 +60,9 @@ namespace FailuresModule.Model.Run.Sustainers
       return ret;
     }
 
-    private static FailureSustainer CreateEvent(ToggleFailureDefinition ifd)
+    private static FailureSustainer CreateToggle(ToggleFailureDefinition ifd)
     {
-      EventFailureSustainer ret = new EventFailureSustainer(ifd);
+      ToggleFailureSustainer ret = new ToggleFailureSustainer(ifd);
       return ret;
     }
   }

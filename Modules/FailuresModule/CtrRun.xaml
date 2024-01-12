@@ -142,12 +142,12 @@
                   <Label>
                     <StackPanel Orientation="Horizontal">
                       <TextBlock Text="{Binding Title}" />
-                      <TextBlock Text=" (id="  FontSize="12"/>
-                      <TextBlock Text="{Binding Id}"  FontSize="12"/>
+                      <TextBlock Text=" (id="  FontSize="12" />
+                      <TextBlock Text="{Binding Id}"  FontSize="12" Foreground="Blue"/>
                       <TextBlock Text=", type="  FontSize="12"/>
-                      <TextBlock Text="{Binding Type}"  FontSize="12"/>
+                      <TextBlock Text="{Binding Type}"  FontSize="12" Foreground="Orange"/>
                       <TextBlock Text=", sim="  FontSize="12"/>
-                      <TextBlock Text="{Binding SimConPoint}" FontSize="12"/>
+                      <TextBlock Text="{Binding SimConPoint}" FontSize="12" Foreground="BlueViolet"/>
                       <TextBlock Text=", state="  FontSize="12"/>
                       <TextBlock Text="{Binding Id, 
                         Converter={StaticResource FailureDefinitionActiveToBoolConverter},

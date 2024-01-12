@@ -11,7 +11,7 @@ using System.Timers;
 
 namespace FailuresModule.Model.Run.Sustainers
 {
-  internal class SimVarViaEventFailureSustainer : SimVarBasedFailureSustainer
+  internal class ToggleOnVarMismatchFailureSustainer : SimVarBasedFailureSustainer
   {
     #region Private Fields
 
@@ -24,7 +24,7 @@ namespace FailuresModule.Model.Run.Sustainers
 
     #region Public Constructors
 
-    public SimVarViaEventFailureSustainer(ToggleOnVarMismatchFailureDefinition failure) : base(failure)
+    public ToggleOnVarMismatchFailureSustainer(ToggleOnVarMismatchFailureDefinition failure) : base(failure)
     {
       this.failure = failure;
       this.updateTimer = new Timer(this.failure.RefreshIntervalInMs);

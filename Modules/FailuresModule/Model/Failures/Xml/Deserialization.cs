@@ -13,12 +13,25 @@ using System.Windows.Media.Animation;
 using System.Speech.Synthesis.TtsEngine;
 using System.IO.IsolatedStorage;
 using ESystem.Asserting;
+using static ESystem.Functions;
 using ESystem;
 
 namespace FailuresModule.Model.Failures.Xml
 {
   internal static class Deserialization
   {
+    public static FailureDefinitionGroup Deserialize(string fileName)
+    {
+      XDocument doc = Try(
+        () => XDocument.Load(fileName, LoadOptions.SetLineInfo),
+        ex => throw new ApplicationException($"Unable to load xml from file '{fileName}'.", ex));
+      return Deserialize(doc);
+    }
+
+    public static FailureDefinitionGroup Deserialize(XDocument doc)
+    {
+      return Deserialize(doc.Root!);
+    }
 
     public static FailureDefinitionGroup Deserialize(XElement src)
     {
