@@ -34,17 +34,17 @@ namespace AffinityModule
     }
     private void AdjustmentCompleted()
     {
-      List<ProcessInfo> oks = new();
-      List<ProcessInfo> fails = new();
-      List<ProcessInfo> skips = new();
+      List<ProcessAdjustResult> oks = new();
+      List<ProcessAdjustResult> fails = new();
+      List<ProcessAdjustResult> skips = new();
 
-      foreach (ProcessInfo info in this.context.ProcessInfos)
+      foreach (ProcessAdjustResult info in this.context.ProcessInfos)
       {
-        if (info.AffinitySetResult == ProcessInfo.EResult.Unchanged
-          && info.PrioritySetResult == ProcessInfo.EResult.Unchanged)
+        if (info.AffinitySetResult == ProcessAdjustResult.EResult.Unchanged
+          && info.PrioritySetResult == ProcessAdjustResult.EResult.Unchanged)
           skips.Add(info);
-        else if (info.AffinitySetResult == ProcessInfo.EResult.Failed
-          || info.PrioritySetResult == ProcessInfo.EResult.Failed)
+        else if (info.AffinitySetResult == ProcessAdjustResult.EResult.Failed
+          || info.PrioritySetResult == ProcessAdjustResult.EResult.Failed)
           fails.Add(info);
         else
           oks.Add(info);

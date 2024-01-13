@@ -18,13 +18,18 @@ namespace Eng.Chlaot.Modules.AffinityModule
       ObjectElementDeserializer oed = new ObjectElementDeserializer()
         .WithCustomTargetType(typeof(RuleBase))
         .WithCustomPropertyDeserialization(
-        nameof(RuleBase.Rules),
-        EXmlHelper.List.CreateForFlat<Rule>("rule"));
+          nameof(RuleBase.AffinityRules),
+          EXmlHelper.List.CreateForNested(
+            "affinity", new EXmlHelper.List.DT("rule", typeof(AffinityRule)), () => new List<AffinityRule>()))
+      .WithCustomPropertyDeserialization(
+        nameof(RuleBase.PriorityRules),
+        EXmlHelper.List.CreateForNested(
+          "priority", new EXmlHelper.List.DT("rule", typeof(PriorityRule)), () => new List<PriorityRule>()));
       ret.Context.ElementDeserializers.Insert(0, oed);
 
       oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(Rule))
-        .WithIgnoredProperty(nameof(Rule.CoreFlags));
+        .WithCustomTargetType(typeof(AffinityRule))
+        .WithIgnoredProperty(nameof(AffinityRule.CoreFlags));
       ret.Context.ElementDeserializers.Insert(0, oed);
 
       return ret;

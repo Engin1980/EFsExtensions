@@ -13,24 +13,11 @@ using System.Windows.Media.Imaging;
 
 namespace Eng.Chlaot.Modules.AffinityModule
 {
-  public class Rule
+  public class AffinityRule : AbstractRule
   {
     public const string ROLL_REGEX = "^((\\d+)(-(\\d+))?)(,(\\d+)(-(\\d+))?)*$";
 
-    public enum EPriority
-    {
-      Idle,
-      BelowNormal,
-      Normal,
-      AboveNormal,
-      Highest
-    }
-
     public List<bool> CoreFlags { get; set; }
-
-    public string TitleOrRegex => this.Title ?? this.Regex ?? "(null)";
-
-    public string? Title { get; set; }
 
     private string _Roll = "";
     public string Roll
@@ -43,30 +30,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
       }
     }
 
-    public EPriority? Priority { get; set; }
-    public ProcessPriorityClass PriorityClass
-    {
-      get
-      {
-        if (Priority == null) throw new NotSupportedException("PriorityClass property get cannot be invoked if Priority is null.");
-        ProcessPriorityClass ret = this.Priority.Value switch
-        {
-          EPriority.Normal => ProcessPriorityClass.Normal,
-          EPriority.Idle => ProcessPriorityClass.Idle,
-          EPriority.BelowNormal => ProcessPriorityClass.BelowNormal,
-          EPriority.AboveNormal => ProcessPriorityClass.AboveNormal,
-          EPriority.Highest => ProcessPriorityClass.High,
-          _ => throw new ArgumentOutOfRangeException(this.Priority.Value + " is unknown priority value.")
-        };
-        return ret;
-      }
-    }
-    public bool ShouldChangePriority => this.Priority != null;
-
-    public string Regex { get; set; }
-    public bool ShouldChangeAffinity => this._Roll.Length > 0;
-
-    public Rule()
+    public AffinityRule()
     {
       this.CoreFlags = AffinityUtils.ToEmptyArray(false);
       _Roll = Roll = "";
@@ -77,7 +41,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
     {
       List<int> includedIndices = new();
 
-      if (Roll.Length > 0)
+      if (Roll.Length > 0 || Roll == "*")
       {
         if (System.Text.RegularExpressions.Regex.IsMatch(Roll, ROLL_REGEX) == false)
         {

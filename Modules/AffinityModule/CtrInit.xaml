@@ -16,8 +16,15 @@
       <TabItem Header="Metainfo">
         <gctr:MetaInfoPanel DataContext="{Binding MetaInfo}" />
       </TabItem>
-      <TabItem Header="Affinity">
-        <ListView x:Name="lstRules" ItemsSource="{Binding RuleBase.Rules}">
+      <TabItem>
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Affinity ("/>
+            <TextBlock Text="{Binding RuleBase.AffinityRules.Count}" />
+            <TextBlock Text=")"/>
+          </StackPanel>
+        </TabItem.Header>
+        <ListView ItemsSource="{Binding RuleBase.AffinityRules}">
           <ListView.ItemTemplate>
             <DataTemplate>
               <Label>
@@ -36,6 +43,28 @@
                       </DataTemplate>
                     </ItemsControl.ItemTemplate>
                   </ItemsControl>
+                </StackPanel>
+              </Label>
+            </DataTemplate>
+          </ListView.ItemTemplate>
+        </ListView>
+      </TabItem>
+      <TabItem>
+        <TabItem.Header>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Priority ("/>
+            <TextBlock Text="{Binding RuleBase.PriorityRules.Count}" />
+            <TextBlock Text=")"/>
+          </StackPanel>
+        </TabItem.Header>
+        <ListView ItemsSource="{Binding RuleBase.PriorityRules}">
+          <ListView.ItemTemplate>
+            <DataTemplate>
+              <Label>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{Binding TitleOrRegex}" Width="200" />
+                  <TextBlock Text=" ==> " />
+                  <TextBlock Text="{Binding Priority}" />
                 </StackPanel>
               </Label>
             </DataTemplate>

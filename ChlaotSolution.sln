@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xmls", "Xmls", "{56EA1EB7-0
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xsds", "Xsds", "{404576BE-5C9A-4B1A-8A79-87DFB1E2718C}"
 	ProjectSection(SolutionItems) = preProject
+		Xmls\Xsds\AffinitySchema.xsd = Xmls\Xsds\AffinitySchema.xsd
 		Xmls\Xsds\ChecklistSchema.xsd = Xmls\Xsds\ChecklistSchema.xsd
 		Xmls\Xsds\CopilotSchema.xsd = Xmls\Xsds\CopilotSchema.xsd
 		Xmls\Xsds\FailureDefinitionSchema.xsd = Xmls\Xsds\FailureDefinitionSchema.xsd
@@ -73,6 +74,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Affinity", "Affinity", "{C728BFD9-4FD3-484B-B4D9-F5DF5F43DBA7}"
 	ProjectSection(SolutionItems) = preProject
 		Xmls\Affinity\schema.affi.xml = Xmls\Affinity\schema.affi.xml
+		Xmls\Affinity\schema16threads.xml = Xmls\Affinity\schema16threads.xml
+		Xmls\Affinity\schema8threads.xml = Xmls\Affinity\schema8threads.xml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FailuresModule", "Modules\FailuresModule\FailuresModule.csproj", "{ABE7AD3D-4576-45B6-8446-E205765120F5}"

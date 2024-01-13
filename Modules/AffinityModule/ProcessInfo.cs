@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.Modules.AffinityModule
 {
-  public class ProcessInfo
+  public class ProcessAdjustResult
   {
     public enum EResult
     {

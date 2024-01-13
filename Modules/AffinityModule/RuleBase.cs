@@ -1,4 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
+﻿using AffinityModule;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
 using Eng.Chlaot.Modules.AffinityModule;
 using System;
@@ -13,6 +14,8 @@ namespace Eng.Chlaot.Modules.AffinityModule
 {
   public class RuleBase : StorableObject
   {
-    public List<Rule> Rules { get; set; } = new List<Rule>();
+    public int ResetIntervalInS { get; set; } = 0;
+    public List<AffinityRule> AffinityRules { get; set; } = new();
+    public List<PriorityRule> PriorityRules { get; set; } = new();
   }
 }

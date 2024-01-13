@@ -32,12 +32,6 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
     public Control RunControl => this.ctrRun ?? throw new ApplicationException("CtrRun is null");
 
-    public Settings Settings
-    {
-      get => base.GetProperty<Settings>(nameof(Settings))!;
-      set => base.UpdateProperty(nameof(Settings), value);
-    }
-
     public AffinityModule()
     {
       this.context = new Context(q => this.IsReady = q);
@@ -45,7 +39,6 @@ namespace Eng.Chlaot.Modules.AffinityModule
     public void Init()
     {
       this.ctrInit = new CtrInit(this.context);
-      this.context.LoadSettings();
     }
 
     public void Run()
