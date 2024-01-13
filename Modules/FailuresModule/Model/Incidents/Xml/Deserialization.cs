@@ -50,21 +50,20 @@ namespace FailuresModule.Model.Incidents.Xml
 
     #region Public Methods
 
-    public static IncidentTopGroup Deserialize(XElement element, List<FailureDefinition> failures)
+    public static IncidentGroup Deserialize(XElement element, List<FailureDefinition> failures)
     {
       var der = CreateDeserializer(failures);
-      IncidentTopGroup ret = der.Deserialize(element);
+      IncidentGroup ret = der.Deserialize(element);
       return ret;
     }
 
-    public static EXml<IncidentTopGroup> CreateDeserializer(List<FailureDefinition> failures)
+    public static EXml<IncidentGroup> CreateDeserializer(List<FailureDefinition> failures)
     {
-      EXml<IncidentTopGroup> ret = new();
+      EXml<IncidentGroup> ret = new();
 
       Dictionary<string, FailureDefinition> failDict = failures.ToDictionary(q => q.Id, q => q);
       ret.Context.CustomData[FAILURES_KEY] = failDict;
       int index = 0;
-      ret.Context.ElementDeserializers.Insert(index++, CreateIncidentSetDeserializer());
       ret.Context.ElementDeserializers.Insert(index++, CreateIncidentGroupDeserializer());
       ret.Context.ElementDeserializers.Insert(index++, CreateIncidentDefinitionDeserializer());
       ret.Context.ElementDeserializers.Insert(index++, CreateCheckStateTriggerDeserializer()); // this one should work as default
@@ -151,27 +150,13 @@ namespace FailuresModule.Model.Incidents.Xml
       IElementDeserializer ret = new ObjectElementDeserializer()
         .WithCustomTargetType(typeof(IncidentGroup))
         .WithCustomPropertyDeserialization(
-          nameof(IncidentTopGroup.Incidents),
+          nameof(IncidentGroup.Incidents),
           EXmlHelper.List.CreateForFlat<Incident>(new EXmlHelper.List.DT[]
           {
             new EXmlHelper.List.DT("incident", typeof(IncidentDefinition)),
             new EXmlHelper.List.DT("group", typeof(IncidentGroup))
           }));
 
-      return ret;
-    }
-
-    private static IElementDeserializer CreateIncidentSetDeserializer()
-    {
-      ObjectElementDeserializer ret = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(IncidentTopGroup))
-        .WithCustomPropertyDeserialization(
-        nameof(IncidentTopGroup.Incidents),
-        EXmlHelper.List.CreateForFlat<Incident>(new EXmlHelper.List.DT[]
-        {
-          new EXmlHelper.List.DT("incident", typeof(IncidentDefinition)),
-          new EXmlHelper.List.DT("group", typeof(IncidentGroup))
-        }));
       return ret;
     }
 

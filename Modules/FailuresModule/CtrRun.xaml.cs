@@ -78,19 +78,5 @@ namespace FailuresModule
       context.CancelFailure(fs);
     }
 
-    private void btnLeakFailureCancel_Click(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void btnSimVarFailureCancel_Click(object sender, RoutedEventArgs e)
-    {
-
-    }
-
-    private void btnStuckFailureCancel_Click(object sender, RoutedEventArgs e)
-    {
-
-    }
   }
 }

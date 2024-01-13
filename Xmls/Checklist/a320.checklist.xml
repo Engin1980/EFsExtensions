@@ -4,11 +4,11 @@
   xmlns="http://tempuri.org/chlaotModule.xsd"
   xsi:noNamespaceSchemaLocation="file://./Xsds/ChecklistSchema.xsd"
   firstChecklistId="batteryOn">
-  <meta>
+  <metaInfo>
     <label>A320 FBW checklist</label>
     <author>Marek Vajgl</author>
     <description>Simple checklists test for A320 FBW customized</description>
-  </meta>
+  </metaInfo>
   <checklist id="beforeStart" callSpeech="Before Start-up">
     <item>
       <call type="speech" value="Parking Brake"/>

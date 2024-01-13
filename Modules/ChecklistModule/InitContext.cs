@@ -61,13 +61,9 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         try
         {
           doc = XDocument.Load(xmlFile);
-
           this.MetaInfo = MetaInfo.Deserialize(doc);
-
           EXml<CheckSet> exml = CreateDeserializer();
           tmp = exml.Deserialize(doc);
-
-
         }
         catch (Exception ex)
         {

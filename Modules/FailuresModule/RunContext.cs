@@ -77,7 +77,7 @@ namespace FailuresModule
 
     #region Methods
 
-    public static RunContext Create(List<FailureDefinition> failureDefinitions, IncidentTopGroup failureSet)
+    public static RunContext Create(List<FailureDefinition> failureDefinitions, IncidentGroup failureSet)
     {
       IncidentGroup ig = new()
       {

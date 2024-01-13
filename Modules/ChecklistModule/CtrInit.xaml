@@ -8,7 +8,7 @@
              xmlns:gctr="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-  <DockPanel DataContext="{Binding ChecklistSet}">
+  <DockPanel>
     <DockPanel DockPanel.Dock="Top">
       <DockPanel DockPanel.Dock="Top">
         <Button x:Name="btnSettings" DockPanel.Dock="Right"
@@ -19,10 +19,10 @@
       </DockPanel>
       <TabControl>
         <TabItem Header="Metainfo">
-          <gctr:MetaInfoPanel Value="{Binding MetaInfo}" />
+          <gctr:MetaInfoPanel DataContext="{Binding MetaInfo}" />
         </TabItem>
         <TabItem Header="Checklist content">
-          <TreeView ItemsSource="{Binding Checklists}">
+          <TreeView ItemsSource="{Binding ChecklistSet.Checklists}">
             <TreeView.Resources>
               <HierarchicalDataTemplate DataType="{x:Type types:CheckList}" ItemsSource="{Binding Items}">
                 <Label x:Name="lblChecklist" Margin="0" Padding="0" 
@@ -56,7 +56,7 @@
         </TabItem>
         <TabItem Header="Checklist sequences">
           <ScrollViewer>
-            <ItemsControl ItemsSource="{Binding Checklists}">
+            <ItemsControl ItemsSource="{Binding ChecklistSet.Checklists}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
                   <StackPanel>
@@ -78,12 +78,12 @@
         </TabItem>
         <TabItem Header="Autostarts">
           <ScrollViewer>
-            <ItemsControl ItemsSource="{Binding Checklists}">
+            <ItemsControl ItemsSource="{Binding ChecklistSet.Checklists}">
               <ItemsControl.ItemTemplate>
                 <DataTemplate>
                   <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding CallSpeech}" />
-                    <TextBlock Text="  = = >  " />
+                    <TextBlock Text="  =>  " />
                     <TextBlock Text="{Binding MetaInfo.When.DisplayString,FallbackValue=(None)}" />
                   </StackPanel>
                 </DataTemplate>

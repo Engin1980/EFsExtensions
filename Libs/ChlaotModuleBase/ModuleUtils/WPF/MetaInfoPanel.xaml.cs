@@ -21,17 +21,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF
   /// </summary>
   public partial class MetaInfoPanel : UserControl
   {
-    public static DependencyProperty ValueProperty = DependencyProperty.Register(
-      nameof(Value), typeof(MetaInfo), typeof(MetaInfoPanel));
-
-    public MetaInfo Value
-    {
-      get => (MetaInfo)GetValue(ValueProperty); set
-      {
-        SetValue(ValueProperty, value);
-        this.DataContext = value;
-      }
-    }
     public MetaInfoPanel()
     {
       InitializeComponent();

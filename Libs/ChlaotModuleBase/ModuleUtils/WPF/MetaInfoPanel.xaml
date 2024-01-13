@@ -6,30 +6,32 @@
              xmlns:local="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-  <Grid DockPanel.Dock="Top" DataContext="{Binding Meta}">
-    <Grid.ColumnDefinitions>
-      <ColumnDefinition />
-      <ColumnDefinition />
-    </Grid.ColumnDefinitions>
-    <Grid.RowDefinitions>
-      <RowDefinition />
-      <RowDefinition />
-      <RowDefinition />
-      <RowDefinition />
-      <RowDefinition />
-      <RowDefinition />
-    </Grid.RowDefinitions>
-    <Label Grid.Row="0" Grid.Column="0">Label</Label>
-    <Label Grid.Row="0" Grid.Column="1" Content="{Binding Label}" />
-    <Label Grid.Row="1" Grid.Column="0">Author</Label>
-    <Label Grid.Row="1" Grid.Column="1" Content="{Binding Author}" />
-    <Label Grid.Row="2" Grid.Column="0">Description</Label>
-    <Label Grid.Row="2" Grid.Column="1" Content="{Binding Description}" />
-    <Label Grid.Row="3" Grid.Column="0">Web</Label>
-    <Label Grid.Row="3" Grid.Column="1" Content="{Binding Web}" />
-    <Label Grid.Row="4" Grid.Column="0">Email</Label>
-    <Label Grid.Row="4" Grid.Column="1" Content="{Binding Email}" />
-    <Label Grid.Row="5" Grid.Column="0">License</Label>
-    <Label Grid.Row="5" Grid.Column="1" Content="{Binding License}" />
-  </Grid>
+  <ScrollViewer>
+    <Grid DockPanel.Dock="Top">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+      </Grid.RowDefinitions>
+      <Label Grid.Row="0" Grid.Column="0">Label:</Label>
+      <Label Grid.Row="0" Grid.Column="1" Content="{Binding LabelAndVersion}" />
+      <Label Grid.Row="1" Grid.Column="0">Author:</Label>
+      <Label Grid.Row="1" Grid.Column="1" Content="{Binding Author}" />
+      <Label Grid.Row="2" Grid.Column="0">Description:</Label>
+      <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Description}" TextWrapping="Wrap" Margin="4" />
+      <Label Grid.Row="3" Grid.Column="0">Web:</Label>
+      <Label Grid.Row="3" Grid.Column="1" Content="{Binding Web}" />
+      <Label Grid.Row="4" Grid.Column="0">Email:</Label>
+      <Label Grid.Row="4" Grid.Column="1" Content="{Binding Email}" />
+      <Label Grid.Row="5" Grid.Column="0">License:</Label>
+      <Label Grid.Row="5" Grid.Column="1" Content="{Binding License}" />
+    </Grid>
+  </ScrollViewer>
 </UserControl>

@@ -1,5 +1,6 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using System;
@@ -47,6 +48,12 @@ namespace Eng.Chlaot.Modules.AffinityModule
       set => base.UpdateProperty(nameof(RuleBase), value);
     }
 
+    public MetaInfo MetaInfo
+    {
+      get => base.GetProperty<MetaInfo>(nameof(MetaInfo))!;
+      set => base.UpdateProperty(nameof(MetaInfo), value);
+    }
+
     public Settings Settings
     {
       get => base.GetProperty<Settings>(nameof(Settings))!;
@@ -55,6 +62,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
     public void LoadRuleBase(string xmlFile)
     {
       RuleBase tmp;
+      MetaInfo tmpMeta;
       var factory = new XmlSerializerFactory();
       XDocument doc;
 
@@ -66,6 +74,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
           doc = XDocument.Load(xmlFile);
           EXml<RuleBase> exml = Deserialization.CreateDeserializer();
           tmp = exml.Deserialize(doc);
+          tmpMeta = MetaInfo.Deserialize(doc);
         }
         catch (Exception ex)
         {
@@ -73,6 +82,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
         }
 
         this.RuleBase = tmp;
+        this.MetaInfo = tmpMeta;
         this.setIsReadyFlagAction(true);
       }
       catch (Exception ex)
@@ -128,7 +138,6 @@ namespace Eng.Chlaot.Modules.AffinityModule
       affinityAdjuster?.ResetAffinity();
     }
 
-    
     private void RefreshTimer_Elapsed(object? sender, ElapsedEventArgs e)
     {
       affinityAdjuster!.AdjustAffinityAsync();

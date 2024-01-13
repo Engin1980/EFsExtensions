@@ -18,19 +18,13 @@ namespace FailuresModule.Types
     private readonly Stack<string> context = new();
     private List<FailureDefinition> failureDefinitions;
 
-    internal static void CheckSanity(IncidentTopGroup tmp, List<FailureDefinition> failureDefinitions)
+    internal static void CheckSanity(IncidentGroup tmp, List<FailureDefinition> failureDefinitions)
     {
       SanityChecker sc = new()
       {
         failureDefinitions = failureDefinitions
       };
       sc.CheckSanityInternal(tmp);
-    }
-
-    private void CheckSanityInternal(IncidentGroup incidentGroup)
-    {
-      Logger.Log(this, LogLevel.VERBOSE, "Checking sanity of incidentGroup");
-      WithContext($"{incidentGroup.Title} (IncidentGroup)", () => CheckSanityInternal(incidentGroup.Incidents));
     }
 
     private void CheckSanityInternal(List<Incident> incidents)
@@ -116,10 +110,10 @@ namespace FailuresModule.Types
       }
     }
 
-    private void CheckSanityInternal(IncidentTopGroup failureSet)
+    private void CheckSanityInternal(IncidentGroup failureSet)
     {
       Logger.Log(this, LogLevel.VERBOSE, "Checking sanity of failureSet");
-      context.Push($"Failure-set '{failureSet.MetaInfo.Label}'");
+      context.Push($"Failure-set '{failureSet.Title}'");
       CheckSanityInternal(failureSet.Incidents);
       context.Pop();
     }

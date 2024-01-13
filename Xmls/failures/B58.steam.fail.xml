@@ -6,9 +6,13 @@
         xsi:noNamespaceSchemaLocation="file://./Xsds/FailureSchema.xsd">
   <metaInfo>
     <g:label>Default failures for SteamGauge Baron B58</g:label>
+    <g:version>0.3</g:version>
     <g:author>Marek Vajgl</g:author>
     <g:description>
-      SteamGauge Baron B58 is not keeping engine failure and trying to reset the flag. Therefore eng{i} failure must be redefined.
+      Failures for SteamGauge Baron B58. Might work for the other twin-prop SteamGauge planes too.\n
+      Supports eng-fail, birdstrike, system-fails, brake-fail, gear+flaps stuck fails.\n\n
+      DevInfo: SteamGauge Baron B58 is not keeping engine failure and trying to reset the flag. Therefore eng{i} failure must be redefined to
+      force engine failure repeatedly.
     </g:description>
   </metaInfo>
   <definitions title="B58 failures">

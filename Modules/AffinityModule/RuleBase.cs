@@ -13,7 +13,6 @@ namespace Eng.Chlaot.Modules.AffinityModule
 {
   public class RuleBase : StorableObject
   {
-    public MetaInfo MetaInfo { get; set; } = new();
     public List<Rule> Rules { get; set; } = new List<Rule>();
   }
 }

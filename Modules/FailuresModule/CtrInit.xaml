@@ -10,6 +10,7 @@
              xmlns:modelVar="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;assembly=ChlaotModuleBase"
              xmlns:converters="clr-namespace:FailuresModule.Converters"
              xmlns:globalConverters ="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"
+             xmlns:gWpf="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
@@ -25,6 +26,9 @@
       <Button x:Name="btnLoad" Content="Load Configuration" Padding="8" Click="btnLoad_Click" />
     </DockPanel>
     <TabControl>
+      <TabItem Header="Metainfo">
+        <gWpf:MetaInfoPanel DataContext="{Binding MetaInfo}" />
+      </TabItem>
       <TabItem Header="Overview">
         <TreeView ItemsSource="{Binding FailureSet.Incidents}">
           <TreeView.Resources>

@@ -7,6 +7,7 @@
              xmlns:types="clr-namespace:Eng.Chlaot.Modules.CopilotModule.Types"
              xmlns:converters="clr-namespace:Eng.Chlaot.Modules.CopilotModule.Converters"
              xmlns:sct ="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;assembly=ChlaotModuleBase" 
+             xmlns:gctr="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
@@ -14,20 +15,16 @@
     <converters:VariableValueConverter x:Key="VariableValueConverter" />
     <converters:VariableHasValueToSolidBrushConverter x:Key="VariableHasValueToSolidBrushConverter" />
     <converters:TextBoxTextIsDoubleToSolidBrushConverter x:Key="TextBoxTextIsDoubleToSolidBrushConverter" />
-    <HierarchicalDataTemplate 
-                              DataType="{x:Type sct:StateCheckDelay}" ItemsSource="{Binding Item}">
+    <HierarchicalDataTemplate DataType="{x:Type sct:StateCheckDelay}" ItemsSource="{Binding Item}">
       <TextBlock Text="{Binding DisplayString}" />
     </HierarchicalDataTemplate>
-    <HierarchicalDataTemplate 
-                              DataType="{x:Type sct:StateCheckCondition}" ItemsSource="{Binding Items}">
+    <HierarchicalDataTemplate DataType="{x:Type sct:StateCheckCondition}" ItemsSource="{Binding Items}">
       <TextBlock Text="{Binding DisplayString}" />
     </HierarchicalDataTemplate>
-    <DataTemplate  
-                              DataType="{x:Type sct:StateCheckTrueFalse}">
+    <DataTemplate DataType="{x:Type sct:StateCheckTrueFalse}">
       <TextBlock Text="{Binding DisplayString}" />
     </DataTemplate>
-    <DataTemplate 
-                              DataType="{x:Type sct:StateCheckProperty}">
+    <DataTemplate DataType="{x:Type sct:StateCheckProperty}">
       <TextBlock Text="{Binding DisplayString}" />
     </DataTemplate>
   </UserControl.Resources>
@@ -42,78 +39,7 @@
       </DockPanel>
       <TabControl>
         <TabItem Header="Metainfo">
-          <Grid DockPanel.Dock="Top" DataContext="{Binding MetaInfo}">
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition />
-              <ColumnDefinition />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Label Grid.Row="0" Grid.Column="0">Label</Label>
-            <Label Grid.Row="0" Grid.Column="1" Content="{Binding Label}" />
-            <Label Grid.Row="1" Grid.Column="0">Author</Label>
-            <Label Grid.Row="1" Grid.Column="1" Content="{Binding Author}" />
-            <Label Grid.Row="2" Grid.Column="0">Description</Label>
-            <Label Grid.Row="2" Grid.Column="1" Content="{Binding Description}" />
-            <Label Grid.Row="3" Grid.Column="0">Web</Label>
-            <Label Grid.Row="3" Grid.Column="1" Content="{Binding Web}" />
-            <Label Grid.Row="4" Grid.Column="0">Email</Label>
-            <Label Grid.Row="4" Grid.Column="1" Content="{Binding Email}" />
-            <Label Grid.Row="5" Grid.Column="0">License</Label>
-            <Label Grid.Row="5" Grid.Column="1" Content="{Binding License}" />
-          </Grid>
-        </TabItem>
-        <TabItem Header="Speeches">
-          <ListView ItemsSource="{Binding SpeechDefinitions}"
-                    ItemContainerStyle="{StaticResource ListViewAlternatingStyle}" AlternationCount="2">
-            <ListView.Template>
-              <ControlTemplate>
-                <ScrollViewer>
-                  <ItemsPresenter></ItemsPresenter>
-                </ScrollViewer>
-              </ControlTemplate>
-            </ListView.Template>
-            <ListView.ItemTemplate>
-              <DataTemplate>
-                <StackPanel x:Name="pnlSpeech" MouseRightButtonDown="pnlSpeech_MouseRightButtonDown" Tag="{Binding}" >
-                  <Label Content="{Binding Title}" />
-                  <Label Margin="32 0 0 0">
-                    <Label.Content>
-                      <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="150" Text="Speech: " />
-                        <TextBlock Text="{Binding Speech.Value}" />
-                        <TextBlock Text="// " Margin="48 0 0 0" />
-                        <TextBlock Text="{Binding Speech.Type}" />
-                        <TextBlock Text=" //" />
-                      </StackPanel>
-                    </Label.Content>
-                  </Label>
-                  <Label Margin="32 0 0 0">
-                    <Label.Content>
-                      <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="150" Text="When: " />
-                        <TreeView ItemsSource="{Binding __WhenCollection}" />
-                      </StackPanel>
-                    </Label.Content>
-                  </Label>
-                  <Label Margin="32 0 0 0">
-                    <Label.Content>
-                      <StackPanel Orientation="Horizontal">
-                        <TextBlock Width="150" Text="Reactivate when: " />
-                        <TreeView ItemsSource="{Binding __ReactivateWhenCollection}" />
-                      </StackPanel>
-                    </Label.Content>
-                  </Label>
-                </StackPanel>
-              </DataTemplate>
-            </ListView.ItemTemplate>
-          </ListView>
+          <gctr:MetaInfoPanel DataContext="{Binding MetaInfo}" />
         </TabItem>
         <TabItem Header="Variables">
           <ListView ItemsSource="{Binding SpeechDefinitions}"
@@ -153,6 +79,52 @@
                       </DataTemplate>
                     </ItemsControl.ItemTemplate>
                   </ItemsControl>
+                </StackPanel>
+              </DataTemplate>
+            </ListView.ItemTemplate>
+          </ListView>
+        </TabItem>
+        <TabItem Header="Speeches">
+          <ListView ItemsSource="{Binding SpeechDefinitions}"
+            ItemContainerStyle="{StaticResource ListViewAlternatingStyle}" AlternationCount="2">
+            <ListView.Template>
+              <ControlTemplate>
+                <ScrollViewer>
+                  <ItemsPresenter></ItemsPresenter>
+                </ScrollViewer>
+              </ControlTemplate>
+            </ListView.Template>
+            <ListView.ItemTemplate>
+              <DataTemplate>
+                <StackPanel x:Name="pnlSpeech" MouseRightButtonDown="pnlSpeech_MouseRightButtonDown" Tag="{Binding}" >
+                  <Label Content="{Binding Title}" />
+                  <Label Margin="32 0 0 0">
+                    <Label.Content>
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="150" Text="Speech: " />
+                        <TextBlock Text="{Binding Speech.Value}" />
+                        <TextBlock Text="// " Margin="48 0 0 0" />
+                        <TextBlock Text="{Binding Speech.Type}" />
+                        <TextBlock Text=" //" />
+                      </StackPanel>
+                    </Label.Content>
+                  </Label>
+                  <Label Margin="32 0 0 0">
+                    <Label.Content>
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="150" Text="When: " />
+                        <TreeView ItemsSource="{Binding __WhenCollection}" />
+                      </StackPanel>
+                    </Label.Content>
+                  </Label>
+                  <Label Margin="32 0 0 0">
+                    <Label.Content>
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock Width="150" Text="Reactivate when: " />
+                        <TreeView ItemsSource="{Binding __ReactivateWhenCollection}" />
+                      </StackPanel>
+                    </Label.Content>
+                  </Label>
                 </StackPanel>
               </DataTemplate>
             </ListView.ItemTemplate>

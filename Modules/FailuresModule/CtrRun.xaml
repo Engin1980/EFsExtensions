@@ -182,20 +182,20 @@
                       <TextBlock Text=" (event, id=" />
                       <TextBlock Text="{Binding Failure.Id}" />
                       <TextBlock Text=") " />
-                      <Button x:Name="btnEventFailureCancel" Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
+                      <Button Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
                     </StackPanel>
                   </Label>
                 </StackPanel>
               </HierarchicalDataTemplate>
-              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:EventFailureSustainer}">
+              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:ToggleFailureSustainer}">
                 <StackPanel Orientation="Horizontal">
                   <Label>
                     <StackPanel Orientation="Horizontal">
                       <TextBlock Text="{Binding Failure.Title}" />
-                      <TextBlock Text=" (event, id=" />
+                      <TextBlock Text=" (toggle, id=" />
                       <TextBlock Text="{Binding Failure.Id}" />
                       <TextBlock Text=") " />
-                      <Button x:Name="btnEventFailureCancel" Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
+                      <Button Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
                     </StackPanel>
                   </Label>
                 </StackPanel>
@@ -214,20 +214,20 @@
                       <TextBlock Text=", leak/tick=" />
                       <TextBlock Text="{Binding LeakPerTick, Converter={StaticResource DoubleToStringConverter}, ConverterParameter='N5'}" />
                       <TextBlock Text=") " />
-                      <Button x:Name="btnLeakFailureCancel" Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
+                      <Button Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
                     </StackPanel>
                   </Label>
                 </StackPanel>
               </HierarchicalDataTemplate>
-              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:SimVarFailureSustainer}">
+              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:SetFailureSustainer}">
                 <StackPanel Orientation="Horizontal">
                   <Label>
                     <StackPanel Orientation="Horizontal">
                       <TextBlock Text="{Binding Failure.Title}" />
-                      <TextBlock Text=" (simVar, id=" />
+                      <TextBlock Text=" (set, id=" />
                       <TextBlock Text="{Binding Failure.Id}" />
                       <TextBlock Text=") " />
-                      <Button x:Name="btnSimVarFailureCancel" Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
+                      <Button Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
                     </StackPanel>
                   </Label>
                 </StackPanel>
@@ -242,7 +242,20 @@
                       <TextBlock Text=", stuckValue=" />
                       <TextBlock Text="{Binding StuckValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter='N5'}" />
                       <TextBlock Text=") " />
-                      <Button x:Name="btnStuckFailureCancel" Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
+                      <Button Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
+                    </StackPanel>
+                  </Label>
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:ToggleOnVarMismatchFailureSustainer}">
+                <StackPanel Orientation="Horizontal">
+                  <Label>
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding Failure.Title}" />
+                      <TextBlock Text=" (toggleOnChange, id=" />
+                      <TextBlock Text="{Binding Failure.Id}" />
+                      <TextBlock Text=") " />
+                      <Button Tag="{Binding}" Content="Cancel" Click="btnFailureCancel_Click" />
                     </StackPanel>
                   </Label>
                 </StackPanel>

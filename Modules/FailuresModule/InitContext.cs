@@ -15,6 +15,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 
 namespace FailuresModule
 {
@@ -35,9 +36,16 @@ namespace FailuresModule
     public List<FailureDefinition> FailureDefinitionsFlat { get; set; }
     public List<FailureDefinitionBase> FailureDefinitions { get; set; }
 
-    public IncidentTopGroup FailureSet
+
+    public MetaInfo MetaInfo
     {
-      get => base.GetProperty<IncidentTopGroup>(nameof(FailureSet))!;
+      get => base.GetProperty<MetaInfo>(nameof(MetaInfo))!;
+      set => base.UpdateProperty(nameof(MetaInfo), value);
+    }
+
+    public IncidentGroup FailureSet
+    {
+      get => base.GetProperty<IncidentGroup>(nameof(FailureSet))!;
       set => base.UpdateProperty(nameof(FailureSet), value);
     }
 
@@ -58,7 +66,8 @@ namespace FailuresModule
         XDocument doc = Try(() => XDocument.Load(xmlFile, LoadOptions.SetLineInfo),
           ex => throw new ApplicationException($"Unable to load xml file '{xmlFile}'.", ex));
 
-        IncidentTopGroup tmp = Try(() => FailuresModule.Model.Incidents.Xml.Deserialization.Deserialize(doc.Root!, this.FailureDefinitionsFlat),
+        MetaInfo tmpMeta = MetaInfo.Deserialize(doc);
+        IncidentGroup tmpData = Try(() => FailuresModule.Model.Incidents.Xml.Deserialization.Deserialize(doc.Root!, this.FailureDefinitionsFlat),
           ex => throw new ApplicationException("Unable to read/deserialize copilot-set from '{xmlFile}'. Invalid file content?", ex));
 
         logger.Invoke(LogLevel.INFO, $"Aplying file-defined failure definitions");
@@ -68,15 +77,16 @@ namespace FailuresModule
             var failDefs = FailuresModule.Model.Failures.Xml.Deserialization.Deserialize(elm);
             FailureDefinition.MergeFailureDefinitions(this.FailureDefinitions, failDefs);
             FailureDefinitionsFlat = FailureDefinition.Flatten(this.FailureDefinitions);
-          }, 
+          },
           ex => throw new ApplicationException("Failed to analyse or apply file-defined failures.", ex));
 
         logger.Invoke(LogLevel.INFO, $"Checking sanity");
         Try(
-          () => SanityChecker.CheckSanity(tmp, this.FailureDefinitionsFlat),
+          () => SanityChecker.CheckSanity(tmpData, this.FailureDefinitionsFlat),
           ex => throw new ApplicationException("Error loading failures.", ex));
 
-        this.FailureSet = tmp;
+        this.FailureSet = tmpData;
+        this.MetaInfo = tmpMeta;
         UpdateReadyFlag();
         logger.Invoke(LogLevel.INFO, $"Failure set file '{xmlFile}' successfully loaded.");
         this.setIsReadyFlagAction(true);
