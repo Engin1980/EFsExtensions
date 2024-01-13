@@ -7,17 +7,17 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <TabControl>
-    <TabItem x:Name="tabProcessed" Header="Processed items">
+    <TabItem x:Name="tabProcessed" Header="Processed items (0)">
       <DataGrid x:Name="grdProcessed"  AutoGenerateColumns="False">
         <DataGrid.Columns>
           <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
           <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
           <DataGridTextColumn Header="Window Title" MaxWidth="300" Binding="{Binding WindowTitle}" IsReadOnly="True"/>
-          <DataGridTextColumn Header="Applied Rule" Binding="{Binding RuleTitle}" IsReadOnly="True"/>
-          <DataGridTemplateColumn Header="Affinity">
+          <DataGridTextColumn Header="Affinity Rule" Binding="{Binding AffinityRule.TitleOrRegex}" IsReadOnly="True"/>
+          <DataGridTemplateColumn Header="Affinity-pre">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
-                <ItemsControl ItemsSource="{Binding CoreFlags}">
+                <ItemsControl ItemsSource="{Binding CoreFlagsPre}">
                   <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                       <StackPanel Orientation="Horizontal"/>
@@ -32,36 +32,102 @@
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
-          <DataGridTextColumn Header="Priority" Binding="{Binding Priority}" IsReadOnly="True" />
+          <DataGridTemplateColumn Header="Affinity-post">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <ItemsControl ItemsSource="{Binding CoreFlagsPost}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <CheckBox IsChecked="{Binding Mode=OneWay}" IsEnabled="False" />
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
           <DataGridTextColumn Header="Affi-Set" Binding="{Binding AffinitySetResult}" IsReadOnly="True" />
-          <DataGridTextColumn Header="Affi-Get" Binding="{Binding AffinityGetResult}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Priority Rule" Binding="{Binding PriorityRule.TitleOrRegex}" IsReadOnly="True"/>
+          <DataGridTextColumn Header="Priority-pre" Binding="{Binding PriorityPre}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Priority-post" Binding="{Binding PriorityPost}" IsReadOnly="True" />
           <DataGridTextColumn Header="Prio-Set" Binding="{Binding PrioritySetResult}" IsReadOnly="True" />
-          <DataGridTextColumn Header="Prio-Get" Binding="{Binding PriorityGetResult}" IsReadOnly="True" />
         </DataGrid.Columns>
       </DataGrid>
     </TabItem>
-    <TabItem x:Name="tabFailed"  Header="Failed items">
+    <TabItem x:Name="tabFailed"  Header="Failed items (0)">
       <DataGrid x:Name="grdFailed" AutoGenerateColumns="False">
         <DataGrid.Columns>
           <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
           <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
           <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}" IsReadOnly="True"/>
-          <DataGridTextColumn Header="Applied Rule" Binding="{Binding RuleTitle}" IsReadOnly="True"/>
-          <DataGridTextColumn Header="Affi-Set" Binding="{Binding AffinitySetResult}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Affinity Rule" Binding="{Binding AffinityRule.TitleOrRegex}" IsReadOnly="True"/>
           <DataGridTextColumn Header="Affi-Get" Binding="{Binding AffinityGetResult}" IsReadOnly="True" />
-          <DataGridTextColumn Header="Prio-Set" Binding="{Binding PrioritySetResult}" IsReadOnly="True" />
+          <DataGridTemplateColumn Header="Affinity-pre">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <ItemsControl ItemsSource="{Binding CoreFlagsPre}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <CheckBox IsChecked="{Binding Mode=OneWay}" IsEnabled="False" />
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTextColumn Header="Affi-Set" Binding="{Binding AffinitySetResult}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Priority Rule" Binding="{Binding PriorityRule.TitleOrRegex}" IsReadOnly="True"/>
           <DataGridTextColumn Header="Prio-Get" Binding="{Binding PriorityGetResult}" IsReadOnly="True" />
-        </DataGrid.Columns> 
+          <DataGridTextColumn Header="Priority-pre" Binding="{Binding PriorityPre}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Prio-Set" Binding="{Binding PrioritySetResult}" IsReadOnly="True" />
+        </DataGrid.Columns>
       </DataGrid>
     </TabItem>
-    <TabItem x:Name="tabSkipped" Header="Skipped items">
+    <TabItem x:Name="tabSkipped" Header="Skipped items (0)">
       <DataGrid x:Name="grdSkipped" AutoGenerateColumns="False">
         <DataGrid.Columns>
           <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
           <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
           <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}" IsReadOnly="True"/>
-          <DataGridTextColumn Header="Affi-Get" Binding="{Binding AffinityGetResult}" IsReadOnly="True" />
-          <DataGridTextColumn Header="Prio-Get" Binding="{Binding PriorityGetResult}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Affinity Rule" Binding="{Binding AffinityRule.TitleOrRegex}" IsReadOnly="True"/>
+          <DataGridTemplateColumn Header="Affinity">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <ItemsControl ItemsSource="{Binding CoreFlagsPre}">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <CheckBox IsChecked="{Binding Mode=OneWay}" IsEnabled="False" />
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTextColumn Header="Priority Rule" Binding="{Binding PriorityRule.TitleOrRegex}" IsReadOnly="True"/>
+          <DataGridTextColumn Header="Priority" Binding="{Binding PriorityPre}" IsReadOnly="True" />
+        </DataGrid.Columns>
+      </DataGrid>
+    </TabItem>
+    <TabItem x:Name="tabUnmatched" Header="Unmatched items (0)">
+      <DataGrid x:Name="grdUnmatched" AutoGenerateColumns="False">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Id" Binding="{Binding Id}" IsReadOnly="True" />
+          <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="True"/>
+          <DataGridTextColumn Header="Window Title" Binding="{Binding WindowTitle}" IsReadOnly="True"/>
         </DataGrid.Columns>
       </DataGrid>
     </TabItem>

@@ -28,7 +28,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
       set => base.UpdateProperty(nameof(IsReady), value);
     }
 
-    public string Name => "Affinity";
+    public string Name => "Affi + Prio";
 
     public Control RunControl => this.ctrRun ?? throw new ApplicationException("CtrRun is null");
 

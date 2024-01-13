@@ -24,10 +24,14 @@ namespace Eng.Chlaot.Modules.AffinityModule
     private readonly List<AffinityRule> affinityRules;
     private readonly List<PriorityRule> priorityRules;
     private readonly List<ProcessAdjustResult> processAdjusts = new();
-    private readonly Action onAdjustmentCompleted;
     private readonly Logger logger;
 
-    public ProcessAdjuster(List<AffinityRule> affinityRules, List<PriorityRule> priorityRules, Action onAdjustmentCompleted)
+    public delegate void SingleProcessCompletedHandler(ProcessAdjustResult processAdjustResult);
+    public delegate void AllProcessesCompletedHandler(List<ProcessAdjustResult> allResults);
+    public event SingleProcessCompletedHandler? SingleProcessCompleted;
+    public event AllProcessesCompletedHandler? AllProcessesCompleted;
+
+    public ProcessAdjuster(List<AffinityRule> affinityRules, List<PriorityRule> priorityRules)
     {
       EAssert.Argument.IsNotNull(affinityRules, nameof(affinityRules));
       EAssert.Argument.IsNotNull(priorityRules, nameof(priorityRules));
@@ -35,7 +39,6 @@ namespace Eng.Chlaot.Modules.AffinityModule
       this.logger = Logger.Create(this);
       this.affinityRules = affinityRules;
       this.priorityRules = priorityRules;
-      this.onAdjustmentCompleted = onAdjustmentCompleted;
     }
 
     public void AdjustAsync()
@@ -102,7 +105,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
         isRunning = false;
         Monitor.PulseAll(this);
       }
-      this.onAdjustmentCompleted();
+      this.AllProcessesCompleted?.Invoke(this.processAdjusts.ToList());
     }
 
     private void ApplyRules()
@@ -122,22 +125,26 @@ namespace Eng.Chlaot.Modules.AffinityModule
           Id = process.Id,
           Name = process.ProcessName,
           WindowTitle = process.MainWindowTitle,
-          ThreadCount = process.Threads.Count
+          ThreadCount = process.Threads.Count,
+          AffinityRule = affinityRule,
+          PriorityRule = priorityRule
         };
-
 
         if (affinityRule != null)
           SetAffinityIfRequired(process, affinityRule, pi);
+        else
+          pi.AffinitySetResult = pi.AffinityGetResult = ProcessAdjustResult.EResult.Unchanged;
         if (priorityRule != null)
           SetPriorityIfRequired(process, priorityRule, pi);
+        else
+          pi.PrioritySetResult = pi.PriorityGetResult = ProcessAdjustResult.EResult.Unchanged;
 
         if (affinityRule == null && priorityRule == null)
-        {
           logger.Invoke(LogLevel.VERBOSE, $"No rule to cover '{pi.Name} ({pi.Id})', skipping.");
-          pi.RuleTitle = "(none)";
-        }
 
-        Application.Current.Dispatcher.Invoke(() => { this.processAdjusts.Add(pi); });
+        this.processAdjusts.Add(pi);
+        this.SingleProcessCompleted?.Invoke(pi);
+        //Application.Current.Dispatcher.Invoke(() => { this.processAdjusts.Add(pi); });
       }
 
       logger.Invoke(LogLevel.INFO, $"Affinity adjustment completed, " +
@@ -153,11 +160,12 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
     private void SetPriorityIfRequired(Process process, PriorityRule rule, ProcessAdjustResult pi)
     {
+      logger.Invoke(LogLevel.VERBOSE, $"Evaluating priority for '{pi.Name} ({pi.Id})'.");
       ProcessPriorityClass targetPriority = rule.Priority;
       ProcessPriorityClass? currentPriority;
       try
       {
-        currentPriority = process.PriorityClass;
+        pi.PriorityPre = currentPriority = process.PriorityClass;
         pi.PriorityGetResult = ProcessAdjustResult.EResult.Ok;
       }
       catch (Exception ex)
@@ -175,7 +183,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
         else
           try
           {
-            process.PriorityClass = targetPriority;
+            pi.PriorityPost = process.PriorityClass = targetPriority;
             pi.PrioritySetResult = ProcessAdjustResult.EResult.Ok;
           }
           catch (Exception ex)
@@ -189,11 +197,12 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
     private void SetAffinityIfRequired(Process process, AffinityRule rule, ProcessAdjustResult pi)
     {
+      logger.Invoke(LogLevel.VERBOSE, $"Evaluating affinity for '{pi.Name} ({pi.Id})'.");
       IntPtr targetAffinity = AffinityUtils.ToIntPtr(rule.CoreFlags.ToArray());
       IntPtr? currentAffinity;
       try
       {
-        currentAffinity = process.ProcessorAffinity;
+        pi.AffinityPre = currentAffinity = process.ProcessorAffinity;
         pi.AffinityGetResult = ProcessAdjustResult.EResult.Ok;
       }
       catch (Exception ex)
@@ -211,7 +220,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
         else
           try
           {
-            process.ProcessorAffinity = targetAffinity;
+            pi.AffinityPost = process.ProcessorAffinity = targetAffinity;
             pi.AffinitySetResult = ProcessAdjustResult.EResult.Ok;
           }
           catch (Exception ex)

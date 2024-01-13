@@ -2,6 +2,7 @@
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
+using ESystem;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using System;
@@ -20,13 +21,13 @@ namespace Eng.Chlaot.Modules.AffinityModule
 {
   public class Context : NotifyPropertyChangedBase
   {
-    private const string SETTINGS_FILE = "affinity.sett.xml";
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
     private ProcessAdjuster? processAdjuster = null;
     private Timer? refreshTimer = null;
-    public delegate void AdjustmentCompletedDelegate();
-    public event AdjustmentCompletedDelegate? AdjustmentCompleted;
+    public delegate void SingleProcessAdjustmentCompletedHandler(ProcessAdjustResult processAdjustResult);
+    public event SingleProcessAdjustmentCompletedHandler? SingleProcessAdjustmentCompleted;
+    public event Action AllProcessesAdjustmentCompleted;
 
     public Context(Action<bool> setIsReadyFlagAction)
     {
@@ -85,16 +86,26 @@ namespace Eng.Chlaot.Modules.AffinityModule
 
     internal void Run()
     {
-      processAdjuster = new ProcessAdjuster(
-        this.RuleBase.AffinityRules, this.RuleBase.PriorityRules, () => this.AdjustmentCompleted?.Invoke());
-      processAdjuster.AdjustAsync();
-      this.refreshTimer = new Timer(this.RuleBase.ResetIntervalInS * 1000)
+      processAdjuster = new ProcessAdjuster(this.RuleBase.AffinityRules, this.RuleBase.PriorityRules);
+      processAdjuster.SingleProcessCompleted += q =>
       {
-        AutoReset = true,
-        Enabled = true
+        if (this.ProcessInfos.None(p => q.Id == p.Id))
+          this.ProcessInfos.Add(q);
+        SingleProcessAdjustmentCompleted?.Invoke(q);
       };
-      this.refreshTimer.Elapsed += RefreshTimer_Elapsed;
-      this.refreshTimer.Start();
+      processAdjuster.AllProcessesCompleted += _ => this.AllProcessesAdjustmentCompleted?.Invoke();
+      processAdjuster.AdjustAsync();
+      if (this.RuleBase.ResetIntervalInS > 0)
+      {
+        this.logger.Log(LogLevel.INFO, $"Registering process refresh every {this.RuleBase.ResetIntervalInS} seconds.");
+        this.refreshTimer = new Timer(this.RuleBase.ResetIntervalInS * 1000)
+        {
+          AutoReset = true,
+          Enabled = true
+        };
+        this.refreshTimer.Elapsed += RefreshTimer_Elapsed;
+        this.refreshTimer.Start();
+      }
     }
 
     internal void Stop()

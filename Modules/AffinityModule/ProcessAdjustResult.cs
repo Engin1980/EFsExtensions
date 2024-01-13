@@ -22,26 +22,43 @@ namespace Eng.Chlaot.Modules.AffinityModule
     public string Name { get; set; }
     public string? WindowTitle { get; set; }
     public int ThreadCount { get; set; }
-    public IntPtr? Affinity { get; set; }
-    public string? RuleTitle { get; set; }
+    public IntPtr? AffinityPre { get; set; }
+    public IntPtr? AffinityPost { get; set; }
+    public AffinityRule? AffinityRule { get; set; }
+    public PriorityRule? PriorityRule { get; set; }
 
     public EResult AffinitySetResult { get; set; }
     public EResult AffinityGetResult { get; set; }
 
-    public ProcessPriorityClass? Priority { get; set; }
+    public ProcessPriorityClass? PriorityPre { get; set; }
+    public ProcessPriorityClass? PriorityPost { get; set; }
     public EResult PrioritySetResult { get; set; }
     public EResult PriorityGetResult { get; set; }
 
-    public bool[] CoreFlags
+    public bool[] CoreFlagsPre
     {
       get
       {
         bool[] ret;
-        if (this.Affinity == null)
+        if (this.AffinityPre == null)
           ret = Array.Empty<bool>();
         else
         {
-          ret = AffinityUtils.ToArray(this.Affinity.Value);
+          ret = AffinityUtils.ToArray(this.AffinityPre.Value);
+        }
+        return ret;
+      }
+    }
+    public bool[] CoreFlagsPost
+    {
+      get
+      {
+        bool[] ret;
+        if (this.AffinityPost == null)
+          ret = Array.Empty<bool>();
+        else
+        {
+          ret = AffinityUtils.ToArray(this.AffinityPost.Value);
         }
         return ret;
       }
