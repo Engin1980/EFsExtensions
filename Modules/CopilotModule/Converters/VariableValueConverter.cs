@@ -16,7 +16,7 @@ namespace Eng.Chlaot.Modules.CopilotModule.Converters
     {
       string ret;
       double? val = (double?)value;
-      if (val.HasValue)
+      if (val.HasValue && double.IsNaN(val.Value) == false)
         ret = val.ToString()!;
       else
         ret = "";

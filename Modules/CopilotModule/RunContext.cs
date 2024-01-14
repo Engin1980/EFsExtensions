@@ -146,7 +146,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
             ? new List<StateCheckEvaluator.HistoryRecord>()
             : null;
 
-          var ret = this.evaluator.Evaluate(q.SpeechDefinition.When, history);
+          var ret = this.evaluator.Evaluate(q.SpeechDefinition.Trigger, history);
           q.WhenEvaluationHistory = history;
 
           return ret;
@@ -189,7 +189,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         .Where(q =>
         {
           var h = GetHistoryListIfRequired();
-          var ret = this.evaluator.Evaluate(q.SpeechDefinition.ReactivateWhen, h);
+          var ret = this.evaluator.Evaluate(q.SpeechDefinition.ReactivationTrigger, h);
           q.ReactivationEvaluationHistory = h;
           return ret;
         })

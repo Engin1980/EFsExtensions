@@ -14,8 +14,8 @@ namespace Eng.Chlaot.Modules.CopilotModule.Converters
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
       string s = (string)value;
-      bool tmp = double.TryParse(s, out double _);
-      SolidColorBrush ret = tmp
+      bool tmp = double.TryParse(s, out double val);
+      SolidColorBrush ret = tmp && double.IsNaN(val) == false
         ? new SolidColorBrush(Colors.LightGreen)
         : new SolidColorBrush(Colors.LightPink);
       return ret;

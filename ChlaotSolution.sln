@@ -55,6 +55,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Copilot", "Copilot", "{6F1EAD50-F00C-44CF-A9E0-4CCBDEF29773}"
 	ProjectSection(SolutionItems) = preProject
 		Xmls\Copilot\ifrCommon.copilot.xml = Xmls\Copilot\ifrCommon.copilot.xml
+		Xmls\copilot\test.copilot.xml = Xmls\copilot\test.copilot.xml
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ELogging", "Libs\ELoging\ELogging.csproj", "{56A001E5-4021-41C9-B78E-CD324435DFD5}"

@@ -1,5 +1,9 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+﻿using Eng.Chlaot.ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
+using ESystem.Asserting;
+using EXmlLib.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,19 +13,71 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.Modules.CopilotModule.Types
 {
-  public class SpeechDefinition
+  public class SpeechDefinition : IXmlObjectPostDeserialize
   {
     public string Title { get; set; } = null!;
     public Speech Speech { get; set; } = null!;
-    public IStateCheckItem When { get; set; } = null!;
-    public IStateCheckItem ReactivateWhen { get; set; } = null!;
-    public List<UserVariable> Variables { get; set; } = new();
+    public IStateCheckItem Trigger { get; set; } = null!;
+    public IStateCheckItem ReactivationTrigger { get; set; } = null!;
+    public List<Variable> Variables { get; set; } = new();
 
     /*
      * This is here because I need those values to be as collections for WPF TreeView
      */
-    public Collection<IStateCheckItem> __WhenCollection => CreateCollectionWith(this.When);
-    public Collection<IStateCheckItem> __ReactivateWhenCollection => CreateCollectionWith(this.ReactivateWhen);
+    public Collection<IStateCheckItem> __TriggerCollection => CreateCollectionWith(this.Trigger);
+    public Collection<IStateCheckItem> __ReactivationTriggerCollection => CreateCollectionWith(this.ReactivationTrigger);
+
+    public void PostDeserialize()
+    {
+      FillVariablesWithUndeclaredOnes();
+      EAssert.IsNonEmptyString(Title);
+      EAssert.IsNotNull(Speech);
+      EAssert.IsNotNull(Trigger);
+      EAssert.IsNotNull(Variables);
+    }
+
+    public void FillVariablesWithUndeclaredOnes()
+    {
+      this.Speech
+        .GetUsedVariables()
+        .Except(this.Variables.Select(q => q.Name))
+        .Select(q => new UserVariable()
+          {
+            Name = q,
+            DefaultValue = null
+          })
+        .ForEach(q=>this.Variables.Add(q));
+
+      this.ExtractVariablePairsFromStateChecks()
+        .Select(q => q.Item1)
+        .Except(this.Variables.Select(q => q.Name))
+        .Select(q => new UserVariable()
+          {
+            Name = q,
+            DefaultValue = null
+          })
+        .ForEach(q => this.Variables.Add(q));
+    }
+
+    private List<(string, StateCheckProperty)> ExtractVariablePairsFromStateChecks()
+    {
+      List<(string, StateCheckProperty)> ret = new();
+      Stack<IStateCheckItem> stack = new();
+
+      stack.Push(this.Trigger);
+      if (this.ReactivationTrigger != null) stack.Push(this.ReactivationTrigger);
+      while (stack.Count > 0)
+      {
+        IStateCheckItem sci = stack.Pop();
+        if (sci is StateCheckCondition scic)
+          scic.Items.ForEach(q => stack.Push(q));
+        else if (sci is StateCheckDelay scid)
+          stack.Push(scid.Item);
+        else if ((sci is StateCheckProperty scip) && scip.IsVariableBased)
+          ret.Add((scip.GetExpressionAsVariableName(), scip));
+      }
+      return ret;
+    }
 
     private Collection<IStateCheckItem> CreateCollectionWith(IStateCheckItem item)
     {

@@ -1,26 +1,20 @@
 ﻿using CopilotModule;
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using Eng.Chlaot.Modules.CopilotModule.Types;
 using EXmlLib;
-using EXmlLib.Deserializers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
-using System.Windows.Media.Animation;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
@@ -28,7 +22,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
   {
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
-    private readonly Dictionary<UserVariable, SpeechDefinition> variableToSpeechDefinitionMapping = new();
+    private readonly Dictionary<Variable, SpeechDefinition> variableToSpeechDefinitionMapping = new();
 
     public CopilotSet Set
     {
@@ -47,18 +41,18 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     internal void LoadFile(string xmlFile)
     {
+      MetaInfo tmpMeta;
       CopilotSet tmp;
       var factory = new XmlSerializerFactory();
-      XDocument doc;
 
       try
       {
         logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
-          doc = XDocument.Load(xmlFile);
-          EXml<CopilotSet> exml = CreateDeserializer();
-          tmp = exml.Deserialize(doc);
+          XDocument doc = XDocument.Load(xmlFile, LoadOptions.SetLineInfo);
+          tmp = Eng.Chlaot.CopilotModule.Types.Xml.Deserializer.Deserialize(xmlFile);
+          tmpMeta = MetaInfo.Deserialize(doc);
         }
         catch (Exception ex)
         {
@@ -132,8 +126,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
         stck.Pop();
       }
 
-      tmp.SpeechDefinitions.ForEach(q => checkStateCheckItem(q.When));
-      tmp.SpeechDefinitions.ForEach(q => checkStateCheckItem(q.ReactivateWhen));
+      tmp.SpeechDefinitions.ForEach(q => checkStateCheckItem(q.Trigger));
+      tmp.SpeechDefinitions.ForEach(q => checkStateCheckItem(q.ReactivationTrigger));
     }
 
     private void UpdateReadyFlag()
@@ -146,33 +140,15 @@ namespace Eng.Chlaot.Modules.CopilotModule
     {
       foreach (var sd in set.SpeechDefinitions)
       {
-        var tmp = sd.Speech.GetUsedVariables()
-          .Except(sd.Variables.Select(q => q.Name))
-          .Select(q => new UserVariable()
-          {
-            Name = q,
-            DefaultValue = 0
-          });
-
-        tmp.ForEach(q => variableToSpeechDefinitionMapping[q] = sd);
-        sd.Variables.AddRange(tmp);
-
-        ExtractVariablePairsFromStateChecks(sd)
-          .Select(q => q.Item1)
-          .Except(sd.Variables.Select(q => q.Name))
-          .ToList()
-          .ForEach(q => sd.Variables.Add(new UserVariable()
-          {
-            Name = q,
-            DefaultValue = 0
-          }));
-        sd.Variables.ForEach(q => q.PropertyChanged += Variable_PropertyChanged);
+        sd.FillVariablesWithUndeclaredOnes();
+        sd.Variables.ForEach(q => variableToSpeechDefinitionMapping[q] = sd);
+        sd.Variables.Where(q => q is Variable).ForEach(q => q.PropertyChanged += Variable_PropertyChanged);
       }
     }
 
     private void Variable_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-      UserVariable variable = (UserVariable)sender!;
+      Variable variable = (Variable)sender!;
       SpeechDefinition sd = variableToSpeechDefinitionMapping[variable];
       if (sd.Speech.Type == Speech.SpeechType.Speech
         && sd.Speech.GetUsedVariables().Any(q => q == variable.Name))
@@ -181,58 +157,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
       }
 
       UpdateReadyFlag();
-    }
-
-    private static List<(string, StateCheckProperty)> ExtractVariablePairsFromStateChecks(SpeechDefinition sd)
-    {
-      List<(string, StateCheckProperty)> ret = new();
-      Stack<IStateCheckItem> stack = new();
-
-      stack.Push(sd.When);
-      stack.Push(sd.ReactivateWhen);
-      while (stack.Count > 0)
-      {
-        IStateCheckItem sci = stack.Pop();
-        if (sci is StateCheckCondition scic)
-          scic.Items.ForEach(q => stack.Push(q));
-        else if (sci is StateCheckDelay scid)
-          stack.Push(scid.Item);
-        else if ((sci is StateCheckProperty scip) && scip.IsVariableBased)
-          ret.Add((scip.GetExpressionAsVariableName(), scip));
-      }
-      return ret;
-    }
-
-    private static EXml<CopilotSet> CreateDeserializer()
-    {
-      EXml<CopilotSet> ret = new();
-
-      var oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(CopilotSet))
-        .WithCustomPropertyDeserialization(
-        nameof(CopilotSet.SpeechDefinitions),
-        EXmlHelper.List.CreateForFlat<SpeechDefinition>("speechDefinition"));
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(SpeechDefinition))
-        .WithCustomPropertyDeserialization(
-          nameof(SpeechDefinition.Variables),
-          EXmlHelper.List.CreateForNested<UserVariable>(
-            "variables",
-            new EXmlHelper.List.DT[] {
-              new EXmlHelper.List.DT("userVariable", typeof(UserVariable))},
-            () => new List<UserVariable>()));
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(Speech))
-        .WithIgnoredProperty(nameof(Speech.Bytes));
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      ret.Context.ElementDeserializers.Insert(0, new StateCheckDeserializer());
-
-      return ret;
     }
 
     private void InitializeSoundStreams(CopilotSet set, string relativePath)

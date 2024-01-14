@@ -55,10 +55,6 @@
       <confirmation type="speech" value="Idle"/>
     </item>
     <item>
-      <call type="speech" value="Surfaces"/>
-      <confirmation type="speech" value="Checked"/>
-    </item>
-    <item>
       <call type="speech" value="Beacon light"/>
       <confirmation type="speech" value="On"/>
     </item>
@@ -87,8 +83,8 @@
       <confirmation type="speech" value="Set"/>
     </item>
     <item>
-      <call type="speech" value="Take-off ecam state"/>
-      <confirmation type="speech" value="No blue"/>
+      <call type="speech" value="Surfaces"/>
+      <confirmation type="speech" value="Checked"/>
     </item>
     <item>
       <call type="speech" value="Weather Radar"/>
@@ -109,6 +105,10 @@
     <nextChecklistId />
   </checklist>
   <checklist id="beforeTakeoff" callSpeech="Before Take Off">
+    <item>
+      <call type="speech" value="Take-off ecam state"/>
+      <confirmation type="speech" value="No blue"/>
+    </item>
     <item>
       <call type="speech" value="Flight Director"/>
       <confirmation type="speech" value="On"/>

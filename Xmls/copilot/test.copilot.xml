@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<copilotSet
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://chlaot.org/copilots.xsd"
+  xmlns:g="http://chlaot.org/global.xsd"
+  xsi:noNamespaceSchemaLocation="file://./Xsds/CopilotSchema.xsd">
+  <metaInfo>
+    <g:label>Common IFS copilot callouts</g:label>
+    <g:author>Marek Vajgl</g:author>
+      <g:description>(none)</g:description>
+    <g:version>1.1</g:version>
+</metaInfo>
+  <speechDefinition title="Deceleration announcement (80)kts" >
+    <speech type="speech" value="{speed} knots" />
+    <trigger>
+      <g:and>
+        <g:property name="ias" direction="passingDown" expression="{speed}" />
+        <g:property name="height" direction="below" expression="5" />
+        <g:property name="acceleration" direction="below" expression="0" />
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:for seconds="10">
+        <g:property name="ias" direction="above" expression="{speed}" />
+      </g:for>
+    </reactivationTrigger>
+    <variables>
+      <g:userVariable name="speed" defaultValue="80" description="Speed in kts" />
+      <g:userVariable name="funny" description="Testing funny variable" />
+      <g:randomVariable name="random" minimum="10" maximum="100"  description="This is random variable" />
+    </variables>
+  </speechDefinition>
+</copilotSet>

@@ -33,10 +33,6 @@ namespace Chlaot
       module = new Eng.Chlaot.Modules.CopilotModule.CopilotModule();
       TryAddModule(module);
 
-      logger.Invoke(LogLevel.INFO, "Loading affinity module...");
-      module = new Eng.Chlaot.Modules.AffinityModule.AffinityModule();
-      TryAddModule(module);
-
       logger.Invoke(LogLevel.INFO, "Loading failures module...");
       module = new Eng.Chlaot.Modules.FailuresModule.FailuresModule();
       TryAddModule(module);
@@ -45,6 +41,9 @@ namespace Chlaot
       module = new Eng.Chlaot.Modules.SimVarTestModule.SimVarTestModule();
       TryAddModule(module);
 
+      logger.Invoke(LogLevel.INFO, "Loading affinity module...");
+      module = new Eng.Chlaot.Modules.AffinityModule.AffinityModule();
+      TryAddModule(module);
 
       logger.Invoke(LogLevel.INFO, "Setting up modules...");
       Modules.ToList().ForEach(q => q.SetUp(

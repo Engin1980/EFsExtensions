@@ -26,7 +26,7 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types
     public string Value { get; set; }
 #pragma warning restore CS8618
 
-    internal string GetEvaluatedValue(List<UserVariable> variables)
+    internal string GetEvaluatedValue(List<Variable> variables)
     {
       if (Type != SpeechType.Speech)
         throw new ApplicationException("Not possible to call this function on non-speech-type speech.");
