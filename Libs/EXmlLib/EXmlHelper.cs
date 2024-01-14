@@ -80,6 +80,12 @@ namespace EXmlLib
         return ret;
       }
 
+      public static ObjectElementDeserializer.PropertyDeserializeHandler CreateForNested<T>(string collectionPath, string elementName)
+      {
+        var ret = CreateForNested<T>(collectionPath, new DT(elementName, typeof(T)));
+        return ret;
+      }
+
       public static ObjectElementDeserializer.PropertyDeserializeHandler CreateForFlat<T>(DT elementTypeMapping)
       {
         return CreateForFlat<T>(new DT[] { elementTypeMapping });

@@ -1,4 +1,6 @@
-﻿using EXmlLib.Attributes;
+﻿using ESystem.Asserting;
+using EXmlLib.Attributes;
+using EXmlLib.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,17 +9,20 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.Modules.ChecklistModule.Types
 {
-  public class CheckDefinition
+  public class CheckDefinition : IXmlObjectPostDeserialize
   {
     public enum CheckDefinitionType
     {
       Speech,
       File
     }
-#pragma warning disable CS8618
-    public byte[] Bytes { get; set; }
-    public string Value { get; set; }
+    public byte[] Bytes { get; set; } = null!;
+    public string Value { get; set; } = null!;
     public CheckDefinitionType Type { get; set; }
-#pragma warning restore CS8618
+
+    public void PostDeserialize()
+    {
+      EAssert.IsNonEmptyString(Value);
+    }
   }
 }

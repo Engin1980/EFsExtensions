@@ -20,6 +20,8 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
+using Eng.Chlaot.Modules.ChecklistModule.Types.Xml;
+using static ESystem.Functions;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -52,18 +54,14 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     internal void LoadFile(string xmlFile)
     {
       CheckSet tmp;
-      var factory = new XmlSerializerFactory();
-      XDocument doc;
-
       try
       {
         logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
-          doc = XDocument.Load(xmlFile);
+          XDocument doc = XDocument.Load(xmlFile);
           this.MetaInfo = MetaInfo.Deserialize(doc);
-          EXml<CheckSet> exml = CreateDeserializer();
-          tmp = exml.Deserialize(doc);
+          tmp = Deserializer.Deserialize(doc);
         }
         catch (Exception ex)
         {
@@ -71,34 +69,14 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         }
 
         logger.Invoke(LogLevel.INFO, $"Checking sanity");
-        try
-        {
-          CheckSanity(tmp);
-        }
-        catch (Exception ex)
-        {
-          throw new ApplicationException("Error loading checklist.", ex);
-        }
+        Try(() => CheckSanity(tmp), ex => new ApplicationException("Error loading checklist.", ex));
 
         logger.Invoke(LogLevel.INFO, $"Binding checklist references");
-        try
-        {
-          BindNextChecklists(tmp);
-        }
-        catch (Exception ex)
-        {
-          throw new ApplicationException("Error binding checklist references.", ex);
-        }
+        Try(() => BindNextChecklists(tmp), ex => new ApplicationException("Error binding checklist references.", ex));
 
         logger.Invoke(LogLevel.INFO, $"Loading/generating sounds");
-        try
-        {
-          InitializeSoundStreams(tmp, System.IO.Path.GetDirectoryName(xmlFile)!);
-        }
-        catch (Exception ex)
-        {
-          throw new ApplicationException("Error creating sound streams for checklist.", ex);
-        }
+        Try(() => InitializeSoundStreams(tmp, System.IO.Path.GetDirectoryName(xmlFile)!),
+          ex => new ApplicationException("Error creating sound streams for checklist.", ex));
 
         this.ChecklistSet = tmp;
         this.setIsReadyFlagAction(true);
@@ -110,8 +88,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         this.setIsReadyFlagAction(false);
         logger.Invoke(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage("\n\t"));
       }
-
-
     }
 
     private static void BindNextChecklists(CheckSet tmp)
@@ -121,48 +97,14 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         var checklist = tmp.Checklists[i];
         if (checklist.NextChecklistId is null)
         {
-          if (i < tmp.Checklists.Count - 1) checklist.NextChecklist = tmp.Checklists[i + 1];
+          if (i < tmp.Checklists.Count - 1)
+            checklist.NextChecklist = tmp.Checklists[i + 1];
+          else
+            checklist.NextChecklist = tmp.Checklists[0];
         }
         else
           checklist.NextChecklist = tmp.Checklists.Single(q => q.Id == checklist.NextChecklistId);
       }
-    }
-
-    private static EXml<CheckSet> CreateDeserializer()
-    {
-      EXml<CheckSet> ret = new();
-
-      var oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(CheckDefinition))
-        .WithIgnoredProperty(nameof(CheckDefinition.Bytes));
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(CheckSet))
-        .WithCustomPropertyDeserialization(
-          nameof(CheckSet.Checklists),
-          EXmlHelper.List.CreateForFlat<CheckList>("checklist"));
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      oed = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(CheckList))
-        .WithIgnoredProperty(nameof(CheckList.EntrySpeechBytes))
-        .WithIgnoredProperty(nameof(CheckList.ExitSpeechBytes))
-        .WithCustomPropertyDeserialization(
-          nameof(CheckList.Items),
-          EXmlHelper.List.CreateForFlat<CheckItem>("item"))
-        .WithCustomPropertyDeserialization(
-          nameof(CheckList.NextChecklistId),
-          (e, t, p, c) =>
-          {
-            string? val = e.LElementOrNull("nextChecklistId")?.Attribute("id")?.Value;
-            EXmlHelper.SetPropertyValue(p, t, val);
-          });
-      ret.Context.ElementDeserializers.Insert(0, oed);
-
-      ret.Context.ElementDeserializers.Insert(0, new StateCheckDeserializer());
-
-      return ret;
     }
 
     private static void CheckSanity(CheckSet tmp)
@@ -202,11 +144,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         stck.Pop();
       }
 
-      tmp.Checklists
-        .Where(q => q.MetaInfo != null)
-        .Where(q => q.MetaInfo.When != null)
-        .ToList()
-        .ForEach(q => checkStateCheckItem(q.MetaInfo.When));
+      tmp.Checklists.Where(q => q.Trigger != null).ForEach(q => checkStateCheckItem(q.Trigger));
     }
 
     private void InitializeSoundStreams(CheckSet checkSet, string relativePath)
@@ -232,18 +170,18 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       Synthetizer synthetizer,
       string relativePath)
     {
-      if (checklist.MetaInfo?.CustomEntrySpeech != null)
-        InitializeSoundStreamsForItems(checklist.MetaInfo.CustomEntrySpeech, generatedSounds, synthetizer, relativePath);
-      if (checklist.MetaInfo?.CustomExitSpeech != null)
-        InitializeSoundStreamsForItems(checklist.MetaInfo.CustomExitSpeech, generatedSounds, synthetizer, relativePath);
+      if (checklist.CustomEntrySpeech != null)
+        InitializeSoundStreamsForItems(checklist.CustomEntrySpeech, generatedSounds, synthetizer, relativePath);
+      if (checklist.CustomExitSpeech != null)
+        InitializeSoundStreamsForItems(checklist.CustomExitSpeech, generatedSounds, synthetizer, relativePath);
 
       checklist.EntrySpeechBytes =
-        checklist.MetaInfo?.CustomEntrySpeech != null
-        ? checklist.MetaInfo.CustomEntrySpeech.Bytes
+        checklist.CustomEntrySpeech != null
+        ? checklist.CustomEntrySpeech.Bytes
         : synthetizer.Generate($"{checklist.CallSpeech} checklist");
       checklist.ExitSpeechBytes =
-        checklist.MetaInfo?.CustomExitSpeech != null
-        ? checklist.MetaInfo.CustomExitSpeech.Bytes
+        checklist.CustomExitSpeech != null
+        ? checklist.CustomExitSpeech.Bytes
         : synthetizer.Generate($"{checklist.CallSpeech} checklist completed");
     }
 

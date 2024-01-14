@@ -1,4 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
+﻿using ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
@@ -42,39 +43,30 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types
         .GetUsedVariables()
         .Except(this.Variables.Select(q => q.Name))
         .Select(q => new UserVariable()
-          {
-            Name = q,
-            DefaultValue = null
-          })
-        .ForEach(q=>this.Variables.Add(q));
+        {
+          Name = q,
+          DefaultValue = null
+        })
+        .ForEach(q => this.Variables.Add(q));
 
       this.ExtractVariablePairsFromStateChecks()
-        .Select(q => q.Item1)
+        .Select(q => q.VariableName)
         .Except(this.Variables.Select(q => q.Name))
         .Select(q => new UserVariable()
-          {
-            Name = q,
-            DefaultValue = null
-          })
+        {
+          Name = q,
+          DefaultValue = null
+        })
         .ForEach(q => this.Variables.Add(q));
     }
 
-    private List<(string, StateCheckProperty)> ExtractVariablePairsFromStateChecks()
+    private List<StateCheckUtils.VariableUsage> ExtractVariablePairsFromStateChecks()
     {
-      List<(string, StateCheckProperty)> ret = new();
-      Stack<IStateCheckItem> stack = new();
-
-      stack.Push(this.Trigger);
-      if (this.ReactivationTrigger != null) stack.Push(this.ReactivationTrigger);
-      while (stack.Count > 0)
+      List<StateCheckUtils.VariableUsage> ret = StateCheckUtils.ExtractVariables(this.Trigger);
+      if (this.ReactivationTrigger != null)
       {
-        IStateCheckItem sci = stack.Pop();
-        if (sci is StateCheckCondition scic)
-          scic.Items.ForEach(q => stack.Push(q));
-        else if (sci is StateCheckDelay scid)
-          stack.Push(scid.Item);
-        else if ((sci is StateCheckProperty scip) && scip.IsVariableBased)
-          ret.Add((scip.GetExpressionAsVariableName(), scip));
+        var tmp = StateCheckUtils.ExtractVariables(this.ReactivationTrigger);
+        ret.AddRange(tmp);
       }
       return ret;
     }

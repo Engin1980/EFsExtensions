@@ -22,40 +22,43 @@
           <gctr:MetaInfoPanel DataContext="{Binding MetaInfo}" />
         </TabItem>
         <TabItem Header="Checklist content">
-          <TreeView ItemsSource="{Binding ChecklistSet.Checklists}">
-            <TreeView.Resources>
-              <HierarchicalDataTemplate DataType="{x:Type types:CheckList}" ItemsSource="{Binding Items}">
-                <Label x:Name="lblChecklist" Margin="0" Padding="0" 
-                       MouseRightButtonDown="lblChecklist_MouseRightButtonDown"
-                       Tag="{Binding}" >
-                  <Label.Content>
-                    <StackPanel Orientation="Horizontal" >
-                      <TextBlock Text="{Binding CallSpeech}" />
-                      <TextBlock Text=" (" />
-                      <TextBlock Text="{Binding Id}" />
-                      <TextBlock Text=")" />
-                    </StackPanel>
-                  </Label.Content>
-                </Label>
-              </HierarchicalDataTemplate>
-              <HierarchicalDataTemplate DataType="{x:Type types:CheckItem}">
-                <Label x:Name="lblItem" Margin="0" Padding="0" 
-                       MouseRightButtonDown="lblItem_MouseRightButtonDown" 
-                       Tag="{Binding}">
-                  <Label.Content>
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="{Binding Call.Value}" />
-                      <TextBlock Text=" => " />
-                      <TextBlock Text="{Binding Confirmation.Value}" />
-                    </StackPanel>
-                  </Label.Content>
-                </Label>
-              </HierarchicalDataTemplate>
-            </TreeView.Resources>
-          </TreeView>
+          <ScrollViewer>
+            <StackPanel>
+              <TreeView ItemsSource="{Binding ChecklistSet.Checklists}">
+                <TreeView.Resources>
+                  <HierarchicalDataTemplate DataType="{x:Type types:CheckList}" ItemsSource="{Binding Items}">
+                    <Label x:Name="lblChecklist" Margin="0" Padding="0" 
+                       MouseRightButtonDown="lblChecklist_MouseRightButtonDown" Tag="{Binding}" >
+                      <Label.Content>
+                        <StackPanel Orientation="Horizontal" >
+                          <TextBlock Text="{Binding CallSpeech}" />
+                          <TextBlock Text=" (" />
+                          <TextBlock Text="{Binding Id}" />
+                          <TextBlock Text=")" />
+                        </StackPanel>
+                      </Label.Content>
+                    </Label>
+                  </HierarchicalDataTemplate>
+                  <HierarchicalDataTemplate DataType="{x:Type types:CheckItem}">
+                    <Label x:Name="lblItem" Margin="0" Padding="0" 
+                       MouseRightButtonDown="lblItem_MouseRightButtonDown" Tag="{Binding}">
+                      <Label.Content>
+                        <StackPanel Orientation="Horizontal">
+                          <TextBlock Text="{Binding Call.Value}" />
+                          <TextBlock Text=" => " />
+                          <TextBlock Text="{Binding Confirmation.Value}" />
+                        </StackPanel>
+                      </Label.Content>
+                    </Label>
+                  </HierarchicalDataTemplate>
+                </TreeView.Resources>
+              </TreeView>
+              <TextBlock Text="(right mouse click to play)" FontSize="14" Foreground="Gray"  />
+            </StackPanel>
+          </ScrollViewer>
         </TabItem>
-        <TabItem Header="Checklist sequences">
-          <DataGrid ItemsSource="{Binding ChecklistSet.Checklists}" AutoGenerateColumns="False">
+        <TabItem Header="Checklist layout">
+          <DataGrid ItemsSource="{Binding ChecklistSet.Checklists}" AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
               <DataGridTemplateColumn Header="Checklist">
                 <DataGridTemplateColumn.CellTemplate>
@@ -81,14 +84,7 @@
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-            </DataGrid.Columns>
-          </DataGrid>
-        </TabItem>
-        <TabItem Header="Autostarts">
-          <DataGrid ItemsSource="{Binding ChecklistSet.Checklists}" AutoGenerateColumns="False">
-            <DataGrid.Columns>
-              <DataGridTextColumn Header="Checklist" Binding="{Binding CallSpeech}" />
-              <DataGridTextColumn Header="Condition" Binding="{Binding MetaInfo.When.DisplayString, FallbackValue=(None)}" />
+              <DataGridTextColumn Header="Autoplay Condition" Binding="{Binding Trigger.DisplayString, FallbackValue=(None)}" />
             </DataGrid.Columns>
           </DataGrid>
         </TabItem>

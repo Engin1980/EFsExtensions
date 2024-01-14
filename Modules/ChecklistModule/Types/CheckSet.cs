@@ -10,9 +10,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types
 {
   public class CheckSet
   {
-#pragma warning disable CS8618
-    public MetaInfo Meta { get; set; }
-    public List<CheckList> Checklists { get; set; }
-#pragma warning restore CS8618
+    public List<CheckList> Checklists { get; set; } = null!;
   }
 }
