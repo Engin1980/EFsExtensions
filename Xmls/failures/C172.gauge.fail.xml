@@ -14,8 +14,8 @@
         <timeTrigger interval="oncePerMinute" probability="0.5" repetitive="false"/>        
       </triggers>
       <failures selection="one">
-        <failure id="b58eng1" />
-        <failure id="b58eng2" />
+        <failure id="eng1" />
+        <failure id="eng2" />
       </failures>
     </incident>
     <incident title="Bird-strike" repetitive="false">

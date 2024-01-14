@@ -12,11 +12,23 @@
     </g:description>
   </metaInfo>
   <affinity>
-    <rule title="Mozilla" regex="Firefox" roll="0-4" />
-    <rule title="Idle" regex="Idle" roll="" />
-    <rule title="Other" regex=".+" roll="6-64" />
+    <rule title="AI Flow" regex="AIFlow.exe" roll="0-4" />
+    <rule title="AI Ground" regex="AIGround.exe" roll="0-4" />
+    <rule title="GSX - Couatl64" regex="Couatl64_MSFS.exe" roll="0-4" />
+    <rule title="FBW SimBridge" regex="fbw-simbridge.exe" roll="0-4" />
+    <rule title="FBW Installer" regex="FlyByWire.+" roll="0-4" />
+    <rule title="FSLTL Traffic Injector" regex="fsltl-traficinjector.exe" roll="0-4" />
+    <rule title="FSUIPC7" regex="fbw-FSUIPC7.exe" roll="0-4" />
+    <rule title="Navigraph" regex="Navigraph Hub.exe" roll="0-4" />
+    <rule title="PACX" regex="PACX.exe" roll="0-4" />
+    <rule title="SimConnectServer" regex="SimConnectServer.exe" roll="0-4" />
+    <rule title="SimConnectServer" regex="SimConnectServer.exe" roll="0-4" />
+    <rule title="Steam" regex="^steam.+" roll="0-4" />
+    <rule title="X-Touch-Mini-FS2020" regex="X-Touch-MINI-FS2020.exe" roll="0-4" />
+    <rule title="FS2020" regex="FlightSimulator.exe" roll="4-12" />
+    <rule title="(anything else)" regex=".+" roll="13-16" />
   </affinity>
   <priority>
-    <rule title="?" regex=".+" priority="High" />
+    <rule title="FS2020" regex="FlightSimulator.exe" priority="High" />
   </priority>
 </ruleBase>
