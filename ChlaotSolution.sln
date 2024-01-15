@@ -33,6 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xsds", "Xsds", "{404576BE-5
 		Xmls\Xsds\FailureDefinitionSchema.xsd = Xmls\Xsds\FailureDefinitionSchema.xsd
 		Xmls\Xsds\FailureSchema.xsd = Xmls\Xsds\FailureSchema.xsd
 		Xmls\Xsds\Global.xsd = Xmls\Xsds\Global.xsd
+		Xmls\Xsds\SimPropertiesSchema.xsd = Xmls\Xsds\SimPropertiesSchema.xsd
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Checklist", "Checklist", "{449B60D4-B914-4D79-A613-532AFFF4AA5A}"
@@ -46,7 +47,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Failures", "Failures", "{10
 	ProjectSection(SolutionItems) = preProject
 		Xmls\Failures\B58.steam.fail.xml = Xmls\Failures\B58.steam.fail.xml
 		Xmls\Failures\C172.gauge.fail.xml = Xmls\Failures\C172.gauge.fail.xml
-		Xmls\Failures\FailureDefinitions.xml = Xmls\Failures\FailureDefinitions.xml
 		Xmls\Failures\Failures-test.fail.xml = Xmls\Failures\Failures-test.fail.xml
 		Xmls\Failures\Failures.fail.xml = Xmls\Failures\Failures.fail.xml
 		Xmls\Failures\FBW320.fail.xml = Xmls\Failures\FBW320.fail.xml
@@ -93,6 +93,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ESystem", "ESystem\ESystem.csproj", "{D47B932B-D907-431E-9FBE-A9446FB0A4D5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimVarTestModule", "Modules\SimVarTest\SimVarTestModule.csproj", "{EE75BBC5-848C-4E39-AB49-F4922FC1626F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{8D41DB2D-C963-4C4F-8904-A38AC779E0CD}"
+	ProjectSection(SolutionItems) = preProject
+		Xmls\Global\FailureDefinitions.xml = Xmls\Global\FailureDefinitions.xml
+		Xmls\Global\SimProperties.xml = Xmls\Global\SimProperties.xml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -172,6 +178,7 @@ Global
 		{ABE7AD3D-4576-45B6-8446-E205765120F5} = {50476E83-616C-4626-99B3-011038C60496}
 		{D47B932B-D907-431E-9FBE-A9446FB0A4D5} = {BDA214A5-916B-47DD-AAC4-51A85D016FAE}
 		{EE75BBC5-848C-4E39-AB49-F4922FC1626F} = {50476E83-616C-4626-99B3-011038C60496}
+		{8D41DB2D-C963-4C4F-8904-A38AC779E0CD} = {56EA1EB7-0FB0-42D6-B301-9BFE7061088D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {635265FD-4132-4AE6-BFE3-2E4C9A812E0B}

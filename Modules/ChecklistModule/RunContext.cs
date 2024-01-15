@@ -21,6 +21,8 @@ using System.Windows;
 using System.Windows.Forms;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
+using ESystem;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -34,9 +36,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       private bool autoplaySuppressed = false;
       private CheckList? prevList = null;
 
-
-      public SimData SimData => this.parent.simConWrapper.SimData;
-
       public AutoplayChecklistEvaluator(RunContext parent)
       {
         this.parent = parent;
@@ -45,7 +44,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
       public bool EvaluateIfShouldPlay(CheckList checkList)
       {
-        if (this.SimData.IsSimPaused) return false;
+        if (this.parent.simObject.IsSimPaused) return false;
         if (Monitor.TryEnter(lck) == false) return false;
 
         this.parent.logger.Invoke(LogLevel.VERBOSE, $"Evaluation started for {checkList.Id}");
@@ -240,7 +239,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     private readonly Settings settings;
 
-    private readonly SimConWrapperWithSimData simConWrapper;
+    private readonly SimObject simObject;
 
     private int keyHookPlayPauseId = -1;
     private int keyHookSkipNextId = -1;
@@ -262,8 +261,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       get => base.GetProperty<CheckSet>(nameof(CheckSet))!;
       set => base.UpdateProperty(nameof(CheckSet), value);
     }
-
-    public SimData SimData => this.simConWrapper.SimData;
 
     public RunContext(InitContext initContext)
     {
@@ -287,9 +284,17 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         .ToList();
 
       this.playback = new PlaybackManager(this);
-      this.simConWrapper = new SimConWrapperWithSimData(new ESimConnect.ESimConnect());
-      this.simConWrapper.SimSecondElapsed += Sim_SimSecondElapsed;
+      this.simObject = SimObject.GetInstance();
+      this.simObject.SimSecondElapsed += SimObject_SimSecondElapsed;
+      this.simObject.Started += SimObject_Started;
+      this.simObject.Started += 
+        () => this.simObject.RegisterProperties(initContext.SimPropertyGroup.GetAllSimPropertiesRecursively());
       this.autoplayEvaluator = new AutoplayChecklistEvaluator(this);
+    }
+
+    private void SimObject_Started()
+    {
+      // what to put here?
     }
 
     internal void Run(KeyHookWrapper keyHookWrapper)
@@ -303,11 +308,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       this.keyHookWrapper = keyHookWrapper ?? throw new ArgumentNullException(nameof(keyHookWrapper));
       ConnectKeyHooks();
 
-      logger?.Invoke(LogLevel.VERBOSE, "Starting connection timer");
-
-      this.simConWrapper.OpenAsync(
-        () => this.simConWrapper.Start(),
-        ex => this.Log(LogLevel.WARNING, "Failed to connect to FS2020, will try it again..."));
+      logger?.Invoke(LogLevel.VERBOSE, "Starting simObject connection");
+      this.simObject.StartAsync();
 
       logger?.Invoke(LogLevel.VERBOSE, "Run done");
     }
@@ -394,7 +396,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       logger.Invoke(level, message);
     }
 
-    private void Sim_SimSecondElapsed()
+    private void SimObject_SimSecondElapsed()
     {
       if (playback.IsWaitingForNextChecklist == false) return;
       CheckList checkList = playback.GetCurrentChecklist();
@@ -410,7 +412,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     private void UpdatePropertyValues()
     {
-      StateCheckEvaluator.UpdateDictionaryByObject(SimData, propertyValues);
+      StateCheckEvaluator.UpdateDictionaryByObject(this.simObject, propertyValues);
     }
   }
 }

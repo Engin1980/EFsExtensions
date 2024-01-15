@@ -22,6 +22,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 using Eng.Chlaot.Modules.ChecklistModule.Types.Xml;
 using static ESystem.Functions;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -42,6 +43,12 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(ChecklistSet), value);
     }
 
+    public SimPropertyGroup SimPropertyGroup
+    {
+      get => base.GetProperty<SimPropertyGroup>(nameof(SimPropertyGroup))!;
+      set => base.UpdateProperty(nameof(SimPropertyGroup), value);
+    }
+
     public Settings Settings { get; private set; } = null!;
 
     public InitContext(Settings settings, Action<bool> setIsReadyFlagAction)
@@ -49,6 +56,22 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       Settings = settings ?? throw new ArgumentNullException(nameof(settings));
       this.logger = Logger.Create(this, "Checklist.InitContext");
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
+      this.SimPropertyGroup = LoadDefaultSimProperties();
+    }
+
+    private SimPropertyGroup LoadDefaultSimProperties()
+    {
+      SimPropertyGroup ret;
+      try
+      {
+        XDocument doc = XDocument.Load(@"Xmls\SimProperties.xml", LoadOptions.SetLineInfo);
+        ret = SimPropertyGroup.Deserialize(doc.Root!);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Failed to load global sim properties.",ex);
+      }
+      return ret;
     }
 
     internal void LoadFile(string xmlFile)
@@ -61,6 +84,15 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         {
           XDocument doc = XDocument.Load(xmlFile);
           this.MetaInfo = MetaInfo.Deserialize(doc);
+          if (doc.Root!.LElement("properties") is XElement pelm)
+          {
+            // workaround due to WPF binding refresh
+            var customProps = SimPropertyGroup.Deserialize(pelm);
+            var spg = new SimPropertyGroup();
+            spg.Properties.AddRange(this.SimPropertyGroup.Properties);
+            spg.Properties.Add(customProps);
+            this.SimPropertyGroup = spg;
+          }
           tmp = Deserializer.Deserialize(doc);
         }
         catch (Exception ex)

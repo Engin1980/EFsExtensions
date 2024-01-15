@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:Eng.Chlaot.Modules.ChecklistModule"
              xmlns:types="clr-namespace:Eng.Chlaot.Modules.ChecklistModule.Types"
              xmlns:gctr="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
+             xmlns:smo="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;assembly=ChlaotModuleBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <DockPanel>
@@ -87,6 +88,25 @@
               <DataGridTextColumn Header="Autoplay Condition" Binding="{Binding Trigger.DisplayString, FallbackValue=(None)}" />
             </DataGrid.Columns>
           </DataGrid>
+        </TabItem>
+        <TabItem Header="Sim Properties">
+          <TreeView ItemsSource="{Binding SimPropertyGroup.Properties}">
+            <TreeView.Resources>
+              <HierarchicalDataTemplate DataType="{x:Type smo:SimPropertyGroup}" ItemsSource="{Binding Properties}">
+                <TextBlock Text="{Binding Title}" />
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type smo:SimProperty}">
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Grid.Column="0" Text="{Binding Name}" />
+                  <TextBlock Grid.Column="0" Text=" (simvar=" FontSize="14" VerticalAlignment="Center" Foreground="Gray" />
+                  <TextBlock Grid.Column="1" Text="{Binding SimVar}" FontSize="14" VerticalAlignment="Center" Foreground="Blue" />
+                  <TextBlock Grid.Column="0" Text=", unit=" FontSize="14" VerticalAlignment="Center" Foreground="Gray" />
+                  <TextBlock Grid.Column="2" Text="{Binding Unit}" FontSize="14" VerticalAlignment="Center"  Foreground="Coral"/>
+                  <TextBlock Grid.Column="0" Text=")" FontSize="14" VerticalAlignment="Center" Foreground="Gray" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+            </TreeView.Resources>
+          </TreeView>
         </TabItem>
       </TabControl>
     </DockPanel>

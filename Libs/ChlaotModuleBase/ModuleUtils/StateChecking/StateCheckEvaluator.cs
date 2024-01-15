@@ -18,10 +18,11 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
 using System.IO.IsolatedStorage;
 using System.Reflection;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
-  public class StateCheckEvaluator 
+  public class StateCheckEvaluator
   {
     #region Public Classes
 
@@ -293,6 +294,15 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     {
       typeof(int), typeof(double), typeof(bool)
     };
+    public static void UpdateDictionaryBySimObject(SimObject simObject, Dictionary<string, double> target)
+    {
+      var tmp = simObject.GetAllPropertiesWithValues();
+      foreach (var item in tmp)
+      {
+        target[item.Key.Name] = item.Value;
+      }
+    }
+
     public static void UpdateDictionaryByObject(object source, Dictionary<string, double> target)
     {
       var props = source.GetType().GetProperties();
