@@ -21,6 +21,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
     private readonly SimSecondElapsedExtender secondElapsedSimConExtender;
     private readonly Dictionary<SimProperty, double> simPropertyValues = new();
     private readonly Dictionary<int, SimVarReg> typeIdMapping = new();
+    private readonly Dictionary<int, SimVarReg> requestIdMapping = new();
     private readonly Dictionary<SimVarReg, List<SimProperty>> simVarReqMapping = new();
     public delegate void SimPropertyChangedDelegate(SimProperty property, double value);
     public event SimPropertyChangedDelegate? SimPropertyChanged;
@@ -85,10 +86,10 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
     private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
     {
       double value = (double)e.Data;
-      int? typeId = e.RequestId;
-      if (typeId == null) return; // not my registered type
-      if (typeIdMapping.ContainsKey(typeId.Value) == false) return; // not my registered type
-      SimVarReg svr = typeIdMapping[typeId.Value];
+      int? requestId = e.RequestId;
+      if (requestId == null) return; // not my registered type
+      if (requestIdMapping.ContainsKey(requestId.Value) == false) return; // not my registered type
+      SimVarReg svr = requestIdMapping[requestId.Value];
       foreach (var simProperty in simVarReqMapping[svr])
       {
         simPropertyValues[simProperty] = value;
@@ -122,6 +123,9 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
         int typeId = simCon.RegisterPrimitive<double>(property.SimVar, property.Unit ?? DEFAULT_PROPERTY_UNIT);
         typeIdMapping[typeId] = svr;
         simVarReqMapping[svr] = new();
+
+        simCon.RequestPrimitiveRepeatedly(typeId, out int requestId, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_PERIOD.SECOND);
+        requestIdMapping[requestId] = svr;
       }
       simVarReqMapping[svr].Add(property);
     }

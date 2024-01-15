@@ -23,6 +23,11 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 using Eng.Chlaot.Modules.ChecklistModule.Types.Xml;
 using static ESystem.Functions;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
+using static ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
+using ChlaotModuleBase.ModuleUtils.StateChecking;
+using static System.Net.WebRequestMethods;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
+using ESystem;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -49,6 +54,14 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(SimPropertyGroup), value);
     }
 
+    public record PropertyUsageCount(SimProperty Property, int Count);
+
+    public List<PropertyUsageCount> PropertyUsageCounts
+    {
+      get => base.GetProperty<List<PropertyUsageCount>>(nameof(PropertyUsageCounts))!;
+      set => base.UpdateProperty(nameof(PropertyUsageCounts), value);
+    }
+
     public Settings Settings { get; private set; } = null!;
 
     public InitContext(Settings settings, Action<bool> setIsReadyFlagAction)
@@ -69,7 +82,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       }
       catch (Exception ex)
       {
-        throw new ApplicationException("Failed to load global sim properties.",ex);
+        throw new ApplicationException("Failed to load global sim properties.", ex);
       }
       return ret;
     }
@@ -77,22 +90,19 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     internal void LoadFile(string xmlFile)
     {
       CheckSet tmp;
+      MetaInfo tmpMeta;
+      SimPropertyGroup? tmpSpg = null;
+
       try
       {
         logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
           XDocument doc = XDocument.Load(xmlFile);
-          this.MetaInfo = MetaInfo.Deserialize(doc);
+          tmpMeta = MetaInfo.Deserialize(doc);
           if (doc.Root!.LElement("properties") is XElement pelm)
-          {
             // workaround due to WPF binding refresh
-            var customProps = SimPropertyGroup.Deserialize(pelm);
-            var spg = new SimPropertyGroup();
-            spg.Properties.AddRange(this.SimPropertyGroup.Properties);
-            spg.Properties.Add(customProps);
-            this.SimPropertyGroup = spg;
-          }
+            tmpSpg = SimPropertyGroup.Deserialize(pelm);
           tmp = Deserializer.Deserialize(doc);
         }
         catch (Exception ex)
@@ -101,7 +111,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         }
 
         logger.Invoke(LogLevel.INFO, $"Checking sanity");
-        Try(() => CheckSanity(tmp), ex => new ApplicationException("Error loading checklist.", ex));
+        var props = tmpSpg == null
+          ? this.SimPropertyGroup.GetAllSimPropertiesRecursively()
+          : tmpSpg.GetAllSimPropertiesRecursively().Union(this.SimPropertyGroup.GetAllSimPropertiesRecursively()).ToList();
+        Try(() => CheckSanity(tmp, props), ex => new ApplicationException("Error loading checklist.", ex));
 
         logger.Invoke(LogLevel.INFO, $"Binding checklist references");
         Try(() => BindNextChecklists(tmp), ex => new ApplicationException("Error binding checklist references.", ex));
@@ -110,16 +123,49 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         Try(() => InitializeSoundStreams(tmp, System.IO.Path.GetDirectoryName(xmlFile)!),
           ex => new ApplicationException("Error creating sound streams for checklist.", ex));
 
+
+        if (tmpSpg != null)
+        {
+          var spg = new SimPropertyGroup();
+          spg.Properties.AddRange(this.SimPropertyGroup.Properties);
+          spg.Properties.Add(tmpSpg);
+          this.SimPropertyGroup = spg;
+        }
+        this.PropertyUsageCounts = GetPropertyUsagesCounts(tmp, this.SimPropertyGroup.GetAllSimPropertiesRecursively());
         this.ChecklistSet = tmp;
+        this.MetaInfo = tmpMeta;
         this.setIsReadyFlagAction(true);
         logger.Invoke(LogLevel.INFO, $"Checklist file '{xmlFile}' successfully loaded.");
-
       }
       catch (Exception ex)
       {
         this.setIsReadyFlagAction(false);
         logger.Invoke(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage("\n\t"));
       }
+    }
+
+    private List<PropertyUsageCount> GetPropertyUsagesCounts(CheckSet tmp, List<SimProperty> simProperties)
+    {
+      Dictionary<string, int> dct = new();
+
+      foreach (var item in tmp.Checklists.Where(q => q.Trigger != null))
+      {
+        var pus = StateCheckUtils.ExtractProperties(item.Trigger!);
+        foreach (var pu in pus)
+        {
+          var pn = pu.PropertyName;
+          if (dct.ContainsKey(pn))
+            dct[pn]++;
+          else
+            dct[pn] = 1;
+        }
+      }
+
+      List<PropertyUsageCount> ret = dct
+        .Select(q => new PropertyUsageCount(simProperties.First(p => p.Name == q.Key), q.Value))
+        .OrderBy(q => q.Property.Name)
+        .ToList();
+      return ret;
     }
 
     private static void BindNextChecklists(CheckSet tmp)
@@ -139,44 +185,46 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       }
     }
 
-    private static void CheckSanity(CheckSet tmp)
+    private static void CheckSanity(CheckSet tmp, List<SimProperty> definedProperties)
     {
       // check no duplicit
       var ids = tmp.Checklists.Select(q => q.Id);
       var dids = ids.Distinct();
       var exc = ids.Except(dids);
       if (exc.Any())
-      {
         throw new ApplicationException("There are repeated checklist id definitions: " + string.Join(", ", exc));
-      }
 
       // all property conditions has values
-      Stack<IStateCheckItem> stck = new();
-      void checkStateCheckItem(IStateCheckItem sti)
-      {
-        stck.Push(sti);
-        if (sti is StateCheckCondition stc)
-          stc.Items.ForEach(q => checkStateCheckItem(q));
-        else if (sti is StateCheckDelay std)
-          checkStateCheckItem(std.Item);
-        else if (sti is StateCheckProperty stp)
-        {
-          if (stp.Expression == null)
-          {
-            throw new ApplicationException($"Expression of checked property {stp.DisplayString} not set." +
-              $"Location: {string.Join(" ==> ", stck.Reverse().ToList().Select(q => q.DisplayString))}");
-          }
-        }
-        else if (sti is StateCheckTrueFalse sttf)
-        {
-          // intentionally blank
-        }
-        else
-          throw new ApplicationException($"Unsupported type of '{nameof(IStateCheckItem)}'.");
-        stck.Pop();
-      }
+      IStateCheckItem[] triggers = tmp.Checklists.Where(q => q.Trigger != null).Select(q => q.Trigger).ToArray()!;
+      List<StateCheckProperty> triggerProps = StateCheckUtils.ExtractStateCheckProperties(triggers);
+      triggerProps
+        .Where(q => q.Expression == null)
+        .ForEach(q => throw new ApplicationException($"Expression of checked property {q.DisplayString} not set."));
 
-      tmp.Checklists.Where(q => q.Trigger != null).ForEach(q => checkStateCheckItem(q.Trigger));
+      // check all properties are defined
+      List<PropertyUsage> propertyUsages = StateCheckUtils.ExtractProperties(triggers);
+      List<string> missingProperties = propertyUsages
+        .Where(q => definedProperties.None(p => p.Name == q.PropertyName))
+        .Select(q => q.PropertyName)
+        .Distinct()
+        .ToList();
+      if (missingProperties.Any())
+        throw new ApplicationException($"Required properties not found in defined properties: {string.Join(", ", missingProperties)}");
+
+      // check all variables are defined
+      List<string> missingVariables = new();
+      foreach (var item in tmp.Checklists.Where(q => q.Trigger != null))
+      {
+        List<Variable> definedVariables = item.Variables;
+        List<VariableUsage> variableUsages = StateCheckUtils.ExtractVariables(item.Trigger!);
+        var vmp = variableUsages
+          .Where(q => definedVariables.None(v => v.Name == q.VariableName))
+          .Select(q => q.VariableName)
+          .ToList();
+        missingVariables.AddRange(vmp);
+      }
+      if (missingVariables.Any())
+        throw new ApplicationException($"Required variables not found in defined variables: {string.Join(", ", missingVariables.Distinct())}.");
     }
 
     private void InitializeSoundStreams(CheckSet checkSet, string relativePath)

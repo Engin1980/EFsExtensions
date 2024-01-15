@@ -41,7 +41,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders
         this.simCon.Open();
         this.IsOpening = false;
         this.IsOpened = true;
-        Opened?.Invoke();
       }
       catch (SimConWrapperOpenException ex)
       {
@@ -53,6 +52,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders
       {
         throw new ApplicationException("Unexpected exception when starting simcon on background.", ex);
       }
+      Opened?.Invoke();
     }
 
     public void OpenAsync()

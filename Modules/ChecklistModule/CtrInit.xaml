@@ -108,6 +108,14 @@
             </TreeView.Resources>
           </TreeView>
         </TabItem>
+        <TabItem Header="Sim Property Usages">
+          <DataGrid ItemsSource="{Binding PropertyUsageCounts}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Property Name" Binding="{Binding Property.Name}" />
+              <DataGridTextColumn Header="Count" Binding="{Binding Count}" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </TabItem>
       </TabControl>
     </DockPanel>
   </DockPanel>

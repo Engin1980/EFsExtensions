@@ -20,6 +20,15 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders
       this.simCon = simCon;
       this.simCon.EventInvoked += SimCon_EventInvoked;
       this.invokeSimSecondEventsOnPause = invokeSimSecondEventsOnPause;
+      if (simCon.IsOpened) RegisterEvents();
+      else
+        simCon.Connected += _ => RegisterEvents();
+    }
+
+    private void RegisterEvents()
+    {
+      simCon.RegisterSystemEvent(ESimConnect.SimEvents.System.Pause);
+      simCon.RegisterSystemEvent(ESimConnect.SimEvents.System._1sec);
     }
 
     private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)

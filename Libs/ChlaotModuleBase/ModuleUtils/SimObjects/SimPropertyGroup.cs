@@ -46,7 +46,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
       List<SimProperty> xps = this.Properties
         .Where(q => q is SimPropertyGroup)
         .Cast<SimPropertyGroup>()
-        .Select(q => q.GetAllSimPropertiesRecursively())
+        .SelectMany(q => q.GetAllSimPropertiesRecursively())
         .Cast<SimProperty>()
         .ToList();
       ret = ret.Union(xps).ToList();
