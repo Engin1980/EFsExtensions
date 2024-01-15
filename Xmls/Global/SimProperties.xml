@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<properties
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://chlaot.org/simProperties.xsd"
+        xmlns:g="http://chlaot.org/global.xsd"
+        xsi:noNamespaceSchemaLocation="file://./Xsds/SimPropertiesSchema.xsd"
+        title="Global properties">
+  <g:properties title="Plane props">
+    <g:property name="altitude" simVar="PLANE ALTITUDE" unit="foot" />
+    <g:property name="height" simVar="PLANE ALT ABOVE GROUND" unit="foot" />
+    <g:property name="ias" simVar="AIRSPEED INDICATED" unit="knot" />
+    <g:property name="verticalSpeed" simVar="VERTICAL SPEED" unit="foot"/>
+  </g:properties>
+  <g:properties title="Plane Systems">
+    <g:property name="engine1Running" simVar="ENG COMBUSTION:1" />
+    <g:property name="engine2Running" simVar="ENG COMBUSTION:2" />
+    <g:property name="engine3Running" simVar="ENG COMBUSTION:3" />
+  </g:properties>
+</properties>

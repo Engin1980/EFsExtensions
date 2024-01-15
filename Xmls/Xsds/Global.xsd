@@ -11,6 +11,21 @@
     </xsd:restriction>
   </xsd:simpleType>
 
+  <xsd:complexType name="simProperties">
+    <xsd:choice minOccurs="1">
+      <xsd:element name="property" type="simProperty" minOccurs="0" maxOccurs="unbounded" />
+      <xsd:element name="properties" type="simProperties" minOccurs="0" maxOccurs="unbounded" />
+    </xsd:choice>
+    <xsd:attribute name="title" type="xsd:string" use="optional" />
+  </xsd:complexType>
+
+  <xsd:complexType name="simProperty">
+    <xsd:attribute name="name" type="nonemptyString" use="required" />
+    <xsd:attribute name="simVar" type="nonemptyString" use="required" />
+    <xsd:attribute name="description" type="nonemptyString" use="optional" />
+    <xsd:attribute name="unit" type="nonemptyString" use="optional" />
+  </xsd:complexType>
+
   <xsd:complexType name="metaData">
     <xsd:choice maxOccurs="unbounded">
       <xsd:element name="author" minOccurs="1" maxOccurs="1" type="nonemptyString"/>

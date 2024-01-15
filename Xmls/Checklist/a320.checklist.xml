@@ -10,6 +10,12 @@
     <g:author>Marek Vajgl</g:author>
     <g:description>Simple checklists test for A320 FBW customized</g:description>
   </meta>
+  <properties title="custom">
+    <g:property name="pushbackTugConnected" simVar="PUSHBACK ATTACHED" />
+    <g:property name="parkingBrakeSet" simVar="BRAKE PARKING POSITION" />
+    <g:property name="engine1Running" simVar="ENG COMBUSTION:1" />
+    <g:property name="engine2Running" simVar="ENG COMBUSTION:2" />    
+  </properties>
   <checklist id="beforeStart" callSpeech="Before Start-up">
     <items>
       <item>

@@ -12,6 +12,7 @@
     <xsd:complexType>
       <xsd:sequence>
         <xsd:element name="meta" minOccurs="1" maxOccurs="1" type="g:metaData"/>
+        <xsd:element name="properties" minOccurs="0" maxOccurs="1" type="g:simProperties" />
         <xsd:element name="checklist" minOccurs="1" maxOccurs="unbounded" type="checklist"/>
       </xsd:sequence>
       <xsd:attribute name="firstChecklistId" type="g:nonemptyString" use="required"/>

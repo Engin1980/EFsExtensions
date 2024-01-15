@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xsd:schema id="Failures"
+            targetNamespace="http://chlaot.org/simProperties.xsd"
+            elementFormDefault="qualified"
+            xmlns="http://chlaot.org/simProperties.xsd"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:g  ="http://chlaot.org/global.xsd"
+>
+  <xsd:import namespace="http://chlaot.org/global.xsd" schemaLocation="Global.xsd" />
+
+  <xsd:element name="properties" type="g:simProperties" />
+
+</xsd:schema>
