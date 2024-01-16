@@ -94,14 +94,14 @@ namespace FailuresModule
       this.simConWrapper.OpenAsync(
         () =>
         {
-          SetVariableValues();
+          InitializeIncidentEvaluators();
           this.simConWrapper.Start();
           this.isRunning = true;
         },
         ex => { });
     }
 
-    private void SetVariableValues()
+    private void InitializeIncidentEvaluators()
     {
       foreach (var runIncidentDefinition in this.IncidentDefinitions)
       {
@@ -109,7 +109,7 @@ namespace FailuresModule
           .ToDictionary(
           k => k.Name,
           v => v.Value);
-        StateCheckEvaluator sce = new(tmp, propertyValues);
+        StateCheckEvaluator sce = new(() => tmp, () => propertyValues);
         incidentEvaluators[runIncidentDefinition] = sce;
       }
     }

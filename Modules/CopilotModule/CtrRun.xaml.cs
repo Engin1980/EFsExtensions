@@ -29,7 +29,7 @@ namespace CopilotModule
       this.runContext = null!;
     }
 
-    public CtrRun(RunContext runContext) : this()
+    internal CtrRun(RunContext runContext) : this()
     {
       this.runContext = runContext;
       this.DataContext = runContext;

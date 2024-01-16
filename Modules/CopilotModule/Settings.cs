@@ -29,12 +29,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
       set => base.UpdateProperty(nameof(ReadConfirmations), value);
     }
 
-    public bool EvalDebugEnabled
-    {
-      get => base.GetProperty<bool>(nameof(EvalDebugEnabled))!;
-      set => base.UpdateProperty(nameof(EvalDebugEnabled), value);
-    }
-
     public SynthetizerSettings Synthetizer { get; set; } = new();
 
     public static Settings Load()

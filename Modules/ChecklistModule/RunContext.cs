@@ -23,30 +23,29 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
 using ESystem;
 using System.ComponentModel;
 using System.Drawing.Imaging;
+using ChlaotModuleBase;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
   public partial class RunContext : NotifyPropertyChangedBase
   {
+    #region Private Fields
+
     private readonly AutoplayChecklistEvaluator autoplayEvaluator;
     private readonly Logger logger;
     private readonly PlaybackManager playback;
+    private readonly Dictionary<string, double> propertyValues = new();
+    private readonly Dictionary<string, double> variableValues = new();
     private readonly Settings settings;
     private readonly SimObject simObject;
-
     private int keyHookPlayPauseId = -1;
     private int keyHookSkipNextId = -1;
     private int keyHookSkipPrevId = -1;
-
-    private readonly Dictionary<string, double> propertyValues = new();
-    private readonly Dictionary<string, double> variableValues = new();
-    public BindingList<PropertyValue> PropertyValues
-    {
-      get => base.GetProperty<BindingList<PropertyValue>>(nameof(PropertyValues))!;
-      set => base.UpdateProperty(nameof(PropertyValues), value);
-    }
-
     private KeyHookWrapper? keyHookWrapper;
+
+    #endregion Private Fields
+
+    #region Public Properties
 
     public List<CheckListView> CheckListViews
     {
@@ -59,6 +58,16 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       get => base.GetProperty<CheckSet>(nameof(CheckSet))!;
       set => base.UpdateProperty(nameof(CheckSet), value);
     }
+
+    public BindingList<BindingKeyValue<string, double>> PropertyValuesView
+    {
+      get => base.GetProperty<BindingList<BindingKeyValue<string, double>>>(nameof(PropertyValuesView))!;
+      set => base.UpdateProperty(nameof(PropertyValuesView), value);
+    }
+
+    #endregion Public Properties
+
+    #region Public Constructors
 
     public RunContext(InitContext initContext)
     {
@@ -91,24 +100,18 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       this.simObject.Started += SimObject_Started;
       this.simObject.Started += () => this.simObject.RegisterProperties(allProps);
       this.simObject.SimPropertyChanged += SimObject_SimPropertyChanged;
-      this.autoplayEvaluator = new AutoplayChecklistEvaluator(this);
+      this.autoplayEvaluator = new AutoplayChecklistEvaluator(() => variableValues, () => propertyValues);
 
-      this.PropertyValues = new BindingList<PropertyValue>(
+      this.PropertyValuesView = new(
         allProps
-        .Select(q => new PropertyValue(q.Name, double.NaN))
-        .OrderBy(q => q.Name)
+        .Select(q => new BindingKeyValue<string, double>(q.Name, double.NaN))
+        .OrderBy(q => q.Key)
         .ToList());
     }
 
-    private void SimObject_SimPropertyChanged(SimProperty property, double value)
-    {
-      this.PropertyValues.Where(q => q.Name == property.Name).ForEach(q => q.Value = value);
-    }
+    #endregion Public Constructors
 
-    private void SimObject_Started()
-    {
-      // what to put here?
-    }
+    #region Internal Methods
 
     internal void Run(KeyHookWrapper keyHookWrapper)
     {
@@ -131,6 +134,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     {
       throw new NotImplementedException();
     }
+
+    #endregion Internal Methods
+
+    #region Private Methods
 
     private static KeyHookInfo ConvertShortcutToKeyHookInfo(Settings.KeyShortcut shortcut)
     {
@@ -209,13 +216,18 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       logger.Invoke(level, message);
     }
 
+    private void SimObject_SimPropertyChanged(SimProperty property, double value)
+    {
+      this.propertyValues[property.Name] = value;
+      this.PropertyValuesView.Where(q => q.Key == property.Name).ForEach(q => q.Value = value);
+    }
+
     private void SimObject_SimSecondElapsed()
     {
       if (playback.IsWaitingForNextChecklist == false) return;
       CheckList checkList = playback.GetCurrentChecklist();
-      UpdatePropertyValues();
-      bool shouldPlay = this.settings.UseAutoplay
-        && this.autoplayEvaluator.EvaluateIfShouldPlay(checkList);
+      StateCheckEvaluator.UpdateDictionaryBySimObject(this.simObject, propertyValues);
+      bool shouldPlay = this.settings.UseAutoplay && !this.simObject.IsSimPaused && this.autoplayEvaluator.EvaluateIfShouldPlay(checkList);
       if (shouldPlay)
       {
         autoplayEvaluator.SuppressAutoplayForCurrentChecklist();
@@ -223,9 +235,11 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       }
     }
 
-    private void UpdatePropertyValues()
+    private void SimObject_Started()
     {
-      StateCheckEvaluator.UpdateDictionaryBySimObject(this.simObject, propertyValues);
+      // what to put here?
     }
+
+    #endregion Private Methods
   }
 }

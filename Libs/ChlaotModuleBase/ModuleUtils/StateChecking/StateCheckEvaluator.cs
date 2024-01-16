@@ -19,38 +19,12 @@ using System.IO.IsolatedStorage;
 using System.Reflection;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
+using System.Windows.Documents;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
   public class StateCheckEvaluator
   {
-    #region Public Classes
-
-    public class HistoryRecord
-    {
-      #region Public Properties
-
-      public IStateCheckItem Item { get; set; }
-
-      public string Message { get; set; }
-
-      public bool Result { get; set; }
-
-      #endregion Public Properties
-
-      #region Public Constructors
-
-      public HistoryRecord(IStateCheckItem item, bool result, string message)
-      {
-        Item = item ?? throw new ArgumentNullException(nameof(item));
-        Result = result;
-        Message = message ?? throw new ArgumentNullException(nameof(message));
-      }
-
-      #endregion Public Constructors
-    }
-
-    #endregion Public Classes
 
     #region Private Enums
 
@@ -64,26 +38,34 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 
     #region Private Fields
 
-    private static Random random = new();
+    private readonly static Random random = new();
+    private static Type[] updatedTypesNumerical =
+    {
+      typeof(int), typeof(double), typeof(bool)
+    };
+
+    private readonly Dictionary<StateCheckDelay, int> delayCounter = new();
     private readonly Dictionary<StateCheckProperty, double> extractedValues = new();
-    private readonly Dictionary<StateCheckDelay, int> historyCounter = new();
     private readonly Logger logger;
     private readonly Dictionary<StateCheckProperty, EPassingState> passingPropertiesStates = new();
-    private readonly Dictionary<string, double> propertyValues;
-    private readonly Dictionary<string, double> variableValues;
-    private List<HistoryRecord>? evaluationHistoryContext;
+    private readonly Func<Dictionary<string, double>> propertyValuesProvider;
+    private readonly Func<Dictionary<string, double>> variableValuesProvider;
+    private Dictionary<string, double>? currentPropertyValues = null;
+    private Dictionary<string, double>? currentVariableValues = null;
 
     #endregion Private Fields
 
     #region Public Constructors
 
-    public StateCheckEvaluator(Dictionary<string, double> variableValues, Dictionary<string, double> propertyValues)
+    public StateCheckEvaluator(
+      Func<Dictionary<string, double>> variableValuesProvider,
+      Func<Dictionary<string, double>> propertyValuesProvider)
     {
-      EAssert.Argument.IsNotNull(variableValues, nameof(variableValues));
-      EAssert.Argument.IsNotNull(propertyValues, nameof(propertyValues));
+      EAssert.Argument.IsNotNull(variableValuesProvider, nameof(variableValuesProvider));
+      EAssert.Argument.IsNotNull(propertyValuesProvider, nameof(propertyValuesProvider));
 
-      this.variableValues = variableValues;
-      this.propertyValues = propertyValues;
+      this.variableValuesProvider = variableValuesProvider;
+      this.propertyValuesProvider = propertyValuesProvider;
 
       this.logger = Logger.Create(this);
       this.logger.Invoke(LogLevel.INFO, "Created");
@@ -93,30 +75,78 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 
     #region Public Methods
 
-    public bool Evaluate(IStateCheckItem item)
+    public static void UpdateDictionaryByObject(object source, Dictionary<string, double> target)
     {
-      return this.Evaluate(item, null);
+      var props = source.GetType().GetProperties();
+      foreach (var prop in props)
+      {
+        var propType = prop.PropertyType;
+        var att = prop.GetCustomAttribute<StateCheckNameAttribute>();
+        var propName = att != null ? att.Name : prop.Name;
+        if (updatedTypesNumerical.Contains(propType))
+        {
+          object? obj = prop.GetValue(source, null);
+          EAssert.IsNotNull(obj);
+          if (obj is double d)
+            target[propName] = d;
+          else if (obj is int i)
+            target[propName] = (double)i;
+          else if (obj is bool b)
+            target[propName] = b ? 1 : 0;
+        }
+        else if (propType.IsArray)
+        {
+          Array? arr = (Array?)prop.GetValue(source, null);
+          EAssert.IsNotNull(arr);
+          for (int i = 0; i < arr.Length; i++)
+          {
+            string indexPropName = $"{propName}:{i + 1}";
+            object? obj = arr.GetValue(i);
+            EAssert.IsNotNull(obj);
+            if (obj is double d)
+              target[indexPropName] = d;
+            else if (obj is int _i)
+              target[indexPropName] = (double)_i;
+            else if (obj is bool b)
+              target[indexPropName] = b ? 1 : 0;
+          }
+        }
+      }
     }
 
-    public bool Evaluate(IStateCheckItem item, List<HistoryRecord>? evaluationHistory)
+    public static void UpdateDictionaryBySimObject(SimObject simObject, Dictionary<string, double> target)
     {
-      logger.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} started.");
-      if (item == null) throw new ArgumentNullException(nameof(item));
+      var tmp = simObject.GetAllPropertiesWithValues();
+      foreach (var item in tmp)
+      {
+        target[item.Key.Name] = item.Value;
+      }
+    }
+
+    public bool Evaluate(IStateCheckItem item)
+    {
       bool ret;
       lock (this)
       {
-        this.evaluationHistoryContext = evaluationHistory;
+        EAssert.Argument.IsNotNull(item, nameof(item));
+        logger.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} started.");
+        this.currentPropertyValues = propertyValuesProvider.Invoke();
+        this.currentVariableValues = variableValuesProvider.Invoke();
         ret = EvaluateItem(item);
-        this.evaluationHistoryContext = null;
+        this.currentVariableValues = null;
+        this.currentPropertyValues = null;
+        logger.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} resulted in {ret}.");
       }
-      logger.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} resulted in {ret}.");
       return ret;
     }
 
     public void Reset()
     {
-      this.historyCounter.Clear();
-      this.passingPropertiesStates.Clear();
+      lock (this)
+      {
+        this.passingPropertiesStates.Clear();
+        this.delayCounter.Clear();
+      }
     }
 
     #endregion Public Methods
@@ -159,17 +189,17 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       bool tmp = EvaluateItem(delay.Item);
       if (tmp)
       {
-        if (historyCounter.ContainsKey(delay))
-          historyCounter[delay]++;
+        if (delayCounter.ContainsKey(delay))
+          delayCounter[delay]++;
         else
-          historyCounter[delay] = 1;
+          delayCounter[delay] = 1;
       }
       else
-        historyCounter[delay] = 0;
+        delayCounter[delay] = 0;
 
-      ret = historyCounter[delay] >= delay.Seconds;
+      ret = delayCounter[delay] >= delay.Seconds;
 
-      message = $"curr_sec/trg_sec/inner => {historyCounter[delay]} / {delay.Seconds} /= {tmp}";
+      message = $"curr_sec/trg_sec/inner => {delayCounter[delay]} / {delay.Seconds} /= {tmp}";
       return ret;
     }
 
@@ -186,7 +216,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       };
 
       Log(item, msg, ret);
-      evaluationHistoryContext?.Add(new HistoryRecord(item, ret, msg));
       return ret;
     }
     private bool EvaluateProperty(StateCheckProperty property, out string message)
@@ -260,7 +289,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         else
         {
           var variableName = property.GetExpressionAsVariableName();
-          if (!this.variableValues.TryGetValue(variableName, out ret))
+          if (!this.currentVariableValues!.TryGetValue(variableName, out ret))
             throw new StateCheckException($"Unable resolve value of variable '{variableName}'.");
         }
         if (applyRandomness) ret = ApplyPropertyRandomness(property, ret);
@@ -282,64 +311,12 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 
     private double ResolveRealPropertyValue(string propertyName)
     {
-      if (propertyValues.ContainsKey(propertyName) == false)
+      if (currentPropertyValues!.ContainsKey(propertyName) == false)
         throw new ApplicationException($"Property {propertyName} not found in property-value dictionary.");
-      double ret = propertyValues[propertyName];
+      double ret = currentPropertyValues[propertyName];
       return ret;
     }
 
     #endregion Private Methods
-
-    private static Type[] updatedTypesNumerical =
-    {
-      typeof(int), typeof(double), typeof(bool)
-    };
-    public static void UpdateDictionaryBySimObject(SimObject simObject, Dictionary<string, double> target)
-    {
-      var tmp = simObject.GetAllPropertiesWithValues();
-      foreach (var item in tmp)
-      {
-        target[item.Key.Name] = item.Value;
-      }
-    }
-
-    public static void UpdateDictionaryByObject(object source, Dictionary<string, double> target)
-    {
-      var props = source.GetType().GetProperties();
-      foreach (var prop in props)
-      {
-        var propType = prop.PropertyType;
-        var att = prop.GetCustomAttribute<StateCheckNameAttribute>();
-        var propName = att != null ? att.Name : prop.Name;
-        if (updatedTypesNumerical.Contains(propType))
-        {
-          object? obj = prop.GetValue(source, null);
-          EAssert.IsNotNull(obj);
-          if (obj is double d)
-            target[propName] = d;
-          else if (obj is int i)
-            target[propName] = (double)i;
-          else if (obj is bool b)
-            target[propName] = b ? 1 : 0;
-        }
-        else if (propType.IsArray)
-        {
-          Array? arr = (Array?)prop.GetValue(source, null);
-          EAssert.IsNotNull(arr);
-          for (int i = 0; i < arr.Length; i++)
-          {
-            string indexPropName = $"{propName}:{i + 1}";
-            object? obj = arr.GetValue(i);
-            EAssert.IsNotNull(obj);
-            if (obj is double d)
-              target[indexPropName] = d;
-            else if (obj is int _i)
-              target[indexPropName] = (double)_i;
-            else if (obj is bool b)
-              target[indexPropName] = b ? 1 : 0;
-          }
-        }
-      }
-    }
   }
 }

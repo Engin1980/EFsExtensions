@@ -1,6 +1,9 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.Modules.ChecklistModule.Types;
+using ESystem.Asserting;
+using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
@@ -9,24 +12,24 @@ namespace Eng.Chlaot.Modules.ChecklistModule
   {
     public class AutoplayChecklistEvaluator
     {
+      private readonly Logger logger;
       private readonly StateCheckEvaluator evaluator;
       private readonly object lck = new();
-      private readonly RunContext parent;
       private bool autoplaySuppressed = false;
       private CheckList? prevList = null;
 
-      public AutoplayChecklistEvaluator(RunContext parent)
+      public AutoplayChecklistEvaluator(Func<Dictionary<string, double>> variableValuesProvider, Func<Dictionary<string, double>> propertyValuesProvider)
       {
-        this.parent = parent;
-        this.evaluator = new StateCheckEvaluator(parent.variableValues, parent.propertyValues);
+        EAssert.Argument.IsNotNull(variableValuesProvider, nameof(variableValuesProvider));
+        EAssert.Argument.IsNotNull(propertyValuesProvider, nameof(propertyValuesProvider));
+        this.logger = Logger.Create(this);
+        this.evaluator = new StateCheckEvaluator(variableValuesProvider, propertyValuesProvider);
       }
 
       public bool EvaluateIfShouldPlay(CheckList checkList)
       {
-        if (this.parent.simObject.IsSimPaused) return false;
         if (Monitor.TryEnter(lck) == false) return false;
-
-        this.parent.logger.Invoke(LogLevel.VERBOSE, $"Evaluation started for {checkList.Id}");
+        logger.Invoke(LogLevel.VERBOSE, $"Evaluation started for {checkList.Id}");
 
         if (prevList != checkList)
         {
@@ -41,7 +44,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         else
           ret = checkList.Trigger != null && this.evaluator.Evaluate(checkList.Trigger);
 
-        this.parent.logger.Invoke(LogLevel.VERBOSE,
+        this.logger.Invoke(LogLevel.VERBOSE,
           $"Evaluation finished for {checkList.Id} as={ret}, autoplaySupressed={autoplaySuppressed}");
         Monitor.Exit(lck);
         return ret;
