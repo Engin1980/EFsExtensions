@@ -94,9 +94,13 @@ namespace Eng.Chlaot.Modules.CopilotModule
       this.settings = initContext.Settings;
       this.logger = Logger.Create(this, "Copilot.RunContext");
 
+      var allProps = initContext.SimPropertyGroup.GetAllSimPropertiesRecursively()
+        .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q))
+        .ToList();
+
       this.simObject = SimObject.GetInstance();
       this.simObject.SimSecondElapsed += SimObject_SimSecondElapsed;
-
+      this.simObject.Started += () => this.simObject.RegisterProperties(allProps);
       this.evaluator = new(variableValues, propertyValues);
 
       this.Set.SpeechDefinitions.ForEach(q => Infos.Add(new SpeechDefinitionInfo(q)));
@@ -175,10 +179,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
     private void EvaluateInactives(IEnumerable<SpeechDefinitionInfo> waits)
     {
       waits
+        .Where(q => q.SpeechDefinition.ReactivationTrigger != null)
         .Where(q =>
         {
           var h = GetHistoryListIfRequired();
-          var ret = this.evaluator.Evaluate(q.SpeechDefinition.ReactivationTrigger, h);
+          var ret = this.evaluator.Evaluate(q.SpeechDefinition.ReactivationTrigger!, h);
           q.ReactivationEvaluationHistory = h;
           return ret;
         })

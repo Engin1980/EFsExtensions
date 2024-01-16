@@ -126,6 +126,9 @@ namespace Eng.Chlaot.Modules.CopilotModule
         Try(() => InitializeSoundStreams(tmp, System.IO.Path.GetDirectoryName(xmlFile)!),
           ex => new ApplicationException("Error creating sound streams.", ex));
 
+        logger.Invoke(LogLevel.INFO, "Binding property changed events");
+        BindPropertyChangedEvents(tmp);
+
         if (tmpSpg != null)
         {
           var spg = new SimPropertyGroup();
@@ -147,12 +150,27 @@ namespace Eng.Chlaot.Modules.CopilotModule
       }
     }
 
+    private void BindPropertyChangedEvents(CopilotSet tmp)
+    {
+      tmp.SpeechDefinitions.ForEach(q =>
+      {
+        q.Variables
+          .Where(q => q is UserVariable)
+          .Cast<UserVariable>()
+          .ForEach(p =>
+          {
+            p.PropertyChanged += Variable_PropertyChanged;
+            variableToSpeechDefinitionMapping[p] = q;
+          });
+      });
+    }
+
     private List<PropertyUsageCount> GetPropertyUsagesCounts(CopilotSet tmp, List<SimProperty> simProperties)
     {
       Dictionary<string, int> dct = new();
 
       var lst = tmp.SpeechDefinitions
-        .Select(q=>q.Trigger)
+        .Select(q => q.Trigger)
         .Union(tmp.SpeechDefinitions
           .Where(q => q.ReactivationTrigger != null)
           .Select(q => q.ReactivationTrigger!));
@@ -232,7 +250,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private void Variable_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-      Variable variable = (Variable)sender!;
+      UserVariable variable = (UserVariable)sender!;
       SpeechDefinition sd = variableToSpeechDefinitionMapping[variable];
       if (sd.Speech.Type == Speech.SpeechType.Speech
         && sd.Speech.GetUsedVariables().Any(q => q == variable.Name))

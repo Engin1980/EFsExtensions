@@ -1,5 +1,6 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using ESystem;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -39,6 +40,10 @@ namespace Chlaot
     [SuppressMessage("", "IDE1006")]
     private void btnRun_Click(object sender, RoutedEventArgs e)
     {
+      if (this.context.Modules.None(q => q.IsReady))
+      {
+        Logger.Log(this, LogLevel.ERROR, "Any module ready, cannot start.");
+      }
       FrmRun frmRun = new(this.context, appSettings);
       Logger.UnregisterLogAction(this);
       this.Close();
@@ -49,6 +54,7 @@ namespace Chlaot
     private void lstModules_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
       IModule module = (IModule)lstModules.SelectedItem;
+      if (module == null) return;
       pnlContent.Children.Clear();
       pnlContent.Children.Add(module.InitControl);
     }
