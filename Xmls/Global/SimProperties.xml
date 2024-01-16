@@ -25,8 +25,8 @@
     <g:property name="pushbackTugConnected" simVar="PUSHBACK ATTACHED"/>
   </g:properties>
   <g:properties title="Plane orientation">
-    <g:property name="accelerationBodyZ" simVar="ACCELERATION BODY Z" unit="feet_per_second_squared" />
-    <g:property name="acceleration" simVar="ACCELERATION BODY Z" unit="feet_per_second_squared"  />
+    <g:property name="accelerationBodyZ" simVar="ACCELERATION BODY Z" unit="feet per second squared" />
+    <g:property name="acceleration" simVar="ACCELERATION BODY Z" unit="feet per second squared"  />
   </g:properties>
 
 </properties>

@@ -106,7 +106,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         {
           XDocument doc = XDocument.Load(xmlFile, LoadOptions.SetLineInfo);
           tmpMeta = MetaInfo.Deserialize(doc);
-          if (doc.Root!.LElement("properties") is XElement pelm)
+          if (doc.Root!.LElementOrNull("properties") is XElement pelm)
             // workaround due to WPF binding refresh
             tmpSpg = SimPropertyGroup.Deserialize(pelm);
           tmp = Eng.Chlaot.CopilotModule.Types.Xml.Deserializer.Deserialize(doc);

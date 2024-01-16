@@ -52,9 +52,9 @@
       </TreeView>
     </TabItem>
     <TabItem Header="Property Values">
-      <DataGrid ItemsSource="{Binding PropertyValues}" AutoGenerateColumns="False">
+      <DataGrid ItemsSource="{Binding PropertyValuesView}" AutoGenerateColumns="False">
         <DataGrid.Columns>
-          <DataGridTextColumn Header="SimProperty" Binding="{Binding Name}" />
+          <DataGridTextColumn Header="SimProperty" Binding="{Binding Key}" />
           <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
         </DataGrid.Columns>
       </DataGrid>

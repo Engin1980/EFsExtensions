@@ -34,11 +34,17 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
     {
       EAssert.Argument.IsNotNull(simCon, nameof(simCon));
       this.simCon = simCon;
+      this.simCon.ThrowsException += SimCon_ThrowsException;
       this.simCon.DataReceived += SimCon_DataReceived;
       this.openAsyncSimConExtender = new(simCon);
       this.openAsyncSimConExtender.Opened += OpenAsyncSimConExtender_Opened;
       this.secondElapsedSimConExtender = new(simCon, false);
       this.secondElapsedSimConExtender.SimSecondElapsed += SecondElapsedSimConExtender_SimSecondElapsed;
+    }
+
+    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_EXCEPTION ex)
+    {
+      throw new ApplicationException("SimCon thows exception: " + ex.ToString());
     }
 
     private void SecondElapsedSimConExtender_SimSecondElapsed()
