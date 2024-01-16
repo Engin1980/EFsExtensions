@@ -5,12 +5,42 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 using System.Xml.Linq;
 
 namespace EXmlLib
 {
-  public static class Utils
+  public static class XmlUtils
   {
+    public static void ValidateXmlAgainstXsd(string xmlFileName, string[] xsdFileNames, out List<string> errors)
+    {
+      var errs = new List<string>();
+      XmlReaderSettings settings = new XmlReaderSettings();
+      foreach (string xsdFileName in xsdFileNames)
+      {
+        string schema = ExtractXsdFileSchema(xsdFileName);
+        settings.Schemas.Add(schema, xsdFileName);
+      }
+      settings.ValidationType = ValidationType.Schema;
+      settings.ValidationEventHandler += (s, e) => errs.Add(e.Message);
+
+      XmlReader books = XmlReader.Create(xmlFileName, settings);
+      while (books.Read()) { }
+
+      errors = errs.ToList();
+    }
+
+    private static string ExtractXsdFileSchema(string xsdFileName)
+    {
+      const string START_PATTERN = "xmlns=\"";
+      string txt = System.IO.File.ReadAllText(xsdFileName);
+      int patternStart = txt.IndexOf(START_PATTERN);
+      int start = patternStart + START_PATTERN.Length;
+      int end = txt.IndexOf("\"", start+1);
+      string ret = txt.Substring(start, end - start);
+      return ret;
+    }
+
     //public static void DeserializeProperties(XElement element, object target, string[] propertyNames, EXmlContext context)
     //{
     //  var props = target.GetType().GetProperties(System.Reflection.BindingFlags.Instance

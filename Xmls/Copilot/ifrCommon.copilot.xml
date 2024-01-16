@@ -10,12 +10,15 @@
     <g:description></g:description>
     <g:version>0.1</g:version>
   </metaInfo>
+  <properties title="custom">
+    <g:property name="acceleration" simVar="PUSHBACK ATTACHED" />
+  </properties>
   <speechDefinition title="Positive rate">
     <speech type="speech" value="Positive rate" />
     <trigger>
       <g:and>
         <g:property name="height" direction="above" expression="0" />
-        <g:property name="verticalSpeed" direction="above" expression="100" />
+        <g:property name="vs" direction="above" expression="100" />
         <g:property name="ias" direction="above" expression="40" />
       </g:and>
     </trigger>
@@ -65,8 +68,8 @@
     <speech type="speech" value="Transition altitude" />
     <trigger>
       <g:and>
-        <g:property name="verticalSpeed" direction="above" expression="300" />
-        <g:property name="altitude" direction="passing" expression="{transition_altitude}" randomness="+-300" />
+        <g:property name="vs" direction="above" expression="300" />
+        <g:property name="alt" direction="passing" expression="{transition_altitude}" randomness="+-300" />
       </g:and>
     </trigger>
     <reactivationTrigger>
@@ -82,8 +85,8 @@
     <speech type="speech" value="Transition level" />
     <trigger>
       <g:and>
-        <g:property name="verticalSpeed" direction="below" expression="-300" />
-        <g:property name="altitude" direction="passing" expression="{transition_level}" randomness="+-300" />
+        <g:property name="vs" direction="below" expression="-300" />
+        <g:property name="alt" direction="passing" expression="{transition_level}" randomness="+-300" />
       </g:and>
     </trigger>
     <reactivationTrigger>
@@ -99,15 +102,15 @@
     <speech type="speech" value="Passing ten thousand feet" />
     <trigger>
       <g:and>
-        <g:property name="altitude" direction="passing" expression="10000" randomness="+-300" />
+        <g:property name="alt" direction="passing" expression="10000" randomness="+-300" />
       </g:and>
     </trigger>
     <reactivationTrigger>
       <g:for seconds="30">
-        <or>
-          <g:property name="verticalSpeed" direction="above" expression="500" />
-          <g:property name="verticalSpeed" direction="below" expression="-500" />
-        </or>
+        <g:or>
+          <g:property name="vs" direction="above" expression="500" />
+          <g:property name="vs" direction="below" expression="-500" />
+        </g:or>
       </g:for>
     </reactivationTrigger>
   </speechDefinition>

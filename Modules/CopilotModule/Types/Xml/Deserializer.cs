@@ -18,6 +18,12 @@ namespace Eng.Chlaot.CopilotModule.Types.Xml
     internal static CopilotSet Deserialize(string xmlFile)
     {
       XDocument doc = XDocument.Load(xmlFile, LoadOptions.SetLineInfo);
+      CopilotSet ret = Deserialize(doc);
+      return ret;
+    }
+
+    internal static CopilotSet Deserialize(XDocument doc)
+    {
       EXml<CopilotSet> exml = CreateDeserializer();
       CopilotSet ret = exml.Deserialize(doc);
       return ret;

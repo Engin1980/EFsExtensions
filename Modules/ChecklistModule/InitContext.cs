@@ -95,6 +95,18 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
       try
       {
+        logger.Invoke(LogLevel.INFO, $"Checking file '{xmlFile}'");
+        try
+        {
+          XmlUtils.ValidateXmlAgainstXsd(xmlFile, new string[] { @".\xmls\xsds\Global.xsd", @".\xmls\xsds\ChecklistSchema.xsd" }, out List<string> errors);
+          if (errors.Any())
+            throw new ApplicationException("XML does not match XSD: " + string.Join("; ", errors.Take(5)));
+        }
+        catch (Exception ex)
+        {
+          throw new ApplicationException($"Failed to validate XMl file against XSD. Error: " + ex.Message, ex);
+        }
+
         logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {

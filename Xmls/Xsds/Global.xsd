@@ -87,7 +87,7 @@
   </xsd:complexType>
 
   <xsd:complexType name="stateCheckProperty">
-    <xsd:attribute name="name" type="stateCheckPropertyName" use="required"/>
+    <xsd:attribute name="name" type="nonemptyString" use="required"/>
     <xsd:attribute name="nameIndex" type="xsd:integer" use="optional" />
     <xsd:attribute name="direction" type="stateCheckPropertyDirection" use="required" />
     <xsd:attribute name="expression" type="stateCheckPropertyValue" use="optional"/>
@@ -109,27 +109,6 @@
       <xsd:enumeration value="passing"/>
       <xsd:enumeration value="passingUp"/>
       <xsd:enumeration value="passingDown"/>
-    </xsd:restriction>
-  </xsd:simpleType>
-
-  <xsd:simpleType name="stateCheckPropertyName">
-    <xsd:restriction base="xsd:string">
-      <xsd:enumeration value="altitude"/>
-      <xsd:enumeration value="height"/>
-      <xsd:enumeration value="gs"/>
-      <xsd:enumeration value="ias" />
-      <xsd:enumeration value="bank" />
-      <xsd:enumeration value="parkingBrakeSet" />
-      <xsd:enumeration value="pushbackTugConnected" />
-      <xsd:enumeration value="engineStarted" />
-      <xsd:enumeration value="verticalSpeed" />
-      <xsd:enumeration value="acceleration" />
-      <xsd:enumeration value="realTimeHour" />
-      <xsd:enumeration value="realTimeHourLastDigit" />
-      <xsd:enumeration value="realTimeMinute" />
-      <xsd:enumeration value="realTimeMinuteLastDigit" />
-      <xsd:enumeration value="realTimeSecond" />
-      <xsd:enumeration value="realTimeSecondLastDigit" />
     </xsd:restriction>
   </xsd:simpleType>
 

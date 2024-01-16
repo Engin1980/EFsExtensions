@@ -12,7 +12,8 @@
   <xsd:element name="copilotSet">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="metaInfo" minOccurs="1" maxOccurs="1" type="g:metaData"/>
+        <xsd:element name="metaInfo" minOccurs="1" maxOccurs="1" type="g:metaData" />
+        <xsd:element name="properties" minOccurs="0" maxOccurs="1" type="g:simProperties" />
         <xsd:element name="speechDefinition" minOccurs="1" maxOccurs="unbounded" type="speechDefinition"/>
       </xsd:sequence>
     </xsd:complexType>

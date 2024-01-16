@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Chlaot"
         xmlns:converters="clr-namespace:Chlaot.Converters"
         mc:Ignorable="d"
-        Title="FrmInit" Height="600" Width="800" Initialized="Window_Initialized">
+        Title="FrmInit" Height="600" Width="1200" Initialized="Window_Initialized">
   <Window.Resources>
     <converters:BoolToRedGreenConverter x:Key="BoolToRedGreenConverter" />
   </Window.Resources>

@@ -215,8 +215,8 @@
     </items>
     <trigger>
       <g:and>
-        <g:property name="altitude" direction="below" expression="17000"/>
-        <g:property name="verticalSpeed" direction="below" expression="0"/>
+        <g:property name="alt" direction="below" expression="17000"/>
+        <g:property name="vs" direction="below" expression="0"/>
       </g:and>
     </trigger>
     <nextChecklistId/>
@@ -294,7 +294,7 @@
     <trigger>
       <g:and>
         <g:property name="height" direction="above" expression="400" />
-        <g:property name="verticalSpeed" direction="above" expression="500"/>
+        <g:property name="vs" direction="above" expression="500"/>
       </g:and>
     </trigger>
     <nextChecklistId id="approach" />

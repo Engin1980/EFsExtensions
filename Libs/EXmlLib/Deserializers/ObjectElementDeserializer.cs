@@ -113,8 +113,8 @@ namespace EXmlLib.Deserializers
       string? customXmlName = null)
     {
       var propName = customXmlName ?? context.ResolvePropertyName(propertyInfo);
-      XElement? elm = Utils.TryGetElementByName(element, propName);
-      XAttribute? attr = Utils.TryGetAttributeByName(element, propName);
+      XElement? elm = XmlUtils.TryGetElementByName(element, propName);
+      XAttribute? attr = XmlUtils.TryGetAttributeByName(element, propName);
       if (elm != null || attr != null)
       {
         object val;

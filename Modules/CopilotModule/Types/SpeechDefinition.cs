@@ -19,7 +19,7 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types
     public string Title { get; set; } = null!;
     public Speech Speech { get; set; } = null!;
     public IStateCheckItem Trigger { get; set; } = null!;
-    public IStateCheckItem ReactivationTrigger { get; set; } = null!;
+    public IStateCheckItem? ReactivationTrigger { get; set; } = null;
     public List<Variable> Variables { get; set; } = new();
 
     /*

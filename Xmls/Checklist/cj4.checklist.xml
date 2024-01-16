@@ -171,7 +171,7 @@
     </items>
     <trigger>
       <g:for seconds="60">
-        <g:property name="verticalSpeed" direction="below" expression="-1800"/>
+        <g:property name="vs" direction="below" expression="-1800"/>
       </g:for>
     </trigger>
     <nextChecklistId/>

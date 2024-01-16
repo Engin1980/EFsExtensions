@@ -4,6 +4,7 @@ using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.Modules.CopilotModule.Types;
 using System;
@@ -67,7 +68,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
     private readonly Logger logger;
     private readonly Dictionary<string, double> propertyValues = new();
     private readonly Settings settings;
-    private readonly SimConWrapperWithSimData simConWrapper;
+    private readonly SimObject simObject;
     private readonly Dictionary<string, double> variableValues = new();
 
     #endregion Private Fields
@@ -82,7 +83,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     public BindingList<SpeechDefinitionInfo> Infos { get; set; } = new();
     public CopilotSet Set { get; private set; }
-    public SimData SimData { get => this.simConWrapper.SimData; }
 
     #endregion Public Properties
 
@@ -94,8 +94,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
       this.settings = initContext.Settings;
       this.logger = Logger.Create(this, "Copilot.RunContext");
 
-      ESimConnect.ESimConnect simCon = new();
-      this.simConWrapper = new(simCon);
+      this.simObject = SimObject.GetInstance();
+      this.simObject.SimSecondElapsed += SimObject_SimSecondElapsed;
 
       this.evaluator = new(variableValues, propertyValues);
 
@@ -109,20 +109,9 @@ namespace Eng.Chlaot.Modules.CopilotModule
     internal void Run()
     {
       Log(LogLevel.INFO, "Run");
-      this.simConWrapper.SimSecondElapsed += SimConWrapper_SimSecondElapsed;
 
-      logger.Invoke(LogLevel.VERBOSE, "Starting connection timer");
-      this.simConWrapper.OpenAsync(
-        () =>
-        {
-          this.simConWrapper.Start();
-          Log(LogLevel.INFO, "Connected to FS2020, starting updates");
-        },
-        ex =>
-        {
-          Log(LogLevel.WARNING, "Failed to connect to FS2020, will try it again in a few seconds...");
-          Log(LogLevel.WARNING, "Fail reason: " + ex.GetFullMessage());
-        });
+      logger?.Invoke(LogLevel.VERBOSE, "Starting simObject connection");
+      this.simObject.StartAsync();
     }
 
     internal void Stop()
@@ -165,7 +154,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private void EvaluateForSpeeches()
     {
-      StateCheckEvaluator.UpdateDictionaryByObject(SimData, propertyValues);
+      StateCheckEvaluator.UpdateDictionaryBySimObject(simObject, propertyValues);
 
       if (this.settings.EvalDebugEnabled)
         this.Infos.ToList().ForEach(q =>
@@ -214,9 +203,9 @@ namespace Eng.Chlaot.Modules.CopilotModule
       logger.Invoke(level, "[RunContext] :: " + message);
     }
 
-    private void SimConWrapper_SimSecondElapsed()
+    private void SimObject_SimSecondElapsed()
     {
-      if (this.simConWrapper.IsSimPaused) return;
+      if (this.simObject.IsSimPaused) return;
       this.logger.Invoke(LogLevel.VERBOSE, "SimSecondElapsed (non-paused)");
 
       if (Monitor.TryEnter(evaluatingLock) == false)

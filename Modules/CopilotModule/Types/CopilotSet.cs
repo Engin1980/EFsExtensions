@@ -9,7 +9,6 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types
 {
   public class CopilotSet
   {
-    public ChlaotModuleBase.ModuleUtils.MetaInfo MetaInfo { get; set; } = null!;
     public List<SpeechDefinition> SpeechDefinitions { get; set; } = null!;
   }
 }
