@@ -122,6 +122,16 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           throw new ApplicationException("Unable to read/deserialize checklist-set from '{xmlFile}'. Invalid file content?", ex);
         }
 
+        if (tmpSpg != null)
+        {
+          logger.Invoke(LogLevel.INFO, "Checking property definition duplicity");
+          var a = this.SimPropertyGroup.GetAllSimPropertiesRecursively();
+          var b = tmpSpg.GetAllSimPropertiesRecursively();
+          var duplicits = a.Select(q => q.Name).Intersect(b.Select(q => q.Name));
+          if (duplicits.Any())
+            throw new ApplicationException("There are duplicit property declarations: " + string.Join(", ", duplicits));
+        }
+
         logger.Invoke(LogLevel.INFO, $"Checking sanity");
         var props = tmpSpg == null
           ? this.SimPropertyGroup.GetAllSimPropertiesRecursively()
@@ -134,7 +144,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         logger.Invoke(LogLevel.INFO, $"Loading/generating sounds");
         Try(() => InitializeSoundStreams(tmp, System.IO.Path.GetDirectoryName(xmlFile)!),
           ex => new ApplicationException("Error creating sound streams for checklist.", ex));
-
 
         if (tmpSpg != null)
         {

@@ -88,7 +88,6 @@
 
   <xsd:complexType name="stateCheckProperty">
     <xsd:attribute name="name" type="nonemptyString" use="required"/>
-    <xsd:attribute name="nameIndex" type="xsd:integer" use="optional" />
     <xsd:attribute name="direction" type="stateCheckPropertyDirection" use="required" />
     <xsd:attribute name="expression" type="stateCheckPropertyValue" use="optional"/>
     <xsd:attribute name="randomness" type="stateCheckPropertyValueDeviation" use="optional"/>

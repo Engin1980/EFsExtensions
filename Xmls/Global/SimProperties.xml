@@ -15,10 +15,10 @@
     <g:property name="bankAngle" simVar="PLANE BANK DEGREES" unit="degree" />
   </g:properties>
   <g:properties title="Plane Systems">
-    <g:property name="engine1Combustion" simVar="ENG COMBUSTION:1" />
-    <g:property name="engine2Combustion" simVar="ENG COMBUSTION:2" />
-    <g:property name="engine3Combustion" simVar="ENG COMBUSTION:3" />
-    <g:property name="engine4Combustion" simVar="ENG COMBUSTION:4" />
+    <g:property name="engine1Running" simVar="ENG COMBUSTION:1" />
+    <g:property name="engine2Running" simVar="ENG COMBUSTION:2" />
+    <g:property name="engine3Running" simVar="ENG COMBUSTION:3" />
+    <g:property name="engine4Running" simVar="ENG COMBUSTION:4" />
   </g:properties>
   <g:properties title="Plane attitude">
     <g:property name="parkingBrake" simVar="PARKING BRAKE POSITION"/>
