@@ -65,6 +65,12 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(PropertyValuesView), value);
     }
 
+    public BindingList<StateCheckEvaluator.RecentResult> EvaluatorRecentResultView
+    {
+      get => base.GetProperty<BindingList<StateCheckEvaluator.RecentResult>>(nameof(EvaluatorRecentResultView))!;
+      set => base.UpdateProperty(nameof(EvaluatorRecentResultView), value);
+    }
+
     #endregion Public Properties
 
     #region Public Constructors
@@ -101,6 +107,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       this.simObject.Started += () => this.simObject.RegisterProperties(allProps);
       this.simObject.SimPropertyChanged += SimObject_SimPropertyChanged;
       this.autoplayEvaluator = new AutoplayChecklistEvaluator(() => variableValues, () => propertyValues);
+      this.EvaluatorRecentResultView = new();
 
       this.PropertyValuesView = new(
         allProps
@@ -211,11 +218,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       }
     }
 
-    private void Log(LogLevel level, string message)
-    {
-      logger.Invoke(level, message);
-    }
-
     private void SimObject_SimPropertyChanged(SimProperty property, double value)
     {
       this.propertyValues[property.Name] = value;
@@ -228,6 +230,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       CheckList checkList = playback.GetCurrentChecklist();
       StateCheckEvaluator.UpdateDictionaryBySimObject(this.simObject, propertyValues);
       bool shouldPlay = this.settings.UseAutoplay && !this.simObject.IsSimPaused && this.autoplayEvaluator.EvaluateIfShouldPlay(checkList);
+      this.EvaluatorRecentResultView = new(this.autoplayEvaluator.GetRecentResults());
       if (shouldPlay)
       {
         autoplayEvaluator.SuppressAutoplayForCurrentChecklist();

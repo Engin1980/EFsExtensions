@@ -14,6 +14,9 @@
     <g:property name="vs" description="Vertical speed" simVar="VERTICAL SPEED" unit="foot"/>
     <g:property name="bankAngle" simVar="PLANE BANK DEGREES" unit="degree" />
   </g:properties>
+  <g:properties title="Plane lights">
+    <g:property name="beaconLight" simVar="LIGHT BEACON" />
+  </g:properties>
   <g:properties title="Plane Systems">
     <g:property name="engine1Running" simVar="ENG COMBUSTION:1" />
     <g:property name="engine2Running" simVar="ENG COMBUSTION:2" />
@@ -21,7 +24,7 @@
     <g:property name="engine4Running" simVar="ENG COMBUSTION:4" />
   </g:properties>
   <g:properties title="Plane attitude">
-    <g:property name="parkingBrake" simVar="PARKING BRAKE POSITION"/>
+    <g:property name="parkingBrakeSet" simVar="BRAKE PARKING POSITION"/>
     <g:property name="pushbackTugConnected" simVar="PUSHBACK ATTACHED"/>
   </g:properties>
   <g:properties title="Plane orientation">

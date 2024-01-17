@@ -28,12 +28,12 @@ namespace Eng.Chlaot.Modules.CopilotModule
   internal class RunContext : NotifyPropertyChangedBase
   {
 
-    #region Public Classes
+    #region Classes + Structs
 
     public class SpeechDefinitionInfo : NotifyPropertyChangedBase
     {
 
-      #region Public Properties
+      #region Properties
 
       public StateCheckEvaluator Evaluator
       {
@@ -54,9 +54,9 @@ namespace Eng.Chlaot.Modules.CopilotModule
         set => base.UpdateProperty(nameof(VariableValuesDict), value);
       }
 
-      #endregion Public Properties
+      #endregion Properties
 
-      #region Public Constructors
+      #region Constructors
 
       public SpeechDefinitionInfo(SpeechDefinition speechDefinition, Func<Dictionary<string, double>> propertyValuesProvider)
       {
@@ -70,9 +70,9 @@ namespace Eng.Chlaot.Modules.CopilotModule
         FillVariableValuesDict();
       }
 
-      #endregion Public Constructors
+      #endregion Constructors
 
-      #region Private Methods
+      #region Methods
 
       private void FillVariableValuesDict()
       {
@@ -89,29 +89,42 @@ namespace Eng.Chlaot.Modules.CopilotModule
           }
       }
 
-      #endregion Private Methods
+      #endregion Methods
 
     }
 
-    #endregion Public Classes
+    #endregion Classes + Structs
 
-    #region Private Fields
+    #region Fields
 
     private readonly Logger logger;
     private readonly Dictionary<string, double> propertyValues = new();
     private readonly SimObject simObject;
 
-    #endregion Private Fields
+    #endregion Fields
 
-    #region Public Properties
+    #region Properties
+
+
+    public SpeechDefinitionInfo EvaluatorRecentResultSpeechDefinitionInfo
+    {
+      get => base.GetProperty<SpeechDefinitionInfo>(nameof(EvaluatorRecentResultSpeechDefinitionInfo))!;
+      set => base.UpdateProperty(nameof(EvaluatorRecentResultSpeechDefinitionInfo), value);
+    }
+
+    public BindingList<StateCheckEvaluator.RecentResult> EvaluatorRecentResultView
+    {
+      get => base.GetProperty<BindingList<StateCheckEvaluator.RecentResult>>(nameof(EvaluatorRecentResultView))!;
+      set => base.UpdateProperty(nameof(EvaluatorRecentResultView), value);
+    }
 
     public BindingList<SpeechDefinitionInfo> Infos { get; set; } = new(); //TODO rename to runtimes
-    public CopilotSet Set { get; private set; }
     public BindingList<BindingKeyValue<string, double>> PropertyValuesView { get; set; } = new();
+    public CopilotSet Set { get; private set; }
 
-    #endregion Public Properties
+    #endregion Properties
 
-    #region Internal Constructors
+    #region Constructors
 
     internal RunContext(InitContext initContext)
     {
@@ -133,15 +146,9 @@ namespace Eng.Chlaot.Modules.CopilotModule
       this.simObject.Started += () => this.simObject.RegisterProperties(allProps);
     }
 
-    private void SimObject_SimPropertyChanged(SimProperty property, double value)
-    {
-      this.propertyValues[property.Name] = value;
-      this.PropertyValuesView.First(q=>q.Key == property.Name).Value = value;
-    }
+    #endregion Constructors
 
-    #endregion Internal Constructors
-
-    #region Internal Methods
+    #region Methods
 
     internal void Run()
     {
@@ -157,10 +164,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
       //this.simConManager.SimSecondElapsed -= SimConManager_SimSecondElapsed;
       //Log(LogLevel.INFO, "Stopped");
     }
-
-    #endregion Internal Methods
-
-    #region Private Methods
 
     private void EvaluateActives(IEnumerable<SpeechDefinitionInfo> readys)
     {
@@ -190,6 +193,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
       var waits = this.Infos.Where(q => !q.IsReadyToBeSpoken);
       this.logger.Invoke(LogLevel.VERBOSE, $"Evaluating {waits.Count()} waits");
       EvaluateInactives(waits);
+
+      if (EvaluatorRecentResultSpeechDefinitionInfo != null)
+      {
+        this.EvaluatorRecentResultView = new(EvaluatorRecentResultSpeechDefinitionInfo.Evaluator.GetRecentResultSet());
+      }
     }
 
     private void EvaluateInactives(IEnumerable<SpeechDefinitionInfo> waits)
@@ -210,6 +218,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
       logger.Invoke(level, "[RunContext] :: " + message);
     }
 
+    private void SimObject_SimPropertyChanged(SimProperty property, double value)
+    {
+      this.propertyValues[property.Name] = value;
+      this.PropertyValuesView.First(q => q.Key == property.Name).Value = value;
+    }
     private void SimObject_SimSecondElapsed()
     {
       if (this.simObject.IsSimPaused) return;
@@ -226,7 +239,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
       Monitor.Exit(this);
     }
 
-    #endregion Private Methods
+    #endregion Methods
 
   }
 }

@@ -79,7 +79,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       public KeyShortcut SkipToPrevious { get; set; } = new();
     }
 
-
     private const string FILE_NAME = "checklist-module-settings.xml";
     public bool LogSimConnectToFile
     {
@@ -91,13 +90,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     {
       get => base.GetProperty<bool>(nameof(ReadConfirmations))!;
       set => base.UpdateProperty(nameof(ReadConfirmations), value);
-    }
-
-
-    public bool EvalDebugEnabled
-    {
-      get => base.GetProperty<bool>(nameof(EvalDebugEnabled))!;
-      set => base.UpdateProperty(nameof(EvalDebugEnabled), value);
     }
 
     public KeyShortcuts Shortcuts { get; set; } = new()
@@ -114,12 +106,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(UseAutoplay), value);
     }
 
-
-    public bool VerboseAutostartEvaluation
-    {
-      get => base.GetProperty<bool>(nameof(VerboseAutostartEvaluation))!;
-      set => base.UpdateProperty(nameof(VerboseAutostartEvaluation), value);
-    }
     public static Settings Load()
     {
       Settings ret;

@@ -20,11 +20,13 @@ using System.Reflection;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
 using System.Windows.Documents;
+using System.Windows;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
   public class StateCheckEvaluator
   {
+    public record RecentResult(IStateCheckItem StateCheckItem, bool Result, string Note);
 
     #region Private Enums
 
@@ -52,6 +54,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     private readonly Func<Dictionary<string, double>> variableValuesProvider;
     private Dictionary<string, double>? currentPropertyValues = null;
     private Dictionary<string, double>? currentVariableValues = null;
+    private readonly List<RecentResult> recentResultSet = new();
 
     #endregion Private Fields
 
@@ -74,6 +77,15 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     #endregion Public Constructors
 
     #region Public Methods
+    public List<RecentResult> GetRecentResultSet()
+    {
+      List<RecentResult> ret;
+      lock (this)
+      {
+        ret = recentResultSet.ToList();
+      }
+      return ret;
+    }
 
     public static void UpdateDictionaryByObject(object source, Dictionary<string, double> target)
     {
@@ -126,10 +138,11 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     public bool Evaluate(IStateCheckItem item)
     {
       bool ret;
+      EAssert.Argument.IsNotNull(item, nameof(item));
       lock (this)
       {
-        EAssert.Argument.IsNotNull(item, nameof(item));
         logger.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} started.");
+        this.recentResultSet.Clear();
         this.currentPropertyValues = propertyValuesProvider.Invoke();
         this.currentVariableValues = variableValuesProvider.Invoke();
         ret = EvaluateItem(item);
@@ -166,6 +179,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     {
       bool ret = trueFalse.Value;
       message = $"T/F => {trueFalse.Value}";
+      recentResultSet.Add(new(trueFalse, ret, string.Empty));
       return ret;
     }
 
@@ -180,6 +194,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       };
 
       message = $"op(a,b,..) => {condition.Operator} ({string.Join(",", subs)})";
+      recentResultSet.Add(new(condition, ret, string.Empty));
       return ret;
     }
 
@@ -197,9 +212,14 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       else
         delayCounter[delay] = 0;
 
-      ret = delayCounter[delay] >= delay.Seconds;
+      var value = delay.IsVariableBased
+        ? GetVariableValue(delay.GetSecondsAsVariableName())
+        : delay.GetSecondsAsDouble();
+
+      ret = delayCounter[delay] >= value;
 
       message = $"curr_sec/trg_sec/inner => {delayCounter[delay]} / {delay.Seconds} /= {tmp}";
+      recentResultSet.Add(new RecentResult(delay, ret, $"counter={delayCounter[delay]}, seconds={value}"));
       return ret;
     }
 
@@ -218,6 +238,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       Log(item, msg, ret);
       return ret;
     }
+
     private bool EvaluateProperty(StateCheckProperty property, out string message)
     {
       double expected = ExtractExpectedPropertyValue(property, true);
@@ -274,6 +295,12 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
           throw new NotImplementedException($"Unknown property direction '{property.Direction}'.");
       }
 
+      recentResultSet.Add(new(
+        property,
+        ret,
+        new StringBuilder(passingPropertiesStates.ContainsKey(property) ? $"passState={passingPropertiesStates[property]}, " : string.Empty)
+        .Append($"target({property.Expression})={expected}, property={actual}")
+        .ToString()));
       return ret;
     }
 
@@ -287,14 +314,17 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         if (property.IsVariableBased == false)
           ret = property.GetExpressionAsDouble();
         else
-        {
-          var variableName = property.GetExpressionAsVariableName();
-          if (!this.currentVariableValues!.TryGetValue(variableName, out ret))
-            throw new StateCheckException($"Unable resolve value of variable '{variableName}'.");
-        }
+          ret = GetVariableValue(property.GetExpressionAsVariableName());
         if (applyRandomness) ret = ApplyPropertyRandomness(property, ret);
         extractedValues[property] = ret;
       }
+      return ret;
+    }
+
+    private double GetVariableValue(string variableName)
+    {
+      if (!this.currentVariableValues!.TryGetValue(variableName, out double ret))
+        throw new StateCheckException($"Unable resolve value of variable '{variableName}'.");
       return ret;
     }
 
@@ -304,6 +334,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       double min = value - property.Sensitivity.Below.GetValue(value);
       return (min, max);
     }
+
     private void Log(IStateCheckItem property, string msg, bool ret)
     {
       this.logger.Invoke(LogLevel.INFO, $"EVAL {property.DisplayString} \t {msg} \t {ret}");

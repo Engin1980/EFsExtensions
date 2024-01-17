@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CopilotModule"
         mc:Ignorable="d"
-        Title="CtrSettings" Height="450" Width="800" Closed="Window_Closed">
+        Title="CtrSettings" Height="276" Width="800" Closed="Window_Closed">
   <StackPanel>
     <GroupBox Header="Synthetizer" DataContext="{Binding Synthetizer}" Margin="8">
       <Grid>
@@ -43,7 +43,7 @@
           <RowDefinition />
         </Grid.RowDefinitions>
         <Label Content="Debug evaluation enabled" Grid.Row="0" Grid.Column="0" />
-        <CheckBox IsChecked="{Binding EvalDebugEnabled}" Grid.Row="0" Grid.Column="1"  Margin="0 8 0 0" />
+        <CheckBox IsChecked="{Binding EvalDebugEnabled}" IsEnabled="False" Grid.Row="0" Grid.Column="1"  Margin="0 8 0 0" />
       </Grid>
     </GroupBox>
   </StackPanel>

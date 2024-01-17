@@ -8,13 +8,14 @@
   <meta>
     <g:label>A320 FBW checklist</g:label>
     <g:author>Marek Vajgl</g:author>
-    <g:description>Simple checklists test for A320 FBW customized</g:description>
+    <g:description>
+      Simple checklists test for A320 FBW customized
+      \n\nNote that A32NX is not using classical 'parkingBrake' flag and also
+      GSX does not use pushback-attached flag.
+    </g:description>
   </meta>
-  <properties title="custom">
-    <g:property name="pushbackTugConnected" simVar="PUSHBACK ATTACHED" />
-    <g:property name="parkingBrakeSet" simVar="BRAKE PARKING POSITION" />
-    <g:property name="engineStarted" simVar="ENG COMBUSTION:1" />
-    <g:property name="xengine2Running" simVar="ENG COMBUSTION:2" />    
+  <properties>
+    <g:property name="fbwParkingBrake" simVar="L:A32NX_PARK_BRAKE_LEVER_POS"/>
   </properties>
   <checklist id="beforeStart" callSpeech="Before Start-up">
     <items>
@@ -68,7 +69,12 @@
       </item>
     </items>
     <trigger>
-      <g:property name="pushbackTugConnected" direction="above" expression="0" />
+      <g:and>
+        <g:property name="fbwParkingBrake" direction="above" expression="0" />
+        <g:for seconds="5">
+          <g:property name="beaconLight" direction="above" expression="0"/>
+        </g:for>
+      </g:and>
     </trigger>
     <nextChecklistId />
   </checklist>
@@ -99,15 +105,17 @@
         <confirmation type="speech" value="On"/>
       </item>
     </items>
+    <variables>
+      <g:randomVariable name="{delay}" minimum="3" maximum="8" isInteger="true"/>
+    </variables>
     <trigger>
-      <g:for seconds="30">
-        <g:and>
-          <g:property name="pushbackTugConnected" direction="below" expression="1" />
-          <g:property name="parkingBrakeSet" direction="below" expression="1" />
-          <g:property name="engine1Running" direction="above" expression="0" />
-          <g:property name="engine2Running" direction="above" expression="0" />
-        </g:and>
-      </g:for>
+      <g:and>
+        <g:property name="engine1Running" direction="above" expression="0" />
+        <g:property name="engine2Running" direction="above" expression="0" />
+        <g:for seconds="{delay}">
+          <g:property name="gs" direction="above" expression="15"/>
+        </g:for>
+      </g:and>
     </trigger>
     <nextChecklistId />
   </checklist>
@@ -168,7 +176,7 @@
       </item>
     </items>
     <variables>
-      <g:randomVariable name="alt" minimum="250" maximum="500"/>
+      <g:randomVariable name="alt" minimum="150" maximum="300"/>
     </variables>
     <trigger>
       <g:property name="height" direction="above" expression="{alt}"/>
@@ -191,10 +199,7 @@
       </item>
     </items>
     <trigger>
-      <g:and>
-        <g:property name="height" direction="above" expression="3000"/>
-        <g:property name="ias" direction="above" expression="205"/>
-      </g:and>
+      <g:property name="ias" direction="above" expression="205"/>
     </trigger>
     <nextChecklistId/>
   </checklist>
@@ -213,9 +218,12 @@
         <confirmation type="speech" value="On" />
       </item>
     </items>
+    <variables>
+      <g:randomVariable name="alt" minimum="14000" maximum="18000" isInteger="true"/>
+    </variables>
     <trigger>
       <g:and>
-        <g:property name="alt" direction="below" expression="17000"/>
+        <g:property name="alt" direction="below" expression="{alt}"/>
         <g:property name="vs" direction="below" expression="0"/>
       </g:and>
     </trigger>
@@ -294,7 +302,9 @@
     <trigger>
       <g:and>
         <g:property name="height" direction="above" expression="400" />
-        <g:property name="vs" direction="above" expression="500"/>
+        <g:for seconds="5">
+          <g:property name="vs" direction="above" expression="500"/>
+        </g:for>
       </g:and>
     </trigger>
     <nextChecklistId id="approach" />

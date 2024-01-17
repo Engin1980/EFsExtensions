@@ -59,5 +59,20 @@
         </DataGrid.Columns>
       </DataGrid>
     </TabItem>
+    <TabItem Header="Eval Debug">
+      <DataGrid ItemsSource="{Binding EvaluatorRecentResultView}" AutoGenerateColumns="False" >
+        <DataGrid.Columns>
+          <DataGridTemplateColumn>
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <TextBlock MaxWidth="250" TextWrapping="Wrap" FontSize="12" Text="{Binding StateCheckItem.DisplayString}" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridCheckBoxColumn Header="True?" Binding="{Binding Result}" />
+          <DataGridTextColumn Header="Note" Binding="{Binding Note}" />
+        </DataGrid.Columns>
+      </DataGrid>
+    </TabItem>
   </TabControl>
 </UserControl>

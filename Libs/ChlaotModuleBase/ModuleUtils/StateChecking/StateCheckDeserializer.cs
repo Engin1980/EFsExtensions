@@ -50,13 +50,10 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     {
       string s = element.Attribute("seconds")?.Value
                  ?? throw new StateCheckDeserializationException("Argument 'seconds' is missing.");
-      int seconds = int.Parse(s);
-
       IStateCheckItem val = DeserializeElement(element.Elements().First(), typeof(IStateCheckItem), context);
-
       StateCheckDelay ret = new()
       {
-        Seconds = seconds,
+        Seconds = s,
         Item = val
       };
       return ret;

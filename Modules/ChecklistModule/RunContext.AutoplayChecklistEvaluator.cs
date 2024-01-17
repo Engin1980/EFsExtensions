@@ -50,6 +50,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         return ret;
       }
 
+      internal IList<StateCheckEvaluator.RecentResult> GetRecentResults() => evaluator.GetRecentResultSet();
+
       internal void SuppressAutoplayForCurrentChecklist()
       {
         this.autoplaySuppressed = true;

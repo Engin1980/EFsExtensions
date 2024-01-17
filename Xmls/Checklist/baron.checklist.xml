@@ -77,8 +77,8 @@
     <trigger>
       <g:and>
         <g:property name="pushbackTugConnected" direction="below" expression="1" />
-        <g:property name="engineStarted" nameIndex="1" direction="above" expression="0"/>
-        <g:property name="engineStarted" nameIndex="2" direction="above" expression="0"/>
+        <g:property name="engine1Running" direction="above" expression="0"/>
+        <g:property name="engine2Running" direction="above" expression="0"/>
         <g:for seconds="3">
           <g:property name="parkingBrakeSet" direction="below" expression="1"/>
         </g:for>

@@ -83,18 +83,18 @@
       <xsd:element name="true" type="stateCheckTrueFalse" />
       <xsd:element name="false" type="stateCheckTrueFalse" />
     </xsd:choice>
-    <xsd:attribute name="seconds" type="xsd:nonNegativeInteger" use="required" />
+    <xsd:attribute name="seconds" type="numberOrVariable" use="required" />
   </xsd:complexType>
 
   <xsd:complexType name="stateCheckProperty">
     <xsd:attribute name="name" type="nonemptyString" use="required"/>
     <xsd:attribute name="direction" type="stateCheckPropertyDirection" use="required" />
-    <xsd:attribute name="expression" type="stateCheckPropertyValue" use="optional"/>
+    <xsd:attribute name="expression" type="numberOrVariable" use="optional"/>
     <xsd:attribute name="randomness" type="stateCheckPropertyValueDeviation" use="optional"/>
     <xsd:attribute name="sensitivity" type="stateCheckPropertyValueDeviation" use="optional" />
   </xsd:complexType>
 
-  <xsd:simpleType name="stateCheckPropertyValue">
+  <xsd:simpleType name="numberOrVariable">
     <xsd:restriction base="xsd:string">
       <xsd:pattern value="(^\{[a-zA-Z][a-zA-Z0-9\-_]*\}$)|(^[+-]?\d+\.?\d*$)" />
     </xsd:restriction>

@@ -112,7 +112,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         {
           XDocument doc = XDocument.Load(xmlFile);
           tmpMeta = MetaInfo.Deserialize(doc);
-          if (doc.Root!.LElement("properties") is XElement pelm)
+          if (doc.Root!.LElementOrNull("properties") is XElement pelm)
             // workaround due to WPF binding refresh
             tmpSpg = SimPropertyGroup.Deserialize(pelm);
           tmp = Deserializer.Deserialize(doc);
