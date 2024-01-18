@@ -41,7 +41,6 @@
         <confirmation type="speech" value="Checked"/>
       </item>
     </items>
-    <nextChecklistId />
   </checklist>
   <checklist id="beforeTaxi" callSpeech="Before Taxi">
     <items>
@@ -84,7 +83,6 @@
         </g:for>
       </g:and>
     </trigger>
-    <nextChecklistId />
   </checklist>
   <checklist id="beforeTakeoff" callSpeech="Before Take Off">
     <items>
@@ -113,7 +111,6 @@
         <confirmation type="speech" value="Charlie"/>
       </item>
     </items>
-    <nextChecklistId/>
   </checklist>
   <checklist id="afterTakeoff" callSpeech="After Take Off">
     <items>
@@ -129,7 +126,6 @@
     <trigger>
       <g:property name="height" direction="above" expression="400"/>
     </trigger>
-    <nextChecklistId/>
   </checklist>
   <checklist id="departure" callSpeech="Departure">
     <items>
@@ -152,7 +148,6 @@
         <g:property name="ias" direction="above" expression="180"/>
       </g:and>
     </trigger>
-    <nextChecklistId/>
   </checklist>
   <checklist id="descend" callSpeech="Descend">
     <items>
@@ -178,9 +173,8 @@
         <g:property name="vs" direction="below" expression="-1800"/>
       </g:for>
     </trigger>
-    <nextChecklistId/>
   </checklist>
-  <checklist id="approach" callSpeech="Approach">
+  <checklist id="approach" callSpeech="Approach" nextChecklistIds="shortFinal;goAround">
     <items>
       <item>
         <call type="speech" value="Flaps" />
@@ -201,9 +195,8 @@
         <g:property name="height" direction="below" expression="10000"/>
       </g:and>
     </trigger>
-    <nextChecklistId/>
   </checklist>
-  <checklist id="shortFinal" callSpeech="Short Final">
+  <checklist id="shortFinal" callSpeech="Short Final" nextChecklistIds="vacated;goAround">
     <items>
       <item>
         <call type="speech" value="Landing Gear" />
@@ -228,9 +221,8 @@
         <g:property name="height" direction="below" expression="1000"/>
       </g:and>
     </trigger>
-    <nextChecklistId id="vacated" />
   </checklist>
-  <checklist id="goAround" callSpeech="Go Around">
+  <checklist id="goAround" callSpeech="Go Around" nextChecklistIds="approach">
     <items>
       <item>
         <call type="speech" value="Gear"/>
@@ -241,7 +233,6 @@
         <confirmation type="speech" value="Checked"/>
       </item>
     </items>
-    <nextChecklistId id="approach" />
   </checklist>
   <checklist id="vacated" callSpeech="Vacated">
     <items>
@@ -254,7 +245,7 @@
         <confirmation type="speech" value="Up" />
       </item>
       <item>
-        <call type="speech" value="Squawk" />
+        <call type="speech" value="Transponder" />
         <confirmation type="speech" value="Stand by" />
       </item>
       <item>
@@ -262,6 +253,5 @@
         <confirmation type="speech" value="Off" />
       </item>
     </items>
-    <nextChecklistId id="beforeStart" />
   </checklist>
 </checklistSet>

@@ -36,7 +36,7 @@
         <confirmation type="speech" value="Set"/>
       </item>
       <item>
-        <call type="speech" value="M C D U departure"/>
+        <call type="speech" value="Departure in M C D U"/>
         <confirmation type="speech" value="Set"/>
       </item>
       <item>
@@ -100,7 +100,7 @@
         <confirmation type="speech" value="Checked"/>
       </item>
       <item>
-        <call type="speech" value="Weather Radar"/>
+        <call type="speech" value="Windshear prediction"/>
         <confirmation type="speech" value="On"/>
       </item>
     </items>
@@ -156,6 +156,14 @@
         <confirmation type="speech" value="Run"/>
       </item>
     </items>
+    <trigger>
+      <g:for seconds="5">
+        <g:and>
+          <g:property name="landingLights" direction="above" expression="0"/>
+          <g:property name="strobeLight" direction="above" expression="0"/>
+        </g:and>
+      </g:for>
+    </trigger>
   </checklist>
   <checklist id="afterTakeoff" callSpeech="After Take Off">
     <items>
@@ -276,7 +284,7 @@
       <g:property name="height" direction="below" expression="1000"/>
     </trigger>
   </checklist>
-  <checklist id="goAround" callSpeech="Go Around">
+  <checklist id="goAround" callSpeech="Go Around" nextChecklistIds="approach">
     <items>
       <item>
         <call type="speech" value="Gear"/>
@@ -284,11 +292,11 @@
       </item>
       <item>
         <call type="speech" value="Flaps"/>
-        <confirmation type="speech" value="As required"/>
+        <confirmation type="speech" value="Adjusted"/>
       </item>
       <item>
         <call type="speech" value="Engine thrust" />
-        <confirmation type="speech" value="Stable" />
+        <confirmation type="speech" value="Set" />
       </item>
     </items>
     <trigger>
@@ -316,6 +324,14 @@
       </item>
       <item>
         <call type="speech" value="Landing Lights" />
+        <confirmation type="speech" value="Off" />
+      </item>
+      <item>
+        <call type="speech" value="Strobe Light" />
+        <confirmation type="speech" value="Off" />
+      </item>
+      <item>
+        <call type="speech" value="Windshear prediction" />
         <confirmation type="speech" value="Off" />
       </item>
     </items>

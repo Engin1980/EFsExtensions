@@ -28,6 +28,18 @@
       </g:for>
     </reactivationTrigger>
   </speechDefinition>
+  <speechDefinition title="Acceleration announcement (100)kts">
+    <speech type="speech" value="{speed} knots" />
+    <trigger>
+      <g:property name="ias" direction="passingUp" expression="{speed}"/>
+    </trigger>
+    <reactivationTrigger>
+      <g:property name="ias" direction="below" expression="10" />
+    </reactivationTrigger>
+    <variables>
+      <g:userVariable name="speed" defaultValue="100"/>
+    </variables>
+  </speechDefinition>
   <speechDefinition title="Deceleration announcement (80)kts" >
     <speech type="speech" value="{speed} knots" />
     <trigger>

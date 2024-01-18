@@ -16,6 +16,8 @@
   </g:properties>
   <g:properties title="Plane lights">
     <g:property name="beaconLight" simVar="LIGHT BEACON" />
+    <g:property name="strobeLight" simVar="LIGHT STROBE" />
+    <g:property name="landingLights" simVar="LIGHT LANDING" />
   </g:properties>
   <g:properties title="Plane Systems">
     <g:property name="engine1Running" simVar="ENG COMBUSTION:1" />

@@ -57,7 +57,6 @@
         <confirmation type="speech" value="Idle"/>
       </item>
     </items>
-    <nextChecklistId />
   </checklist>
   <checklist id="beforeTaxi" callSpeech="Before Taxi">
     <items>
@@ -77,14 +76,13 @@
     <trigger>
       <g:and>
         <g:property name="pushbackTugConnected" direction="below" expression="1" />
-        <g:property name="engineStarted" nameIndex="1" direction="above" expression="0"/>
-        <g:property name="engineStarted" nameIndex="2" direction="above" expression="0"/>
+        <g:property name="engine1Started" direction="above" expression="0"/>
+        <g:property name="engine2Started" direction="above" expression="0"/>
         <g:for seconds="3">
           <g:property name="parkingBrakeSet" direction="below" expression="1"/>
         </g:for>
       </g:and>
     </trigger>
-    <nextChecklistId />
   </checklist>
   <checklist id="beforeTakeoff" callSpeech="Before Take Off">
     <items>
@@ -117,7 +115,6 @@
         <confirmation type="speech" value="Set" />
       </item>
     </items>
-    <nextChecklistId/>
   </checklist>
   <checklist id="afterTakeoff" callSpeech="After Take Off">
     <items>
@@ -125,11 +122,14 @@
         <call type="speech" value="Gear" />
         <confirmation type="speech" value="Up" />
       </item>
+      <item>
+        <call type="speech" value="Yaw damper" />
+        <confirmation type="speech" value="On" />
+      </item>
     </items>
     <trigger>
       <g:property name="height" direction="above" expression="400"/>
     </trigger>
-    <nextChecklistId/>
   </checklist>
   <checklist id="departure" callSpeech="Departure">
     <items>
@@ -148,7 +148,6 @@
         <g:property name="ias" direction="above" expression="180"/>
       </g:and>
     </trigger>
-    <nextChecklistId/>
   </checklist>
   <checklist id="descend" callSpeech="Descend">
     <items>
@@ -170,13 +169,15 @@
       </item>
     </items>
     <trigger>
-      <g:for seconds="60">
-        <g:property name="vs" direction="below" expression="-1800"/>
-      </g:for>
+      <g:and>
+        <g:property name="alt" direction="below" expression="18000"/>
+        <g:for seconds="60">
+          <g:property name="vs" direction="below" expression="-1800"/>
+        </g:for>
+      </g:and>
     </trigger>
-    <nextChecklistId/>
   </checklist>
-  <checklist id="approach" callSpeech="Approach">
+  <checklist id="approach" callSpeech="Approach" nextChecklistIds="shortFinal;goAround">
     <items>
       <item>
         <call type="speech" value="Flaps" />
@@ -197,9 +198,8 @@
         <g:property name="height" direction="below" expression="10000"/>
       </g:and>
     </trigger>
-    <nextChecklistId/>
   </checklist>
-  <checklist id="shortFinal" callSpeech="Short Final">
+  <checklist id="shortFinal" callSpeech="Short Final" nextChecklistIds="vacated;goAround">
     <items>
       <item>
         <call type="speech" value="Landing Gear" />
@@ -224,9 +224,8 @@
         <g:property name="height" direction="below" expression="1000"/>
       </g:and>
     </trigger>
-    <nextChecklistId id="vacated" />
   </checklist>
-  <checklist id="goAround" callSpeech="Go Around">
+  <checklist id="goAround" callSpeech="Go Around" nextChecklistIds="approach">
     <items>
       <item>
         <call type="speech" value="Gear"/>
@@ -237,7 +236,6 @@
         <confirmation type="speech" value="Checked"/>
       </item>
     </items>
-    <nextChecklistId id="approach" />
   </checklist>
   <checklist id="vacated" callSpeech="Vacated">
     <items>
@@ -258,6 +256,5 @@
         <confirmation type="speech" value="Off" />
       </item>
     </items>
-    <nextChecklistId id="beforeStart" />
   </checklist>
 </checklistSet>
