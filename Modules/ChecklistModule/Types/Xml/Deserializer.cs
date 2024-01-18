@@ -50,15 +50,15 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.Xml
           {
             new EXmlHelper.List.DT("userVariable", typeof(UserVariable)),
             new EXmlHelper.List.DT("randomVariable", typeof(RandomVariable))
-          }, 
-          () => new List<Variable>()))
-        .WithCustomPropertyDeserialization(
-          nameof(CheckList.NextChecklistId),
-          (e, t, p, c) =>
-          {
-            string? val = e.LElementOrNull("nextChecklistId")?.Attribute("id")?.Value;
-            EXmlHelper.SetPropertyValue(p, t, val);
-          });
+          },
+          () => new List<Variable>()));
+        //.WithCustomPropertyDeserialization(
+        //  nameof(CheckList.NextChecklistIds),
+        //  (e, t, p, c) =>
+        //  {
+        //    string? val = e.LElementOrNull("nextChecklistId")?.Attribute("id")?.Value;
+        //    EXmlHelper.SetPropertyValue(p, t, val);
+        //  });
       ret.Context.ElementDeserializers.Insert(index++, oed);
 
       ret.Context.ElementDeserializers.Insert(index++, new StateCheckDeserializer());

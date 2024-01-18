@@ -76,7 +76,6 @@
         </g:for>
       </g:and>
     </trigger>
-    <nextChecklistId />
   </checklist>
   <checklist id="inTaxi" callSpeech="In Taxi">
     <items>
@@ -117,7 +116,6 @@
         </g:for>
       </g:and>
     </trigger>
-    <nextChecklistId />
   </checklist>
   <checklist id="beforeTakeoff" callSpeech="Before Take Off">
     <items>
@@ -158,7 +156,6 @@
         <confirmation type="speech" value="Run"/>
       </item>
     </items>
-    <nextChecklistId/>
   </checklist>
   <checklist id="afterTakeoff" callSpeech="After Take Off">
     <items>
@@ -181,7 +178,6 @@
     <trigger>
       <g:property name="height" direction="above" expression="{alt}"/>
     </trigger>
-    <nextChecklistId/>
   </checklist>
   <checklist id="departure" callSpeech="Departure">
     <items>
@@ -201,7 +197,6 @@
     <trigger>
       <g:property name="ias" direction="above" expression="205"/>
     </trigger>
-    <nextChecklistId/>
   </checklist>
   <checklist id="descent" callSpeech="Descent">
     <items>
@@ -227,9 +222,8 @@
         <g:property name="vs" direction="below" expression="0"/>
       </g:and>
     </trigger>
-    <nextChecklistId/>
   </checklist>
-  <checklist id="approach" callSpeech="Approach">
+  <checklist id="approach" callSpeech="Approach" nextChecklistIds="shortFinal;goAround">
     <items>
       <item>
         <call type="speech" value="SeatBelts" />
@@ -262,9 +256,8 @@
         <g:property name="ias" direction="below" expression="190"/>
       </g:and>
     </trigger>
-    <nextChecklistId/>
   </checklist>
-  <checklist id="shortFinal" callSpeech="Short Final">
+  <checklist id="shortFinal" callSpeech="Short Final" nextChecklistIds="vacated;goAround">
     <items>
       <item>
         <call type="speech" value="Landing Gear" />
@@ -282,7 +275,6 @@
     <trigger>
       <g:property name="height" direction="below" expression="1000"/>
     </trigger>
-    <nextChecklistId />
   </checklist>
   <checklist id="goAround" callSpeech="Go Around">
     <items>
@@ -307,7 +299,6 @@
         </g:for>
       </g:and>
     </trigger>
-    <nextChecklistId id="approach" />
   </checklist>
   <checklist id="vacated" callSpeech="Vacated">
     <items>
@@ -328,6 +319,5 @@
         <confirmation type="speech" value="Off" />
       </item>
     </items>
-    <nextChecklistId id="beforeStart" />
   </checklist>
 </checklistSet>

@@ -1,8 +1,7 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
-using Eng.Chlaot.Modules.ChecklistModule.Types;
 using Eng.Chlaot.Modules.ChecklistModule.Types.RunViews;
+using ESystem.Asserting;
 using System;
-using System.Linq;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -10,134 +9,159 @@ namespace Eng.Chlaot.Modules.ChecklistModule
   {
     public class PlaybackManager
     {
-      private readonly RunContext parent;
       private int currentItemIndex = 0;
-      private CheckListView currentList;
       private bool isCallPlayed = false;
       private bool isEntryPlayed = false;
-      private bool isPlaying = false;
-      private CheckListView? previousList;
+      private bool isMainLoopAbortRequested = false;
+      private bool isMainLoopActive = false;
+      private bool isCurrentLastSpeechPlaying = false;
+      private readonly bool readConfirmations;
+      public event Action? ChecklistPlayingCompleted;
       public bool IsWaitingForNextChecklist { get => currentItemIndex == 0 && isEntryPlayed == false; }
+      public bool IsPartlyPlayed => currentItemIndex > 0;
 
-      public PlaybackManager(RunContext parent)
+      public PlaybackManager(CheckListView initialChecklist, bool readConfirmations)
       {
-        this.parent = parent ?? throw new ArgumentNullException(nameof(parent));
-        this.currentList = parent.CheckListViews.First();
+        EAssert.Argument.IsNotNull(initialChecklist, nameof(initialChecklist));
+        this.readConfirmations = readConfirmations;
+        this.Current = initialChecklist;
+        this.SetCurrent(this.Current); // ensures correct initialization
       }
 
-      public CheckList GetCurrentChecklist() => currentList.CheckList;
+      public CheckListView Current { get; private set; }
+      public bool IsPlaying { get => this.isMainLoopActive; }
+
+      public void SetCurrent(CheckListView value)
+      {
+        EAssert.Argument.IsNotNull(value, nameof(value));
+        // reset old one
+        Current.State = RunState.Runned;
+
+        // setting new one
+        Current = value;
+        Current.State = RunState.Current;
+        Current.Items.ForEach(q => q.State = RunState.NotYet);
+        currentItemIndex = 0;
+        isEntryPlayed = false;
+        isCallPlayed = false;
+      }
 
       public void PauseAsync()
       {
-        this.isPlaying = false;
+        lock (this)
+        {
+          this.isCallPlayed = false;
+          this.isEntryPlayed = false;
+          this.isMainLoopAbortRequested = true;
+        }
+      }
+
+      private void PlayNext()
+      {
+        EAssert.IsTrue(isMainLoopActive);
+        EAssert.IsFalse(isMainLoopAbortRequested);
+        lock (this)
+        {
+          byte[] playData = ResolveAndMarkNexPlayBytes(out isCurrentLastSpeechPlaying);
+          Player player = new(playData);
+          player.PlaybackFinished += Player_PlaybackFinished;
+          player.PlayAsync();
+        }
+        AdjustRunStates();
+      }
+
+      private void Player_PlaybackFinished(Player sender)
+      {
+        lock (this)
+        {
+          if (isMainLoopActive)
+          {
+            if (isMainLoopAbortRequested)
+            {
+              isMainLoopActive = false;
+              isMainLoopAbortRequested = false;
+            }
+            else if (isCurrentLastSpeechPlaying)
+            {
+              isMainLoopActive = false;
+              isMainLoopAbortRequested = false;
+              isCurrentLastSpeechPlaying = false;
+              this.ChecklistPlayingCompleted?.Invoke();
+            }
+            else
+              this.PlayNext();
+          }
+        }
+      }
+
+      public void Reset()
+      {
+        this.currentItemIndex = 0;
         this.isCallPlayed = false;
         this.isEntryPlayed = false;
+        this.Current.Items.ForEach(q => q.State = RunState.NotYet);
       }
 
       public void Play()
       {
         lock (this)
         {
-          this.isPlaying = true;
-          byte[] playData = ResolveAndMarkNexPlayBytes(out bool stopPlaying);
-          Player player = new(playData);
-          player.PlaybackFinished += Player_PlaybackFinished;
-          player.PlayAsync();
-          if (stopPlaying) this.isPlaying = false;
+          if (!isMainLoopActive)
+          {
+            this.isMainLoopActive = true;
+            PlayNext();
+          }
         }
-        AdjustRunStates();
-      }
-
-      public void Reset()
-      {
-        this.currentList = parent.CheckListViews.First();
-        this.currentItemIndex = 0;
-        this.AdjustRunStates();
       }
 
       public void TogglePlay()
       {
-        if (isPlaying)
-          PauseAsync();
-        else
-          Play();
-      }
-
-      internal void SkipToNext()
-      {
-        currentList = parent.CheckListViews.First(q => q.CheckList == currentList.CheckList.NextChecklist);
-        currentItemIndex = 0;
-        isEntryPlayed = false;
-        isCallPlayed = false;
-        AdjustRunStates();
-        if (!isPlaying) this.Play();
-      }
-
-      internal void SkipToPrev()
-      {
-        if (isEntryPlayed || currentItemIndex > 0)
+        lock (this)
         {
-          currentItemIndex = 0;
-          isCallPlayed = false;
-          isEntryPlayed = false;
+          if (isMainLoopActive)
+            PauseAsync();
+          else
+            Play();
         }
-        else if (previousList != null)
-        {
-          currentList = previousList;
-          previousList = null;
-        }
-        AdjustRunStates();
-        if (!isPlaying) this.Play();
       }
 
       private void AdjustRunStates()
       {
-        parent.CheckListViews
-          .Where(q => q.State == RunState.Current && q != currentList)
-          .ToList()
-          .ForEach(q => q.State = RunState.Runned);
-        for (int i = 0; i < currentList.Items.Count; i++)
+        for (int i = 0; i < Current.Items.Count; i++)
         {
           if (i < currentItemIndex)
-            currentList.Items[i].State = RunState.Runned;
+            Current.Items[i].State = RunState.Runned;
           else if (i > currentItemIndex)
-            currentList.Items[i].State = RunState.NotYet;
+            Current.Items[i].State = RunState.NotYet;
           else
-            currentList.Items[i].State = RunState.Current;
+            Current.Items[i].State = RunState.Current;
         }
-        if (currentList.State != RunState.Current)
-          currentList.State = RunState.Current;
-        if (currentItemIndex < currentList.Items.Count)
-          currentList.Items[currentItemIndex].State = RunState.Current;
-      }
-      private void Player_PlaybackFinished(Player sender)
-      {
-        lock (this)
-        {
-          if (!this.isPlaying) return;
-          this.Play();
-        }
+        //TODO asi navíc
+        //if (currentItemIndex < _Current.Items.Count)
+        //  currentList.Items[currentItemIndex].State = RunState.Current;
       }
 
-      private byte[] ResolveAndMarkNexPlayBytes(out bool stopPlaying)
+
+
+      private byte[] ResolveAndMarkNexPlayBytes(out bool isThisLastChecklistSpeech)
       {
         byte[] ret;
         if (currentItemIndex == 0 && !this.isEntryPlayed)
         {
           // playing checklist entry speech
-          ret = currentList.CheckList.EntrySpeechBytes;
+          ret = Current.CheckList.EntrySpeechBytes;
           this.isEntryPlayed = true;
-          stopPlaying = false;
+          isThisLastChecklistSpeech = false;
         }
-        else if (currentItemIndex < currentList.Items.Count)
+        else if (currentItemIndex < Current.Items.Count)
         {
           // play checklist item and increase index
           if (isCallPlayed == false)
           {
-            ret = currentList.Items[currentItemIndex].CheckItem.Call.Bytes;
+            ret = Current.Items[currentItemIndex].CheckItem.Call.Bytes;
             isCallPlayed = true;
 
-            if (!this.parent.settings.ReadConfirmations)
+            if (!this.readConfirmations)
             {
               currentItemIndex++;
               isCallPlayed = false;
@@ -145,22 +169,17 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           }
           else
           {
-            ret = currentList.Items[currentItemIndex].CheckItem.Confirmation.Bytes;
+            ret = Current.Items[currentItemIndex].CheckItem.Confirmation.Bytes;
             currentItemIndex++;
             isCallPlayed = false;
           }
-          stopPlaying = false;
+          isThisLastChecklistSpeech = false;
         }
         else
         {
           // playing at the end
-          ret = currentList.CheckList.ExitSpeechBytes;
-          this.isEntryPlayed = false;
-          previousList = currentList;
-          currentList = parent.CheckListViews.First(q => q.CheckList == currentList.CheckList.NextChecklist);
-          currentItemIndex = 0;
-          isCallPlayed = false;
-          stopPlaying = true;
+          ret = Current.CheckList.ExitSpeechBytes;
+          isThisLastChecklistSpeech = true;
         }
         return ret;
       }

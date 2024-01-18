@@ -29,8 +29,7 @@
         </xsd:complexType>
       </xsd:element>
       <xsd:element name="variables" minOccurs="0" maxOccurs="1" type="g:variables" />
-      <xsd:element name="trigger" minOccurs="0" maxOccurs="1" type="g:stateCheckConditionTop"/>
-      <xsd:element name="nextChecklistId" minOccurs="1" maxOccurs="1" type="nextChecklistId"/>
+      <xsd:element name="trigger" minOccurs="0" maxOccurs="1" type="g:stateCheckConditionTop"/>      
       <xsd:element name="customEntrySpeech" minOccurs="0" maxOccurs="1" type="g:speech"/>
       <xsd:element name="customExitSpeech" minOccurs="0" maxOccurs="1" type="g:speech"/>
     </xsd:choice>
@@ -39,7 +38,14 @@
     <xsd:attribute name="sequence" type="xsd:integer" use="optional"/>
     <xsd:attribute name="beginCallFile" type="g:nonemptyString" use="optional"/>
     <xsd:attribute name="endCallFile" type="g:nonemptyString" use="optional"/>
+    <xsd:attribute name="nextChecklistIds" type="checklistIds" use="optional"/>
   </xsd:complexType>
+
+  <xsd:simpleType name="checklistIds">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="\S+(;\S+)*" />
+    </xsd:restriction>
+  </xsd:simpleType>
 
   <xsd:complexType name="nextChecklistId">
     <xsd:attribute name="id" type="g:nonemptyString" use="optional"/>

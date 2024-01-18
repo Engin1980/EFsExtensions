@@ -31,9 +31,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
   {
     #region Private Fields
 
-    private readonly AutoplayChecklistEvaluator autoplayEvaluator;
     private readonly Logger logger;
-    private readonly PlaybackManager playback;
+    private readonly ChecklistManager manager;
     private readonly Dictionary<string, double> propertyValues = new();
     private readonly Dictionary<string, double> variableValues = new();
     private readonly Settings settings;
@@ -100,13 +99,11 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q))
         .ToList();
 
-      this.playback = new PlaybackManager(this);
       this.simObject = SimObject.GetInstance();
       this.simObject.SimSecondElapsed += SimObject_SimSecondElapsed;
       this.simObject.Started += SimObject_Started;
       this.simObject.Started += () => this.simObject.RegisterProperties(allProps);
       this.simObject.SimPropertyChanged += SimObject_SimPropertyChanged;
-      this.autoplayEvaluator = new AutoplayChecklistEvaluator(() => variableValues, () => propertyValues);
       this.EvaluatorRecentResultView = new();
 
       this.PropertyValuesView = new(
@@ -114,6 +111,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         .Select(q => new BindingKeyValue<string, double>(q.Name, double.NaN))
         .OrderBy(q => q.Key)
         .ToList());
+
+      this.manager = new ChecklistManager(this.CheckListViews, this.simObject,
+        this.settings.UseAutoplay, this.settings.ReadConfirmations,
+        () => variableValues); // CheckListViews must be set before calling this
     }
 
     #endregion Public Constructors
@@ -125,7 +126,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       logger?.Invoke(LogLevel.INFO, "Run");
 
       logger?.Invoke(LogLevel.VERBOSE, "Resetting playback");
-      playback.Reset();
+      manager.Reset();
 
       logger?.Invoke(LogLevel.VERBOSE, "Adding key hooks");
       this.keyHookWrapper = keyHookWrapper ?? throw new ArgumentNullException(nameof(keyHookWrapper));
@@ -202,15 +203,15 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     {
       if (hookId == this.keyHookPlayPauseId)
       {
-        this.playback.TogglePlay();
+        this.manager.TogglePlay();
       }
       else if (hookId == this.keyHookSkipNextId)
       {
-        this.playback.SkipToNext();
+        this.manager.SkipToNext();
       }
       else if (hookId == this.keyHookSkipPrevId)
       {
-        this.playback.SkipToPrev();
+        this.manager.SkipToPrev();
       }
       else
       {
@@ -226,16 +227,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     private void SimObject_SimSecondElapsed()
     {
-      if (playback.IsWaitingForNextChecklist == false) return;
-      CheckList checkList = playback.GetCurrentChecklist();
-      StateCheckEvaluator.UpdateDictionaryBySimObject(this.simObject, propertyValues);
-      bool shouldPlay = this.settings.UseAutoplay && !this.simObject.IsSimPaused && this.autoplayEvaluator.EvaluateIfShouldPlay(checkList);
-      this.EvaluatorRecentResultView = new(this.autoplayEvaluator.GetRecentResults());
-      if (shouldPlay)
-      {
-        autoplayEvaluator.SuppressAutoplayForCurrentChecklist();
-        this.playback.TogglePlay();
-      }
+      this.manager.CheckForActiveChecklistsIfRequired();
+      this.EvaluatorRecentResultView = new(this.manager.GetRecentResults());
     }
 
     private void SimObject_Started()

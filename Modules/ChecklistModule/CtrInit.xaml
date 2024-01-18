@@ -64,24 +64,32 @@
               <DataGridTemplateColumn Header="Checklist">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
+                    <Label>
                     <StackPanel Orientation="Horizontal">
                       <TextBlock Text="{Binding CallSpeech}" />
-                      <TextBlock Text=" (id=" FontSize="10"  VerticalAlignment="Bottom"/>
-                      <TextBlock Text="{Binding Id}" FontSize="10"   VerticalAlignment="Bottom"/>
-                      <TextBlock Text=")" FontSize="10"   VerticalAlignment="Bottom"/>
+                        <TextBlock Text=" (id=" FontSize="10"  VerticalAlignment="Bottom" Foreground="Gray"/>
+                      <TextBlock Text="{Binding Id}" FontSize="10"   VerticalAlignment="Bottom" Foreground="Blue"/>
+                        <TextBlock Text=")" FontSize="10"   VerticalAlignment="Bottom" Foreground="Gray"/>
                     </StackPanel>
+                    </Label>
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
               <DataGridTemplateColumn Header="Following">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="{Binding NextChecklist.CallSpeech}" />
-                      <TextBlock Text=" (id=" FontSize="10"  VerticalAlignment="Bottom"/>
-                      <TextBlock Text="{Binding NextChecklist.Id}" FontSize="10"   VerticalAlignment="Bottom"/>
-                      <TextBlock Text=")" FontSize="10"   VerticalAlignment="Bottom"/>
-                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding NextChecklists}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                          <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding CallSpeech}" />
+                            <TextBlock Text=" (id=" FontSize="10"  VerticalAlignment="Bottom" Foreground="Gray"/>
+                            <TextBlock Text="{Binding Id}" FontSize="10"   VerticalAlignment="Bottom" Foreground="Blue"/>
+                            <TextBlock Text=")" FontSize="10"   VerticalAlignment="Bottom" Foreground="Gray"/>
+                          </StackPanel>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>

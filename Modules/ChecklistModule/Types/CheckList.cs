@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Eng.Chlaot.Modules.ChecklistModule.Types
@@ -18,8 +19,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types
     public string Id { get; set; } = null!;
     public string CallSpeech { get; set; } = null!;
     public List<CheckItem> Items { get; set; } = null!;
-    public string? NextChecklistId { get; set; } = null;
-    public CheckList NextChecklist { get; set; } = null!;
+    public string NextChecklistIds { get; set; } = null!;
+    public List<CheckList> NextChecklists { get; set; } = null!;
     public byte[] EntrySpeechBytes { get; set; } = null!; //xml-ignored
     public byte[] ExitSpeechBytes { get; set; } = null!; // xml-ignored
     public List<Variable> Variables { get; set; } = new();
@@ -32,6 +33,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types
       FillVariablesWithUndeclaredOnes();
       EAssert.IsNonEmptyString(Id, $"{nameof(Id)} is empty string.");
       EAssert.IsNonEmptyString(CallSpeech, $"{nameof(CallSpeech)} is empty string.");
+      EAssert.IsTrue(string.IsNullOrEmpty(this.NextChecklistIds) || Regex.IsMatch(this.NextChecklistIds, @"\S+(;\S+)*")); // sequence of ids delimited by semicolon
       EAssert.IsNotNull(Variables);
     }
 
@@ -41,10 +43,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types
         .Select(q => q.VariableName)
         .Except(this.Variables.Select(q => q.Name))
         .Select(q => new UserVariable()
-          {
-            Name = q,
-            DefaultValue = null
-          })
+        {
+          Name = q,
+          DefaultValue = null
+        })
         .ForEach(q => this.Variables.Add(q));
     }
 
@@ -58,5 +60,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types
       }
       return ret;
     }
+
+    public override string ToString() => $"{this.CallSpeech} ({this.Id}) {{checklist}}";
   }
 }

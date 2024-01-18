@@ -18,7 +18,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders
     private readonly ESimConnect.ESimConnect simCon;
     private readonly Timer connectionTimer;
     public event Action? Opened = null!;
-    public event Action<SimConWrapperOpenException>? OpeningFailed = null!;
+    public event Action<Exception>? OpeningFailed = null!;
     public bool IsOpened { get; private set; } = false;
     public bool IsOpening { get; private set; } = false;
 
@@ -50,7 +50,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders
       }
       catch (Exception ex)
       {
-        throw new ApplicationException("Unexpected exception when starting simcon on background.", ex);
+        var tmp =new ApplicationException("Unexpected exception when starting simcon on background.", ex);
+        OpeningFailed?.Invoke(tmp);
       }
       Opened?.Invoke();
     }

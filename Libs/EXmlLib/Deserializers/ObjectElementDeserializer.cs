@@ -47,7 +47,7 @@ namespace EXmlLib.Deserializers
       this.predicate = targetTypePredicate ?? throw new ArgumentNullException(nameof(targetTypePredicate));
       return this;
     }
-
+  
     public ObjectElementDeserializer WithCustomPropertyMapping(string propertyName, string xmlName)
     {
       void handler(XElement e, object t, PropertyInfo f, EXmlContext c)
@@ -224,5 +224,7 @@ namespace EXmlLib.Deserializers
 
       return ret;
     }
+
+
   }
 }

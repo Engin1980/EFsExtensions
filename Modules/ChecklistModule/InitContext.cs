@@ -28,6 +28,7 @@ using ChlaotModuleBase.ModuleUtils.StateChecking;
 using static System.Net.WebRequestMethods;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using ESystem;
+using System.Runtime.CompilerServices;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -122,6 +123,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           throw new ApplicationException("Unable to read/deserialize checklist-set from '{xmlFile}'. Invalid file content?", ex);
         }
 
+        // check duplicit property declarations
         if (tmpSpg != null)
         {
           logger.Invoke(LogLevel.INFO, "Checking property definition duplicity");
@@ -132,15 +134,18 @@ namespace Eng.Chlaot.Modules.ChecklistModule
             throw new ApplicationException("There are duplicit property declarations: " + string.Join(", ", duplicits));
         }
 
+        // check checkset sanity
         logger.Invoke(LogLevel.INFO, $"Checking sanity");
         var props = tmpSpg == null
           ? this.SimPropertyGroup.GetAllSimPropertiesRecursively()
           : tmpSpg.GetAllSimPropertiesRecursively().Union(this.SimPropertyGroup.GetAllSimPropertiesRecursively()).ToList();
         Try(() => CheckSanity(tmp, props), ex => new ApplicationException("Error loading checklist.", ex));
 
+        // bind next-checklist references
         logger.Invoke(LogLevel.INFO, $"Binding checklist references");
         Try(() => BindNextChecklists(tmp), ex => new ApplicationException("Error binding checklist references.", ex));
 
+        // initialize sound streams
         logger.Invoke(LogLevel.INFO, $"Loading/generating sounds");
         Try(() => InitializeSoundStreams(tmp, System.IO.Path.GetDirectoryName(xmlFile)!),
           ex => new ApplicationException("Error creating sound streams for checklist.", ex));
@@ -194,15 +199,29 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       for (int i = 0; i < tmp.Checklists.Count; i++)
       {
         var checklist = tmp.Checklists[i];
-        if (checklist.NextChecklistId is null)
+        checklist.NextChecklists = new();
+        if (string.IsNullOrEmpty(checklist.NextChecklistIds))
         {
           if (i < tmp.Checklists.Count - 1)
-            checklist.NextChecklist = tmp.Checklists[i + 1];
+            checklist.NextChecklists.Add(tmp.Checklists[i + 1]);
           else
-            checklist.NextChecklist = tmp.Checklists[0];
+            checklist.NextChecklists.Add(tmp.Checklists[0]);
         }
         else
-          checklist.NextChecklist = tmp.Checklists.Single(q => q.Id == checklist.NextChecklistId);
+        {
+          var pts = checklist.NextChecklistIds.Split(";");
+          foreach (var pt in pts)
+          {
+            try
+            {
+              var n = tmp.Checklists.Single(q => q.Id == pt);
+              checklist.NextChecklists.Add(n);
+            }catch (Exception ex)
+            {
+              throw new ApplicationException($"Failed to find checklist with id '{pt}'.", ex);
+            }
+          }
+        }
       }
     }
 
