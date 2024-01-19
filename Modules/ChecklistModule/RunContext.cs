@@ -46,6 +46,12 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     #region Public Properties
 
+    public CheckListView EvaluatorRecentResultChecklistView
+    {
+      get => base.GetProperty<CheckListView>(nameof(EvaluatorRecentResultChecklistView))!;
+      set => base.UpdateProperty(nameof(EvaluatorRecentResultChecklistView), value);
+    }
+
     public List<CheckListView> CheckListViews
     {
       get => base.GetProperty<List<CheckListView>>(nameof(CheckListViews))!;
@@ -68,6 +74,12 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     {
       get => base.GetProperty<BindingList<StateCheckEvaluator.RecentResult>>(nameof(EvaluatorRecentResultView))!;
       set => base.UpdateProperty(nameof(EvaluatorRecentResultView), value);
+    }
+
+    public Type Name
+    {
+      get => base.GetProperty<Type>(nameof(Name))!;
+      set => base.UpdateProperty(nameof(Name), value);
     }
 
     #endregion Public Properties
@@ -228,7 +240,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     private void SimObject_SimSecondElapsed()
     {
       this.manager.CheckForActiveChecklistsIfRequired();
-      this.EvaluatorRecentResultView = new(this.manager.GetRecentResults());
     }
 
     private void SimObject_Started()

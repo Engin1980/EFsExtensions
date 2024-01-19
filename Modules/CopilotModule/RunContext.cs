@@ -105,7 +105,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     #region Properties
 
-
     public SpeechDefinitionInfo EvaluatorRecentResultSpeechDefinitionInfo
     {
       get => base.GetProperty<SpeechDefinitionInfo>(nameof(EvaluatorRecentResultSpeechDefinitionInfo))!;
@@ -119,7 +118,9 @@ namespace Eng.Chlaot.Modules.CopilotModule
     }
 
     public BindingList<SpeechDefinitionInfo> Infos { get; set; } = new(); //TODO rename to runtimes
+    
     public BindingList<BindingKeyValue<string, double>> PropertyValuesView { get; set; } = new();
+    
     public CopilotSet Set { get; private set; }
 
     #endregion Properties

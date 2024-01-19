@@ -1,4 +1,5 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using System.Collections.Generic;
 
 namespace Eng.Chlaot.Modules.ChecklistModule.Types.RunViews
@@ -22,6 +23,12 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.RunViews
     {
       get => base.GetProperty<List<CheckItemView>>(nameof(Items))!;
       set => base.UpdateProperty(nameof(Items), value);
+    }
+
+    public StateCheckEvaluator Evaluator
+    {
+      get => base.GetProperty<StateCheckEvaluator>(nameof(Evaluator))!;
+      set => base.UpdateProperty(nameof(Evaluator), value);
     }
   }
 }
