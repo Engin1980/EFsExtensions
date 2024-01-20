@@ -20,7 +20,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       public bool IsWaitingForNextChecklist { get => currentItemIndex == 0 && isEntryPlayed == false; }
       public bool IsPartlyPlayed => currentItemIndex > 0;
 
-      public PlaybackManager(CheckListRunVM initialChecklist, bool readConfirmations)
+      public PlaybackManager(CheckListVM initialChecklist, bool readConfirmations)
       {
         EAssert.Argument.IsNotNull(initialChecklist, nameof(initialChecklist));
         this.readConfirmations = readConfirmations;
@@ -28,19 +28,19 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         this.SetCurrent(this.Current); // ensures correct initialization
       }
 
-      public CheckListRunVM Current { get; private set; }
+      public CheckListVM Current { get; private set; }
       public bool IsPlaying { get => this.isMainLoopActive; }
 
-      public void SetCurrent(CheckListRunVM value)
+      public void SetCurrent(CheckListVM value)
       {
         EAssert.Argument.IsNotNull(value, nameof(value));
         // reset old one
-        Current.State = RunState.Runned;
+        Current.RunTime.State = RunState.Runned;
 
         // setting new one
         Current = value;
-        Current.State = RunState.Current;
-        Current.Items.ForEach(q => q.State = RunState.NotYet);
+        Current.RunTime.State = RunState.Current;
+        Current.Items.ForEach(q => q.RunTime.State = RunState.NotYet);
         currentItemIndex = 0;
         isEntryPlayed = false;
         isCallPlayed = false;
@@ -99,7 +99,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         this.currentItemIndex = 0;
         this.isCallPlayed = false;
         this.isEntryPlayed = false;
-        this.Current.Items.ForEach(q => q.State = RunState.NotYet);
+        this.Current.Items.ForEach(q => q.RunTime.State = RunState.NotYet);
       }
 
       public void Play()
@@ -130,11 +130,11 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         for (int i = 0; i < Current.Items.Count; i++)
         {
           if (i < currentItemIndex)
-            Current.Items[i].State = RunState.Runned;
+            Current.Items[i].RunTime.State = RunState.Runned;
           else if (i > currentItemIndex)
-            Current.Items[i].State = RunState.NotYet;
+            Current.Items[i].RunTime.State = RunState.NotYet;
           else
-            Current.Items[i].State = RunState.Current;
+            Current.Items[i].RunTime.State = RunState.Current;
         }
         //TODO asi navíc
         //if (currentItemIndex < _Current.Items.Count)

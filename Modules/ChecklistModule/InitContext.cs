@@ -164,13 +164,12 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
         this.MetaInfo = tmpMeta;
 
-        var lst = tmp.Checklists.Select(q => new CheckListRunVM()
+        this.CheckListVMs = tmp.Checklists.Select(q => new CheckListVM()
         {
           CheckList = q,
           Variables = new(q.Variables.Select(q => new BindingKeyValue<string, double>(q.Name, q.Value)).ToList()),
-          Items = new(q.Items.Select(p => new CheckItemRunVM() { CheckItem = p }))
+          Items = new(q.Items.Select(p => new CheckItemVM() { CheckItem = p }))
         }).ToList();
-        this.CheckListVMs = new(lst);
 
         this.setIsReadyFlagAction(true);
         logger.Invoke(LogLevel.INFO, $"Checklist file '{xmlFile}' successfully loaded.");

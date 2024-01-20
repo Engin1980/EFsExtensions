@@ -45,15 +45,15 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     #region Public Properties
 
-    public CheckListRunVM EvaluatorRecentResultChecklistVM
+    public CheckListVM EvaluatorRecentResultChecklistVM
     {
-      get => base.GetProperty<CheckListRunVM>(nameof(EvaluatorRecentResultChecklistVM))!;
+      get => base.GetProperty<CheckListVM>(nameof(EvaluatorRecentResultChecklistVM))!;
       set => base.UpdateProperty(nameof(EvaluatorRecentResultChecklistVM), value);
     }
 
-    public List<CheckListRunVM> CheckListVMs
+    public List<CheckListVM> CheckListVMs
     {
-      get => base.GetProperty<List<CheckListRunVM>>(nameof(CheckListVMs))!;
+      get => base.GetProperty<List<CheckListVM>>(nameof(CheckListVMs))!;
       set => base.UpdateProperty(nameof(CheckListVMs), value);
     }
 
@@ -61,12 +61,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     {
       get => base.GetProperty<BindingList<BindingKeyValue<string, double>>>(nameof(PropertyValuesVM))!;
       set => base.UpdateProperty(nameof(PropertyValuesVM), value);
-    }
-
-    public BindingList<StateCheckEvaluator.RecentResult> EvaluatorRecentResultVM
-    {
-      get => base.GetProperty<BindingList<StateCheckEvaluator.RecentResult>>(nameof(EvaluatorRecentResultVM))!;
-      set => base.UpdateProperty(nameof(EvaluatorRecentResultVM), value);
     }
 
     public Type Name
@@ -84,7 +78,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       this.logger = Logger.Create(this, "CheckList.RunContext");
       this.settings = initContext.Settings;
 
-      this.CheckListVMs = new(initContext.CheckListVMs.ToList().Cast<CheckListRunVM>().ToList());
+      this.CheckListVMs = initContext.CheckListVMs;
 
       var properties = initContext.SimPropertyGroup.GetAllSimPropertiesRecursively()
         .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q));
@@ -99,7 +93,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       this.simObject.Started += SimObject_Started;
       this.simObject.Started += () => this.simObject.RegisterProperties(properties);
       this.simObject.SimPropertyChanged += SimObject_SimPropertyChanged;
-      this.EvaluatorRecentResultVM = new();
 
       this.manager = new ChecklistManager(this.CheckListVMs, this.simObject,
         this.settings.UseAutoplay, this.settings.ReadConfirmations); // CheckListViews must be set before calling this
@@ -215,9 +208,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     private void SimObject_SimSecondElapsed()
     {
       this.manager.CheckForActiveChecklistsIfRequired();
-
-      if (this.EvaluatorRecentResultChecklistVM == null) return;
-      EvaluatorRecentResultVM = new(this.EvaluatorRecentResultChecklistVM.Evaluator.GetRecentResultSet());
     }
 
     private void SimObject_Started()

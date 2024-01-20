@@ -20,21 +20,22 @@ using System.Xml.Serialization;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using ESystem;
 using static ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
+using Eng.Chlaot.Modules.CopilotModule.Types.VMs;
+using ChlaotModuleBase;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
   public class InitContext : NotifyPropertyChangedBase
   {
+    #region Fields
+
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
     private readonly Dictionary<Variable, SpeechDefinition> variableToSpeechDefinitionMapping = new();
 
-    public CopilotSet Set
-    {
-      get => base.GetProperty<CopilotSet>(nameof(Set))!;
-      set => base.UpdateProperty(nameof(Set), value);
-    }
+    #endregion Fields
 
+    #region Properties
 
     public MetaInfo MetaInfo
     {
@@ -42,7 +43,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
       set => base.UpdateProperty(nameof(MetaInfo), value);
     }
 
-    internal Settings Settings { get; private set; }
+    public List<PropertyUsageCount> PropertyUsageCounts
+    {
+      get => base.GetProperty<List<PropertyUsageCount>>(nameof(PropertyUsageCounts))!;
+      set => base.UpdateProperty(nameof(PropertyUsageCounts), value);
+    }
 
     public SimPropertyGroup SimPropertyGroup
     {
@@ -50,13 +55,18 @@ namespace Eng.Chlaot.Modules.CopilotModule
       set => base.UpdateProperty(nameof(SimPropertyGroup), value);
     }
 
+    public BindingList<SpeechDefinitionVM> SpeechDefinitionVMs
+    {
+      get => base.GetProperty<BindingList<SpeechDefinitionVM>>(nameof(SpeechDefinitionVMs))!;
+      set => base.UpdateProperty(nameof(SpeechDefinitionVMs), value);
+    }
+    internal Settings Settings { get; private set; }
+
+    #endregion Properties
+
     public record PropertyUsageCount(SimProperty Property, int Count);
 
-    public List<PropertyUsageCount> PropertyUsageCounts
-    {
-      get => base.GetProperty<List<PropertyUsageCount>>(nameof(PropertyUsageCounts))!;
-      set => base.UpdateProperty(nameof(PropertyUsageCounts), value);
-    }
+    #region Constructors
 
     internal InitContext(Settings settings, Action<bool> setIsReadyFlagAction)
     {
@@ -66,20 +76,9 @@ namespace Eng.Chlaot.Modules.CopilotModule
       this.SimPropertyGroup = LoadDefaultSimProperties();
     }
 
-    private SimPropertyGroup LoadDefaultSimProperties()
-    {
-      SimPropertyGroup ret;
-      try
-      {
-        XDocument doc = XDocument.Load(@"Xmls\SimProperties.xml", LoadOptions.SetLineInfo);
-        ret = SimPropertyGroup.Deserialize(doc.Root!);
-      }
-      catch (Exception ex)
-      {
-        throw new ApplicationException("Failed to load global sim properties.", ex);
-      }
-      return ret;
-    }
+    #endregion Constructors
+
+    #region Methods
 
     internal void LoadFile(string xmlFile)
     {
@@ -138,7 +137,15 @@ namespace Eng.Chlaot.Modules.CopilotModule
         }
         this.PropertyUsageCounts = GetPropertyUsagesCounts(tmp, this.SimPropertyGroup.GetAllSimPropertiesRecursively());
         this.MetaInfo = tmpMeta;
-        this.Set = tmp;
+
+        this.SpeechDefinitionVMs = tmp.SpeechDefinitions
+          .Select(q => new SpeechDefinitionVM()
+          {
+            SpeechDefinition = q,
+            Variables = q.Variables
+          })
+          .ToBindingList();
+
         UpdateReadyFlag();
         logger.Invoke(LogLevel.INFO, $"Copilot set file '{xmlFile}' successfully loaded.");
 
@@ -163,6 +170,45 @@ namespace Eng.Chlaot.Modules.CopilotModule
             variableToSpeechDefinitionMapping[p] = q;
           });
       });
+    }
+
+    private void BuildSpeech(
+      SpeechDefinition speechDefinition,
+      Dictionary<string, byte[]> generatedSounds,
+      Synthetizer synthetizer,
+      string relativePath)
+    {
+      Speech speech = speechDefinition.Speech;
+      if (speech.Type == Speech.SpeechType.File)
+        try
+        {
+          speech.Bytes = System.IO.File.ReadAllBytes(
+            System.IO.Path.Combine(relativePath, speech.Value));
+        }
+        catch (Exception ex)
+        {
+          throw new EXmlException($"Unable to load sound file '{speech.Value}'.", ex);
+        }
+      else if (speech.Type == Speech.SpeechType.Speech)
+      {
+        string txt = speech.GetEvaluatedValue(speechDefinition.Variables);
+        try
+        {
+          if (generatedSounds.ContainsKey(txt))
+            speech.Bytes = generatedSounds[txt];
+          else
+          {
+            speech.Bytes = synthetizer.Generate(txt);
+            generatedSounds[txt] = speech.Bytes;
+          }
+        }
+        catch (Exception ex)
+        {
+          throw new EXmlException($"Unable to generated sound for speech '{speech.Value}'.", ex);
+        }
+      }
+      else
+        throw new NotImplementedException($"Unknown type {speech.Type}.");
     }
 
     private List<PropertyUsageCount> GetPropertyUsagesCounts(CopilotSet tmp, List<SimProperty> simProperties)
@@ -242,9 +288,33 @@ namespace Eng.Chlaot.Modules.CopilotModule
         throw new ApplicationException($"Required variables not found in defined variables: {string.Join(", ", missingVariables.Distinct())}.");
     }
 
+    private void InitializeSoundStreams(CopilotSet set, string relativePath)
+    {
+      Synthetizer synthetizer = new(Settings.Synthetizer);
+      Dictionary<string, byte[]> generatedSounds = new();
+      foreach (var sd in set.SpeechDefinitions)
+      {
+        BuildSpeech(sd, generatedSounds, synthetizer, relativePath);
+      }
+    }
+
+    private SimPropertyGroup LoadDefaultSimProperties()
+    {
+      SimPropertyGroup ret;
+      try
+      {
+        XDocument doc = XDocument.Load(@"Xmls\SimProperties.xml", LoadOptions.SetLineInfo);
+        ret = SimPropertyGroup.Deserialize(doc.Root!);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Failed to load global sim properties.", ex);
+      }
+      return ret;
+    }
     private void UpdateReadyFlag()
     {
-      bool ready = this.Set != null && this.Set.SpeechDefinitions.SelectMany(q => q.Variables).All(q => !double.IsNaN(q.Value));
+      bool ready = this.SpeechDefinitionVMs != null && this.SpeechDefinitionVMs.SelectMany(q => q.Variables).All(q => !double.IsNaN(q.Value));
       this.setIsReadyFlagAction(ready);
     }
 
@@ -261,53 +331,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
       UpdateReadyFlag();
     }
 
-    private void InitializeSoundStreams(CopilotSet set, string relativePath)
-    {
-      Synthetizer synthetizer = new(Settings.Synthetizer);
-      Dictionary<string, byte[]> generatedSounds = new();
-      foreach (var sd in set.SpeechDefinitions)
-      {
-        BuildSpeech(sd, generatedSounds, synthetizer, relativePath);
-      }
-    }
-
-    private void BuildSpeech(
-      SpeechDefinition speechDefinition,
-      Dictionary<string, byte[]> generatedSounds,
-      Synthetizer synthetizer,
-      string relativePath)
-    {
-      Speech speech = speechDefinition.Speech;
-      if (speech.Type == Speech.SpeechType.File)
-        try
-        {
-          speech.Bytes = System.IO.File.ReadAllBytes(
-            System.IO.Path.Combine(relativePath, speech.Value));
-        }
-        catch (Exception ex)
-        {
-          throw new EXmlException($"Unable to load sound file '{speech.Value}'.", ex);
-        }
-      else if (speech.Type == Speech.SpeechType.Speech)
-      {
-        string txt = speech.GetEvaluatedValue(speechDefinition.Variables);
-        try
-        {
-          if (generatedSounds.ContainsKey(txt))
-            speech.Bytes = generatedSounds[txt];
-          else
-          {
-            speech.Bytes = synthetizer.Generate(txt);
-            generatedSounds[txt] = speech.Bytes;
-          }
-        }
-        catch (Exception ex)
-        {
-          throw new EXmlException($"Unable to generated sound for speech '{speech.Value}'.", ex);
-        }
-      }
-      else
-        throw new NotImplementedException($"Unknown type {speech.Type}.");
-    }
+    #endregion Methods
   }
 }

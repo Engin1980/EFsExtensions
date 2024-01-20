@@ -6,6 +6,7 @@ using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using ESystem.Asserting;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
@@ -15,29 +16,25 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     public class ChecklistManager
     {
       private readonly PlaybackManager playbackManager;
-      private CheckListRunVM? previous;
-      private CheckListRunVM current;
-      private readonly List<CheckListRunVM> active = new();
-      private readonly List<CheckListRunVM> all;
+      private CheckListVM? previous;
+      private CheckListVM current;
+      private readonly List<CheckListVM> active = new();
+      private readonly List<CheckListVM> all;
       private readonly bool isAutoplayingEnabled;
       private readonly SimObject simObject;
       private readonly Dictionary<string, double> propertyValues = new();
-      private readonly Dictionary<CheckListRunVM, Dictionary<string, double>> variableValues = new();
 
-      public ChecklistManager(List<CheckListRunVM> checkListViews, SimObject simObject,
+      public ChecklistManager(List<CheckListVM> checkListViews, SimObject simObject,
         bool useAutoplay, bool readConfirmations)
       {
         EAssert.Argument.IsNotNull(checkListViews, nameof(checkListViews));
         EAssert.Argument.IsNotNull(simObject, nameof(simObject));
 
         this.all = checkListViews;
-        this.all.ForEach(q =>
-        {
-          variableValues[q] = q.CheckList.Variables.ToDictionary(q => q.Name, q => q.Value);
-          q.Evaluator = new StateCheckEvaluator(() => variableValues[q], () => this.propertyValues);
-        });
+        this.all.ForEach(q => q.CreateRuntime(() => this.propertyValues));
         this.current = checkListViews.First();
         this.active.Add(current);
+        this.all.ForEach(q => q.RunTime.IsActive = active.Contains(q));
 
         this.isAutoplayingEnabled = useAutoplay;
         this.simObject = simObject;
@@ -53,14 +50,15 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         EAssert.IsTrue(nextActiveViews.Any(), "There must be at least one next checklist.");
         this.active.Clear();
         this.active.AddRange(nextActiveViews);
-        nextActiveViews.ForEach(q => q.Evaluator.Reset());
+        this.all.ForEach(q => q.RunTime.IsActive = active.Contains(q));
+        nextActiveViews.ForEach(q => q.RunTime.ResetEvaluator());
         this.current = nextActiveViews.First();
         this.playbackManager.SetCurrent(this.current);
       }
 
       public void Reset()
       {
-        this.current.Evaluator.Reset();
+        this.current.RunTime.ResetEvaluator();
         this.playbackManager.Reset();
       }
 
@@ -70,7 +68,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         var nextActiveViews = this.all.Where(q => nextActive.Contains(q.CheckList));
         this.active.Clear();
         this.active.AddRange(nextActiveViews);
-        nextActiveViews.ForEach(q => q.Evaluator.Reset());
+        this.all.ForEach(q => q.RunTime.IsActive = active.Contains(q));
+        nextActiveViews.ForEach(q => q.RunTime.ResetEvaluator());
 
         this.previous = this.current;
         this.current = nextActiveViews.First();
@@ -88,7 +87,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           playbackManager.SetCurrent(this.previous);
           this.active.Clear();
           this.active.Add(this.previous);
-          this.previous.Evaluator.Reset();
+          this.all.ForEach(q => q.RunTime.IsActive = active.Contains(q));
+          this.previous.RunTime.ResetEvaluator();
           this.previous = this.all.FirstOrDefault(q => q.CheckList.NextChecklists.First() == this.previous.CheckList); // tries to get previous;
         }
         this.playbackManager.Play();
@@ -107,9 +107,9 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
         StateCheckEvaluator.UpdateDictionaryBySimObject(this.simObject, this.propertyValues);
 
-        CheckListRunVM? readyCheckList = this.active
+        CheckListVM? readyCheckList = this.active
           .Where(q => q.CheckList.Trigger != null)
-          .FirstOrDefault(q => q.Evaluator.Evaluate(q.CheckList.Trigger!));
+          .FirstOrDefault(q => q.RunTime.Evaluate(q.CheckList.Trigger!));
 
         if (readyCheckList != null)
         {

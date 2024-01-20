@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel
 {
-  public class UserVariable : Variable
+  public class UserVariable : Variable //probably no longer needed to be notifi-based and uservalue can be omitted too
   {
     public double? DefaultValue
     {

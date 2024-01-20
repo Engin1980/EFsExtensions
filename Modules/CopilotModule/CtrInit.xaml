@@ -82,7 +82,7 @@
           <gctr:MetaInfoPanel DataContext="{Binding MetaInfo}" />
         </TabItem>
         <TabItem Header="Variables">
-          <ListView ItemsSource="{Binding Set.SpeechDefinitions}"
+          <ListView ItemsSource="{Binding SpeechDefinitionVMs}"                    
                     ItemContainerStyle="{StaticResource ListViewAlternatingStyle}" AlternationCount="2">
             <ListView.Template>
               <ControlTemplate>
@@ -95,7 +95,7 @@
               <DataTemplate>
                 <StackPanel Visibility="{Binding Variables.Count, Converter={StaticResource Int2VisibilityConverter}}"
                   Orientation="Horizontal">
-                  <Label Content="{Binding Title}" Width="350" />
+                  <Label Content="{Binding SpeechDefinition.Title}" Width="350" />
                   <ItemsControl ItemsSource="{Binding Variables}" ItemTemplateSelector="{StaticResource VariablesTemplateSelector}" >
                   </ItemsControl>
                 </StackPanel>
@@ -104,7 +104,7 @@
           </ListView>
         </TabItem>
         <TabItem Header="Speeches">
-          <ListView ItemsSource="{Binding Set.SpeechDefinitions}"
+          <ListView ItemsSource="{Binding SpeechDefinitionVMs}"
             ItemContainerStyle="{StaticResource ListViewAlternatingStyle}" AlternationCount="2">
             <ListView.Template>
               <ControlTemplate>
@@ -115,15 +115,15 @@
             </ListView.Template>
             <ListView.ItemTemplate>
               <DataTemplate>
-                <StackPanel x:Name="pnlSpeech" MouseRightButtonDown="pnlSpeech_MouseRightButtonDown" Tag="{Binding}" >
-                  <Label Content="{Binding Title}" />
+                <StackPanel x:Name="pnlSpeech" MouseRightButtonDown="pnlSpeech_MouseRightButtonDown" Tag="{Binding SpeechDefinition}" >
+                  <Label Content="{Binding SpeechDefinition.Title}" />
                   <Label Margin="32 0 0 0">
                     <Label.Content>
                       <StackPanel Orientation="Horizontal">
                         <TextBlock Width="150" Text="Speech: " />
-                        <TextBlock Text="{Binding Speech.Value}" />
+                        <TextBlock Text="{Binding SpeechDefinition.Speech.Value}" />
                         <TextBlock Text="// " Margin="48 0 0 0" />
-                        <TextBlock Text="{Binding Speech.Type}" />
+                        <TextBlock Text="{Binding SpeechDefinition.Speech.Type}" />
                         <TextBlock Text=" //" />
                       </StackPanel>
                     </Label.Content>
@@ -132,7 +132,7 @@
                     <Label.Content>
                       <StackPanel Orientation="Horizontal">
                         <TextBlock Width="150" Text="When: " />
-                        <TreeView ItemsSource="{Binding __TriggerCollection}" />
+                        <TreeView ItemsSource="{Binding SpeechDefinition.__TriggerCollection}" />
                       </StackPanel>
                     </Label.Content>
                   </Label>
@@ -140,7 +140,7 @@
                     <Label.Content>
                       <StackPanel Orientation="Horizontal">
                         <TextBlock Width="150" Text="Reactivate when: " />
-                        <TreeView ItemsSource="{Binding __ReactivationTriggerCollection}" />
+                        <TreeView ItemsSource="{Binding SpeechDefinition.__ReactivationTriggerCollection}" />
                       </StackPanel>
                     </Label.Content>
                   </Label>

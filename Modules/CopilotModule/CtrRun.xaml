@@ -34,7 +34,7 @@
   <DockPanel DataContext="{Binding}">
     <TabControl>
       <TabItem Header="Speeches">
-        <ListView ItemsSource="{Binding Infos}"
+        <ListView ItemsSource="{Binding SpeechDefinitionVMs}"
                     ItemContainerStyle="{StaticResource ListViewAlternatingStyle}" AlternationCount="2">
           <ListView.Template>
             <ControlTemplate>
@@ -56,7 +56,7 @@
         </ListView>
       </TabItem>
       <TabItem Header="Variables">
-        <ListView ItemsSource="{Binding Set.SpeechDefinitions}"
+        <ListView ItemsSource="{Binding SpeechDefinitionVMs}"
                     ItemContainerStyle="{StaticResource ListViewAlternatingStyle}" AlternationCount="2">
           <ListView.Template>
             <ControlTemplate>
@@ -69,7 +69,7 @@
             <DataTemplate>
               <StackPanel Visibility="{Binding Variables.Count, Converter={StaticResource Int2VisibilityConverter}}"
                           Orientation="Horizontal">
-                <Label Content="{Binding Title}" Width="350" />
+                <Label Content="{Binding SpeechDefinition.Title}" Width="350" />
                 <ItemsControl ItemsSource="{Binding Variables}" ItemTemplateSelector="{StaticResource VariablesTemplateSelector}" >
                 </ItemsControl>
               </StackPanel>
@@ -89,21 +89,31 @@
         <DockPanel>
           <DockPanel DockPanel.Dock="Top">
             <Label DockPanel.Dock="Left" Content="Speech: " />
-            <ComboBox ItemsSource="{Binding Infos}" DisplayMemberPath="SpeechDefinition.Title" SelectedValue="{Binding EvaluatorRecentResultSpeechDefinitionInfo}" />
+            <ComboBox ItemsSource="{Binding SpeechDefinitionVMs}" DisplayMemberPath="SpeechDefinition.Title" SelectedValue="{Binding EvaluatorRecentResultSpeechDefinitionVM}" />
           </DockPanel>
-          <DataGrid ItemsSource="{Binding EvaluatorRecentResultView}" AutoGenerateColumns="False" >
-            <DataGrid.Columns>
-              <DataGridTemplateColumn>
-                <DataGridTemplateColumn.CellTemplate>
-                  <DataTemplate>
-                    <TextBlock MaxWidth="250" TextWrapping="Wrap" FontSize="12" Text="{Binding StateCheckItem.DisplayString}" />
-                  </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-              </DataGridTemplateColumn>
-              <DataGridCheckBoxColumn Header="True?" Binding="{Binding Result}" />
-              <DataGridTextColumn Header="Note" Binding="{Binding Note}" />
-            </DataGrid.Columns>
-          </DataGrid>
+          <StackPanel>
+            <StackPanel Orientation="Horizontal">
+              <Label>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="Last update time:" />
+                  <TextBlock Text="{Binding EvaluatorRecentResultSpeechDefinitionVM.RunTime.EvaluatorRecentResultDateTime}" />
+                </StackPanel>
+              </Label>
+            </StackPanel>
+            <DataGrid ItemsSource="{Binding EvaluatorRecentResultSpeechDefinitionVM.RunTime.EvaluatorRecentResult}" AutoGenerateColumns="False" >
+              <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Condition">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <TextBlock MaxWidth="250" TextWrapping="Wrap" FontSize="12" Text="{Binding StateCheckItem.DisplayString}" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridCheckBoxColumn Header="True?" Binding="{Binding Result}" />
+                <DataGridTextColumn Header="Note" Binding="{Binding Note}" />
+              </DataGrid.Columns>
+            </DataGrid>
+          </StackPanel>
         </DockPanel>
       </TabItem>
     </TabControl>

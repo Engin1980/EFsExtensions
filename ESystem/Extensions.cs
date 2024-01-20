@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.ComponentModel;
+using System.Text;
 
 namespace ESystem
 {
@@ -53,6 +54,16 @@ namespace ESystem
     {
       action(obj);
       return obj;
+    }
+
+    public static BindingList<T> ToBindingList<T>(this IEnumerable<T> items)
+    {
+      BindingList<T> ret;
+      if (items is List<T> lst)
+        ret = new(lst);
+      else
+        ret = new(items.ToList());
+      return ret;
     }
   }
 }

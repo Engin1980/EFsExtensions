@@ -19,13 +19,13 @@
       <TreeView ItemsSource="{Binding CheckListVMs}" x:Name="tvwTree">
         <TreeView.ItemContainerStyle>
           <Style TargetType="TreeViewItem">
-            <Setter Property="IsExpanded" Value="{Binding State, Converter={StaticResource RunStateToTreeNodeExpandedConverter}}"/>
+            <Setter Property="IsExpanded" Value="{Binding RunTime.State, Converter={StaticResource RunStateToTreeNodeExpandedConverter}}"/>
           </Style>
         </TreeView.ItemContainerStyle>
         <TreeView.Resources>
-          <HierarchicalDataTemplate DataType="{x:Type vm:CheckListRunVM}" ItemsSource="{Binding Items}">
+          <HierarchicalDataTemplate DataType="{x:Type vm:CheckListVM}" ItemsSource="{Binding Items}">
             <Label x:Name="lblChecklist" Margin="0" Padding="0" 
-                    Background="{Binding State, Converter={StaticResource RunStateToSolidBrushColorConverter}}">
+                    Background="{Binding RunTime.State, Converter={StaticResource RunStateToSolidBrushColorConverter}}">
               <Label.Content>
                 <StackPanel Orientation="Horizontal" >
                   <TextBlock Text="{Binding CheckList.CallSpeech}" />
@@ -36,9 +36,9 @@
               </Label.Content>
             </Label>
           </HierarchicalDataTemplate>
-          <HierarchicalDataTemplate DataType="{x:Type vm:CheckItemRunVM}">
+          <HierarchicalDataTemplate DataType="{x:Type vm:CheckItemVM}">
             <Label x:Name="lblItem" Margin="0" Padding="0" 
-                    Background="{Binding State, Converter={StaticResource RunStateToSolidBrushColorConverter}}">
+                    Background="{Binding RunTime.State, Converter={StaticResource RunStateToSolidBrushColorConverter}}">
               <Label.Content>
                 <StackPanel Orientation="Horizontal">
                   <TextBlock Text="{Binding CheckItem.Call.Value}" />
@@ -85,21 +85,39 @@
       <DockPanel>
         <DockPanel DockPanel.Dock="Top">
           <Label DockPanel.Dock="Left">Checklist:</Label>
-          <ComboBox ItemsSource="{Binding CheckListVMs}" DisplayMemberPath="CheckList.CallSpeech" SelectedItem="{Binding EvaluatorRecentResultChecklistVM}" />
+          <!--<ComboBox ItemsSource="{Binding CheckListVMs}" DisplayMemberPath="CheckList.CallSpeech" SelectedItem="{Binding EvaluatorRecentResultChecklistVM}" />-->
+          <ComboBox ItemsSource="{Binding CheckListVMs}" SelectedItem="{Binding EvaluatorRecentResultChecklistVM}">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{Binding CheckList.CallSpeech}" />
+                  <TextBlock Text="{Binding RunTime.IsActivePostfixString}" />
+                </StackPanel>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
         </DockPanel>
-        <DataGrid ItemsSource="{Binding EvaluatorRecentResultVM}" AutoGenerateColumns="False" >
-          <DataGrid.Columns>
-            <DataGridTemplateColumn>
-              <DataGridTemplateColumn.CellTemplate>
-                <DataTemplate>
-                  <TextBlock MaxWidth="250" TextWrapping="Wrap" FontSize="12" Text="{Binding StateCheckItem.DisplayString}" />
-                </DataTemplate>
-              </DataGridTemplateColumn.CellTemplate>
-            </DataGridTemplateColumn>
-            <DataGridCheckBoxColumn Header="True?" Binding="{Binding Result}" />
-            <DataGridTextColumn Header="Note" Binding="{Binding Note}" />
-          </DataGrid.Columns>
-        </DataGrid>
+        <StackPanel>
+          <Label>
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="Last refresh:" />
+              <TextBlock Text="{Binding EvaluatorRecentResultChecklistVM.RunTime.EvaluatorRecentResultDateTime}" />
+            </StackPanel>
+          </Label>
+          <DataGrid ItemsSource="{Binding EvaluatorRecentResultChecklistVM.RunTime.EvaluatorRecentResultVM}" AutoGenerateColumns="False" >
+            <DataGrid.Columns>
+              <DataGridTemplateColumn Header="Condition">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate>
+                    <TextBlock MaxWidth="250" TextWrapping="Wrap" FontSize="12" Text="{Binding StateCheckItem.DisplayString}" />
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridCheckBoxColumn Header="True?" Binding="{Binding Result}" />
+              <DataGridTextColumn Header="Note" Binding="{Binding Note}" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </StackPanel>
       </DockPanel>
     </TabItem>
   </TabControl>

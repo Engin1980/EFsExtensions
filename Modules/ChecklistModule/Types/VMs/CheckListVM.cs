@@ -1,31 +1,75 @@
 ﻿using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
 {
-  public class CheckListRunVM : CheckListVM
+  public class CheckListVM : NotifyPropertyChangedBase
   {
-    public RunState State
+    public class RunTimeVM : NotifyPropertyChangedBase
     {
-      get => base.GetProperty<RunState>(nameof(State))!;
-      set => base.UpdateProperty(nameof(State), value);
-    }
-    public StateCheckEvaluator Evaluator
-    {
-      get => base.GetProperty<StateCheckEvaluator>(nameof(Evaluator))!;
-      set => base.UpdateProperty(nameof(Evaluator), value);
+      private readonly StateCheckEvaluator evaluator;
+
+      public RunState State
+      {
+        get => base.GetProperty<RunState>(nameof(State))!;
+        set => base.UpdateProperty(nameof(State), value);
+      }
+
+      public BindingList<StateCheckEvaluator.RecentResult> EvaluatorRecentResultVM
+      {
+        get => base.GetProperty<BindingList<StateCheckEvaluator.RecentResult>>(nameof(EvaluatorRecentResultVM))!;
+        set => base.UpdateProperty(nameof(EvaluatorRecentResultVM), value);
+      }
+
+      public DateTime EvaluatorRecentResultDateTime
+      {
+        get => base.GetProperty<DateTime>(nameof(EvaluatorRecentResultDateTime))!;
+        set => base.UpdateProperty(nameof(EvaluatorRecentResultDateTime), value);
+      }
+
+      public bool IsActive
+      {
+        get => base.GetProperty<bool>(nameof(IsActive))!;
+        set
+        {
+          base.UpdateProperty(nameof(IsActive), value);
+          this.IsActivePostfixString = value ? " (Active)" : "";
+        }
+      }
+
+      public string IsActivePostfixString
+      {
+        get => base.GetProperty<string>(nameof(IsActivePostfixString))!;
+        set => base.UpdateProperty(nameof(IsActivePostfixString), value);
+      }
+
+      public RunTimeVM(List<Variable> variables, Func<Dictionary<string, double>> propertyValuesProvider)
+      {
+        var dict = variables.ToDictionary(q => q.Name, q => q.Value);
+        this.evaluator = new StateCheckEvaluator(() => dict, propertyValuesProvider);
+        this.State = RunState.NotYet;
+      }
+
+      public bool Evaluate(IStateCheckItem item)
+      {
+        bool ret = this.evaluator.Evaluate(item);
+        this.EvaluatorRecentResultDateTime = DateTime.Now;
+        this.EvaluatorRecentResultVM = this.evaluator.GetRecentResultSet().ToBindingList();
+        return ret;
+      }
+
+      public void ResetEvaluator()
+      {
+        this.evaluator.Reset();
+      }
     }
 
-    public CheckListRunVM()
-    {
-      this.State = RunState.NotYet;
-    }
-  }
-  public abstract class CheckListVM : NotifyPropertyChangedBase
-  {
     public CheckList CheckList
     {
       get => base.GetProperty<CheckList>(nameof(CheckList))!;
@@ -38,12 +82,23 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
       set => base.UpdateProperty(nameof(Variables), value);
     }
 
-    public List<CheckItemRunVM> Items
+    public List<CheckItemVM> Items
     {
-      get => base.GetProperty<List<CheckItemRunVM>>(nameof(Items))!;
+      get => base.GetProperty<List<CheckItemVM>>(nameof(Items))!;
       set => base.UpdateProperty(nameof(Items), value);
     }
 
+    public string DisplayString
+    {
+      get => base.GetProperty<string>(nameof(DisplayString))!;
+      set => base.UpdateProperty(nameof(DisplayString), value);
+    }
 
+    public RunTimeVM RunTime { get; private set; } = null!;
+
+    public void CreateRuntime(Func<Dictionary<string, double>> propertyValuesProvider)
+    {
+      this.RunTime = new RunTimeVM(this.CheckList.Variables, propertyValuesProvider);
+    }
   }
 }

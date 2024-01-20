@@ -10,6 +10,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using Eng.Chlaot.Modules.CopilotModule.Types;
+using Eng.Chlaot.Modules.CopilotModule.Types.VMs;
 using ESystem.Asserting;
 using System;
 using System.Collections.Generic;
@@ -28,73 +29,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
   internal class RunContext : NotifyPropertyChangedBase
   {
 
-    #region Classes + Structs
-
-    public class SpeechDefinitionInfo : NotifyPropertyChangedBase
-    {
-
-      #region Properties
-
-      public StateCheckEvaluator Evaluator
-      {
-        get => base.GetProperty<StateCheckEvaluator>(nameof(Evaluator))!;
-        set => base.UpdateProperty(nameof(Evaluator), value);
-      }
-
-      public bool IsReadyToBeSpoken
-      {
-        get => base.GetProperty<bool>(nameof(IsReadyToBeSpoken))!;
-        set => base.UpdateProperty(nameof(IsReadyToBeSpoken), value);
-      }
-
-      public SpeechDefinition SpeechDefinition { get; set; }
-      public Dictionary<string, double> VariableValuesDict
-      {
-        get => base.GetProperty<Dictionary<string, double>>(nameof(VariableValuesDict))!;
-        set => base.UpdateProperty(nameof(VariableValuesDict), value);
-      }
-
-      #endregion Properties
-
-      #region Constructors
-
-      public SpeechDefinitionInfo(SpeechDefinition speechDefinition, Func<Dictionary<string, double>> propertyValuesProvider)
-      {
-        EAssert.Argument.IsNotNull(speechDefinition, nameof(speechDefinition));
-        EAssert.Argument.IsNotNull(propertyValuesProvider, nameof(propertyValuesProvider));
-
-        this.SpeechDefinition = speechDefinition;
-        this.IsReadyToBeSpoken = true;
-        this.VariableValuesDict = new();
-        this.Evaluator = new StateCheckEvaluator(() => this.VariableValuesDict, propertyValuesProvider);
-        FillVariableValuesDict();
-      }
-
-      #endregion Constructors
-
-      #region Methods
-
-      private void FillVariableValuesDict()
-      {
-        foreach (var varUsage in StateCheckUtils.ExtractVariablesFromProperties(this.SpeechDefinition.Trigger))
-        {
-          Variable var = this.SpeechDefinition.Variables.First(q => q.Name == varUsage.VariableName);
-          this.VariableValuesDict[var.Name] = var.Value;
-        }
-        if (this.SpeechDefinition.ReactivationTrigger != null)
-          foreach (var varUsage in StateCheckUtils.ExtractVariablesFromProperties(this.SpeechDefinition.ReactivationTrigger))
-          {
-            Variable var = this.SpeechDefinition.Variables.First(q => q.Name == varUsage.VariableName);
-            this.VariableValuesDict[var.Name] = var.Value;
-          }
-      }
-
-      #endregion Methods
-
-    }
-
-    #endregion Classes + Structs
-
     #region Fields
 
     private readonly Logger logger;
@@ -105,23 +39,18 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     #region Properties
 
-    public SpeechDefinitionInfo EvaluatorRecentResultSpeechDefinitionInfo
-    {
-      get => base.GetProperty<SpeechDefinitionInfo>(nameof(EvaluatorRecentResultSpeechDefinitionInfo))!;
-      set => base.UpdateProperty(nameof(EvaluatorRecentResultSpeechDefinitionInfo), value);
-    }
-
-    public BindingList<StateCheckEvaluator.RecentResult> EvaluatorRecentResultView
-    {
-      get => base.GetProperty<BindingList<StateCheckEvaluator.RecentResult>>(nameof(EvaluatorRecentResultView))!;
-      set => base.UpdateProperty(nameof(EvaluatorRecentResultView), value);
-    }
-
-    public BindingList<SpeechDefinitionInfo> Infos { get; set; } = new(); //TODO rename to runtimes
-    
     public BindingList<BindingKeyValue<string, double>> PropertyValuesView { get; set; } = new();
-    
-    public CopilotSet Set { get; private set; }
+    public BindingList<SpeechDefinitionVM> SpeechDefinitionVMs
+    {
+      get => base.GetProperty<BindingList<SpeechDefinitionVM>>(nameof(SpeechDefinitionVMs))!;
+      set => base.UpdateProperty(nameof(SpeechDefinitionVMs), value);
+    }
+
+    public SpeechDefinitionVM EvaluatorRecentResultSpeechDefinitionVM
+    {
+      get => base.GetProperty<SpeechDefinitionVM>(nameof(EvaluatorRecentResultSpeechDefinitionVM))!;
+      set => base.UpdateProperty(nameof(EvaluatorRecentResultSpeechDefinitionVM), value);
+    }
 
     #endregion Properties
 
@@ -131,8 +60,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
     {
       this.logger = Logger.Create(this, "Copilot.RunContext");
 
-      this.Set = initContext.Set;
-      this.Set.SpeechDefinitions.ForEach(q => Infos.Add(new SpeechDefinitionInfo(q, () => this.propertyValues)));
+      this.SpeechDefinitionVMs = initContext.SpeechDefinitionVMs;
+      this.SpeechDefinitionVMs.ForEach(q => q.CreateRunTime(() => propertyValues));
 
       var allProps = initContext.SimPropertyGroup.GetAllSimPropertiesRecursively()
         .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q))
@@ -166,18 +95,18 @@ namespace Eng.Chlaot.Modules.CopilotModule
       //Log(LogLevel.INFO, "Stopped");
     }
 
-    private void EvaluateActives(IEnumerable<SpeechDefinitionInfo> readys)
+    private void EvaluateActives(IEnumerable<SpeechDefinitionVM> readys)
     {
       // play one one at once
-      SpeechDefinitionInfo? activated = readys
-        .FirstOrDefault(q => q.Evaluator.Evaluate(q.SpeechDefinition.Trigger));
+      SpeechDefinitionVM? activated = readys
+        .FirstOrDefault(q => q.RunTime.Evaluate(q.SpeechDefinition.Trigger));
 
       if (activated != null)
       {
         Player player = new(activated.SpeechDefinition.Speech.Bytes);
         player.PlayAsync();
 
-        activated.IsReadyToBeSpoken = false;
+        activated.RunTime.IsReadyToBeSpoken = false;
         this.logger.Invoke(LogLevel.VERBOSE,
           $"Activated speech {activated.SpeechDefinition.Title}");
       }
@@ -187,28 +116,23 @@ namespace Eng.Chlaot.Modules.CopilotModule
     {
       StateCheckEvaluator.UpdateDictionaryBySimObject(simObject, propertyValues);
 
-      var readys = this.Infos.Where(q => q.IsReadyToBeSpoken);
+      var readys = this.SpeechDefinitionVMs.Where(q => q.RunTime.IsReadyToBeSpoken);
       this.logger.Invoke(LogLevel.VERBOSE, $"Evaluating {readys.Count()} readys");
       EvaluateActives(readys);
 
-      var waits = this.Infos.Where(q => !q.IsReadyToBeSpoken);
+      var waits = this.SpeechDefinitionVMs.Where(q => !q.RunTime.IsReadyToBeSpoken);
       this.logger.Invoke(LogLevel.VERBOSE, $"Evaluating {waits.Count()} waits");
       EvaluateInactives(waits);
-
-      if (EvaluatorRecentResultSpeechDefinitionInfo != null)
-      {
-        this.EvaluatorRecentResultView = new(EvaluatorRecentResultSpeechDefinitionInfo.Evaluator.GetRecentResultSet());
-      }
     }
 
-    private void EvaluateInactives(IEnumerable<SpeechDefinitionInfo> waits)
+    private void EvaluateInactives(IEnumerable<SpeechDefinitionVM> waits)
     {
       waits
         .Where(q => q.SpeechDefinition.ReactivationTrigger != null)
-        .Where(q => q.Evaluator.Evaluate(q.SpeechDefinition.ReactivationTrigger!))
+        .Where(q => q.RunTime.Evaluate(q.SpeechDefinition.ReactivationTrigger!))
         .ForEach(q =>
         {
-          q.IsReadyToBeSpoken = true;
+          q.RunTime.IsReadyToBeSpoken = true;
           this.logger.Invoke(LogLevel.VERBOSE,
           $"Reactivated speech {q.SpeechDefinition.Title}");
         });
