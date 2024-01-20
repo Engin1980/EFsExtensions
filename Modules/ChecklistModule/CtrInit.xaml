@@ -7,6 +7,7 @@
              xmlns:types="clr-namespace:Eng.Chlaot.Modules.ChecklistModule.Types"
              xmlns:gctr="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
              xmlns:smo="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;assembly=ChlaotModuleBase"
+             xmlns:vm="clr-namespace:Eng.Chlaot.Modules.ChecklistModule.Types.VM"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <DockPanel>
@@ -25,29 +26,31 @@
         <TabItem Header="Checklist content">
           <ScrollViewer>
             <StackPanel>
-              <TreeView ItemsSource="{Binding ChecklistSet.Checklists}">
+              <TreeView ItemsSource="{Binding CheckListVMs}">
                 <TreeView.Resources>
-                  <HierarchicalDataTemplate DataType="{x:Type types:CheckList}" ItemsSource="{Binding Items}">
+                  <HierarchicalDataTemplate DataType="{x:Type vm:CheckListVM}" ItemsSource="{Binding Items}">
                     <Label x:Name="lblChecklist" Margin="0" Padding="0" 
                        MouseRightButtonDown="lblChecklist_MouseRightButtonDown" Tag="{Binding}" >
                       <Label.Content>
                         <StackPanel Orientation="Horizontal" >
-                          <TextBlock Text="{Binding CallSpeech}" />
-                          <TextBlock Text=" (" />
-                          <TextBlock Text="{Binding Id}" />
-                          <TextBlock Text=")" />
+                          <TextBlock Text="{Binding CheckList.CallSpeech}" />
+                          <TextBlock Text=" (" Foreground="Gray"/>
+                          <TextBlock Text="{Binding CheckList.Id}"  Foreground="Gray"/>
+                          <TextBlock Text=") " Foreground="Gray"/>
+                          <TextBlock Text="#" Foreground="Gray"/>
+                          <TextBlock Text="{Binding Items.Count}"  Foreground="Gray"/>
                         </StackPanel>
                       </Label.Content>
                     </Label>
                   </HierarchicalDataTemplate>
-                  <HierarchicalDataTemplate DataType="{x:Type types:CheckItem}">
+                  <HierarchicalDataTemplate DataType="{x:Type vm:CheckItemVM}">
                     <Label x:Name="lblItem" Margin="0" Padding="0" 
                        MouseRightButtonDown="lblItem_MouseRightButtonDown" Tag="{Binding}">
                       <Label.Content>
                         <StackPanel Orientation="Horizontal">
-                          <TextBlock Text="{Binding Call.Value}" />
+                          <TextBlock Text="{Binding CheckItem.Call.Value}" />
                           <TextBlock Text=" => " />
-                          <TextBlock Text="{Binding Confirmation.Value}" />
+                          <TextBlock Text="{Binding CheckItem.Confirmation.Value}" />
                         </StackPanel>
                       </Label.Content>
                     </Label>
@@ -59,16 +62,16 @@
           </ScrollViewer>
         </TabItem>
         <TabItem Header="Checklist layout">
-          <DataGrid ItemsSource="{Binding ChecklistSet.Checklists}" AutoGenerateColumns="False" CanUserAddRows="False">
+          <DataGrid ItemsSource="{Binding CheckListVMs}" AutoGenerateColumns="False" CanUserAddRows="False">
             <DataGrid.Columns>
               <DataGridTemplateColumn Header="Checklist">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
                     <Label>
                     <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="{Binding CallSpeech}" />
+                      <TextBlock Text="{Binding CheckList.CallSpeech}" />
                         <TextBlock Text=" (id=" FontSize="10"  VerticalAlignment="Bottom" Foreground="Gray"/>
-                      <TextBlock Text="{Binding Id}" FontSize="10"   VerticalAlignment="Bottom" Foreground="Blue"/>
+                        <TextBlock Text="{Binding CheckList.Id}" FontSize="10"   VerticalAlignment="Bottom" Foreground="Blue"/>
                         <TextBlock Text=")" FontSize="10"   VerticalAlignment="Bottom" Foreground="Gray"/>
                     </StackPanel>
                     </Label>
@@ -78,7 +81,7 @@
               <DataGridTemplateColumn Header="Following">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
-                    <ItemsControl ItemsSource="{Binding NextChecklists}">
+                    <ItemsControl ItemsSource="{Binding CheckList.NextChecklists}">
                       <ItemsControl.ItemTemplate>
                         <DataTemplate>
                           <StackPanel Orientation="Horizontal">
@@ -93,7 +96,7 @@
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-              <DataGridTextColumn Header="Autoplay Condition" Binding="{Binding Trigger.DisplayString, FallbackValue=(None)}" />
+              <DataGridTextColumn Header="Autoplay Condition" Binding="{Binding CheckList.Trigger.DisplayString, FallbackValue=(None)}" />
             </DataGrid.Columns>
           </DataGrid>
         </TabItem>

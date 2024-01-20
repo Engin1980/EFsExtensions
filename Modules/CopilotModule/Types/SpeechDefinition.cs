@@ -62,10 +62,10 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types
 
     private List<StateCheckUtils.VariableUsage> ExtractVariablePairsFromStateChecks()
     {
-      List<StateCheckUtils.VariableUsage> ret = StateCheckUtils.ExtractVariables(this.Trigger);
+      List<StateCheckUtils.VariableUsage> ret = StateCheckUtils.ExtractVariablesFromProperties(this.Trigger);
       if (this.ReactivationTrigger != null)
       {
-        var tmp = StateCheckUtils.ExtractVariables(this.ReactivationTrigger);
+        var tmp = StateCheckUtils.ExtractVariablesFromProperties(this.ReactivationTrigger);
         ret.AddRange(tmp);
       }
       return ret;

@@ -76,13 +76,13 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
       private void FillVariableValuesDict()
       {
-        foreach (var varUsage in StateCheckUtils.ExtractVariables(this.SpeechDefinition.Trigger))
+        foreach (var varUsage in StateCheckUtils.ExtractVariablesFromProperties(this.SpeechDefinition.Trigger))
         {
           Variable var = this.SpeechDefinition.Variables.First(q => q.Name == varUsage.VariableName);
           this.VariableValuesDict[var.Name] = var.Value;
         }
         if (this.SpeechDefinition.ReactivationTrigger != null)
-          foreach (var varUsage in StateCheckUtils.ExtractVariables(this.SpeechDefinition.ReactivationTrigger))
+          foreach (var varUsage in StateCheckUtils.ExtractVariablesFromProperties(this.SpeechDefinition.ReactivationTrigger))
           {
             Variable var = this.SpeechDefinition.Variables.First(q => q.Name == varUsage.VariableName);
             this.VariableValuesDict[var.Name] = var.Value;

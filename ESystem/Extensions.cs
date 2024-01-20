@@ -40,13 +40,19 @@ namespace ESystem
       return ret;
     }
 
-    public static IEnumerable<T> Tap<T>(this IEnumerable<T> lst, Action<T> action)
+    public static IEnumerable<T> TapEach<T>(this IEnumerable<T> lst, Action<T> action)
     {
       foreach (var item in lst)
       {
         action(item);
       }
       return lst;
+    }
+
+    public static T Tap<T>(this T obj, Action<T> action)
+    {
+      action(obj);
+      return obj;
     }
   }
 }

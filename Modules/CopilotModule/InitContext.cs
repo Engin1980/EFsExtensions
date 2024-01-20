@@ -221,7 +221,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
       foreach (var item in tmp.SpeechDefinitions)
       {
         List<Variable> definedVariables = item.Variables;
-        List<VariableUsage> variableUsages = StateCheckUtils.ExtractVariables(item.Trigger);
+        List<VariableUsage> variableUsages = StateCheckUtils.ExtractVariablesFromProperties(item.Trigger);
         var vmp = variableUsages
           .Where(q => definedVariables.None(v => v.Name == q.VariableName))
           .Select(q => q.VariableName)
@@ -231,7 +231,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
       foreach (var item in tmp.SpeechDefinitions.Where(q => q.ReactivationTrigger != null))
       {
         List<Variable> definedVariables = item.Variables;
-        List<VariableUsage> variableUsages = StateCheckUtils.ExtractVariables(item.ReactivationTrigger!);
+        List<VariableUsage> variableUsages = StateCheckUtils.ExtractVariablesFromProperties(item.ReactivationTrigger!);
         var vmp = variableUsages
           .Where(q => definedVariables.None(v => v.Name == q.VariableName))
           .Select(q => q.VariableName)

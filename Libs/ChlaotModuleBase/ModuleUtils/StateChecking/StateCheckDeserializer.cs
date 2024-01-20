@@ -48,6 +48,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 
     private StateCheckDelay DeserializeDelayfromElement(XElement element, EXmlContext context)
     {
+      //TODO this should be done via EXml
       string s = element.Attribute("seconds")?.Value
                  ?? throw new StateCheckDeserializationException("Argument 'seconds' is missing.");
       IStateCheckItem val = DeserializeElement(element.Elements().First(), typeof(IStateCheckItem), context);
@@ -56,6 +57,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         Seconds = s,
         Item = val
       };
+      ret.PostDeserialize();
       return ret;
     }
 

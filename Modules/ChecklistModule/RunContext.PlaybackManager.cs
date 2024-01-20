@@ -1,5 +1,5 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
-using Eng.Chlaot.Modules.ChecklistModule.Types.RunViews;
+using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using ESystem.Asserting;
 using System;
 
@@ -20,7 +20,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       public bool IsWaitingForNextChecklist { get => currentItemIndex == 0 && isEntryPlayed == false; }
       public bool IsPartlyPlayed => currentItemIndex > 0;
 
-      public PlaybackManager(CheckListView initialChecklist, bool readConfirmations)
+      public PlaybackManager(CheckListRunVM initialChecklist, bool readConfirmations)
       {
         EAssert.Argument.IsNotNull(initialChecklist, nameof(initialChecklist));
         this.readConfirmations = readConfirmations;
@@ -28,10 +28,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         this.SetCurrent(this.Current); // ensures correct initialization
       }
 
-      public CheckListView Current { get; private set; }
+      public CheckListRunVM Current { get; private set; }
       public bool IsPlaying { get => this.isMainLoopActive; }
 
-      public void SetCurrent(CheckListView value)
+      public void SetCurrent(CheckListRunVM value)
       {
         EAssert.Argument.IsNotNull(value, nameof(value));
         // reset old one

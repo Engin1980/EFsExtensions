@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.ChecklistModule.Types.RunViews;
+﻿using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

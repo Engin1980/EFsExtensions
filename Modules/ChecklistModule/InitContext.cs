@@ -29,6 +29,8 @@ using static System.Net.WebRequestMethods;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using ESystem;
 using System.Runtime.CompilerServices;
+using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
+using ChlaotModuleBase;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -43,10 +45,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(MetaInfo), value);
     }
 
-    public CheckSet ChecklistSet
+    public List<CheckListVM> CheckListVMs
     {
-      get => base.GetProperty<CheckSet>(nameof(ChecklistSet))!;
-      set => base.UpdateProperty(nameof(ChecklistSet), value);
+      get => base.GetProperty<List<CheckListVM>>(nameof(CheckListVMs))!;
+      set => base.UpdateProperty(nameof(CheckListVMs), value);
     }
 
     public SimPropertyGroup SimPropertyGroup
@@ -158,8 +160,18 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           this.SimPropertyGroup = spg;
         }
         this.PropertyUsageCounts = GetPropertyUsagesCounts(tmp, this.SimPropertyGroup.GetAllSimPropertiesRecursively());
-        this.ChecklistSet = tmp;
+
+
         this.MetaInfo = tmpMeta;
+
+        var lst = tmp.Checklists.Select(q => new CheckListRunVM()
+        {
+          CheckList = q,
+          Variables = new(q.Variables.Select(q => new BindingKeyValue<string, double>(q.Name, q.Value)).ToList()),
+          Items = new(q.Items.Select(p => new CheckItemRunVM() { CheckItem = p }))
+        }).ToList();
+        this.CheckListVMs = new(lst);
+
         this.setIsReadyFlagAction(true);
         logger.Invoke(LogLevel.INFO, $"Checklist file '{xmlFile}' successfully loaded.");
       }
@@ -216,7 +228,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
             {
               var n = tmp.Checklists.Single(q => q.Id == pt);
               checklist.NextChecklists.Add(n);
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
               throw new ApplicationException($"Failed to find checklist with id '{pt}'.", ex);
             }
@@ -255,13 +268,11 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       List<string> missingVariables = new();
       foreach (var item in tmp.Checklists.Where(q => q.Trigger != null))
       {
-        List<Variable> definedVariables = item.Variables;
-        List<VariableUsage> variableUsages = StateCheckUtils.ExtractVariables(item.Trigger!);
-        var vmp = variableUsages
-          .Where(q => definedVariables.None(v => v.Name == q.VariableName))
-          .Select(q => q.VariableName)
-          .ToList();
-        missingVariables.AddRange(vmp);
+        var definedVariables = item.Variables.Select(q => q.Name);
+        var usedVariableNames = StateCheckUtils.ExtractVariables(item.Trigger!);
+        var misses = usedVariableNames
+          .Where(q => definedVariables.None(v => v == q));
+        missingVariables.AddRange(misses);
       }
       if (missingVariables.Any())
         throw new ApplicationException($"Required variables not found in defined variables: {string.Join(", ", missingVariables.Distinct())}.");

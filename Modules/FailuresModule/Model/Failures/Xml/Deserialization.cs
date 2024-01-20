@@ -117,7 +117,7 @@ namespace FailuresModule.Model.Failures.Xml
         EAssert.IsTrue(items.None(q => q is FailureDefinitionGroup || q is Sequence));
         var tmp = items
           .Cast<FailureDefinition>()
-          .Tap(q => q.ExpandVariableIfExists(seq.VarRef, i))
+          .TapEach(q => q.ExpandVariableIfExists(seq.VarRef, i))
           .ToList();
         subLists.Add(tmp);
       }

@@ -1,7 +1,8 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
+﻿using ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.Modules.ChecklistModule.Types.RunViews;
+using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using ESystem.Asserting;
 using System;
 using System.Collections.Generic;
@@ -14,25 +15,27 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     public class ChecklistManager
     {
       private readonly PlaybackManager playbackManager;
-      private CheckListView? previous;
-      private CheckListView current;
-      private readonly List<CheckListView> active = new ();
-      private readonly List<CheckListView> all;
+      private CheckListRunVM? previous;
+      private CheckListRunVM current;
+      private readonly List<CheckListRunVM> active = new();
+      private readonly List<CheckListRunVM> all;
       private readonly bool isAutoplayingEnabled;
       private readonly SimObject simObject;
       private readonly Dictionary<string, double> propertyValues = new();
+      private readonly Dictionary<CheckListRunVM, Dictionary<string, double>> variableValues = new();
 
-
-      public ChecklistManager(List<CheckListView> checkListViews, SimObject simObject,
-        bool useAutoplay, bool readConfirmations,
-        Func<Dictionary<string, double>> variableValuesProvider)
+      public ChecklistManager(List<CheckListRunVM> checkListViews, SimObject simObject,
+        bool useAutoplay, bool readConfirmations)
       {
-        EAssert.Argument.IsNotNull(variableValuesProvider, nameof(variableValuesProvider));
         EAssert.Argument.IsNotNull(checkListViews, nameof(checkListViews));
         EAssert.Argument.IsNotNull(simObject, nameof(simObject));
 
         this.all = checkListViews;
-        this.all.ForEach(q => q.Evaluator = new StateCheckEvaluator(variableValuesProvider, () => this.propertyValues));
+        this.all.ForEach(q =>
+        {
+          variableValues[q] = q.CheckList.Variables.ToDictionary(q => q.Name, q => q.Value);
+          q.Evaluator = new StateCheckEvaluator(() => variableValues[q], () => this.propertyValues);
+        });
         this.current = checkListViews.First();
         this.active.Add(current);
 
@@ -67,7 +70,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         var nextActiveViews = this.all.Where(q => nextActive.Contains(q.CheckList));
         this.active.Clear();
         this.active.AddRange(nextActiveViews);
-        nextActiveViews.ForEach(q=>q.Evaluator.Reset());
+        nextActiveViews.ForEach(q => q.Evaluator.Reset());
 
         this.previous = this.current;
         this.current = nextActiveViews.First();
@@ -104,7 +107,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
         StateCheckEvaluator.UpdateDictionaryBySimObject(this.simObject, this.propertyValues);
 
-        CheckListView? readyCheckList = this.active
+        CheckListRunVM? readyCheckList = this.active
           .Where(q => q.CheckList.Trigger != null)
           .FirstOrDefault(q => q.Evaluator.Evaluate(q.CheckList.Trigger!));
 

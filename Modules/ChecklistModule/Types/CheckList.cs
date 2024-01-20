@@ -55,7 +55,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types
       List<StateCheckUtils.VariableUsage> ret = new();
       if (this.Trigger != null)
       {
-        var tmp = StateCheckUtils.ExtractVariables(this.Trigger);
+        var tmp = StateCheckUtils.ExtractVariablesFromProperties(this.Trigger);
         ret.AddRange(tmp);
       }
       return ret;

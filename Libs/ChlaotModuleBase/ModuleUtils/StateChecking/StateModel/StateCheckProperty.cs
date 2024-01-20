@@ -11,10 +11,11 @@ using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows.Media.Animation;
 using static ESimConnect.SimUnits;
+using EXmlLib.Interfaces;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel
 {
-  public class StateCheckProperty : IStateCheckItem, IValidable
+  public class StateCheckProperty : IStateCheckItem, IXmlObjectPostDeserialize
   {
 
     #region Properties
@@ -42,15 +43,15 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel
       return Expression[1..^1];
     }
 
-    public void CheckIsValid()
+    public override string ToString() => this.DisplayString + " {StateCheckProperty}";
+
+    public void PostDeserialize()
     {
       if (Expression == null) throw new StateCheckException($"{nameof(Expression)} is null.");
       if (Name == null) throw new StateCheckException($"{nameof(Name)} is null.");
       if (Randomness == null) throw new StateCheckException($"{nameof(Randomness)} is null.");
       if (Sensitivity == null) throw new StateCheckException($"{nameof(Sensitivity)} is null.");
     }
-
-    public override string ToString() => this.DisplayString + " {StateCheckProperty}";
 
     #endregion Methods
 
