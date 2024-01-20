@@ -105,7 +105,7 @@
       </item>
     </items>
     <variables>
-      <g:randomVariable name="{delay}" minimum="3" maximum="8" isInteger="true"/>
+      <g:randomVariable name="delay" minimum="3" maximum="8" isInteger="true"/>
     </variables>
     <trigger>
       <g:and>

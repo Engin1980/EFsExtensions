@@ -28,7 +28,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel
     {
       EAssert.IsNonEmptyString(Seconds);
       string numPattern = @"^\d+(\.\d+)?$";
-      string varPattern = @"^[^\{]\S+[^\}]$";
+      string varPattern = @"^\{\S+\}$";
       EAssert.IsTrue(
         Regex.IsMatch(this.Seconds, numPattern) || Regex.IsMatch(this.Seconds, varPattern),
         $"Value of seconds ('{this.Seconds}') is not in the valid format.");

@@ -1,7 +1,10 @@
-﻿using System;
+﻿using ESystem.Asserting;
+using EXmlLib.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel
@@ -33,5 +36,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel
     }
 
     public override double Value { get => UserValue ?? DefaultValue ?? double.NaN; }
+
   }
 }

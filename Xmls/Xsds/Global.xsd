@@ -125,7 +125,7 @@
   </xsd:complexType>
 
   <xsd:complexType name="randomVariable">
-    <xsd:attribute name="name" type="nonemptyString" use="required"/>
+    <xsd:attribute name="name" type="variableName" use="required"/>
     <xsd:attribute name="minimum" type="xsd:double" use="required"/>
     <xsd:attribute name="maximum" type="xsd:double" use="required"/>
     <xsd:attribute name="description" type="xsd:string" use="optional" />
@@ -133,9 +133,15 @@
   </xsd:complexType>
 
   <xsd:complexType name="userVariable">
-    <xsd:attribute name="name" type="nonemptyString" use="required"/>
+    <xsd:attribute name="name" type="variableName" use="required"/>
     <xsd:attribute name="defaultValue" type="xsd:double" use="optional" />
     <xsd:attribute name="description" type="xsd:string" use="optional" />
   </xsd:complexType>
+  
+  <xsd:simpleType name="variableName">
+    <xsd:restriction base="xsd:string">
+      <xsd:pattern value="^[^\{]\S+[^\}]$" />
+    </xsd:restriction>
+  </xsd:simpleType>
 
 </xsd:schema>
