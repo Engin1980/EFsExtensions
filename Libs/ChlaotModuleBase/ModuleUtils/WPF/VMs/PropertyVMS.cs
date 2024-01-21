@@ -27,12 +27,12 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
       return this.ToDictionary(q => q.Key.Name, q => q.Value);
     }
 
-    public static void UpdateDictionaryBySimObject(SimObject simObject, Dictionary<string, double> target)
+    public void UpdateBySimObject(SimObject simObject)
     {
       var tmp = simObject.GetAllPropertiesWithValues();
       foreach (var item in tmp)
       {
-        target[item.Key.Name] = item.Value;
+        this[item.Key.Name] = item.Value;
       }
     }
   }

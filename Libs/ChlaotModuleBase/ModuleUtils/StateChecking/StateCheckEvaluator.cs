@@ -115,14 +115,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       }
     }
 
-    public static void UpdateDictionaryBySimObject(SimObject simObject, Dictionary<string, double> target)
-    {
-      var tmp = simObject.GetAllPropertiesWithValues();
-      foreach (var item in tmp)
-      {
-        target[item.Key.Name] = item.Value;
-      }
-    }
+
 
     public bool Evaluate(IStateCheckItem item)
     {
