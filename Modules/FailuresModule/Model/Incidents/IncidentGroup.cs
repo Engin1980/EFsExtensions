@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESystem;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
@@ -7,8 +8,25 @@ using System.Threading.Tasks;
 
 namespace FailuresModule.Model.Incidents
 {
-    public class IncidentGroup : Incident
+  public class IncidentGroup : Incident
+  {
+    public List<Incident> Incidents { get; set; }
+
+    public List<IncidentDefinition> GetIncidentDefinitionsRecursively()
     {
-        public List<Incident> Incidents { get; set; }
+      List<IncidentDefinition> ret = new List<IncidentDefinition>();
+
+      foreach (var item in Incidents)
+      {
+        if (item is IncidentGroup ig)
+        {
+          var tmp = ig.GetIncidentDefinitionsRecursively();
+          ret.AddRange(tmp);
+        }
+        else if (item is IncidentDefinition id)
+          ret.Add(id);
+      }
+      return ret;
     }
+  }
 }

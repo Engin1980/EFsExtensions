@@ -39,7 +39,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     #region Properties
 
-    public PropertyVMS PropertyVMs { get; set; } = new();
+    public PropertyVMS PropertyVMs { get; set; }
 
     public BindingList<SpeechDefinitionVM> SpeechDefinitionVMs
     {
@@ -62,11 +62,10 @@ namespace Eng.Chlaot.Modules.CopilotModule
       this.logger = Logger.Create(this, "Copilot.RunContext");
 
       this.SpeechDefinitionVMs = initContext.SpeechDefinitionVMs;
-      this.PropertyVMs = PropertyVMS.Create(initContext.SimPropertyGroup
+      this.PropertyVMs = new(initContext.SimPropertyGroup
         .GetAllSimPropertiesRecursively()
         .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q)));
-
-      this.SpeechDefinitionVMs.ForEach(q => q.CreateRunTime(this.PropertyVMs));
+      this.SpeechDefinitionVMs.ForEach(q => q.CreateRunTime(PropertyVMs));
 
       this.simObject = SimObject.GetInstance();
       this.simObject.SimSecondElapsed += SimObject_SimSecondElapsed;
@@ -112,7 +111,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private void EvaluateForSpeeches()
     {
-      StateCheckEvaluator.UpdateDictionaryBySimObject(simObject, propertyValues);
+      this.PropertyVMs.UpdateBySimObject(simObject);
 
       var readys = this.SpeechDefinitionVMs.Where(q => q.RunTime.IsReadyToBeSpoken);
       this.logger.Invoke(LogLevel.VERBOSE, $"Evaluating {readys.Count()} readys");
@@ -143,8 +142,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private void SimObject_SimPropertyChanged(SimProperty property, double value)
     {
-      this.propertyValues[property.Name] = value;
-      this.PropertyValuesView.First(q => q.Key == property.Name).Value = value;
+      this.PropertyVMs[property] = value;
     }
     private void SimObject_SimSecondElapsed()
     {

@@ -28,7 +28,7 @@
                 <TextBlock Text=" (set)" />
               </StackPanel>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelRun:RunIncidentDefinition}">
+            <HierarchicalDataTemplate DataType="{x:Type modelRun:IncidentDefinitionVM}">
               <StackPanel Orientation="Vertical" Margin="2">
                 <StackPanel Orientation="Horizontal">
                   <Label>

@@ -1,7 +1,6 @@
 ﻿using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.Interfaces;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using Eng.Chlaot.Modules.CopilotModule.Types;
@@ -38,9 +37,9 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types.VMs
         set => base.UpdateProperty(nameof(IsReadyToBeSpoken), value);
       }
 
-      public RunTimeVM(IVariableValuesProvider variableValuesProvider, IPropertyValuesProvider propertyValuesProvider)
+      public RunTimeVM(VariableVMS variables, PropertyVMS propertyVMs)
       {
-        this.evaluator = new StateCheckEvaluator(variableValuesProvider, propertyValuesProvider);
+        this.evaluator = new StateCheckEvaluator(variables.GetAsDict, propertyVMs.GetAsDict);
       }
 
       public bool Evaluate(IStateCheckItem item)
@@ -67,9 +66,9 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types.VMs
       set => base.UpdateProperty(nameof(Variables), value);
     }
 
-    public void CreateRunTime(IPropertyValuesProvider propertyValuesProvider)
+    internal void CreateRunTime(PropertyVMS propertyVMs)
     {
-      this.RunTime = new RunTimeVM(this.Variables, propertyValuesProvider);
+      this.RunTime = new RunTimeVM(this.Variables, propertyVMs);
     }
   }
 }

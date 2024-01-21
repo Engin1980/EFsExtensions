@@ -17,7 +17,7 @@ namespace FailuresModule.Model.RunTime
       {
         RunIncident ri;
         if (i is IncidentDefinition id)
-          ri = RunIncidentDefinition.Create(id);
+          ri = IncidentDefinitionVM.Create(id);
         else if (i is IncidentGroup ig)
           ri = RunIncidentGroup.Create(ig);
         else

@@ -15,8 +15,9 @@
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <converters:Int2VisibilityConverter x:Key="Int2VisibilityConverter" />
+    <gConverters:DoubleNanConverter x:Key="DoubleNanConverter"/>
     <converters:VariableValueConverter x:Key="VariableValueConverter" />
-    <converters:VariableHasValueToSolidBrushConverter x:Key="VariableHasValueToSolidBrushConverter" />
+    <converters:DoubleHasValueToSolidBrushConverter x:Key="DoubleHasValueToSolidBrushConverter" />
     <converters:TextBoxTextIsDoubleToSolidBrushConverter x:Key="TextBoxTextIsDoubleToSolidBrushConverter" />
     <gConverters:DoubleFormatter x:Key="DoubleFormatter" />
     <HierarchicalDataTemplate DataType="{x:Type sct:StateCheckDelay}" ItemsSource="{Binding Item}">
@@ -31,42 +32,6 @@
     <DataTemplate DataType="{x:Type sct:StateCheckProperty}">
       <TextBlock Text="{Binding DisplayString}" />
     </DataTemplate>
-    <DataTemplate DataType="{x:Type vars:UserVariable}" x:Key="TemplateUserVariable">
-      <Label>
-        <StackPanel Orientation="Horizontal" ToolTip="{Binding Description}">
-          <TextBlock Text="{Binding Name}" />
-          <TextBlock Text=" = " />
-          <TextBox TextAlignment="Right" Margin="0" 
-            Text="{Binding UserOrDefaultValue, 
-            UpdateSourceTrigger=PropertyChanged, 
-              Converter={StaticResource VariableValueConverter}}"
-            Background="{Binding RelativeSource={RelativeSource Self}, Path=Text,
-              Converter={StaticResource TextBoxTextIsDoubleToSolidBrushConverter}}"
-            Width="50" />
-          <TextBlock Text=" (default=" />
-          <TextBlock Text="{Binding DefaultValue}" />
-          <TextBlock Text=")" />
-        </StackPanel>
-      </Label>
-    </DataTemplate>
-    <DataTemplate DataType="{x:Type vars:RandomVariable}"  x:Key="TemplateRandomVariable">
-      <Label>
-        <StackPanel Orientation="Horizontal" ToolTip="{Binding Description}">
-          <TextBlock Text="{}{" />
-          <TextBlock Text="{Binding Name}" />
-          <TextBlock Text="} = " />
-          <TextBlock TextAlignment="Right" Margin="0" 
-            Text="{Binding Value, Converter={StaticResource DoubleFormatter}, ConverterParameter=N3}" />
-          <TextBlock Text=" ( min = " />
-          <TextBlock Text="{Binding Minimum}" />
-          <TextBlock Text=", max = " />
-          <TextBlock Text="{Binding Maximum}" />
-          <TextBlock Text=")" />
-        </StackPanel>
-      </Label>
-    </DataTemplate>
-    <local:VariablesTemplateSelector x:Key="VariablesTemplateSelector"
-      UserVariableTemplate="{StaticResource TemplateUserVariable}" RandomVariableTemplate="{StaticResource TemplateRandomVariable}"                                      />
   </UserControl.Resources>
   <DockPanel>
     <DockPanel DockPanel.Dock="Top">
@@ -96,7 +61,19 @@
                 <StackPanel Visibility="{Binding Variables.Count, Converter={StaticResource Int2VisibilityConverter}}"
                   Orientation="Horizontal">
                   <Label Content="{Binding SpeechDefinition.Title}" Width="350" />
-                  <ItemsControl ItemsSource="{Binding Variables}" ItemTemplateSelector="{StaticResource VariablesTemplateSelector}" >
+                  <ItemsControl ItemsSource="{Binding Variables}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                          <TextBlock Text="{Binding Key.Variable.Name}" />
+                          <TextBlock Text=" = " />
+                          <TextBox Text="{Binding Value, Converter={StaticResource DoubleNanConverter}}" Width="50" TextAlignment="Right"
+                                   IsReadOnly="{Binding Key.IsReadOnly}" Background="{Binding Value, Converter={StaticResource DoubleHasValueToSolidBrushConverter}}" />
+                          <TextBlock Text=" " />
+                          <TextBlock Text="{Binding Key.AdditionalInfo}" />
+                        </StackPanel>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
                   </ItemsControl>
                 </StackPanel>
               </DataTemplate>

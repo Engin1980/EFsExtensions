@@ -16,6 +16,8 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 
 namespace FailuresModule
 {
@@ -34,8 +36,14 @@ namespace FailuresModule
     }
 
     public List<FailureDefinition> FailureDefinitionsFlat { get; set; }
+
     public List<FailureDefinitionBase> FailureDefinitions { get; set; }
 
+    public PropertyVMS PropertyVMs
+    {
+      get => base.GetProperty<PropertyVMS>(nameof(PropertyVMs))!;
+      set => base.UpdateProperty(nameof(PropertyVMs), value);
+    }
 
     public MetaInfo MetaInfo
     {

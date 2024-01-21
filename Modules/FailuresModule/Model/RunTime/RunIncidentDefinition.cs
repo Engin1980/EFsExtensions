@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace FailuresModule.Model.RunTime
 {
-    internal class RunIncidentDefinition : RunIncident
+    internal class IncidentDefinitionVM : RunIncident
   {
     internal static RunIncident Create(IncidentDefinition id)
     {
-      RunIncidentDefinition ret = new RunIncidentDefinition(id);
+      IncidentDefinitionVM ret = new IncidentDefinitionVM(id);
       return ret;
     }
 
-    private RunIncidentDefinition(IncidentDefinition incidentDefinition)
+    private IncidentDefinitionVM(IncidentDefinition incidentDefinition)
     {
       IncidentDefinition = incidentDefinition;
     }

@@ -19,9 +19,10 @@ using System.Xml.Linq;
 using System.Xml.Serialization;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using ESystem;
-using static ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
+using static Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
 using Eng.Chlaot.Modules.CopilotModule.Types.VMs;
 using ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
@@ -31,7 +32,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
-    private readonly Dictionary<Variable, SpeechDefinition> variableToSpeechDefinitionMapping = new();
 
     #endregion Fields
 
@@ -121,12 +121,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
           : tmpSpg.GetAllSimPropertiesRecursively().Union(this.SimPropertyGroup.GetAllSimPropertiesRecursively()).ToList();
         Try(() => CheckSanity(tmp, props), ex => new ApplicationException("Error loading copilot data.", ex));
 
-        logger.Invoke(LogLevel.INFO, $"Loading/generating sounds");
-        Try(() => InitializeSoundStreams(tmp, System.IO.Path.GetDirectoryName(xmlFile)!),
-          ex => new ApplicationException("Error creating sound streams.", ex));
-
-        logger.Invoke(LogLevel.INFO, "Binding property changed events");
-        BindPropertyChangedEvents(tmp);
 
         if (tmpSpg != null)
         {
@@ -142,9 +136,16 @@ namespace Eng.Chlaot.Modules.CopilotModule
           .Select(q => new SpeechDefinitionVM()
           {
             SpeechDefinition = q,
-            Variables = q.Variables
+            Variables = VariableVMS.Create(q.Variables)
           })
           .ToBindingList();
+
+        logger.Invoke(LogLevel.INFO, $"Loading/generating sounds");
+        Try(() => InitializeSoundStreams(this.SpeechDefinitionVMs, System.IO.Path.GetDirectoryName(xmlFile)!),
+          ex => new ApplicationException("Error creating sound streams.", ex));
+
+        logger.Invoke(LogLevel.INFO, "Binding property changed events");
+        BindPropertyChangedEvents();
 
         UpdateReadyFlag();
         logger.Invoke(LogLevel.INFO, $"Copilot set file '{xmlFile}' successfully loaded.");
@@ -157,28 +158,21 @@ namespace Eng.Chlaot.Modules.CopilotModule
       }
     }
 
-    private void BindPropertyChangedEvents(CopilotSet tmp)
+    private void BindPropertyChangedEvents()
     {
-      tmp.SpeechDefinitions.ForEach(q =>
-      {
-        q.Variables
-          .Where(q => q is UserVariable)
-          .Cast<UserVariable>()
-          .ForEach(p =>
-          {
-            p.PropertyChanged += Variable_PropertyChanged;
-            variableToSpeechDefinitionMapping[p] = q;
-          });
-      });
+      this.SpeechDefinitionVMs
+        .SelectMany(q => q.Variables)
+        .Where(q => !q.Key.IsReadOnly)
+        .ForEach(q => q.PropertyChanged += Variable_PropertyChanged);
     }
 
     private void BuildSpeech(
-      SpeechDefinition speechDefinition,
+      SpeechDefinitionVM speechDefinitionVM,
       Dictionary<string, byte[]> generatedSounds,
       Synthetizer synthetizer,
       string relativePath)
     {
-      Speech speech = speechDefinition.Speech;
+      Speech speech = speechDefinitionVM.SpeechDefinition.Speech;
       if (speech.Type == Speech.SpeechType.File)
         try
         {
@@ -191,7 +185,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         }
       else if (speech.Type == Speech.SpeechType.Speech)
       {
-        string txt = speech.GetEvaluatedValue(speechDefinition.Variables);
+        string txt = speech.GetEvaluatedValue(speechDefinitionVM.Variables);
         try
         {
           if (generatedSounds.ContainsKey(txt))
@@ -288,11 +282,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
         throw new ApplicationException($"Required variables not found in defined variables: {string.Join(", ", missingVariables.Distinct())}.");
     }
 
-    private void InitializeSoundStreams(CopilotSet set, string relativePath)
+    private void InitializeSoundStreams(BindingList<SpeechDefinitionVM> speechDefinitions, string relativePath)
     {
       Synthetizer synthetizer = new(Settings.Synthetizer);
       Dictionary<string, byte[]> generatedSounds = new();
-      foreach (var sd in set.SpeechDefinitions)
+      foreach (var sd in speechDefinitions)
       {
         BuildSpeech(sd, generatedSounds, synthetizer, relativePath);
       }
@@ -320,10 +314,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private void Variable_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-      UserVariable variable = (UserVariable)sender!;
-      SpeechDefinition sd = variableToSpeechDefinitionMapping[variable];
-      if (sd.Speech.Type == Speech.SpeechType.Speech
-        && sd.Speech.GetUsedVariables().Any(q => q == variable.Name))
+      BindingKeyValue<VariableVM, double> bkv = (BindingKeyValue<VariableVM, double>)sender!;
+      UserVariable variable = (UserVariable)bkv.Key.Variable;
+      SpeechDefinitionVM sd = this.SpeechDefinitionVMs.First(q => q.Variables.Any(q => q.Key.Variable == variable));
+      if (sd.SpeechDefinition.Speech.Type == Speech.SpeechType.Speech
+        && sd.SpeechDefinition.Speech.GetUsedVariables().Any(q => q == variable.Name))
       {
         BuildSpeech(sd, new(), new Synthetizer(this.Settings.Synthetizer), "");
       }

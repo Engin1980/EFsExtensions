@@ -23,14 +23,16 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 using Eng.Chlaot.Modules.ChecklistModule.Types.Xml;
 using static ESystem.Functions;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
-using static ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
+
 using static System.Net.WebRequestMethods;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using ESystem;
 using System.Runtime.CompilerServices;
 using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
+using static Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -167,7 +169,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         this.CheckListVMs = tmp.Checklists.Select(q => new CheckListVM()
         {
           CheckList = q,
-          Variables = new(q.Variables.Select(q => new BindingKeyValue<string, double>(q.Name, q.Value)).ToList()),
+          Variables = VariableVMS.Create(q.Variables),
           Items = new(q.Items.Select(p => new CheckItemVM() { CheckItem = p }))
         }).ToList();
 

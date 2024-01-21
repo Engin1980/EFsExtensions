@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -9,20 +10,19 @@ using System.Windows.Media;
 
 namespace Eng.Chlaot.Modules.CopilotModule.Converters
 {
-  public class VariableHasValueToSolidBrushConverter : IValueConverter
+  public class DoubleHasValueToSolidBrushConverter : TypedConverter<double, SolidColorBrush>
   {
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    protected override SolidColorBrush Convert(double value, object parameter, CultureInfo culture)
     {
       SolidColorBrush ret;
-      bool val = (bool)value;
-      ret = val
+      ret = !double.IsNaN(value)
         ? new SolidColorBrush(Colors.LightGreen)
         : new SolidColorBrush(Colors.LightPink);
 
       return ret;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    protected override double ConvertBack(SolidColorBrush value, object parameter, CultureInfo culture)
     {
       throw new NotImplementedException();
     }

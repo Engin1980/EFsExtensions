@@ -2,6 +2,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
 using Eng.Chlaot.Modules.ChecklistModule;
 using Eng.Chlaot.Modules.ChecklistModule.Types;
+using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -70,19 +71,19 @@ namespace ChecklistModule
     private void lblChecklist_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
       Label lbl = (Label)sender;
-      CheckList checkList = (CheckList)lbl.Tag;
+      CheckListVM vm = (CheckListVM)lbl.Tag;
       this.autoPlaybackManager.ClearQueue();
-      this.autoPlaybackManager.Enqueue(checkList.EntrySpeechBytes);
-      this.autoPlaybackManager.Enqueue(checkList.ExitSpeechBytes);
+      this.autoPlaybackManager.Enqueue(vm.CheckList.EntrySpeechBytes);
+      this.autoPlaybackManager.Enqueue(vm.CheckList.ExitSpeechBytes);
     }
 
     private void lblItem_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
       Label lbl = (Label)sender;
-      CheckItem checkItem = (CheckItem)lbl.Tag;
+      CheckItemVM vm = (CheckItemVM)lbl.Tag;
       this.autoPlaybackManager.ClearQueue();
-      this.autoPlaybackManager.Enqueue(checkItem.Call.Bytes);
-      this.autoPlaybackManager.Enqueue(checkItem.Confirmation.Bytes);
+      this.autoPlaybackManager.Enqueue(vm.CheckItem.Call.Bytes);
+      this.autoPlaybackManager.Enqueue(vm.CheckItem.Confirmation.Bytes);
     }
   }
 }

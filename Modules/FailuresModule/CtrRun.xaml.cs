@@ -60,7 +60,7 @@ namespace FailuresModule
     private void btnFireIncident_Click(object sender, RoutedEventArgs e)
     {
       Button btn = (Button)sender;
-      RunIncidentDefinition runIncidentDefinition = (RunIncidentDefinition)btn.Tag;
+      IncidentDefinitionVM runIncidentDefinition = (IncidentDefinitionVM)btn.Tag;
       this.context.FireIncidentDefinition(runIncidentDefinition);
     }
 

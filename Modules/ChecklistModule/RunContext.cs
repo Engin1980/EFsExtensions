@@ -25,6 +25,7 @@ using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -57,10 +58,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(CheckListVMs), value);
     }
 
-    public BindingList<BindingKeyValue<string, double>> PropertyValuesVM
+    public PropertyVMS PropertyVMs
     {
-      get => base.GetProperty<BindingList<BindingKeyValue<string, double>>>(nameof(PropertyValuesVM))!;
-      set => base.UpdateProperty(nameof(PropertyValuesVM), value);
+      get => base.GetProperty<PropertyVMS>(nameof(PropertyVMs))!;
+      set => base.UpdateProperty(nameof(PropertyVMs), value);
     }
 
     public Type Name
@@ -79,22 +80,16 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       this.settings = initContext.Settings;
 
       this.CheckListVMs = initContext.CheckListVMs;
-
-      var properties = initContext.SimPropertyGroup.GetAllSimPropertiesRecursively()
-        .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q));
-      var propertiesVM = properties
-        .Select(q => new BindingKeyValue<string, double>(q.Name, double.NaN))
-        .OrderBy(q => q.Key)
-        .ToList();
-      this.PropertyValuesVM = new(propertiesVM);
+      this.PropertyVMs = new PropertyVMS(initContext.SimPropertyGroup.GetAllSimPropertiesRecursively()
+        .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q)));
 
       this.simObject = SimObject.GetInstance();
       this.simObject.SimSecondElapsed += SimObject_SimSecondElapsed;
       this.simObject.Started += SimObject_Started;
-      this.simObject.Started += () => this.simObject.RegisterProperties(properties);
+      this.simObject.Started += () => this.simObject.RegisterProperties(this.PropertyVMs.Select(q => q.Key));
       this.simObject.SimPropertyChanged += SimObject_SimPropertyChanged;
 
-      this.manager = new ChecklistManager(this.CheckListVMs, this.simObject,
+      this.manager = new ChecklistManager(this.PropertyVMs, this.CheckListVMs, this.simObject,
         this.settings.UseAutoplay, this.settings.ReadConfirmations); // CheckListViews must be set before calling this
     }
 
@@ -202,7 +197,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     private void SimObject_SimPropertyChanged(SimProperty property, double value)
     {
-      this.PropertyValuesVM.Where(q => q.Key == property.Name).ForEach(q => q.Value = value);
+      this.PropertyVMs[property] = value;
     }
 
     private void SimObject_SimSecondElapsed()

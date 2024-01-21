@@ -7,6 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
+using ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
@@ -16,9 +18,11 @@ namespace Eng.Chlaot.Modules.CopilotModule
     public DataTemplate RandomVariableTemplate { get; set; }
     public override DataTemplate SelectTemplate(object item, DependencyObject container)
     {
-      if (item is UserVariable)
+      BindingKeyValue<VariableVM, double> kv = (BindingKeyValue<VariableVM, double>)item;
+      Variable v = kv.Key.Variable;
+      if (v is UserVariable)
         return UserVariableTemplate;
-      else if (item is RandomVariable)
+      else if (v is RandomVariable)
         return RandomVariableTemplate;
       else
         throw new NotImplementedException();

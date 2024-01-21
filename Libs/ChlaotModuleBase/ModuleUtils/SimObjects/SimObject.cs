@@ -16,19 +16,42 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
   {
     public record struct SimVarReg(string SimVar, string Unit);
 
-    private readonly ESimConnect.ESimConnect simCon;
-    private readonly OpenAsyncExtender openAsyncSimConExtender;
-    private readonly SimSecondElapsedExtender secondElapsedSimConExtender;
-    private readonly Dictionary<SimProperty, double> simPropertyValues = new();
-    private readonly Dictionary<int, SimVarReg> typeIdMapping = new();
-    private readonly Dictionary<int, SimVarReg> requestIdMapping = new();
-    private readonly Dictionary<SimVarReg, List<SimProperty>> simVarReqMapping = new();
+    #region Public Delegates
+
     public delegate void SimPropertyChangedDelegate(SimProperty property, double value);
+
+    #endregion Public Delegates
+
+    #region Public Events
+
     public event SimPropertyChangedDelegate? SimPropertyChanged;
+
     public event Action? SimSecondElapsed;
+
     public event Action? Started;
 
+    #endregion Public Events
+
+    #region Private Fields
+
+    private static SimObject? _instance = null;
+    private readonly OpenAsyncExtender openAsyncSimConExtender;
+    private readonly Dictionary<int, SimVarReg> requestIdMapping = new();
+    private readonly SimSecondElapsedExtender secondElapsedSimConExtender;
+    private readonly ESimConnect.ESimConnect simCon;
+    private readonly Dictionary<SimProperty, double> simPropertyValues = new();
+    private readonly Dictionary<SimVarReg, List<SimProperty>> simVarReqMapping = new();
+    private readonly Dictionary<int, SimVarReg> typeIdMapping = new();
+
+    #endregion Private Fields
+
+    #region Public Properties
+
     public bool IsSimPaused => this.secondElapsedSimConExtender.IsSimPaused;
+
+    #endregion Public Properties
+
+    #region Public Constructors
 
     public SimObject(ESimConnect.ESimConnect simCon)
     {
@@ -42,25 +65,9 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
       this.secondElapsedSimConExtender.SimSecondElapsed += SecondElapsedSimConExtender_SimSecondElapsed;
     }
 
-    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_EXCEPTION ex)
-    {
-      throw new ApplicationException("SimCon thows exception: " + ex.ToString());
-    }
+    #endregion Public Constructors
 
-    private void SecondElapsedSimConExtender_SimSecondElapsed()
-    {
-      this.SimSecondElapsed?.Invoke();
-    }
-
-    private void OpenAsyncSimConExtender_Opened()
-    {
-      this.Started?.Invoke();
-    }
-
-    public void StartAsync()
-    {
-      this.openAsyncSimConExtender.OpenAsync();
-    }
+    #region Public Indexers
 
     public double this[string propertyName]
     {
@@ -87,20 +94,33 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
       }
     }
 
+    #endregion Public Indexers
+
+    #region Public Methods
+
+    public static SimObject GetInstance()
+    {
+      var tmp = _instance;
+      if (tmp == null)
+      {
+        lock (typeof(SimObject))
+        {
+          if (_instance == null)
+            _instance = new SimObject(new ESimConnect.ESimConnect());
+          tmp = _instance;
+        }
+      }
+      EAssert.IsNotNull(tmp);
+      return tmp;
+    }
+
     public Dictionary<SimProperty, double> GetAllPropertiesWithValues() => new(this.simPropertyValues);
 
-    private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
+    public void RegisterProperties(IEnumerable<SimProperty> simProperties)
     {
-      double value = (double)e.Data;
-      int? requestId = e.RequestId;
-      if (requestId == null) return; // not my registered type
-      if (requestIdMapping.ContainsKey(requestId.Value) == false) return; // not my registered type
-      SimVarReg svr = requestIdMapping[requestId.Value];
-      foreach (var simProperty in simVarReqMapping[svr])
-      {
-        simPropertyValues[simProperty] = value;
-        SimPropertyChanged?.Invoke(simProperty, value);
-      }
+      EAssert.Argument.IsNotNull(simProperties, nameof(simProperties));
+      foreach (var simProperty in simProperties)
+        this.RegisterProperty(simProperty);
     }
 
     public void RegisterProperty(SimProperty property)
@@ -124,6 +144,20 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
       }
     }
 
+    public void StartAsync()
+    {
+      this.openAsyncSimConExtender.OpenAsync();
+    }
+
+    #endregion Public Methods
+
+    #region Private Methods
+
+    private void OpenAsyncSimConExtender_Opened()
+    {
+      this.Started?.Invoke();
+    }
+
     private void RegisterPropertyToSimCon(SimProperty property)
     {
       const string DEFAULT_PROPERTY_UNIT = "Number";
@@ -141,28 +175,30 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
       simVarReqMapping[svr].Add(property);
     }
 
-    private static SimObject? _instance = null;
-    public static SimObject GetInstance()
+    private void SecondElapsedSimConExtender_SimSecondElapsed()
     {
-      var tmp = _instance;
-      if (tmp == null)
-      {
-        lock (typeof(SimObject))
-        {
-          if (_instance == null)
-            _instance = new SimObject(new ESimConnect.ESimConnect());
-          tmp = _instance;
-        }
-      }
-      EAssert.IsNotNull(tmp);
-      return tmp;
+      this.SimSecondElapsed?.Invoke();
     }
 
-    public void RegisterProperties(IEnumerable<SimProperty> simProperties)
+    private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
     {
-      EAssert.Argument.IsNotNull(simProperties, nameof(simProperties));
-      foreach (var simProperty in simProperties)
-        this.RegisterProperty(simProperty);
+      double value = (double)e.Data;
+      int? requestId = e.RequestId;
+      if (requestId == null) return; // not my registered type
+      if (requestIdMapping.ContainsKey(requestId.Value) == false) return; // not my registered type
+      SimVarReg svr = requestIdMapping[requestId.Value];
+      foreach (var simProperty in simVarReqMapping[svr])
+      {
+        simPropertyValues[simProperty] = value;
+        SimPropertyChanged?.Invoke(simProperty, value);
+      }
     }
+
+    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_EXCEPTION ex)
+    {
+      throw new ApplicationException("SimCon thows exception: " + ex.ToString());
+    }
+
+    #endregion Private Methods
   }
 }

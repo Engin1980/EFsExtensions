@@ -2,6 +2,7 @@
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -49,10 +50,9 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
         set => base.UpdateProperty(nameof(IsActivePostfixString), value);
       }
 
-      public RunTimeVM(List<Variable> variables, Func<Dictionary<string, double>> propertyValuesProvider)
+      public RunTimeVM(VariableVMS variables, PropertyVMS propertyVMs)
       {
-        var dict = variables.ToDictionary(q => q.Name, q => q.Value);
-        this.evaluator = new StateCheckEvaluator(() => dict, propertyValuesProvider);
+        this.evaluator = new StateCheckEvaluator(variables.GetAsDict, propertyVMs.GetAsDict);
         this.State = RunState.NotYet;
       }
 
@@ -76,11 +76,13 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
       set => base.UpdateProperty(nameof(CheckList), value);
     }
 
-    public BindingList<BindingKeyValue<string, double>> Variables
+
+    public VariableVMS Variables
     {
-      get => base.GetProperty<BindingList<BindingKeyValue<string, double>>>(nameof(Variables))!;
+      get => base.GetProperty<VariableVMS>(nameof(Variables))!;
       set => base.UpdateProperty(nameof(Variables), value);
     }
+
 
     public List<CheckItemVM> Items
     {
@@ -96,9 +98,9 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
 
     public RunTimeVM RunTime { get; private set; } = null!;
 
-    public void CreateRuntime(Func<Dictionary<string, double>> propertyValuesProvider)
+    internal void CreateRuntime(PropertyVMS propertyVMs)
     {
-      this.RunTime = new RunTimeVM(this.CheckList.Variables, propertyValuesProvider);
+      this.RunTime = new RunTimeVM(Variables, propertyVMs);
     }
   }
 }

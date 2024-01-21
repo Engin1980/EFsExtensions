@@ -7,16 +7,11 @@ using FailuresModule.Model.Incidents;
 using FailuresModule.Model.Run.Sustainers;
 using FailuresModule.Model.Failures;
 using FailuresModule.Model.RunTime;
-using FailuresModule.Model.Run.Sustainers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Printing;
-using System.Text;
-using System.Threading.Tasks;
-using System.Timers;
-using System.Windows.Documents;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 
 namespace FailuresModule
 {
@@ -26,9 +21,9 @@ namespace FailuresModule
 
     private readonly Random random = new();
     private readonly SimConWrapperWithSimData simConWrapper;
-    private List<RunIncidentDefinition>? _IncidentDefinitions = null;
-    private readonly Dictionary<string, double> propertyValues = new();
+    private List<IncidentDefinitionVM>? _IncidentDefinitions = null;
     private bool isRunning = false;
+    private readonly Dictionary<string, double> propertyValues = new();
 
     #endregion Fields
 
@@ -43,7 +38,7 @@ namespace FailuresModule
       get => base.GetProperty<int>(nameof(SustainersCount))!;
       set => base.UpdateProperty(nameof(SustainersCount), value);
     }
-    internal List<RunIncidentDefinition> IncidentDefinitions
+    internal List<IncidentDefinitionVM> IncidentDefinitions
     {
       get
       {
@@ -77,8 +72,10 @@ namespace FailuresModule
 
     #region Methods
 
-    public static RunContext Create(List<FailureDefinition> failureDefinitions, IncidentGroup failureSet)
+    public static RunContext Create(InitContext initContext)
     {
+      List<FailureDefinition> failureDefinitions = initContext.FailureDefinitionsFlat;
+      IncidentGroup failureSet = initContext.FailureSet;
       IncidentGroup ig = new()
       {
         Incidents = failureSet.Incidents
@@ -105,18 +102,15 @@ namespace FailuresModule
     {
       foreach (var runIncidentDefinition in this.IncidentDefinitions)
       {
-        Dictionary<string, double> tmp = runIncidentDefinition.IncidentDefinition.Variables
-          .ToDictionary(
-          k => k.Name,
-          v => v.Value);
-        StateCheckEvaluator sce = new(() => tmp, () => propertyValues);
+        VariableVMS variableVMs = VariableVMS.Create(runIncidentDefinition.IncidentDefinition.Variables);
+        StateCheckEvaluator sce = new(variableVMs.GetAsDict, () => propertyValues);
         incidentEvaluators[runIncidentDefinition] = sce;
       }
     }
 
-    private static List<RunIncidentDefinition> FlattenIncidentDefinitions(List<RunIncident> incidents)
+    private static List<IncidentDefinitionVM> FlattenIncidentDefinitions(List<RunIncident> incidents)
     {
-      List<RunIncidentDefinition> ret = new();
+      List<IncidentDefinitionVM> ret = new();
 
       foreach (var incident in incidents)
       {
@@ -125,7 +119,7 @@ namespace FailuresModule
           var tmp = FlattenIncidentDefinitions(rig.Incidents);
           ret.AddRange(tmp);
         }
-        else if (incident is RunIncidentDefinition rid)
+        else if (incident is IncidentDefinitionVM rid)
         {
           ret.Add(rid);
         }
@@ -134,7 +128,7 @@ namespace FailuresModule
       return ret;
     }
 
-    private readonly Dictionary<RunIncidentDefinition, StateCheckEvaluator> incidentEvaluators = new();
+    private readonly Dictionary<IncidentDefinitionVM, StateCheckEvaluator> incidentEvaluators = new();
     private void EvaluateAndFireFailures()
     {
       foreach (var runIncidentDefinition in this.IncidentDefinitions)
@@ -148,7 +142,7 @@ namespace FailuresModule
       }
     }
 
-    private void EvaluateIncidentDefinition(RunIncidentDefinition incident, out bool isActivated)
+    private void EvaluateIncidentDefinition(IncidentDefinitionVM incident, out bool isActivated)
     {
       isActivated = false;
       foreach (var trigger in incident.IncidentDefinition.Triggers)
@@ -223,7 +217,7 @@ namespace FailuresModule
       return ret;
     }
 
-    private List<FailId> PickFailItems(RunIncidentDefinition incident)
+    private List<FailId> PickFailItems(IncidentDefinitionVM incident)
     {
       FailGroup rootGroup = incident.IncidentDefinition.FailGroup;
       List<FailId> ret = PickFailItems(rootGroup);
@@ -298,7 +292,7 @@ namespace FailuresModule
       }
     }
 
-    internal void FireIncidentDefinition(RunIncidentDefinition runIncidentDefinition)
+    internal void FireIncidentDefinition(IncidentDefinitionVM runIncidentDefinition)
     {
       var tmp = PickFailItems(runIncidentDefinition);
       var lst = tmp

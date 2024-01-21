@@ -2,6 +2,7 @@
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using ESystem.Asserting;
 using System;
@@ -22,16 +23,19 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       private readonly List<CheckListVM> all;
       private readonly bool isAutoplayingEnabled;
       private readonly SimObject simObject;
-      private readonly Dictionary<string, double> propertyValues = new();
+      private readonly PropertyVMS propertyVMs;
 
-      public ChecklistManager(List<CheckListVM> checkListViews, SimObject simObject,
+      public ChecklistManager(PropertyVMS propertyVMs, List<CheckListVM> checkListViews, SimObject simObject,
         bool useAutoplay, bool readConfirmations)
       {
+        EAssert.Argument.IsNotNull(propertyVMs, nameof(propertyVMs));
         EAssert.Argument.IsNotNull(checkListViews, nameof(checkListViews));
         EAssert.Argument.IsNotNull(simObject, nameof(simObject));
 
+        this.propertyVMs = propertyVMs;
+
         this.all = checkListViews;
-        this.all.ForEach(q => q.CreateRuntime(() => this.propertyValues));
+        this.all.ForEach(q => q.CreateRuntime(this.propertyVMs));
         this.current = checkListViews.First();
         this.active.Add(current);
         this.all.ForEach(q => q.RunTime.IsActive = active.Contains(q));
@@ -105,7 +109,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         if (!isAutoplayingEnabled) return;
         if (simObject.IsSimPaused) return;
 
-        StateCheckEvaluator.UpdateDictionaryBySimObject(this.simObject, this.propertyValues);
+        this.propertyVMs.UpdateBySimObject(simObject);
 
         CheckListVM? readyCheckList = this.active
           .Where(q => q.CheckList.Trigger != null)

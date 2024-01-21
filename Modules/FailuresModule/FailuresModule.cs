@@ -44,7 +44,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
     public void Run()
     {
-      RunContext runContext = RunContext.Create(InitContext.FailureDefinitionsFlat, InitContext.FailureSet);
+      RunContext runContext = RunContext.Create(InitContext);
       this._RunControl = new CtrRun(runContext);
       runContext.Start();
     }

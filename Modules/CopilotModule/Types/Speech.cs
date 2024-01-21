@@ -1,5 +1,6 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -20,13 +21,11 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types
     }
 
     private const string VARIABLE_NAME_REGEX = @"\{(.+)\}";
-#pragma warning disable CS8618
-    public byte[] Bytes { get; set; }
+    public byte[] Bytes { get; set; } = null!;
     public SpeechType Type { get; set; }
-    public string Value { get; set; }
-#pragma warning restore CS8618
+    public string Value { get; set; } = null!;
 
-    internal string GetEvaluatedValue(List<Variable> variables)
+    internal string GetEvaluatedValue(VariableVMS variables)
     {
       if (Type != SpeechType.Speech)
         throw new ApplicationException("Not possible to call this function on non-speech-type speech.");
@@ -35,9 +34,8 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types
       string me(Match m)
       {
         var varName = m.Groups[1].Value;
-        var varVal = variables.FirstOrDefault(q => q.Name == varName)
-          ?? throw new ApplicationException($"Unable to replace variable {varName}. Variable not found.");
-        string ret = " " + varVal.Value.ToString() + " ";
+        var varVal = variables[varName];
+        string ret = " " + varVal.ToString() + " ";
         return ret;
       }
 
