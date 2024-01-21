@@ -1,26 +1,15 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions;
 using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
 using ESystem.Asserting;
-using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Printing;
-using System.Speech.Synthesis.TtsEngine;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Media.TextFormatting;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
-using System.IO.IsolatedStorage;
 using System.Reflection;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
-using System.Windows.Documents;
-using System.Windows;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.Interfaces;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
@@ -50,8 +39,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     private readonly Dictionary<StateCheckProperty, double> extractedValues = new();
     private readonly Logger logger;
     private readonly Dictionary<StateCheckProperty, EPassingState> passingPropertiesStates = new();
-    private readonly Func<Dictionary<string, double>> propertyValuesProvider;
-    private readonly Func<Dictionary<string, double>> variableValuesProvider;
+    private readonly IPropertyValuesProvider propertyValuesProvider;
+    private readonly IVariableValuesProvider variableValuesProvider;
     private Dictionary<string, double>? currentPropertyValues = null;
     private Dictionary<string, double>? currentVariableValues = null;
     private readonly List<RecentResult> recentResultSet = new();
@@ -61,8 +50,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     #region Public Constructors
 
     public StateCheckEvaluator(
-      Func<Dictionary<string, double>> variableValuesProvider,
-      Func<Dictionary<string, double>> propertyValuesProvider)
+       IVariableValuesProvider variableValuesProvider,
+      IPropertyValuesProvider propertyValuesProvider)
     {
       EAssert.Argument.IsNotNull(variableValuesProvider, nameof(variableValuesProvider));
       EAssert.Argument.IsNotNull(propertyValuesProvider, nameof(propertyValuesProvider));
@@ -143,8 +132,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       {
         logger.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} started.");
         this.recentResultSet.Clear();
-        this.currentPropertyValues = propertyValuesProvider.Invoke();
-        this.currentVariableValues = variableValuesProvider.Invoke();
+        this.currentPropertyValues = propertyValuesProvider.GetPropertyValues();
+        this.currentVariableValues = variableValuesProvider.GetVariableValues();
         ret = EvaluateItem(item);
         this.currentVariableValues = null;
         this.currentPropertyValues = null;

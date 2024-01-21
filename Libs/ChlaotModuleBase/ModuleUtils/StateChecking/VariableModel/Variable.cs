@@ -10,23 +10,12 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel
 {
-  public abstract class Variable : NotifyPropertyChangedBase, IXmlObjectPostDeserialize
+  public abstract class Variable : IXmlObjectPostDeserialize
   {
     [EXmlNonemptyString]
-    public string Name
-    {
-      get => base.GetProperty<string>(nameof(Name))!;
-      set => base.UpdateProperty(nameof(Name), value);
-    }
+    public string Name { get; set; } = null!;
 
-
-    public string? Description
-    {
-      get => base.GetProperty<string?>(nameof(Description))!;
-      set => base.UpdateProperty(nameof(Description), value);
-    }
-
-    public abstract double Value { get; }
+    public string? Description { get; set; }
 
     public virtual void PostDeserialize()
     {

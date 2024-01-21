@@ -9,6 +9,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using Eng.Chlaot.Modules.CopilotModule.Types;
 using Eng.Chlaot.Modules.CopilotModule.Types.VMs;
 using ESystem.Asserting;
@@ -32,14 +33,14 @@ namespace Eng.Chlaot.Modules.CopilotModule
     #region Fields
 
     private readonly Logger logger;
-    private readonly Dictionary<string, double> propertyValues = new();
     private readonly SimObject simObject;
 
     #endregion Fields
 
     #region Properties
 
-    public BindingList<BindingKeyValue<string, double>> PropertyValuesView { get; set; } = new();
+    public PropertyVMS PropertyVMs { get; set; } = new();
+
     public BindingList<SpeechDefinitionVM> SpeechDefinitionVMs
     {
       get => base.GetProperty<BindingList<SpeechDefinitionVM>>(nameof(SpeechDefinitionVMs))!;
@@ -61,19 +62,16 @@ namespace Eng.Chlaot.Modules.CopilotModule
       this.logger = Logger.Create(this, "Copilot.RunContext");
 
       this.SpeechDefinitionVMs = initContext.SpeechDefinitionVMs;
-      this.SpeechDefinitionVMs.ForEach(q => q.CreateRunTime(() => propertyValues));
+      this.PropertyVMs = PropertyVMS.Create(initContext.SimPropertyGroup
+        .GetAllSimPropertiesRecursively()
+        .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q)));
 
-      var allProps = initContext.SimPropertyGroup.GetAllSimPropertiesRecursively()
-        .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q))
-        .ToList();
-      PropertyValuesView = new BindingList<BindingKeyValue<string, double>>(
-        allProps.Select(q => new BindingKeyValue<string, double>(q.Name, double.NaN)).OrderBy(q => q.Key).ToList()
-        );
+      this.SpeechDefinitionVMs.ForEach(q => q.CreateRunTime(this.PropertyVMs));
 
       this.simObject = SimObject.GetInstance();
       this.simObject.SimSecondElapsed += SimObject_SimSecondElapsed;
       this.simObject.SimPropertyChanged += SimObject_SimPropertyChanged;
-      this.simObject.Started += () => this.simObject.RegisterProperties(allProps);
+      this.simObject.Started += () => this.simObject.RegisterProperties(this.PropertyVMs.Select(q => q.Key));
     }
 
     #endregion Constructors

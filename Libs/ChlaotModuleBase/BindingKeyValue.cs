@@ -26,5 +26,7 @@ namespace ChlaotModuleBase
       Key = key;
       Value = value;
     }
+
+    public override string ToString() => $"{Key}: {Value} {{BindingKeyValue}}";
   }
 }

@@ -110,11 +110,16 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
 
       lock (this)
       {
-        if (simPropertyValues.Keys.Any(q => q.Name == property.Name))
-          throw new ApplicationException(
-            $"SimProperty {property.Name} is already registered.");
+        if (this.simPropertyValues.ContainsKey(property) == false)
+        {
+          if (simPropertyValues.Keys.Any(q => q.Name == property.Name))
+          {
+            throw new ApplicationException($"SimProperty {property.Name} is already registered.");
+          }
+          else
+            RegisterPropertyToSimCon(property);
+        }
 
-        RegisterPropertyToSimCon(property);
         this.simPropertyValues[property] = double.NaN;
       }
     }

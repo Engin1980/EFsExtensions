@@ -1,7 +1,9 @@
 ﻿using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.Interfaces;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using Eng.Chlaot.Modules.CopilotModule.Types;
 using System;
 using System.Collections.Generic;
@@ -16,7 +18,6 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types.VMs
   {
     public class RunTimeVM : NotifyPropertyChangedBase
     {
-      private readonly Dictionary<string, double> variableValues;
       private readonly StateCheckEvaluator evaluator;
 
       public BindingList<StateCheckEvaluator.RecentResult> EvaluatorRecentResult
@@ -37,15 +38,9 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types.VMs
         set => base.UpdateProperty(nameof(IsReadyToBeSpoken), value);
       }
 
-      public RunTimeVM(List<Variable> variables, Func<Dictionary<string, double>> propertyValuesProvider)
+      public RunTimeVM(IVariableValuesProvider variableValuesProvider, IPropertyValuesProvider propertyValuesProvider)
       {
-        this.variableValues = variables.ToDictionary(q => q.Name, q => q.Value);
-        variables.ForEach(q => q.PropertyChanged += (s, e) =>
-        {
-          if (e.PropertyName == nameof(Variable.Value))
-            variableValues[q.Name] = q.Value;
-        });
-        this.evaluator = new StateCheckEvaluator(() => variableValues, propertyValuesProvider);
+        this.evaluator = new StateCheckEvaluator(variableValuesProvider, propertyValuesProvider);
       }
 
       public bool Evaluate(IStateCheckItem item)
@@ -65,13 +60,14 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types.VMs
       set => base.UpdateProperty(nameof(SpeechDefinition), value);
     }
 
-    public List<Variable> Variables
+
+    public VariableVMS Variables
     {
-      get => base.GetProperty<List<Variable>>(nameof(Variables))!;
+      get => base.GetProperty<VariableVMS>(nameof(Variables))!;
       set => base.UpdateProperty(nameof(Variables), value);
     }
 
-    public void CreateRunTime(Func<Dictionary<string, double>> propertyValuesProvider)
+    public void CreateRunTime(IPropertyValuesProvider propertyValuesProvider)
     {
       this.RunTime = new RunTimeVM(this.Variables, propertyValuesProvider);
     }
