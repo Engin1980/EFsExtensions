@@ -59,7 +59,6 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types.VMs
       set => base.UpdateProperty(nameof(SpeechDefinition), value);
     }
 
-
     public VariableVMS Variables
     {
       get => base.GetProperty<VariableVMS>(nameof(Variables))!;
@@ -68,7 +67,12 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types.VMs
 
     internal void CreateRunTime(PropertyVMS propertyVMs)
     {
-      this.RunTime = new RunTimeVM(this.Variables, propertyVMs);
+      this.RunTime = new RunTimeVM(this.Variables, propertyVMs)
+      {
+        IsReadyToBeSpoken=true
+      };
     }
+
+    public override string ToString() => $"{SpeechDefinition.ToString} {{SpeechDefinitionVM}}";
   }
 }

@@ -111,7 +111,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private void EvaluateForSpeeches()
     {
-      this.PropertyVMs.UpdateBySimObject(simObject);
+      //TODO xa probalby can delete this line
+      //this.PropertyVMs.UpdateBySimObject(simObject);
 
       var readys = this.SpeechDefinitionVMs.Where(q => q.RunTime.IsReadyToBeSpoken);
       this.logger.Invoke(LogLevel.VERBOSE, $"Evaluating {readys.Count()} readys");
