@@ -12,9 +12,10 @@ using static ESystem.Functions;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
 {
-  public class PropertyVMS : GenericVMS<PropertyVM>
+  public class PropertyVMS : GenericVMS<PropertyVM, SimProperty>
   {
-    public PropertyVMS(IEnumerable<PropertyVM> properties) : base(properties, (PropertyVM p) => p.Property.Name) { }
+    public PropertyVMS(IEnumerable<PropertyVM> properties)
+      : base(properties, p => p.Property.Name, p => p.Property) { }
 
     public static PropertyVMS Create(IEnumerable<SimProperty> properties)
     {
@@ -25,20 +26,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
       });
       PropertyVMS ret = new(tmp);
       return ret;
-    }
-
-    public double this[SimProperty property]
-    {
-      get => this.Single(q => q.Property.Equals(property)).Value;
-      set => Try(
-        () => this.Single(q => q.Property.Equals(property)).Value = value, 
-        ex => new ApplicationException($"Property '{property.Name}' not found.", ex));
-    }
-
-    public void UpdateBySimObject(SimObject simObject)
-    {
-      var tmp = simObject.GetAllPropertiesWithValues();
-      tmp.ForEach(q => this[q.Key] = q.Value);
     }
   }
 }

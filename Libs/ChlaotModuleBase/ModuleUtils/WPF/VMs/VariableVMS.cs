@@ -13,9 +13,10 @@ using System.Runtime.CompilerServices;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
 {
-  public class VariableVMS : GenericVMS<VariableVM>
+  public class VariableVMS : GenericVMS<VariableVM, Variable>
   {
-    private VariableVMS(IEnumerable<VariableVM> items) : base(items, q => q.Variable.Name) { }
+    private VariableVMS(IEnumerable<VariableVM> items) 
+      : base(items, q => q.Variable.Name, q=>q.Variable) { }
 
     public static VariableVMS Create(List<Variable> variables)
     {

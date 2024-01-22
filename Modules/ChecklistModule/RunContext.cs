@@ -198,7 +198,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     private void SimObject_SimPropertyChanged(SimProperty property, double value)
     {
-      this.PropertyVMs[property] = value;
+      this.PropertyVMs.SetIfExists(property, value);
     }
 
     private void SimObject_SimSecondElapsed()

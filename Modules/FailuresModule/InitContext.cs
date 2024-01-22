@@ -73,13 +73,16 @@ namespace FailuresModule
         logger.Invoke(LogLevel.INFO, $"Checking file '{xmlFile}'");
         try
         {
-          XmlUtils.ValidateXmlAgainstXsd(xmlFile, new string[] { @".\xmls\xsds\Global.xsd", @".\xmls\xsds\Failure.xsd" }, out List<string> errors);
+          XmlUtils.ValidateXmlAgainstXsd(xmlFile, new string[] {
+            @".\xmls\xsds\Global.xsd",
+            @".\xmls\xsds\FailureSchema.xsd",
+            @".\xmls\xsds\FailureDefinitionSchema.xsd"}, out List<string> errors);
           if (errors.Any())
             throw new ApplicationException("XML does not match XSD: " + string.Join("; ", errors.Take(5)));
         }
         catch (Exception ex)
         {
-          throw new ApplicationException($"Failed to validate XMl file against XSD. Error: " + ex.Message, ex);
+          throw new ApplicationException($"Failed to validate XML file against XSD. Error: " + ex.Message, ex);
         }
 
         logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
