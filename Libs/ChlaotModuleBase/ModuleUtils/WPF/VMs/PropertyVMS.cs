@@ -10,9 +10,26 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
 {
-  public class PropertyVMS : GenericVMS<SimProperty>
+  public class PropertyVMS : GenericVMS<PropertyVM>
   {
-    public PropertyVMS(IEnumerable<SimProperty> properties) : base(properties, (SimProperty p) => p.Name) { }
+    public PropertyVMS(IEnumerable<PropertyVM> properties) : base(properties, (PropertyVM p) => p.Property.Name) { }
+
+    public static PropertyVMS Create(IEnumerable<SimProperty> properties)
+    {
+      var tmp = properties.Select(q => new PropertyVM()
+      {
+        Property = q,
+        Value = double.NaN
+      });
+      PropertyVMS ret = new(tmp);
+      return ret;
+    }
+
+    public double this[SimProperty property]
+    {
+      get => this.Single(q => q.Property.Equals(property)).Value;
+      set => this.Single(q => q.Property.Equals(property)).Value = value;
+    }
 
     public void UpdateBySimObject(SimObject simObject)
     {

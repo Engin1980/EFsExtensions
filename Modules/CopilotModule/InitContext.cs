@@ -162,7 +162,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
     {
       this.SpeechDefinitionVMs
         .SelectMany(q => q.Variables)
-        .Where(q => !q.Key.IsReadOnly)
+        .Where(q => !q.IsReadOnly)
         .ForEach(q => q.PropertyChanged += Variable_PropertyChanged);
     }
 
@@ -314,9 +314,9 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     private void Variable_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-      BindingKeyValue<VariableVM, double> bkv = (BindingKeyValue<VariableVM, double>)sender!;
-      UserVariable variable = (UserVariable)bkv.Key.Variable;
-      SpeechDefinitionVM sd = this.SpeechDefinitionVMs.First(q => q.Variables.Any(q => q.Key.Variable == variable));
+      VariableVM vvm = (VariableVM)sender!;
+      UserVariable variable = (UserVariable)vvm.Variable;
+      SpeechDefinitionVM sd = this.SpeechDefinitionVMs.First(q => q.Variables.Any(q => q.Variable == variable));
       if (sd.SpeechDefinition.Speech.Type == Speech.SpeechType.Speech
         && sd.SpeechDefinition.Speech.GetUsedVariables().Any(q => q == variable.Name))
       {

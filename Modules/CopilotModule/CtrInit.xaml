@@ -17,7 +17,7 @@
     <converters:Int2VisibilityConverter x:Key="Int2VisibilityConverter" />
     <gConverters:DoubleNanConverter x:Key="DoubleNanConverter"/>
     <converters:VariableValueConverter x:Key="VariableValueConverter" />
-    <converters:DoubleHasValueToSolidBrushConverter x:Key="DoubleHasValueToSolidBrushConverter" />
+    <converters:BoolToSolidBrushConverter x:Key="BoolToSolidBrushConverter" />
     <converters:TextBoxTextIsDoubleToSolidBrushConverter x:Key="TextBoxTextIsDoubleToSolidBrushConverter" />
     <gConverters:DoubleFormatter x:Key="DoubleFormatter" />
     <HierarchicalDataTemplate DataType="{x:Type sct:StateCheckDelay}" ItemsSource="{Binding Item}">
@@ -65,12 +65,12 @@
                     <ItemsControl.ItemTemplate>
                       <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                          <TextBlock Text="{Binding Key.Variable.Name}" />
+                          <TextBlock Text="{Binding Variable.Name}" />
                           <TextBlock Text=" = " />
                           <TextBox Text="{Binding Value, Converter={StaticResource DoubleNanConverter}}" Width="50" TextAlignment="Right"
-                                   IsReadOnly="{Binding Key.IsReadOnly}" Background="{Binding Value, Converter={StaticResource DoubleHasValueToSolidBrushConverter}}" />
+                                   IsReadOnly="{Binding IsReadOnly}" Background="{Binding IsValid, Converter={StaticResource BoolToSolidBrushConverter}}" />
                           <TextBlock Text=" " />
-                          <TextBlock Text="{Binding Key.AdditionalInfo}" />
+                          <TextBlock Text="{Binding AdditionalInfo}" />
                         </StackPanel>
                       </DataTemplate>
                     </ItemsControl.ItemTemplate>

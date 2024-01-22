@@ -15,27 +15,11 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
 {
   public class VariableVMS : GenericVMS<VariableVM>
   {
-    private static readonly Random rnd = new();
-
     private VariableVMS(IEnumerable<VariableVM> items) : base(items, q => q.Variable.Name) { }
 
     public static VariableVMS Create(List<Variable> variables)
     {
       VariableVMS ret = new(variables.Select(q => VariableVM.Create(q)));
-      foreach (var item in ret)
-      {
-        if (item.Key.Variable is RandomVariable rv)
-        {
-          var tmp = rv.Minimum + rnd.NextDouble() * (rv.Maximum - rv.Minimum);
-          if (rv.IsInteger)
-            tmp = Math.Round(tmp);
-          item.Value = tmp;
-        }
-        else if (item.Key.Variable is UserVariable uv)
-        {
-          item.Value = uv.DefaultValue ?? double.NaN;
-        }
-      }
       return ret;
     }
 

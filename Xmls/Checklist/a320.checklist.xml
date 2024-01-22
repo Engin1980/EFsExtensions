@@ -14,7 +14,7 @@
       GSX does not use pushback-attached flag.
     </g:description>
   </meta>
-  <properties>
+  <properties title="FBW Properties">
     <g:property name="fbwParkingBrake" simVar="L:A32NX_PARK_BRAKE_LEVER_POS"/>
   </properties>
   <checklist id="beforeStart" callSpeech="Before Start-up">

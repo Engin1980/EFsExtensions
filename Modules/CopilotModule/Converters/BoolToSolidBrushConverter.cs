@@ -10,19 +10,19 @@ using System.Windows.Media;
 
 namespace Eng.Chlaot.Modules.CopilotModule.Converters
 {
-  public class DoubleHasValueToSolidBrushConverter : TypedConverter<double, SolidColorBrush>
+  public class BoolToSolidBrushConverter : TypedConverter<bool, SolidColorBrush>
   {
-    protected override SolidColorBrush Convert(double value, object parameter, CultureInfo culture)
+    protected override SolidColorBrush Convert(bool value, object parameter, CultureInfo culture)
     {
       SolidColorBrush ret;
-      ret = !double.IsNaN(value)
+      ret = value
         ? new SolidColorBrush(Colors.LightGreen)
         : new SolidColorBrush(Colors.LightPink);
 
       return ret;
     }
 
-    protected override double ConvertBack(SolidColorBrush value, object parameter, CultureInfo culture)
+    protected override bool ConvertBack(SolidColorBrush value, object parameter, CultureInfo culture)
     {
       throw new NotImplementedException();
     }

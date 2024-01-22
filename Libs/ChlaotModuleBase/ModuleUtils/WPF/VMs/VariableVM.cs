@@ -10,11 +10,12 @@ using System.Windows;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
 {
-  public class VariableVM : NotifyPropertyChangedBase
+  public class VariableVM : WithValueVM
   {
 
     #region Private Fields
 
+    private static Random rnd = new();
 
     #endregion Private Fields
 
@@ -53,11 +54,17 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
     {
       this.Variable = variable;
       this.IsReadOnly = false;
+      this.Value = variable.DefaultValue ?? double.NaN;
     }
+
     public VariableVM(RandomVariable variable)
     {
       this.Variable = variable;
-      this.IsReadOnly = true;      
+      this.IsReadOnly = true;
+      var tmp = variable.Minimum + rnd.NextDouble() * (variable.Maximum - variable.Minimum);
+      if (variable.IsInteger)
+        tmp = Math.Round(tmp);
+      this.Value = tmp;
     }
 
     #endregion Public Constructors
@@ -77,5 +84,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
     }
 
     #endregion Public Methods
+
   }
 }

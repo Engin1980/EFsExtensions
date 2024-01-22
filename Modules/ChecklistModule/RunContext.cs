@@ -80,13 +80,14 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       this.settings = initContext.Settings;
 
       this.CheckListVMs = initContext.CheckListVMs;
-      this.PropertyVMs = new PropertyVMS(initContext.SimPropertyGroup.GetAllSimPropertiesRecursively()
+      this.PropertyVMs = PropertyVMS.Create(
+        initContext.SimPropertyGroup.GetAllSimPropertiesRecursively()
         .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q)));
 
       this.simObject = SimObject.GetInstance();
       this.simObject.SimSecondElapsed += SimObject_SimSecondElapsed;
       this.simObject.Started += SimObject_Started;
-      this.simObject.Started += () => this.simObject.RegisterProperties(this.PropertyVMs.Select(q => q.Key));
+      this.simObject.Started += () => this.simObject.RegisterProperties(this.PropertyVMs.Select(q => q.Property));
       this.simObject.SimPropertyChanged += SimObject_SimPropertyChanged;
 
       this.manager = new ChecklistManager(this.PropertyVMs, this.CheckListVMs, this.simObject,

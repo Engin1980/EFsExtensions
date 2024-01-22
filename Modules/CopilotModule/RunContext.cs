@@ -62,7 +62,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
       this.logger = Logger.Create(this, "Copilot.RunContext");
 
       this.SpeechDefinitionVMs = initContext.SpeechDefinitionVMs;
-      this.PropertyVMs = new(initContext.SimPropertyGroup
+      this.PropertyVMs = PropertyVMS.Create(initContext.SimPropertyGroup
         .GetAllSimPropertiesRecursively()
         .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q)));
       this.SpeechDefinitionVMs.ForEach(q => q.CreateRunTime(PropertyVMs));
@@ -70,7 +70,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
       this.simObject = SimObject.GetInstance();
       this.simObject.SimSecondElapsed += SimObject_SimSecondElapsed;
       this.simObject.SimPropertyChanged += SimObject_SimPropertyChanged;
-      this.simObject.Started += () => this.simObject.RegisterProperties(this.PropertyVMs.Select(q => q.Key));
+      this.simObject.Started += () => this.simObject.RegisterProperties(this.PropertyVMs.Select(q => q.Property));
     }
 
     #endregion Constructors
