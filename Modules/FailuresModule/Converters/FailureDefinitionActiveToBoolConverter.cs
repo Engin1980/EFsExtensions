@@ -1,4 +1,4 @@
-﻿using FailuresModule.Model.Run.Sustainers;
+﻿using Eng.Chlaot.Modules.FailuresModule.Model.Run.Sustainers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace FailuresModule.Converters
+namespace Eng.Chlaot.Modules.FailuresModule.Converters
 {
   internal class FailureDefinitionActiveToBoolConverter : IValueConverter
   {

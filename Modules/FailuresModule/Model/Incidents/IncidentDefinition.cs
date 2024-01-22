@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Model.Incidents
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents
 {
     public class IncidentDefinition : Incident
     {

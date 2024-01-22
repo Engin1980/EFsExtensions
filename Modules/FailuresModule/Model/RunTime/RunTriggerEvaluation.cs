@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Model.RunTime
+namespace Eng.Chlaot.Modules.FailuresModule.Model.RunTime
 {
   public class RunTriggerEvaluation
   {

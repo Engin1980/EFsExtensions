@@ -1,7 +1,7 @@
 ﻿using ESystem.Asserting;
 using EXmlLib.Interfaces;
 
-namespace FailuresModule.Model.Failures
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
 {
   public class SetFailureDefinition : WithSimVarFailureDefinition
   {

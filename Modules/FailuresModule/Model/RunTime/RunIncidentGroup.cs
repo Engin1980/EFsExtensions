@@ -1,11 +1,11 @@
-﻿using FailuresModule.Model.Incidents;
+﻿using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Model.RunTime
+namespace Eng.Chlaot.Modules.FailuresModule.Model.RunTime
 {
     internal class RunIncidentGroup : RunIncident
   {

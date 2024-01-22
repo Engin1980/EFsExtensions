@@ -1,6 +1,6 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
-using FailuresModule;
+using Eng.Chlaot.Modules.FailuresModule;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

@@ -1,6 +1,6 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase;
+using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
 using ESimConnect;
-using FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Model.Run.Sustainers
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Run.Sustainers
 {
   public abstract class FailureSustainer : NotifyPropertyChangedBase
   {

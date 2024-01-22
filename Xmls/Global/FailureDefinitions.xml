@@ -24,6 +24,8 @@
                minimalSneakAdjustPerSecond="0.001" maximalSneakAdjustPerSecond="0.03"
                direction="down" isPercentageBased="true" finalValue="100000"
                tickIntervalInMS="100" finalFailureId="eng{i}"/>
+        <stuck id="throttle{i}Stuck" simVar="GENERAL ENG THROTTLE LEVER POSITION:{i}" onlyUpdateOnDetectedChange="true" refreshIntervalInMs="100" />
+        <stuck id="mixture{i}Stuck" simVar="GENERAL ENG MIXTURE LEVER POSITION:{i}" onlyUpdateOnDetectedChange="true" refreshIntervalInMs="100" />
       </sequence>
     </definitions>
     <definitions title="systems">

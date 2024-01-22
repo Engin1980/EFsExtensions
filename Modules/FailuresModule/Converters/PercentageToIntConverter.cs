@@ -1,5 +1,5 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;
-using FailuresModule.Model.Incidents;
+using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace FailuresModule.Converters
+namespace Eng.Chlaot.Modules.FailuresModule.Converters
 {
     public class PercentageToIntConverter : TypedConverter<Percentage, int>
   {

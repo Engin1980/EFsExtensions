@@ -1,5 +1,5 @@
 ﻿using ELogging;
-using FailuresModule.Model.Failures;
+using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace FailuresModule.Model.Run.Sustainers
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Run.Sustainers
 {
   internal class ToggleOnVarMismatchFailureSustainer : SimVarBasedFailureSustainer
   {

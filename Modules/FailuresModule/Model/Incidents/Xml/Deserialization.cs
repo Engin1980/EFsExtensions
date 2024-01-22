@@ -2,15 +2,15 @@
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using EXmlLib.Deserializers;
 using EXmlLib;
-using FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
 
-namespace FailuresModule.Model.Incidents.Xml
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents.Xml
 {
   internal static class Deserialization
   {
@@ -44,7 +44,6 @@ namespace FailuresModule.Model.Incidents.Xml
     #region Private Fields
 
     private const string FAILURES_KEY = "__failures";
-    private readonly static Random rnd = new();
 
     #endregion Private Fields
 
@@ -136,7 +135,7 @@ namespace FailuresModule.Model.Incidents.Xml
             "triggers",
             new EXmlHelper.List.DT[] {
             new EXmlHelper.List.DT("trigger", typeof(CheckStateTrigger)),
-            new EXmlHelper.List.DT("timeTrigger", typeof(FuncTrigger))},
+            new EXmlHelper.List.DT("timeTrigger", typeof(TimeTrigger))},
             () => new List<Trigger>()))
         .WithCustomPropertyDeserialization(
           nameof(IncidentDefinition.FailGroup),
@@ -163,47 +162,9 @@ namespace FailuresModule.Model.Incidents.Xml
     private static IElementDeserializer CreateTimeTriggerDeserializer()
     {
       ObjectElementDeserializer ret = new ObjectElementDeserializer()
-        .WithCustomTargetType(typeof(FuncTrigger))
-        .WithCustomPropertyDeserialization(
-        nameof(FuncTrigger.EvaluatingFunction), (e, t, f, c) =>
-        {
-          string val = e.Attribute("interval")!.Value;
-          Func<bool> func;
-          int secondDigit;
-          int minuteDigit;
-          switch (val)
-          {
-            case "oncePerTenSeconds":
-              secondDigit = rnd.Next(0, 10);
-              func = () => DateTime.Now.Second % 10 == secondDigit;
-              break;
-            case "oncePerMinute":
-              secondDigit = rnd.Next(0, 60);
-              func = () => DateTime.Now.Second == secondDigit;
-              break;
-            case "oncePerTenMinutes":
-              secondDigit = rnd.Next(0, 60);
-              minuteDigit = rnd.Next(0, 10);
-              func = () => DateTime.Now.Second == secondDigit && DateTime.Now.Minute % 10 == minuteDigit;
-              break;
-            case "oncePerHour":
-              secondDigit = rnd.Next(0, 60);
-              minuteDigit = rnd.Next(0, 60);
-              func = () => DateTime.Now.Second == secondDigit && DateTime.Now.Minute == minuteDigit;
-              break;
-            default:
-              throw new NotImplementedException();
-          }
-          EXmlHelper.SetPropertyValue(f, t, func);
-        })
-        .WithCustomPropertyDeserialization(
-        nameof(FuncTrigger.Interval), (e, t, f, c) =>
-        {
-          string val = e.Attribute("interval")!.Value;
-          EXmlHelper.SetPropertyValue(f, t, val);
-        });
+        .WithCustomTargetType(typeof(TimeTrigger))
+        .WithIgnoredProperty(nameof(TimeTrigger.Probability));
       return ret;
-
     }
 
     #endregion Private Methods

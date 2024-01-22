@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 
-namespace FailuresModule.Model.Failures
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
 {
   public abstract class FailureDefinition : FailureDefinitionBase, IXmlObjectPostDeserialize
   {
@@ -27,8 +27,8 @@ namespace FailuresModule.Model.Failures
 
     public virtual void PostDeserialize()
     {
-      EAssert.IsNonEmptyString(Id);
-      EAssert.IsNonEmptyString(Title);
+      EAssert.IsNonEmptyString(Id, $"{nameof(Id)} is empty or null");
+      EAssert.IsNonEmptyString(Title, $"{nameof(Title)} is empty or null");
     }
 
     internal virtual void ExpandVariableIfExists(string varRef, int variableValue)

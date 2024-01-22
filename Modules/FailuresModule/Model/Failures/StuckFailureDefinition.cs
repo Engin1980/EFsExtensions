@@ -1,8 +1,7 @@
 ﻿using ESystem.Asserting;
-using FailuresModule.Model.Run.Sustainers;
 using System;
 
-namespace FailuresModule.Model.Failures
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
 {
   public class StuckFailureDefinition : WithSimVarFailureDefinition
   {
@@ -27,7 +26,7 @@ namespace FailuresModule.Model.Failures
     public override void PostDeserialize()
     {
       base.PostDeserialize();
-      EAssert.IsTrue(RefreshIntervalInMs > 50);
+      EAssert.IsTrue(RefreshIntervalInMs > 50, $"Invalid refresh interval ({this.RefreshIntervalInMs}).");
     }
 
     #endregion Public Constructors

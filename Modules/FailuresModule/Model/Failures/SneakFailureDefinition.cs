@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
-namespace FailuresModule.Model.Failures
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
 {
   public class SneakFailureDefinition : WithSimVarFailureDefinition
   {

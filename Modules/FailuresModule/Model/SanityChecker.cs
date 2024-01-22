@@ -1,8 +1,8 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
-using FailuresModule.Model.Incidents;
-using FailuresModule.Model.Failures;
+using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
+using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Types
+namespace Eng.Chlaot.Modules.FailuresModule.Types
 {
     internal class SanityChecker
   {

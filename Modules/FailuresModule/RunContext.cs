@@ -3,17 +3,17 @@ using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using FailuresModule.Model.Incidents;
-using FailuresModule.Model.Run.Sustainers;
-using FailuresModule.Model.Failures;
-using FailuresModule.Model.RunTime;
+using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
+using Eng.Chlaot.Modules.FailuresModule.Model.Run.Sustainers;
+using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
+using Eng.Chlaot.Modules.FailuresModule.Model.RunTime;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 
-namespace FailuresModule
+namespace Eng.Chlaot.Modules.FailuresModule
 {
   public class RunContext : NotifyPropertyChangedBase
   {
@@ -150,8 +150,8 @@ namespace FailuresModule
         if (incident.OneShotTriggersInvoked.Contains(trigger)) continue;
 
         bool isConditionTrue;
-        if (trigger is FuncTrigger ft)
-          isConditionTrue = ft.EvaluatingFunction();
+        if (trigger is TimeTrigger tt)
+          isConditionTrue = tt.EvaluatingFunction();
         else if (trigger is CheckStateTrigger csct)
         {
           StateCheckEvaluator sce = incidentEvaluators[incident];

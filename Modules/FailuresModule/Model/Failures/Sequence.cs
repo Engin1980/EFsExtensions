@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Model.Failures
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
 {
   public class Sequence : FailureDefinitionBase
   {

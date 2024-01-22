@@ -1,8 +1,7 @@
-﻿using FailuresModule.Converters;
-using FailuresModule.Model.Incidents;
-using FailuresModule.Model.Failures;
-using FailuresModule.Model.RunTime;
-using FailuresModule.Model.Run.Sustainers;
+﻿using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
+using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
+using Eng.Chlaot.Modules.FailuresModule.Model.RunTime;
+using Eng.Chlaot.Modules.FailuresModule.Model.Run.Sustainers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +16,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Eng.Chlaot.Modules.FailuresModule.Converters;
 
-namespace FailuresModule
+namespace Eng.Chlaot.Modules.FailuresModule
 {
   /// <summary>
   /// Interaction logic for CtrRun.xaml

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace FailuresModule.Model.Incidents
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents
 {
     public class FailGroup : Fail
     {

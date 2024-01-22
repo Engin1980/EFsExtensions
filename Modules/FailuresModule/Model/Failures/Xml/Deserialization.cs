@@ -2,7 +2,6 @@
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using EXmlLib.Deserializers;
 using EXmlLib;
-using FailuresModule.Model.Incidents;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,7 @@ using ESystem.Asserting;
 using static ESystem.Functions;
 using ESystem;
 
-namespace FailuresModule.Model.Failures.Xml
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures.Xml
 {
   internal static class Deserialization
   {

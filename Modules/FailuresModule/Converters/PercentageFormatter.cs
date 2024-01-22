@@ -1,5 +1,5 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;
-using FailuresModule.Model.Incidents;
+using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Converters
+namespace Eng.Chlaot.Modules.FailuresModule.Converters
 {
   internal class PercentageFormatter : TypedConverter<Percentage, string>
   {

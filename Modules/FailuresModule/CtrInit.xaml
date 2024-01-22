@@ -1,14 +1,14 @@
-﻿<UserControl x:Class="FailuresModule.CtrInit"
+﻿<UserControl x:Class="Eng.Chlaot.Modules.FailuresModule.CtrInit"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:FailuresModule"
-             xmlns:ctrl="clr-namespace:FailuresModule.Controls"
-             xmlns:modelApp ="clr-namespace:FailuresModule.Model.Incidents"
-             xmlns:modelSim="clr-namespace:FailuresModule.Model.Failures"
+             xmlns:local="clr-namespace:Eng.Chlaot.Modules.FailuresModule"
+             xmlns:ctrl="clr-namespace:Eng.Chlaot.Modules.FailuresModule.Controls"
+             xmlns:modelApp ="clr-namespace:Eng.Chlaot.Modules.FailuresModule.Model.Incidents"
+             xmlns:modelSim="clr-namespace:Eng.Chlaot.Modules.FailuresModule.Model.Failures"
              xmlns:modelVar="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;assembly=ChlaotModuleBase"
-             xmlns:converters="clr-namespace:FailuresModule.Converters"
+             xmlns:converters="clr-namespace:Eng.Chlaot.Modules.FailuresModule.Converters"
              xmlns:globalConverters ="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"
              xmlns:gWpf="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
              mc:Ignorable="d" 
@@ -23,7 +23,7 @@
   </UserControl.Resources>
   <DockPanel>
     <DockPanel DockPanel.Dock="Top">
-      <Button x:Name="btnLoad" Content="Load Configuration" Padding="8" Click="btnLoad_Click" />
+      <Button x:Name="btnLoad" Content="Load Configuration" Margin="8" Padding="8" Click="btnLoad_Click" />
     </DockPanel>
     <TabControl>
       <TabItem Header="Metainfo">
@@ -104,10 +104,13 @@
                 <TextBlock Text=") " />
               </StackPanel>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelApp:FuncTrigger}">
+            <HierarchicalDataTemplate DataType="{x:Type modelApp:TimeTrigger}">
               <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Trigger (prob=" />
-                <TextBlock Text="{Binding Probability, Converter={StaticResource PercentageFormatter}, ConverterParameter=N2}" />
+                <TextBlock Text="Trigger (MTBF hours=" />
+                <TextBlock Text="{Binding MtbfHours}" />
+                <ctrl:NumericUpDown Margin="3,0,3,0" Value="{Binding MtbfHours, Mode=TwoWay}" />
+                <TextBlock Text=", prob=" />
+                <TextBlock Text="{Binding Probability, Converter={StaticResource PercentageFormatter}, ConverterParameter=N5}" />
                 <ctrl:ProbabilityUpDown Margin="3,0,3,0" Value="{Binding Probability, Mode=TwoWay}" />
                 <TextBlock Text=", rpt=" />
                 <TextBlock Text="{Binding Repetitive}" />

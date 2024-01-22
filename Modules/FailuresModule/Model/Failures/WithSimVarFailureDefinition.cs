@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 
-namespace FailuresModule.Model.Failures
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
 {
   public abstract class WithSimVarFailureDefinition : FailureDefinition
   {
@@ -15,12 +15,13 @@ namespace FailuresModule.Model.Failures
 
     public override void PostDeserialize()
     {
+      this.Title ??= SimVar;
       base.PostDeserialize();
-      EAssert.IsNonEmptyString(SimVar);
+      EAssert.IsNonEmptyString(SimVar, $"{nameof(SimVar)} is empty or null");
     }
 
     internal override void ExpandVariableIfExists(string varRef, int variableValue)
-    {
+    {      
       base.ExpandVariableIfExists(varRef, variableValue);
       SimVar = FailureDefinition.ExpandVariableInString(this.SimVar, varRef, variableValue);
     }

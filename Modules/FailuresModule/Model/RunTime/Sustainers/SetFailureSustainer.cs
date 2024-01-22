@@ -1,5 +1,5 @@
-﻿using FailuresModule.Model.Run.Sustainers;
-using FailuresModule.Model.Failures;
+﻿using Eng.Chlaot.Modules.FailuresModule.Model.Run.Sustainers;
+using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +7,7 @@ using System.Printing;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FailuresModule.Model.Run.Sustainers
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Run.Sustainers
 {
   internal class SetFailureSustainer : SimVarBasedFailureSustainer
   {

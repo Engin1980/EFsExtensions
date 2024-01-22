@@ -2,7 +2,7 @@
 using EXmlLib.Interfaces;
 using System.Windows.Media.Animation;
 
-namespace FailuresModule.Model.Failures
+namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
 {
   public class LeakFailureDefinition : WithSimVarFailureDefinition
   {
