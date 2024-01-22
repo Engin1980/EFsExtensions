@@ -83,6 +83,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
       return ret;
     }
 
+    public override string ToString() => $"{this.Variable.Name}={this.Value} {{VariableVM}}";
+
     #endregion Public Methods
 
   }

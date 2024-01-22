@@ -52,26 +52,34 @@
       </TreeView>
     </TabItem>
     <TabItem Header="Property Values">
-      <DataGrid ItemsSource="{Binding PropertyValuesVM}" AutoGenerateColumns="False">
+      <DataGrid ItemsSource="{Binding PropertyVMs}" AutoGenerateColumns="False" CanUserAddRows="False">
         <DataGrid.Columns>
-          <DataGridTextColumn Header="SimProperty" Binding="{Binding Key}" />
+          <DataGridTextColumn Header="SimProperty" Binding="{Binding Property.Name}" />
           <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
         </DataGrid.Columns>
       </DataGrid>
     </TabItem>
     <TabItem Header="Variable Values">
-      <ListView ItemsSource="{Binding CheckListVMs}">
+      <ListView ItemsSource="{Binding CheckListVMs}"
+                ItemContainerStyle="{StaticResource ListViewAlternatingStyle}" AlternationCount="2">
         <ListView.ItemTemplate>
           <DataTemplate>
             <StackPanel Orientation="Horizontal">
-              <TextBlock Text="{Binding CheckList.CallSpeech}" Width="200" />
+              <StackPanel Orientation="Horizontal" Width="200">
+                <TextBlock Text="{Binding CheckList.CallSpeech}" />
+                <TextBlock Text=" (" Foreground="Gray" />
+                <TextBlock Text="{Binding Variables.Count}" Foreground="Gray" />
+                <TextBlock Text=")" Foreground="Gray" />
+              </StackPanel>
               <ItemsControl ItemsSource="{Binding Variables}">
                 <ItemsControl.ItemTemplate>
                   <DataTemplate>
                     <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="{Binding Key}" />
+                      <TextBlock Text="{Binding Variable.Name}" />
                       <TextBlock Text=" = " />
                       <TextBlock Text="{Binding Value}" />
+                      <TextBlock Text=" " />
+                      <TextBlock Text="{Binding AdditionalInfo}" Foreground="Gray" />
                     </StackPanel>
                   </DataTemplate>
                 </ItemsControl.ItemTemplate>
@@ -85,7 +93,6 @@
       <DockPanel>
         <DockPanel DockPanel.Dock="Top">
           <Label DockPanel.Dock="Left">Checklist:</Label>
-          <!--<ComboBox ItemsSource="{Binding CheckListVMs}" DisplayMemberPath="CheckList.CallSpeech" SelectedItem="{Binding EvaluatorRecentResultChecklistVM}" />-->
           <ComboBox ItemsSource="{Binding CheckListVMs}" SelectedItem="{Binding EvaluatorRecentResultChecklistVM}">
             <ComboBox.ItemTemplate>
               <DataTemplate>
@@ -98,9 +105,15 @@
           </ComboBox>
         </DockPanel>
         <StackPanel>
-          <Label>
+          <Label Margin="8 0 0 0">
             <StackPanel Orientation="Horizontal">
-              <TextBlock Text="Last refresh:" />
+              <TextBlock Text="Condition: "/>
+              <TextBlock Text="{Binding EvaluatorRecentResultChecklistVM.CheckList.Trigger.DisplayString}" />
+            </StackPanel>
+          </Label>
+          <Label Margin="8 0 0 0">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="Last refresh: " />
               <TextBlock Text="{Binding EvaluatorRecentResultChecklistVM.RunTime.EvaluatorRecentResultDateTime}" />
             </StackPanel>
           </Label>

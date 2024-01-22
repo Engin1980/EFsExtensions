@@ -15,5 +15,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
       get => base.GetProperty<SimProperty>(nameof(Property))!;
       set => base.UpdateProperty(nameof(Property), value);
     }
+
+    public override string ToString() => $"{this.Property.Name}={this.Value} {{PropertyVM}}";
   }
 }

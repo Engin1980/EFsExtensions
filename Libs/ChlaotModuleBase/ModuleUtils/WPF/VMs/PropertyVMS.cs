@@ -7,6 +7,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using static ESystem.Functions;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
 {
@@ -28,7 +30,9 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
     public double this[SimProperty property]
     {
       get => this.Single(q => q.Property.Equals(property)).Value;
-      set => this.Single(q => q.Property.Equals(property)).Value = value;
+      set => Try(
+        () => this.Single(q => q.Property.Equals(property)).Value = value, 
+        ex => new ApplicationException($"Property '{property.Name}' not found.", ex));
     }
 
     public void UpdateBySimObject(SimObject simObject)

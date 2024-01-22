@@ -109,8 +109,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         if (!isAutoplayingEnabled) return;
         if (simObject.IsSimPaused) return;
 
-        this.propertyVMs.UpdateBySimObject(simObject);
-
         CheckListVM? readyCheckList = this.active
           .Where(q => q.CheckList.Trigger != null)
           .FirstOrDefault(q => q.RunTime.Evaluate(q.CheckList.Trigger!));
