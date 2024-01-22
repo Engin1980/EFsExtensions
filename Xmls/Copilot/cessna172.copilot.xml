@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<copilotSet
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://chlaot.org/copilots.xsd"
+  xmlns:g="http://chlaot.org/global.xsd"
+  xsi:noNamespaceSchemaLocation="file://./Xsds/CopilotSchema.xsd">
+  <metaInfo>
+    <g:label>Basic C172 copilot callouts</g:label>
+    <g:author>Marek Vajgl</g:author>
+    <g:description>(none)</g:description>
+    <g:version>0.1</g:version>
+  </metaInfo>
+  <speechDefinition title="acceleration 50">
+    <speech type="speech" value="50 knots" />
+    <trigger>
+      <g:and>
+        <g:property name="ias" direction="passing" expression="50" />
+        <g:property name="acceleration" direction="above" expression="0" />
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:property name="ias" direction="below" expression="10" />
+    </reactivationTrigger>
+  </speechDefinition>
+  <speechDefinition title="acceleration 70">
+    <speech type="speech" value="70 knots" />
+    <trigger>
+      <g:and>
+        <g:property name="ias" direction="passing" expression="70" />
+        <g:property name="acceleration" direction="above" expression="0" />
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:property name="ias" direction="below" expression="10" />
+    </reactivationTrigger>
+  </speechDefinition>
+</copilotSet>
