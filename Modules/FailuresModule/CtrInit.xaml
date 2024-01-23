@@ -109,7 +109,7 @@
                 <TextBlock Text="Trigger (MTBF hours=" />
                 <TextBlock Text="{Binding MtbfHours}" />
                 <ctrl:NumericUpDown Margin="3,0,3,0" Value="{Binding MtbfHours, Mode=TwoWay}" />
-                <TextBlock Text=", prob=" />
+                <TextBlock Text=", prob/interval=" />
                 <TextBlock Text="{Binding Probability, Converter={StaticResource PercentageFormatter}, ConverterParameter=N5}" />
                 <ctrl:ProbabilityUpDown Margin="3,0,3,0" Value="{Binding Probability, Mode=TwoWay}" />
                 <TextBlock Text=", rpt=" />
