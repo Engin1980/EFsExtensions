@@ -1,4 +1,5 @@
-﻿using Eng.Chlaot.Modules.FailuresModule.Model.Run.Sustainers;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;
+using Eng.Chlaot.Modules.FailuresModule.Model.Sustainers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,18 +11,17 @@ using System.Windows.Data;
 
 namespace Eng.Chlaot.Modules.FailuresModule.Converters
 {
-  internal class FailureDefinitionActiveToBoolConverter : IValueConverter
+  internal class FailureDefinitionActiveToBoolConverter : TypedConverter<string, object>
   {
     private static BindingList<FailureSustainer> activeSustainers = new();
     public static void SetActiveSustainers(BindingList<FailureSustainer> sustainers) => activeSustainers = sustainers;
 
-    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    protected override object Convert(string value, object parameter, CultureInfo culture)
     {
-      var id = (string)value;
-      bool isActive = activeSustainers.Any(q => q.Failure.Id == id);
+      bool isActive = activeSustainers.Any(q => q.Failure.Id == value);
       object ret;
       if ((parameter is string s && s.Contains('|')))
-            {
+      {
         string[] pts = s.Split('|');
         ret = isActive ? pts[0] : pts[1];
       }
@@ -30,7 +30,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Converters
       return ret;
     }
 
-    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+    protected override string ConvertBack(object value, object parameter, CultureInfo culture)
     {
       throw new NotImplementedException();
     }

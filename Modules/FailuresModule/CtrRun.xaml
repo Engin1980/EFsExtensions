@@ -6,8 +6,9 @@
              xmlns:local="clr-namespace:Eng.Chlaot.Modules.FailuresModule"
              xmlns:modelApp ="clr-namespace:Eng.Chlaot.Modules.FailuresModule.Model.Incidents"
              xmlns:modelSim="clr-namespace:Eng.Chlaot.Modules.FailuresModule.Model.Failures"
-             xmlns:modelRun ="clr-namespace:Eng.Chlaot.Modules.FailuresModule.Model.RunTime"
-             xmlns:modelRunSus ="clr-namespace:Eng.Chlaot.Modules.FailuresModule.Model.Run.Sustainers"
+             xmlns:vm ="clr-namespace:Eng.Chlaot.Modules.FailuresModule.Model.VMs"
+             xmlns:vmg="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;assembly=ChlaotModuleBase"
+             xmlns:modelSus ="clr-namespace:Eng.Chlaot.Modules.FailuresModule.Model.Sustainers"
              xmlns:modelVars="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;assembly=ChlaotModuleBase"
              xmlns:converters="clr-namespace:Eng.Chlaot.Modules.FailuresModule.Converters"             
              xmlns:globalConverters="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"             
@@ -20,115 +21,81 @@
   <DockPanel>
     <TabControl>
       <TabItem Header="Overview">
-        <TreeView ItemsSource="{Binding Incidents}">
+        <TreeView ItemsSource="{Binding IncidentVMs}">
           <TreeView.Resources>
-            <HierarchicalDataTemplate DataType="{x:Type modelRun:RunIncidentGroup}" ItemsSource="{Binding Incidents}">
-              <StackPanel Orientation="Horizontal" Margin="2">
+            <HierarchicalDataTemplate DataType="{x:Type vm:IncidentGroupVM}" ItemsSource="{Binding Incidents}">
+              <StackPanel Orientation="Horizontal">
                 <TextBlock Text="{Binding Title}" />
                 <TextBlock Text=" (" Foreground="Gray" />
                 <TextBlock Text="{Binding Incidents.Count}" Foreground="Gray" />
                 <TextBlock Text="+)" Foreground="Gray" />
               </StackPanel>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelRun:IncidentDefinitionVM}">
-              <StackPanel Orientation="Vertical" Margin="2">
+            <HierarchicalDataTemplate DataType="{x:Type vm:IncidentDefinitionVM}" ItemsSource="{Binding VMItems}">
+              <StackPanel Orientation="Vertical" >
                 <StackPanel Orientation="Horizontal">
-                  <Label>
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock FontWeight="Bold" Text="{Binding IncidentDefinition.Title}" />
-                      <TextBlock Text=" (" Foreground="Gray" />
-                      <TextBlock Text="Inactive" Foreground="Gray" />
-                      <TextBlock Text=")" Foreground="Gray" />
-                    </StackPanel>
-                  </Label>
+                  <TextBlock FontWeight="Bold" Text="{Binding IncidentDefinition.Title}" />
+                  <TextBlock Text=" (" Foreground="Gray" />
+                  <TextBlock Text="Inactive" Foreground="Gray" />
+                  <TextBlock Text=") " Foreground="Gray" />
                   <Button x:Name="btnFireIncident" Content="Fire" Tag="{Binding}" Click="btnFireIncident_Click" />
                 </StackPanel>
-                <TreeViewItem ItemsSource="{Binding IncidentDefinition.Variables}">
-                  <TreeViewItem.Header>
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="Variables" Foreground="Green" />
-                      <TextBlock Text=" (" Foreground="Gray"/>
-                      <TextBlock Text="{Binding IncidentDefinition.Variables.Count}" Foreground="Gray" />
-                      <TextBlock Text=")"  Foreground="Gray"/>
-                    </StackPanel>
-                  </TreeViewItem.Header>
-                </TreeViewItem>
-                <TreeViewItem ItemsSource="{Binding IncidentDefinition.Triggers}">
-                  <TreeViewItem.Header>
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="Triggers" />
-                      <TextBlock Text=" (" Foreground="Gray" />
-                      <TextBlock Text="{Binding IncidentDefinition.Triggers.Count}" Foreground="Gray" />
-                      <TextBlock Text=")" Foreground="Gray" />
-                    </StackPanel>
-                  </TreeViewItem.Header>
-                </TreeViewItem>
-                <TreeViewItem ItemsSource="{Binding TriggerEvaluations}" Foreground="DeepSkyBlue">
-                  <TreeViewItem.Header>
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="Triggers hits" />
-                      <TextBlock Text=" (" />
-                      <TextBlock Text="{Binding TriggerEvaluations.Count}" />
-                      <TextBlock Text=")" />
-                    </StackPanel>
-                  </TreeViewItem.Header>
-                </TreeViewItem>
-                <TreeViewItem ItemsSource="{Binding IncidentDefinition.FailGroup.Items}">
-                  <TreeViewItem.Header>
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="Failures" Foreground="Red" />
-                      <TextBlock Text=" (sel=" Foreground="Gray" />
-                      <TextBlock Text="{Binding IncidentDefinition.FailGroup.Selection}" Foreground="Blue" />
-                      <TextBlock Text=", weight=" Foreground="Gray" />
-                      <TextBlock Text="{Binding IncidentDefinition.FailGroup.Weight}" Foreground="Blue" />
-                      <TextBlock Text=")"  Foreground="Gray"/>
-                    </StackPanel>
-                  </TreeViewItem.Header>
-                </TreeViewItem>
               </StackPanel>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelRun:RunTriggerEvaluation}">
-              <StackPanel Orientation="Horizontal" Margin="2">
-                <TextBlock Text="TODO" />
+
+            <HierarchicalDataTemplate DataType="{x:Type vmg:VariableVMS}" ItemsSource="{Binding}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Variables" />
+                <TextBlock Text=" (" Foreground="Gray" />
+                <TextBlock Text="{Binding Count}" Foreground="Gray" />
+                <TextBlock Text=")" Foreground="Gray" />
               </StackPanel>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelVars:Variable}">
-              <StackPanel Orientation="Horizontal" Margin="2">
-                <TextBlock Text="{Binding Name}" />
-                <TextBlock Text=" = " />
-                <TextBlock Text="{Binding Value}" />
+            <HierarchicalDataTemplate DataType="{x:Type vmg:VariableVM}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="I am not implemented yet" ></TextBlock>
               </StackPanel>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelApp:Trigger}">
-              <Label Margin="0" Padding="0" Foreground="Blue">
-                <StackPanel Orientation="Horizontal" >
-                  <TextBlock Text="Trigger (prob=" />
-                  <TextBlock Text="{Binding Probability}" />
-                  <TextBlock Text=", rpt=" />
-                  <TextBlock Text="{Binding Repetitive}" />
-                  <TextBlock Text=", cond=" />
-                  <TextBlock Text="{Binding Condition.DisplayString}" />
-                  <TextBlock Text=") " />
-                </StackPanel>
-              </Label>
+
+            <HierarchicalDataTemplate DataType="{x:Type vm:TriggerVMS}" ItemsSource="{Binding}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Triggers" />
+                <TextBlock Text=" (" Foreground="Gray" />
+                <TextBlock Text="{Binding Count}" Foreground="Gray" />
+                <TextBlock Text=")" Foreground="Gray" />
+              </StackPanel>
             </HierarchicalDataTemplate>
+            <HierarchicalDataTemplate DataType="{x:Type vm:TriggerVM}">
+              <StackPanel DataContext="{Binding Trigger}" Orientation="Horizontal" >
+                <TextBlock Text="Trigger (prob=" />
+                <TextBlock Text="{Binding Probability}" />
+                <TextBlock Text=", rpt=" />
+                <TextBlock Text="{Binding Repetitive}" />
+                <TextBlock Text=", cond=" />
+                <TextBlock Text="{Binding Condition.DisplayString}" />
+                <TextBlock Text=") " />
+              </StackPanel>
+            </HierarchicalDataTemplate>
+
             <HierarchicalDataTemplate DataType="{x:Type modelApp:FailGroup}" ItemsSource="{Binding Items}">
               <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Group (sel=" />
-                <TextBlock Text="{Binding Selection}" />
-                <TextBlock Text=", weight=" />
-                <TextBlock Text="{Binding Weight}" />
-                <TextBlock Text=")" />
+                <TextBlock Text="Failures" />
+                <TextBlock Text=" (sel=" Foreground="Gray" />
+                <TextBlock Text="{Binding Selection}" Foreground="Blue" />
+                <TextBlock Text=", weight=" Foreground="Gray" />
+                <TextBlock Text="{Binding Weight}" Foreground="Blue" />
+                <TextBlock Text=")" Foreground="Gray" />
               </StackPanel>
             </HierarchicalDataTemplate>
             <HierarchicalDataTemplate DataType="{x:Type modelApp:FailId}">
-              <Label Margin="0" Padding="0" Foreground="OrangeRed">
+              <Label Margin="0" Padding="0">
                 <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="Failure (id=" />
-                  <TextBlock Text="{Binding Id}" />
-                  <TextBlock Text=", weight=" />
-                  <TextBlock Text="{Binding Weight}" />
-                  <TextBlock Text=")" />
+                  <TextBlock Text="Failure" />
+                  <TextBlock Text=" (id=" Foreground="Gray" />
+                  <TextBlock Text="{Binding Id}"  Foreground="Blue"/>
+                  <TextBlock Text=", weight=" Foreground="Gray" />
+                  <TextBlock Text="{Binding Weight}" Foreground="Blue" />
+                  <TextBlock Text=") " Foreground="Gray" />
                   <Button x:Name="btnFireFailure" Content="Fire" Tag="{Binding}" Click="btnFireFailure_Click" />
                 </StackPanel>
               </Label>
@@ -177,7 +144,7 @@
         <ScrollViewer>
           <ListView ItemsSource="{Binding Sustainers}">
             <ListView.Resources>
-              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:SneakFailureSustainer}">
+              <HierarchicalDataTemplate DataType="{x:Type modelSus:SneakFailureSustainer}">
                 <StackPanel Orientation="Horizontal">
                   <Label>
                     <StackPanel Orientation="Horizontal">
@@ -190,7 +157,7 @@
                   </Label>
                 </StackPanel>
               </HierarchicalDataTemplate>
-              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:ToggleFailureSustainer}">
+              <HierarchicalDataTemplate DataType="{x:Type modelSus:ToggleFailureSustainer}">
                 <StackPanel Orientation="Horizontal">
                   <Label>
                     <StackPanel Orientation="Horizontal">
@@ -203,7 +170,7 @@
                   </Label>
                 </StackPanel>
               </HierarchicalDataTemplate>
-              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:LeakFailureSustainer}">
+              <HierarchicalDataTemplate DataType="{x:Type modelSus:LeakFailureSustainer}">
                 <StackPanel Orientation="Horizontal">
                   <Label>
                     <StackPanel Orientation="Horizontal">
@@ -222,7 +189,7 @@
                   </Label>
                 </StackPanel>
               </HierarchicalDataTemplate>
-              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:SetFailureSustainer}">
+              <HierarchicalDataTemplate DataType="{x:Type modelSus:SetFailureSustainer}">
                 <StackPanel Orientation="Horizontal">
                   <Label>
                     <StackPanel Orientation="Horizontal">
@@ -235,7 +202,7 @@
                   </Label>
                 </StackPanel>
               </HierarchicalDataTemplate>
-              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:StuckFailureSustainer}">
+              <HierarchicalDataTemplate DataType="{x:Type modelSus:StuckFailureSustainer}">
                 <StackPanel Orientation="Horizontal">
                   <Label>
                     <StackPanel Orientation="Horizontal">
@@ -250,7 +217,7 @@
                   </Label>
                 </StackPanel>
               </HierarchicalDataTemplate>
-              <HierarchicalDataTemplate DataType="{x:Type modelRunSus:ToggleOnVarMismatchFailureSustainer}">
+              <HierarchicalDataTemplate DataType="{x:Type modelSus:ToggleOnVarMismatchFailureSustainer}">
                 <StackPanel Orientation="Horizontal">
                   <Label>
                     <StackPanel Orientation="Horizontal">

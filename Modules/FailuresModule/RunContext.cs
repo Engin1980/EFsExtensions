@@ -4,18 +4,18 @@ using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
-using Eng.Chlaot.Modules.FailuresModule.Model.Run.Sustainers;
 using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
-using Eng.Chlaot.Modules.FailuresModule.Model.RunTime;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
+using Eng.Chlaot.Modules.FailuresModule.Model.VMs;
+using Eng.Chlaot.Modules.FailuresModule.Model.Sustainers;
 
 namespace Eng.Chlaot.Modules.FailuresModule
 {
-  public class RunContext : NotifyPropertyChangedBase
+    public class RunContext : NotifyPropertyChangedBase
   {
     #region Fields
 
@@ -30,7 +30,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
     #region Properties
 
     public List<FailureDefinition> FailureDefinitions { get; }
-    public List<RunIncident> Incidents { get; }
+    public List<IncidentVM> IncidentVMs { get; }
     public BindingList<FailureSustainer> Sustainers { get; }
 
     public int SustainersCount
@@ -44,7 +44,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
       {
         if (_IncidentDefinitions == null)
         {
-          _IncidentDefinitions = FlattenIncidentDefinitions(Incidents);
+          _IncidentDefinitions = FlattenIncidentDefinitions(IncidentVMs);
         }
         return _IncidentDefinitions;
       }
@@ -54,7 +54,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
     #region Constructors
 
-    public RunContext(List<FailureDefinition> failureDefinitions, List<RunIncident> incidents)
+    public RunContext(List<FailureDefinition> failureDefinitions, List<IncidentVM> incidents)
     {
       ESimConnect.ESimConnect eSimCon = new();
       simConWrapper = new(eSimCon);
@@ -63,7 +63,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
       FailureSustainer.SetSimCon(eSimCon);
       FailureDefinitions = failureDefinitions;
-      Incidents = incidents;
+      IncidentVMs = incidents;
       Sustainers = new();
       Sustainers.ListChanged += (s, e) => this.SustainersCount = Sustainers.Count;
     }
@@ -80,7 +80,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
       {
         Incidents = failureSet.Incidents
       };
-      RunIncidentGroup top = RunIncidentGroup.Create(ig);
+      IncidentGroupVM top = IncidentGroupVM.Create(ig);
 
       RunContext ret = new(failureDefinitions, top.Incidents);
       return ret;
@@ -91,30 +91,19 @@ namespace Eng.Chlaot.Modules.FailuresModule
       this.simConWrapper.OpenAsync(
         () =>
         {
-          InitializeIncidentEvaluators();
           this.simConWrapper.Start();
           this.isRunning = true;
         },
         ex => { });
     }
 
-    private void InitializeIncidentEvaluators()
-    {
-      foreach (var runIncidentDefinition in this.IncidentDefinitions)
-      {
-        VariableVMS variableVMs = VariableVMS.Create(runIncidentDefinition.IncidentDefinition.Variables);
-        StateCheckEvaluator sce = new(variableVMs.GetAsDict, () => propertyValues);
-        incidentEvaluators[runIncidentDefinition] = sce;
-      }
-    }
-
-    private static List<IncidentDefinitionVM> FlattenIncidentDefinitions(List<RunIncident> incidents)
+    private static List<IncidentDefinitionVM> FlattenIncidentDefinitions(List<IncidentVM> incidents)
     {
       List<IncidentDefinitionVM> ret = new();
 
       foreach (var incident in incidents)
       {
-        if (incident is RunIncidentGroup rig)
+        if (incident is IncidentGroupVM rig)
         {
           var tmp = FlattenIncidentDefinitions(rig.Incidents);
           ret.AddRange(tmp);
@@ -128,7 +117,6 @@ namespace Eng.Chlaot.Modules.FailuresModule
       return ret;
     }
 
-    private readonly Dictionary<IncidentDefinitionVM, StateCheckEvaluator> incidentEvaluators = new();
     private void EvaluateAndFireFailures()
     {
       foreach (var runIncidentDefinition in this.IncidentDefinitions)
@@ -145,28 +133,19 @@ namespace Eng.Chlaot.Modules.FailuresModule
     private void EvaluateIncidentDefinition(IncidentDefinitionVM incident, out bool isActivated)
     {
       isActivated = false;
-      foreach (var trigger in incident.IncidentDefinition.Triggers)
+      foreach (var trigger in incident.Triggers)
       {
-        if (incident.OneShotTriggersInvoked.Contains(trigger)) continue;
+        if (incident.InvokedOneShotTriggers.Contains(trigger)) continue;
 
-        bool isConditionTrue;
-        if (trigger is TimeTrigger tt)
-          isConditionTrue = tt.EvaluatingFunction();
-        else if (trigger is CheckStateTrigger csct)
-        {
-          StateCheckEvaluator sce = incidentEvaluators[incident];
-          isConditionTrue = IsTriggerConditionTrue(sce, csct.Condition);
-        }
-        else
-          throw new ApplicationException($"Unsupported type of trigger: {trigger.GetType().Name}.");
+        bool isConditionTrue = trigger.Evaluate();
 
         if (isConditionTrue)
         {
-          if (trigger.Repetitive == false)
-            incident.OneShotTriggersInvoked.Add(trigger);
+          if (trigger.Trigger.Repetitive == false)
+            incident.InvokedOneShotTriggers.Add(trigger);
 
           double prob = random.NextDouble();
-          isActivated = prob <= trigger.Probability;
+          isActivated = prob <= trigger.Trigger.Probability;
           if (isActivated) return;
         }
       }
@@ -209,12 +188,6 @@ namespace Eng.Chlaot.Modules.FailuresModule
       FailureSustainer fs = FailureSustainerFactory.Create(finalFailure);
       this.Sustainers.Add(fs);
       fs.Start();
-    }
-
-    private bool IsTriggerConditionTrue(StateCheckEvaluator stateCheckEvaluator, IStateCheckItem condition)
-    {
-      bool ret = stateCheckEvaluator.Evaluate(condition);
-      return ret;
     }
 
     private List<FailId> PickFailItems(IncidentDefinitionVM incident)
