@@ -50,12 +50,17 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       private void PlaybackManager_ChecklistPlayingCompleted()
       {
         this.previous = this.current;
-        var nextActiveViews = all.Where(q => this.current.CheckList.NextChecklists.Contains(q.CheckList));
+        var nextActiveViews = this.current.CheckList.NextChecklists.Select(q => all.Single(p => p.CheckList == q));
         EAssert.IsTrue(nextActiveViews.Any(), "There must be at least one next checklist.");
         this.active.Clear();
         this.active.AddRange(nextActiveViews);
         this.all.ForEach(q => q.RunTime.IsActive = active.Contains(q));
-        nextActiveViews.ForEach(q => q.RunTime.ResetEvaluator());
+        nextActiveViews.ForEach(q => q.RunTime.ResetEvaluator());        
+        if (previous == this.all.Last())
+        {
+          this.all.ForEach(q => q.RunTime.State = RunState.NotYet);
+          this.all.SelectMany(q => q.Items).ForEach(q => q.RunTime.State = RunState.NotYet);
+        }
         this.current = nextActiveViews.First();
         this.playbackManager.SetCurrent(this.current);
       }

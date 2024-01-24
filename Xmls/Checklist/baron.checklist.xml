@@ -29,7 +29,7 @@
         <confirmation type="speech" value="On"/>
       </item>
       <item>
-        <call type="speech" value="Batery Switch"/>
+        <call type="speech" value="Battery Switch"/>
         <confirmation type="speech" value="On"/>
       </item>
       <item>
@@ -97,6 +97,10 @@
       <item>
         <call type="speech" value="Propeller"/>
         <confirmation type="speech" value="Feathering"/>
+      </item>
+      <item>
+        <call type="speech" value="Fuel Boost Pump" />
+        <confirmation type="speech" value="On" />
       </item>
       <item>
         <call type="speech" value="Landing Lights"/>

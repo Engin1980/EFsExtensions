@@ -25,7 +25,9 @@
             <HierarchicalDataTemplate DataType="{x:Type modelRun:RunIncidentGroup}" ItemsSource="{Binding Incidents}">
               <StackPanel Orientation="Horizontal" Margin="2">
                 <TextBlock Text="{Binding Title}" />
-                <TextBlock Text=" (set)" />
+                <TextBlock Text=" (" Foreground="Gray" />
+                <TextBlock Text="{Binding Incidents.Count}" Foreground="Gray" />
+                <TextBlock Text="+)" Foreground="Gray" />
               </StackPanel>
             </HierarchicalDataTemplate>
             <HierarchicalDataTemplate DataType="{x:Type modelRun:IncidentDefinitionVM}">
@@ -34,29 +36,30 @@
                   <Label>
                     <StackPanel Orientation="Horizontal">
                       <TextBlock FontWeight="Bold" Text="{Binding IncidentDefinition.Title}" />
-                      <TextBlock Text=" ==> " />
-                      <TextBlock Text="Inactive" />
+                      <TextBlock Text=" (" Foreground="Gray" />
+                      <TextBlock Text="Inactive" Foreground="Gray" />
+                      <TextBlock Text=")" Foreground="Gray" />
                     </StackPanel>
                   </Label>
                   <Button x:Name="btnFireIncident" Content="Fire" Tag="{Binding}" Click="btnFireIncident_Click" />
                 </StackPanel>
-                <TreeViewItem ItemsSource="{Binding IncidentDefinition.Variables}" Foreground="Green">
+                <TreeViewItem ItemsSource="{Binding IncidentDefinition.Variables}">
                   <TreeViewItem.Header>
                     <StackPanel Orientation="Horizontal">
-                      <Image Source="Icons/variable32.png" Width="16"/>
-                      <TextBlock Text=" (" />
-                      <TextBlock Text="{Binding IncidentDefinition.Variables.Count}" />
-                      <TextBlock Text=")" />
+                      <TextBlock Text="Variables" Foreground="Green" />
+                      <TextBlock Text=" (" Foreground="Gray"/>
+                      <TextBlock Text="{Binding IncidentDefinition.Variables.Count}" Foreground="Gray" />
+                      <TextBlock Text=")"  Foreground="Gray"/>
                     </StackPanel>
                   </TreeViewItem.Header>
                 </TreeViewItem>
-                <TreeViewItem ItemsSource="{Binding IncidentDefinition.Triggers}" Foreground="Blue">
+                <TreeViewItem ItemsSource="{Binding IncidentDefinition.Triggers}">
                   <TreeViewItem.Header>
                     <StackPanel Orientation="Horizontal">
-                      <Image Source="Icons/trigger32.png" Width="16" />
-                      <TextBlock Text=" (" />
-                      <TextBlock Text="{Binding IncidentDefinition.Triggers.Count}" />
-                      <TextBlock Text=")" />
+                      <TextBlock Text="Triggers" />
+                      <TextBlock Text=" (" Foreground="Gray" />
+                      <TextBlock Text="{Binding IncidentDefinition.Triggers.Count}" Foreground="Gray" />
+                      <TextBlock Text=")" Foreground="Gray" />
                     </StackPanel>
                   </TreeViewItem.Header>
                 </TreeViewItem>
@@ -70,15 +73,15 @@
                     </StackPanel>
                   </TreeViewItem.Header>
                 </TreeViewItem>
-                <TreeViewItem ItemsSource="{Binding IncidentDefinition.FailGroup.Items}" Foreground="OrangeRed">
+                <TreeViewItem ItemsSource="{Binding IncidentDefinition.FailGroup.Items}">
                   <TreeViewItem.Header>
                     <StackPanel Orientation="Horizontal">
-                      <Image Source="Icons/failure32.png" Width="16" />
-                      <TextBlock Text=" (sel=" />
-                      <TextBlock Text="{Binding IncidentDefinition.FailGroup.Selection}" />
-                      <TextBlock Text=", weight=" />
-                      <TextBlock Text="{Binding IncidentDefinition.FailGroup.Weight}" />
-                      <TextBlock Text=")" />
+                      <TextBlock Text="Failures" Foreground="Red" />
+                      <TextBlock Text=" (sel=" Foreground="Gray" />
+                      <TextBlock Text="{Binding IncidentDefinition.FailGroup.Selection}" Foreground="Blue" />
+                      <TextBlock Text=", weight=" Foreground="Gray" />
+                      <TextBlock Text="{Binding IncidentDefinition.FailGroup.Weight}" Foreground="Blue" />
+                      <TextBlock Text=")"  Foreground="Gray"/>
                     </StackPanel>
                   </TreeViewItem.Header>
                 </TreeViewItem>

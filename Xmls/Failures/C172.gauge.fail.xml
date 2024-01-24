@@ -25,7 +25,7 @@
     <group title="Engine failures">
       <incident title="Engine failure" repetitive="false">
         <triggers>
-          <timeTrigger interval="oncePerHour" mtbfHours="1000" repetitive="true"/>
+          <timeTrigger interval="oncePerHour" mtbfHours="5000" repetitive="true"/>
         </triggers>
         <failures selection="one">
           <failure id="engOilPressure1->eng1"/>

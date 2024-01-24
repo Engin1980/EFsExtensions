@@ -43,7 +43,7 @@
     </incident>
     <incident title="Engine fail" repetitive="true">
       <triggers>
-        <timeTrigger interval="oncePerHour" probability="0.05" repetitive="true" />
+        <timeTrigger interval="oncePerHour" mtbfHours="2000" repetitive="true" />
       </triggers>
       <failures selection="one">
         <failure id="eng1"/>
@@ -131,4 +131,22 @@
       </incident>
     </group>
   </group>
+  <incident title="Throttle stuck" repetitive="false">
+    <triggers>
+      <timeTrigger interval="oncePerHour" mtbfHours="1000" repetitive="false"/>
+    </triggers>
+    <failures selection="one">
+      <failure id="throttle1Stuck"/>
+      <failure id="throttle2Stuck"/>
+    </failures>
+  </incident>
+  <incident title="Mixture stuck" repetitive="false">
+    <triggers>
+      <timeTrigger interval="oncePerHour" mtbfHours="1000" repetitive="false"/>
+    </triggers>
+    <failures selection="one">
+      <failure id="mixture1Stuck"/>
+      <failure id="mixture2Stuck"/>
+    </failures>
+  </incident>
 </failureDefinitions>

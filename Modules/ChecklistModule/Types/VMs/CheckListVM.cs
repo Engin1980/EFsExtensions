@@ -102,5 +102,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
     {
       this.RunTime = new RunTimeVM(Variables, propertyVMs);
     }
+
+    public override string ToString() => $"{this.DisplayString} {{CheckListVM}}";
   }
 }
