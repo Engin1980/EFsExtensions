@@ -14,6 +14,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.VMs
 {
   public class TriggerVM : NotifyPropertyChangedBase
   {
+    private bool recordAllTriggerFires = false;
     private readonly StateCheckEvaluator? evaluator;
 
     public Trigger Trigger
@@ -60,13 +61,15 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.VMs
       if (Trigger is TimeTrigger tt)
       {
         ret = tt.EvaluatingFunction();
-        if (ret) this.Evaluations.Add(new BindingKeyValue<DateTime, object>(DateTime.Now, "Evaluated true."));
+        if (recordAllTriggerFires ||  ret) 
+          this.Evaluations.Add(new BindingKeyValue<DateTime, object>(DateTime.Now, $"Evaluated {ret}."));
       }
       else if (Trigger is CheckStateTrigger csct)
       {
         EAssert.IsNotNull(evaluator);
         ret = evaluator.Evaluate(csct.Condition);
-        if (ret) this.Evaluations.Add(new(DateTime.Now, evaluator.GetRecentResultSet()));
+        if (recordAllTriggerFires || ret) 
+          this.Evaluations.Add(new(DateTime.Now, evaluator.GetRecentResultSet()));
       }
       else
         throw new ApplicationException($"Unsupported type of trigger: {Trigger.GetType().Name}.");
