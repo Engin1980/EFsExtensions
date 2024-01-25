@@ -9,7 +9,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.VMs
 {
   internal class IncidentGroupVM : IncidentVM
   {
-    public static IncidentGroupVM Create(IncidentGroup incidentGroup)
+    public static IncidentGroupVM Create(IncidentGroup incidentGroup, Func<Dictionary<string, double>> propertyValuesProvider)
     {
       List<IncidentVM> incidents = new();
 
@@ -17,9 +17,9 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.VMs
       {
         IncidentVM ri;
         if (i is IncidentDefinition id)
-          ri = new IncidentDefinitionVM(id);
+          ri = new IncidentDefinitionVM(id, propertyValuesProvider);
         else if (i is IncidentGroup ig)
-          ri = Create(ig);
+          ri = Create(ig, propertyValuesProvider);
         else
           throw new NotImplementedException();
         incidents.Add(ri);

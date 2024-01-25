@@ -46,9 +46,10 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.VMs
       {
         this.evaluator = new StateCheckEvaluator(variableValuesProvider, propertyValuesProvider);
         this.InfoString = cst.Condition.ToString()!;
-      } else if (trigger is TimeTrigger tt)
+      }
+      else if (trigger is TimeTrigger tt)
       {
-        this.InfoString = tt.Interval
+        this.InfoString = $"{tt.Interval}, MTBF={tt.MtbfHours}";
       }
       this.Evaluations = new();
     }

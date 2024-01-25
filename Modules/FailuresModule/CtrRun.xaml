@@ -65,15 +65,16 @@
                 <TextBlock Text=")" Foreground="Gray" />
               </StackPanel>
             </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type vm:TriggerVM}">
-              <StackPanel DataContext="{Binding Trigger}" Orientation="Horizontal" >
-                <TextBlock Text="Trigger (prob=" />
-                <TextBlock Text="{Binding Probability}" />
-                <TextBlock Text=", rpt=" />
-                <TextBlock Text="{Binding Repetitive}" />
-                <TextBlock Text=", cond=" />
-                <TextBlock Text="{Binding Condition.DisplayString}" />
-                <TextBlock Text=") " />
+            <HierarchicalDataTemplate DataType="{x:Type vm:TriggerVM}" ItemsSource="{Binding Evaluations}">
+              <StackPanel Orientation="Horizontal" >
+                <TextBlock Text="Trigger" />
+                <TextBlock Text=" (prob=" Foreground="Gray" />
+                <TextBlock Text="{Binding Trigger.Probability}" Foreground="Blue" />
+                <TextBlock Text=", rpt=" Foreground="Gray" />
+                <TextBlock Text="{Binding Trigger.Repetitive}" Foreground="Blue" />
+                <TextBlock Text=", " Foreground="Gray" />
+                <TextBlock Text="{Binding InfoString}" Foreground="Gray" />
+                <TextBlock Text=") " Foreground="Gray" />
               </StackPanel>
             </HierarchicalDataTemplate>
 

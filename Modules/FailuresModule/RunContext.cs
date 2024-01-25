@@ -54,8 +54,21 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
     #region Constructors
 
-    public RunContext(List<FailureDefinition> failureDefinitions, List<IncidentVM> incidents)
+    public RunContext(InitContext initContext)
     {
+      // preparation
+      List<FailureDefinition> failureDefinitions = initContext.FailureDefinitionsFlat;
+      IncidentGroup rootIncidentGroup = new IncidentGroup()
+      {
+        Incidents = initContext.FailureSet.Incidents
+      };
+      IncidentGroupVM top = IncidentGroupVM.Create(rootIncidentGroup, () => propertyValues);
+
+      //RunContext ret = new(failureDefinitions, top.Incidents);
+      //return ret;
+
+
+      // creation
       ESimConnect.ESimConnect eSimCon = new();
       simConWrapper = new(eSimCon);
       simConWrapper.SimSecondElapsed += SimConWrapper_SimSecondElapsed;
@@ -63,7 +76,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
       FailureSustainer.SetSimCon(eSimCon);
       FailureDefinitions = failureDefinitions;
-      IncidentVMs = incidents;
+      IncidentVMs = top.Incidents;
       Sustainers = new();
       Sustainers.ListChanged += (s, e) => this.SustainersCount = Sustainers.Count;
     }
@@ -71,20 +84,6 @@ namespace Eng.Chlaot.Modules.FailuresModule
     #endregion Constructors
 
     #region Methods
-
-    public static RunContext Create(InitContext initContext)
-    {
-      List<FailureDefinition> failureDefinitions = initContext.FailureDefinitionsFlat;
-      IncidentGroup failureSet = initContext.FailureSet;
-      IncidentGroup ig = new()
-      {
-        Incidents = failureSet.Incidents
-      };
-      IncidentGroupVM top = IncidentGroupVM.Create(ig);
-
-      RunContext ret = new(failureDefinitions, top.Incidents);
-      return ret;
-    }
 
     public void Start()
     {
