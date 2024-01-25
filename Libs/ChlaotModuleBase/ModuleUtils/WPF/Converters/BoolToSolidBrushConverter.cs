@@ -5,10 +5,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Eng.Chlaot.Modules.CopilotModule.Converters
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters
 {
   public class BoolToSolidBrushConverter : TypedConverter<bool, SolidColorBrush>
   {

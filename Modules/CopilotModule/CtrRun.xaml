@@ -6,11 +6,12 @@
              xmlns:local="clr-namespace:Eng.Chlaot.Modules.CopilotModule"
              xmlns:converters="clr-namespace:Eng.Chlaot.Modules.CopilotModule.Converters"
              xmlns:gConverters="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"
+             xmlns:gWpf="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <converters:Int2VisibilityConverter x:Key="Int2VisibilityConverter" />
-    <converters:BoolToSolidBrushConverter x:Key="BoolToSolidBrushConverter" />
+    <gConverters:BoolToSolidBrushConverter x:Key="BoolToSolidBrushConverter" />
     <gConverters:DoubleNanConverter x:Key="DoubleNanConverter"/>
     <DataTemplate x:Key="TemplateUserVariable">
       <Label>
@@ -90,12 +91,7 @@
         </ListView>
       </TabItem>
       <TabItem Header="Property Values">
-        <DataGrid ItemsSource="{Binding PropertyVMs}" AutoGenerateColumns="False" CanUserAddRows="False">
-          <DataGrid.Columns>
-            <DataGridTextColumn Header="SimProperty" Binding="{Binding Property.Name}" />
-            <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
-          </DataGrid.Columns>
-        </DataGrid>
+        <gWpf:PropertiesDataGrid Properties="{Binding PropertyVMs}" />
       </TabItem>
       <TabItem Header="Evaluation Info">
         <DockPanel>

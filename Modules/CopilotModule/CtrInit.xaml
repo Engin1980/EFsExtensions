@@ -9,15 +9,14 @@
              xmlns:converters="clr-namespace:Eng.Chlaot.Modules.CopilotModule.Converters"
              xmlns:sct ="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;assembly=ChlaotModuleBase" 
              xmlns:gctr="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
-             xmlns:gConverters="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"
              xmlns:smo="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;assembly=ChlaotModuleBase"
+             xmlns:gConverters="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"
+             xmlns:gWpf="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <converters:Int2VisibilityConverter x:Key="Int2VisibilityConverter" />
-    <gConverters:DoubleNanConverter x:Key="DoubleNanConverter"/>
     <converters:VariableValueConverter x:Key="VariableValueConverter" />
-    <converters:BoolToSolidBrushConverter x:Key="BoolToSolidBrushConverter" />
     <converters:TextBoxTextIsDoubleToSolidBrushConverter x:Key="TextBoxTextIsDoubleToSolidBrushConverter" />
     <gConverters:DoubleFormatter x:Key="DoubleFormatter" />
     <HierarchicalDataTemplate DataType="{x:Type sct:StateCheckDelay}" ItemsSource="{Binding Item}">
@@ -64,14 +63,7 @@
                   <ItemsControl ItemsSource="{Binding Variables}">
                     <ItemsControl.ItemTemplate>
                       <DataTemplate>
-                        <StackPanel Orientation="Horizontal">
-                          <TextBlock Text="{Binding Variable.Name}" />
-                          <TextBlock Text=" = " />
-                          <TextBox Text="{Binding Value, Converter={StaticResource DoubleNanConverter}}" Width="50" TextAlignment="Right"
-                                   IsReadOnly="{Binding IsReadOnly}" Background="{Binding IsValid, Converter={StaticResource BoolToSolidBrushConverter}}" />
-                          <TextBlock Text=" " />
-                          <TextBlock Text="{Binding AdditionalInfo}" />
-                        </StackPanel>
+                        <gWpf:VariableVMPanel Value="{Binding}" />
                       </DataTemplate>
                     </ItemsControl.ItemTemplate>
                   </ItemsControl>

@@ -7,6 +7,7 @@
              xmlns:types="clr-namespace:Eng.Chlaot.Modules.ChecklistModule.Types"
              xmlns:vm="clr-namespace:Eng.Chlaot.Modules.ChecklistModule.Types.VM"
              xmlns:converters="clr-namespace:Eng.Chlaot.Modules.ChecklistModule.Converters"
+             xmlns:gWpf="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
              mc:Ignorable="d" 
              x:Name="ctrRun"
              d:DesignHeight="450" d:DesignWidth="800">
@@ -52,12 +53,7 @@
       </TreeView>
     </TabItem>
     <TabItem Header="Property Values">
-      <DataGrid ItemsSource="{Binding PropertyVMs}" AutoGenerateColumns="False" CanUserAddRows="False">
-        <DataGrid.Columns>
-          <DataGridTextColumn Header="SimProperty" Binding="{Binding Property.Name}" />
-          <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
-        </DataGrid.Columns>
-      </DataGrid>
+      <gWpf:PropertiesDataGrid Properties="{Binding PropertyVMs}" />
     </TabItem>
     <TabItem Header="Variable Values">
       <ListView ItemsSource="{Binding CheckListVMs}"
