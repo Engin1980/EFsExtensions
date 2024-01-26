@@ -20,6 +20,7 @@
     </CollectionViewSource>
     <converters:PercentageToIntConverter x:Key="PercentageToIntConverter" />
     <converters:PercentageFormatter x:Key="PercentageFormatter" />
+    <globalConverters:DoubleFormatter x:Key="DoubleFormatter" />
   </UserControl.Resources>
   <DockPanel>
     <DockPanel DockPanel.Dock="Top">
@@ -30,116 +31,124 @@
         <gWpf:MetaInfoPanel DataContext="{Binding MetaInfo}" />
       </TabItem>
       <TabItem Header="Overview">
-        <TreeView ItemsSource="{Binding FailureSet.Incidents}">
-          <TreeView.Resources>
-            <HierarchicalDataTemplate DataType="{x:Type modelApp:IncidentGroup}" ItemsSource="{Binding Incidents}">
-              <StackPanel Orientation="Horizontal" Margin="2">
-                <TextBlock Text="{Binding Title}" />
-                <TextBlock Text=" (set)" Foreground="Gray" />
-              </StackPanel>
-            </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelApp:IncidentDefinition}">
-              <StackPanel Orientation="Vertical" Margin="2">
-                <TextBlock Text="{Binding Title}" />
-                <TreeViewItem ItemsSource="{Binding Variables}">
-                  <TreeViewItem.Header>
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="Variables" />
-                      <TextBlock Text=" (" Foreground="Gray"/>
-                      <TextBlock Text="{Binding Variables.Count}" Foreground="Gray" />
-                      <TextBlock Text=")" Foreground="Gray" />
-                    </StackPanel>
-                  </TreeViewItem.Header>
-                </TreeViewItem>
-                <TreeViewItem ItemsSource="{Binding Triggers}">
-                  <TreeViewItem.Header>
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="Triggers" />
-                      <TextBlock Text=" (" Foreground="Gray"/>
-                      <TextBlock Text="{Binding Triggers.Count}" Foreground="Gray"/>
-                      <TextBlock Text=")" Foreground="Gray" />
-                    </StackPanel>
-                  </TreeViewItem.Header>
-                </TreeViewItem>
-                <TreeViewItem ItemsSource="{Binding FailGroup.Items}">
-                  <TreeViewItem.Header>
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="Failures"/>
-                      <TextBlock Text=" (sel=" Foreground="Gray" />
-                      <TextBlock Text="{Binding FailGroup.Selection}" Foreground="Blue" />
-                      <TextBlock Text=", weight=" Foreground="Gray" />
-                      <TextBlock Text="{Binding FailGroup.Weight}"  Foreground="Blue"/>
-                      <TextBlock Text=")" Foreground="Gray"/>
-                    </StackPanel>
-                  </TreeViewItem.Header>
-                </TreeViewItem>
-              </StackPanel>
-            </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelVar:RandomVariable}">
-              <StackPanel Orientation="Horizontal" Margin="2">
-                <TextBlock Text="{Binding Name}" />
-                <TextBlock Text=" (random " />
-                <TextBlock Text="{Binding Minimum}" />
-                <TextBlock Text="-" />
-                <TextBlock Text="{Binding Maximum}" />
-                <TextBlock Text=")" />
-              </StackPanel>
-            </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelVar:UserVariable}">
-              <StackPanel Orientation="Horizontal" Margin="2">
-                <TextBlock Text="{Binding Name}" />
-                <TextBlock Text=" (user, default=" />
-                <TextBlock Text="{Binding DefaultValue}" />
-                <TextBlock Text=")" />
-              </StackPanel>
-            </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelApp:CheckStateTrigger}">
-              <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Trigger (prob=" />
-                <TextBlock Text="{Binding Probability, Converter={StaticResource PercentageFormatter}, ConverterParameter=N2}" />
-                <ctrl:ProbabilityUpDown Margin="3,0,3,0" Value="{Binding Probability, Mode=TwoWay}" />
-                <TextBlock Text=", rpt=" />
-                <TextBlock Text="{Binding Repetitive}" />
-                <TextBlock Text=", cond=" />
-                <TextBlock Text="{Binding Condition.DisplayString}" />
-                <TextBlock Text=") " />
-              </StackPanel>
-            </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelApp:TimeTrigger}">
-              <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Trigger (MTBF hours=" />
-                <TextBlock Text="{Binding MtbfHours}" />
-                <ctrl:NumericUpDown Margin="3,0,3,0" Value="{Binding MtbfHours, Mode=TwoWay}" />
-                <TextBlock Text=", prob/interval=" />
-                <TextBlock Text="{Binding Probability, Converter={StaticResource PercentageFormatter}, ConverterParameter=N5}" />
-                <ctrl:ProbabilityUpDown Margin="3,0,3,0" Value="{Binding Probability, Mode=TwoWay}" />
-                <TextBlock Text=", rpt=" />
-                <TextBlock Text="{Binding Repetitive}" />
-                <TextBlock Text=", interval=" />
-                <TextBlock Text="{Binding Interval}" />
-                <TextBlock Text=") " />
-              </StackPanel>
-            </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelApp:FailGroup}" ItemsSource="{Binding Items}">
-              <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Group (sel=" />
-                <TextBlock Text="{Binding Selection}" />
-                <TextBlock Text=", weight=" />
-                <TextBlock Text="{Binding Weight}" />
-                <TextBlock Text=")" />
-              </StackPanel>
-            </HierarchicalDataTemplate>
-            <HierarchicalDataTemplate DataType="{x:Type modelApp:FailId}">
-              <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Failure (id=" />
-                <TextBlock Text="{Binding Id}" />
-                <TextBlock Text=", weight=" />
-                <TextBlock Text="{Binding Weight}" />
-                <TextBlock Text=")" />
-              </StackPanel>
-            </HierarchicalDataTemplate>
-          </TreeView.Resources>
-        </TreeView>
+        <DockPanel>
+          <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" >
+            <TextBlock Text="Estimated probability per flight: " />
+            <TextBlock Text="{Binding EstimatedProbabilityPerFlight, Converter={StaticResource PercentageFormatter}, ConverterParameter=N2}" />
+            <TextBlock Text=" Estimated flighs till failure: " />
+            <TextBlock Text="{Binding EstimatedFlighstPerFailure, Converter={StaticResource DoubleFormatter}, ConverterParameter=N5}" />
+          </StackPanel>
+          <TreeView ItemsSource="{Binding FailureSet.Incidents}">
+            <TreeView.Resources>
+              <HierarchicalDataTemplate DataType="{x:Type modelApp:IncidentGroup}" ItemsSource="{Binding Incidents}">
+                <StackPanel Orientation="Horizontal" Margin="2">
+                  <TextBlock Text="{Binding Title}" />
+                  <TextBlock Text=" (set)" Foreground="Gray" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type modelApp:IncidentDefinition}">
+                <StackPanel Orientation="Vertical" Margin="2">
+                  <TextBlock Text="{Binding Title}" />
+                  <TreeViewItem ItemsSource="{Binding Variables}">
+                    <TreeViewItem.Header>
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Variables" />
+                        <TextBlock Text=" (" Foreground="Gray"/>
+                        <TextBlock Text="{Binding Variables.Count}" Foreground="Gray" />
+                        <TextBlock Text=")" Foreground="Gray" />
+                      </StackPanel>
+                    </TreeViewItem.Header>
+                  </TreeViewItem>
+                  <TreeViewItem ItemsSource="{Binding Triggers}">
+                    <TreeViewItem.Header>
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Triggers" />
+                        <TextBlock Text=" (" Foreground="Gray"/>
+                        <TextBlock Text="{Binding Triggers.Count}" Foreground="Gray"/>
+                        <TextBlock Text=")" Foreground="Gray" />
+                      </StackPanel>
+                    </TreeViewItem.Header>
+                  </TreeViewItem>
+                  <TreeViewItem ItemsSource="{Binding FailGroup.Items}">
+                    <TreeViewItem.Header>
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Failures"/>
+                        <TextBlock Text=" (sel=" Foreground="Gray" />
+                        <TextBlock Text="{Binding FailGroup.Selection}" Foreground="Blue" />
+                        <TextBlock Text=", weight=" Foreground="Gray" />
+                        <TextBlock Text="{Binding FailGroup.Weight}"  Foreground="Blue"/>
+                        <TextBlock Text=")" Foreground="Gray"/>
+                      </StackPanel>
+                    </TreeViewItem.Header>
+                  </TreeViewItem>
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type modelVar:RandomVariable}">
+                <StackPanel Orientation="Horizontal" Margin="2">
+                  <TextBlock Text="{Binding Name}" />
+                  <TextBlock Text=" (random " />
+                  <TextBlock Text="{Binding Minimum}" />
+                  <TextBlock Text="-" />
+                  <TextBlock Text="{Binding Maximum}" />
+                  <TextBlock Text=")" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type modelVar:UserVariable}">
+                <StackPanel Orientation="Horizontal" Margin="2">
+                  <TextBlock Text="{Binding Name}" />
+                  <TextBlock Text=" (user, default=" />
+                  <TextBlock Text="{Binding DefaultValue}" />
+                  <TextBlock Text=")" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type modelApp:CheckStateTrigger}">
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="Trigger (prob=" />
+                  <TextBlock Text="{Binding Probability, Converter={StaticResource PercentageFormatter}, ConverterParameter=N2}" />
+                  <ctrl:ProbabilityUpDown Margin="3,0,3,0" Value="{Binding Probability, Mode=TwoWay}" />
+                  <TextBlock Text=", rpt=" />
+                  <TextBlock Text="{Binding Repetitive}" />
+                  <TextBlock Text=", cond=" />
+                  <TextBlock Text="{Binding Condition.DisplayString}" />
+                  <TextBlock Text=") " />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type modelApp:TimeTrigger}">
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="Trigger (MTBF hours=" />
+                  <TextBlock Text="{Binding MtbfHours}" />
+                  <ctrl:NumericUpDown Margin="3,0,3,0" Value="{Binding MtbfHours, Mode=TwoWay}" />
+                  <TextBlock Text=", prob/interval=" />
+                  <TextBlock Text="{Binding Probability, Converter={StaticResource PercentageFormatter}, ConverterParameter=N5}" />
+                  <ctrl:ProbabilityUpDown Margin="3,0,3,0" Value="{Binding Probability, Mode=TwoWay}" />
+                  <TextBlock Text=", rpt=" />
+                  <TextBlock Text="{Binding Repetitive}" />
+                  <TextBlock Text=", interval=" />
+                  <TextBlock Text="{Binding Interval}" />
+                  <TextBlock Text=") " />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type modelApp:FailGroup}" ItemsSource="{Binding Items}">
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="Group (sel=" />
+                  <TextBlock Text="{Binding Selection}" />
+                  <TextBlock Text=", weight=" />
+                  <TextBlock Text="{Binding Weight}" />
+                  <TextBlock Text=")" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type modelApp:FailId}">
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="Failure (id=" />
+                  <TextBlock Text="{Binding Id}" />
+                  <TextBlock Text=", weight=" />
+                  <TextBlock Text="{Binding Weight}" />
+                  <TextBlock Text=")" />
+                </StackPanel>
+              </HierarchicalDataTemplate>
+            </TreeView.Resources>
+          </TreeView>
+        </DockPanel>
       </TabItem>
       <TabItem Header="Failure Definitions (tree)">
         <TreeView ItemsSource="{Binding FailureDefinitions}" >

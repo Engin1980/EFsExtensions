@@ -18,6 +18,9 @@ using System.Xml.Serialization;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using System.Drawing.Text;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.IO.IsolatedStorage;
 
 namespace Eng.Chlaot.Modules.FailuresModule
 {
@@ -38,6 +41,19 @@ namespace Eng.Chlaot.Modules.FailuresModule
     public List<FailureDefinition> FailureDefinitionsFlat { get; set; }
 
     public List<FailureDefinitionBase> FailureDefinitions { get; set; }
+
+
+    public Percentage EstimatedProbabilityPerFlight
+    {
+      get => base.GetProperty<Percentage>(nameof(EstimatedProbabilityPerFlight))!;
+      set => base.UpdateProperty(nameof(EstimatedProbabilityPerFlight), value);
+    }
+
+    public double EstimatedFlighstPerFailure
+    {
+      get => base.GetProperty<double>(nameof(EstimatedFlighstPerFailure))!;
+      set => base.UpdateProperty(nameof(EstimatedFlighstPerFailure), value);
+    }
 
     public PropertyVMS PropertyVMs
     {
@@ -109,6 +125,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
           ex => throw new ApplicationException("Error loading failures.", ex));
 
         this.FailureSet = tmpData;
+        this.CalculateEstimations();
         this.MetaInfo = tmpMeta;
         UpdateReadyFlag();
         logger.Invoke(LogLevel.INFO, $"Failure set file '{xmlFile}' successfully loaded.");
@@ -119,6 +136,33 @@ namespace Eng.Chlaot.Modules.FailuresModule
         this.setIsReadyFlagAction(false);
         logger.Invoke(LogLevel.ERROR, $"Failed to load failure set from '{xmlFile}'." + ex.GetFullMessage());
       }
+    }
+
+    private void CalculateEstimations()
+    {
+      const double estimatedFlightLengthInHours = 2;
+      const double estimatedOnceEventRepetitionsPerFlight = 2;
+      List<double> negativeProbabilities = new();
+
+      foreach (var id in this.FailureSet.GetIncidentDefinitionsRecursively())
+      {
+        foreach (var t in id.Triggers)
+        {
+          double p;
+          if (t is CheckStateTrigger cst)
+            p = (1 - cst.Probability);
+          else if (t is TimeTrigger tt)
+            p = (1 - (estimatedFlightLengthInHours / tt.MtbfHours));
+          else
+            throw new NotImplementedException();
+          for (int i = 0; i < estimatedOnceEventRepetitionsPerFlight; i++)
+            negativeProbabilities.Add(p);
+        }
+      }
+
+      double m = 1 - negativeProbabilities.Aggregate(1.0, (a, b) => a * b);
+      this.EstimatedProbabilityPerFlight = (Percentage)m;
+      this.EstimatedFlighstPerFailure = 1 / m;
     }
 
     private void UpdateReadyFlag()

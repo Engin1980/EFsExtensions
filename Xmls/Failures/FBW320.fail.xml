@@ -7,7 +7,7 @@
   <metaInfo>
     <g:label>Default failures for FBW A320</g:label>
     <g:author>Marek Vajgl</g:author>
-    <g:version>0.1</g:version>
+    <g:version>0.2</g:version>
     <g:description></g:description>
   </metaInfo>
   <definitions title="fbw:320">
@@ -33,7 +33,7 @@
         <g:randomVariable name="vFail" minimum="70" maximum="180"/>
       </variables>
       <triggers>
-        <trigger probability="0.05" repetitive="false">
+        <trigger probability="0.005" repetitive="false">
           <g:property name="ias" direction="passing" expression="{vFail}"/>
         </trigger>
       </triggers>
@@ -53,7 +53,7 @@
     <group title="System failures">
       <incident title="Internal systems" repetitive="true">
         <triggers>
-          <timeTrigger interval="oncePerTenMinutes" mtbfHours="5000" repetitive="true"/>
+          <timeTrigger interval="oncePerTenMinutes" mtbfHours="10000" repetitive="true"/>
         </triggers>
         <failures selection="one">
           <failure id="pitot"/>
@@ -64,7 +64,7 @@
     <group title="Panel failures">
       <incident title="Panel failure" repetitive="true">
         <triggers>
-          <timeTrigger interval="oncePerTenMinutes" mtbfHours="3000"  repetitive="true"/>
+          <timeTrigger interval="oncePerTenMinutes" mtbfHours="15000"  repetitive="true"/>
         </triggers>
         <failures selection="one">
           <failure id="pnlAirspeed"/>
@@ -74,7 +74,7 @@
     </group>
     <incident title="Brake failures" repetitive="false">
       <triggers>
-        <trigger probability="0.03" repetitive="false">
+        <trigger probability="0.0005" repetitive="false">
           <g:property name="height" direction="passingDown" expression="100"/>
         </trigger>
       </triggers>
@@ -86,7 +86,7 @@
     </incident>
     <incident title="Fuel leak" repetitive="false">
       <triggers>
-        <timeTrigger interval="oncePerHour" mtbfHours="3000" repetitive="true"/>
+        <timeTrigger interval="oncePerHour" mtbfHours="10000" repetitive="true"/>
       </triggers>
       <failures selection="one">
         <failure id="fbw320fuelLeft"/>
@@ -98,7 +98,7 @@
     </incident>
     <incident title="Flaps stuck" repetitive="false">
       <triggers>
-        <timeTrigger interval="oncePerHour" mtbfHours="0.005" repetitive="true"/>
+        <timeTrigger interval="oncePerHour" mtbfHours="10000" repetitive="true"/>
       </triggers>
       <failures selection="one">
         <failure id="fbw320FlapsHandleStuck"/>
@@ -106,7 +106,7 @@
     </incident>
     <incident title="Pressure lost" repetitive="false">
       <triggers>
-        <timeTrigger interval="oncePerHour" mtbfHours="0.001" repetitive="false"/>
+        <timeTrigger interval="oncePerHour" mtbfHours="15000" repetitive="false"/>
       </triggers>
       <failures selection="one">
         <failure id="fbwExitOpen0"/>
