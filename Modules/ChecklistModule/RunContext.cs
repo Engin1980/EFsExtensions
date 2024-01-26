@@ -31,6 +31,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 {
   public partial class RunContext : NotifyPropertyChangedBase
   {
+
     #region Private Fields
 
     private readonly Logger logger;
@@ -58,16 +59,16 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(CheckListVMs), value);
     }
 
-    public PropertyVMS PropertyVMs
-    {
-      get => base.GetProperty<PropertyVMS>(nameof(PropertyVMs))!;
-      set => base.UpdateProperty(nameof(PropertyVMs), value);
-    }
-
     public Type Name
     {
       get => base.GetProperty<Type>(nameof(Name))!;
       set => base.UpdateProperty(nameof(Name), value);
+    }
+
+    public PropertyVMS PropertyVMs
+    {
+      get => base.GetProperty<PropertyVMS>(nameof(PropertyVMs))!;
+      set => base.UpdateProperty(nameof(PropertyVMs), value);
     }
 
     #endregion Public Properties
@@ -212,5 +213,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     }
 
     #endregion Private Methods
+
   }
 }

@@ -16,6 +16,12 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
     {
       private readonly StateCheckEvaluator evaluator;
 
+      public bool CanBeAutoplayed
+      {
+        get => base.GetProperty<bool>(nameof(CanBeAutoplayed))!;
+        set => base.UpdateProperty(nameof(CanBeAutoplayed), value);
+      }
+
       public RunState State
       {
         get => base.GetProperty<RunState>(nameof(State))!;

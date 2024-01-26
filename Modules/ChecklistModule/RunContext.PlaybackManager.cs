@@ -36,6 +36,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         EAssert.Argument.IsNotNull(value, nameof(value));
         // reset old one
         Current.RunTime.State = RunState.Runned;
+        Current.RunTime.CanBeAutoplayed = true;
 
         // setting new one
         Current = value;
@@ -50,9 +51,17 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       {
         lock (this)
         {
-          this.isCallPlayed = false;
-          this.isEntryPlayed = false;
-          this.isMainLoopAbortRequested = true;
+          if (this.isCurrentLastSpeechPlaying == false)
+          {
+            this.isCallPlayed = false;
+            this.isEntryPlayed = false;
+            this.isMainLoopAbortRequested = true;
+          }
+          else
+          {
+            // if this is last speech, let next speech is played
+            // ... this causes switch to the next checklist
+          }
         }
       }
 
@@ -108,6 +117,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         {
           if (!isMainLoopActive)
           {
+            this.Current.RunTime.CanBeAutoplayed = false;
             this.isMainLoopActive = true;
             PlayNext();
           }
@@ -136,12 +146,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           else
             Current.Items[i].RunTime.State = RunState.Current;
         }
-        //TODO asi navíc
-        //if (currentItemIndex < _Current.Items.Count)
-        //  currentList.Items[currentItemIndex].State = RunState.Current;
       }
-
-
 
       private byte[] ResolveAndMarkNexPlayBytes(out bool isThisLastChecklistSpeech)
       {

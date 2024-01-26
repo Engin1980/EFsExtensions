@@ -55,7 +55,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         this.active.Clear();
         this.active.AddRange(nextActiveViews);
         this.all.ForEach(q => q.RunTime.IsActive = active.Contains(q));
-        nextActiveViews.ForEach(q => q.RunTime.ResetEvaluator());        
+        nextActiveViews.ForEach(q => q.RunTime.ResetEvaluator());
         if (previous == this.all.Last())
         {
           this.all.ForEach(q => q.RunTime.State = RunState.NotYet);
@@ -116,6 +116,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
         CheckListVM? readyCheckList = this.active
           .Where(q => q.CheckList.Trigger != null)
+          .Where(q => q.RunTime.CanBeAutoplayed)
           .FirstOrDefault(q => q.RunTime.Evaluate(q.CheckList.Trigger!));
 
         if (readyCheckList != null)
