@@ -5,25 +5,26 @@
         xmlns:fd ="http://chlaot.org/failureDefinitions.xsd"
         xsi:noNamespaceSchemaLocation="file://./Xsds/FailureSchema.xsd">
   <metaInfo>
-    <g:label>Default failures for C172 with steam gauges</g:label>
+    <g:label>Default failures for FBW A320</g:label>
     <g:author>Marek Vajgl</g:author>
+    <g:version>0.1</g:version>
     <g:description></g:description>
   </metaInfo>
   <definitions title="fbw:320">
-    <fd:simVarStuck id="fbw320FlapsHandleStuck" title="FBW A320 Flaps handle stuck" simVar="L:A32NX_FLAPS_HANDLE_INDEX" onlyOnDetectedChange="true" />
-    <fd:simVarValue id="fbw320MasterWarn" title="FBW A320 Master Warning On" simVar="L:A32NX_MASTER_WARNING" okValue="0" failValue="1" />
+    <fd:stuck id="fbw320FlapsHandleStuck" title="FBW A320 Flaps handle stuck" simVar="L:A32NX_FLAPS_HANDLE_INDEX" onlyUpdateOnDetectedChange="true" />
+    <fd:set id="fbw320MasterWarn" title="FBW A320 Master Warning On" simVar="L:A32NX_MASTER_WARNING" okValue="0" failValue="1" />
     <fd:definitions title="fuel">
-      <fd:simVarLeak id="fbw320fuelLeft" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_LEFT_PRE" />
+      <fd:leak id="fbw320fuelLeft" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_LEFT_PRE" />
       <!--<simVarLeak id="fbw320fuelLeftAux" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_AUX_LEFT_PRE" />-->
-      <fd:simVarLeak id="fbw320fuelRight" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_RIGHT_PRE" />
+      <fd:leak id="fbw320fuelRight" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_RIGHT_PRE" />
       <!--<simVarLeak id="fbw320fuelRightAux" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_AUX_RIGHT_PRE" />-->
-      <fd:simVarLeak id="fbw320fuelCenter" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_CENTER_PRE" />
+      <fd:leak id="fbw320fuelCenter" title ="FBW A320 Fuel Left Leak" simVar="L:A32NX_FUEL_CENTER_PRE" />
     </fd:definitions>
     <fd:definitions title="door-open">
-      <fd:simVarValue id="fbwExitOpen0" title="Pressure lost via front left door" simVar="EXIT OPEN:0" okValue="0" failValue="0.05" />
-      <fd:simVarValue id="fbwExitOpen1" title="Pressure lost via front right door" simVar="EXIT OPEN:1" okValue="0" failValue="0.05" />
-      <fd:simVarValue id="fbwExitOpen2" title="Pressure lost via back left door" simVar="EXIT OPEN:2" okValue="0" failValue="0.05" />
-      <fd:simVarValue id="fbwExitOpen3" title="Pressure lost via back right door" simVar="EXIT OPEN:3" okValue="0" failValue="0.05" />
+      <fd:set id="fbwExitOpen0" title="Pressure lost via front left door" simVar="EXIT OPEN:0" okValue="0" failValue="0.05" />
+      <fd:set id="fbwExitOpen1" title="Pressure lost via front right door" simVar="EXIT OPEN:1" okValue="0" failValue="0.05" />
+      <fd:set id="fbwExitOpen2" title="Pressure lost via back left door" simVar="EXIT OPEN:2" okValue="0" failValue="0.05" />
+      <fd:set id="fbwExitOpen3" title="Pressure lost via back right door" simVar="EXIT OPEN:3" okValue="0" failValue="0.05" />
     </fd:definitions>
   </definitions>
   <group title="Failures">
@@ -52,7 +53,7 @@
     <group title="System failures">
       <incident title="Internal systems" repetitive="true">
         <triggers>
-          <timeTrigger interval="oncePerTenMinutes" probability="0.005" repetitive="true"/>
+          <timeTrigger interval="oncePerTenMinutes" mtbfHours="5000" repetitive="true"/>
         </triggers>
         <failures selection="one">
           <failure id="pitot"/>
@@ -63,7 +64,7 @@
     <group title="Panel failures">
       <incident title="Panel failure" repetitive="true">
         <triggers>
-          <timeTrigger interval="oncePerTenMinutes" probability="0.005" repetitive="true"/>
+          <timeTrigger interval="oncePerTenMinutes" mtbfHours="3000"  repetitive="true"/>
         </triggers>
         <failures selection="one">
           <failure id="pnlAirspeed"/>
@@ -85,7 +86,7 @@
     </incident>
     <incident title="Fuel leak" repetitive="false">
       <triggers>
-        <timeTrigger interval="oncePerHour" probability="0.005" repetitive="true"/>
+        <timeTrigger interval="oncePerHour" mtbfHours="3000" repetitive="true"/>
       </triggers>
       <failures selection="one">
         <failure id="fbw320fuelLeft"/>
@@ -97,7 +98,7 @@
     </incident>
     <incident title="Flaps stuck" repetitive="false">
       <triggers>
-        <timeTrigger interval="oncePerHour" probability="0.005" repetitive="true"/>
+        <timeTrigger interval="oncePerHour" mtbfHours="0.005" repetitive="true"/>
       </triggers>
       <failures selection="one">
         <failure id="fbw320FlapsHandleStuck"/>
@@ -105,7 +106,7 @@
     </incident>
     <incident title="Pressure lost" repetitive="false">
       <triggers>
-        <timeTrigger interval="oncePerHour" probability="0.001" repetitive="false"/>
+        <timeTrigger interval="oncePerHour" mtbfHours="0.001" repetitive="false"/>
       </triggers>
       <failures selection="one">
         <failure id="fbwExitOpen0"/>

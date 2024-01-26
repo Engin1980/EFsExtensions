@@ -17,7 +17,7 @@
     <speech type="speech" value="Positive rate" />
     <trigger>
       <g:and>
-        <g:property name="height" direction="above" expression="0" />
+        <g:property name="height" direction="above" expression="30" />
         <g:property name="vs" direction="above" expression="100" />
         <g:property name="ias" direction="above" expression="40" />
       </g:and>
@@ -45,7 +45,7 @@
     <trigger>
       <g:and>
         <g:property name="ias" direction="passingDown" expression="{speed}" />
-        <g:property name="height" direction="below" expression="5" />
+        <g:property name="height" direction="below" expression="20" />
         <g:property name="acceleration" direction="below" expression="0" />
       </g:and>
     </trigger>
@@ -63,7 +63,7 @@
     <trigger>
       <g:and>
         <g:property name="ias" direction="passingDown" expression="{speed}" />
-        <g:property name="height" direction="below" expression="5" />
+        <g:property name="height" direction="below" expression="20" />
         <g:property name="acceleration" direction="below" expression="0" />
       </g:and>
     </trigger>
