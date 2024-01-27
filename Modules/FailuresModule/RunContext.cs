@@ -15,7 +15,7 @@ using Eng.Chlaot.Modules.FailuresModule.Model.Sustainers;
 
 namespace Eng.Chlaot.Modules.FailuresModule
 {
-    public class RunContext : NotifyPropertyChangedBase
+  public class RunContext : NotifyPropertyChangedBase
   {
     #region Fields
 
@@ -131,23 +131,24 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
     private void EvaluateIncidentDefinition(IncidentDefinitionVM incident, out bool isActivated)
     {
-      isActivated = false;
-      foreach (var trigger in incident.Triggers)
+      if (incident.IsOneShotTriggerInvoked)
       {
-        if (incident.InvokedOneShotTriggers.Contains(trigger)) continue;
-
-        bool isConditionTrue = trigger.Evaluate();
-
-        if (isConditionTrue)
-        {
-          if (trigger.Trigger.Repetitive == false)
-            incident.InvokedOneShotTriggers.Add(trigger);
-
-          double prob = random.NextDouble();
-          isActivated = prob <= trigger.Trigger.Probability;
-          if (isActivated) return;
-        }
+        isActivated = false;
+        return;
       }
+
+      bool isConditionTrue = incident.Trigger.Evaluate();
+
+      if (isConditionTrue)
+      {
+        if (incident.Trigger.Trigger.Repetitive == false)
+          incident.IsOneShotTriggerInvoked = true;
+
+        double prob = random.NextDouble();
+        isActivated = prob <= incident.Trigger.Trigger.Probability;
+      }
+      else
+        isActivated = false;
     }
 
     private static List<FailId> FlattenFailGroup(Fail failItem)

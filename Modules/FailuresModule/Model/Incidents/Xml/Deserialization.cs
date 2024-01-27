@@ -30,7 +30,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents.Xml
         string tmp = attribute.Value;
         if (double.TryParse(tmp, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.GetCultureInfo("en-US"), out double res) == false)
         {
-          throw new EXmlException($"Percentage-deserialzer failed to deserialize percentage value from attribute {attribute.Name} with value {attribute.Value}.");
+          throw new ApplicationException($"Percentage-deserialzer failed to deserialize percentage value from attribute {attribute.Name} with value {attribute.Value}.");
         }
         Percentage ret = (Percentage)res;
         return ret;
@@ -130,13 +130,26 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents.Xml
               new EXmlHelper.List.DT("userVariable", typeof(UserVariable))},
             () => new List<Variable>()))
         .WithCustomPropertyDeserialization(
-          nameof(IncidentDefinition.Triggers),
-          EXmlHelper.List.CreateForNested<Trigger>(
-            "triggers",
-            new EXmlHelper.List.DT[] {
-            new EXmlHelper.List.DT("trigger", typeof(CheckStateTrigger)),
-            new EXmlHelper.List.DT("timeTrigger", typeof(TimeTrigger))},
-            () => new List<Trigger>()))
+          nameof(IncidentDefinition.Trigger),
+          (e, t, f, c) =>
+          {
+            var te = e.LElementOrNull("trigger");
+            var tte = e.LElementOrNull("timeTrigger");
+            if (te != null)
+            {
+              var des = c.ResolveElementDeserializer(typeof(CheckStateTrigger));
+              var val = des.Deserialize(te, typeof(CheckStateTrigger), c);
+              EXmlHelper.SetPropertyValue(f, t, val);
+            }
+            else if (tte != null)
+            {
+              var des = c.ResolveElementDeserializer(typeof(TimeTrigger));
+              var val = des.Deserialize(tte, typeof(TimeTrigger), c);
+              EXmlHelper.SetPropertyValue(f, t, val);
+            }
+            else
+              throw new ApplicationException($"Unable to find trigger definition for element {e}.");
+          })
         .WithCustomPropertyDeserialization(
           nameof(IncidentDefinition.FailGroup),
           EXmlHelper.Property.Create("failures", typeof(FailGroup)));

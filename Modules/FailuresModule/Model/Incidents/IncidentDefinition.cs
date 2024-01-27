@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents
 {
-    public class IncidentDefinition : Incident
-    {
-        public List<Variable> Variables { get; set; } = new List<Variable>();
-        public List<Trigger> Triggers { get; set; } = new List<Trigger>();
-        public FailGroup FailGroup { get; set; }
-        public bool Repetitive { get; set; }
-    }
+  public class IncidentDefinition : Incident
+  {
+    public List<Variable> Variables { get; set; } = new List<Variable>();
+    public Trigger Trigger { get; set; } = null!;
+    public FailGroup FailGroup { get; set; } = null!;
+    public bool Repetitive { get; set; }
+  }
 }

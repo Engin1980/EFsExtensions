@@ -8,10 +8,10 @@ namespace EXmlLib
 {
   public class EXmlException : Exception
   {
-    public EXmlException(string? message) : base(message)
+    internal EXmlException(string? message) : base(message)
     {
     }
 
-    public EXmlException(string message, Exception innerException) : base(message, innerException) { }
+    internal EXmlException(string message, Exception innerException) : base(message, innerException) { }
   }
 }

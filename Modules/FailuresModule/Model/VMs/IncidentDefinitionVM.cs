@@ -18,10 +18,10 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.VMs
       set => base.UpdateProperty(nameof(Variables), value);
     }
 
-    public TriggerVMS Triggers
+    public TriggerVM Trigger
     {
-      get => base.GetProperty<TriggerVMS>(nameof(Triggers))!;
-      set => base.UpdateProperty(nameof(Triggers), value);
+      get => base.GetProperty<TriggerVM>(nameof(Trigger))!;
+      set => base.UpdateProperty(nameof(Trigger), value);
     }
 
     public List<object> VMItems
@@ -34,19 +34,19 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.VMs
     {
       IncidentDefinition = incidentDefinition;
       this.Variables = VariableVMS.Create(this.IncidentDefinition.Variables);
-      this.Triggers = new(incidentDefinition.Triggers.Select(q => new TriggerVM(q, this.Variables.GetAsDict, propertyValuesProvider)));
+      this.Trigger = new TriggerVM(incidentDefinition.Trigger, this.Variables.GetAsDict, propertyValuesProvider);
 
       this.VMItems = new List<object>
       {
         this.Variables,
-        this.Triggers,
+        this.Trigger,
         this.IncidentDefinition.FailGroup
       };
     }
 
     public IncidentDefinition IncidentDefinition { get; }
 
-    public List<TriggerVM> InvokedOneShotTriggers { get; } = new List<TriggerVM>();
+    public bool IsOneShotTriggerInvoked { get; set; } = false;
 
   }
 }

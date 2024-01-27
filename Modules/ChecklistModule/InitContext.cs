@@ -331,7 +331,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         }
         catch (Exception ex)
         {
-          throw new EXmlException($"Unable to load sound file '{checkDefinition.Value}'.", ex);
+          throw new ApplicationException($"Unable to load sound file '{checkDefinition.Value}'.", ex);
         }
       else if (checkDefinition.Type == CheckDefinition.CheckDefinitionType.Speech)
         try
@@ -346,7 +346,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         }
         catch (Exception ex)
         {
-          throw new EXmlException($"Unable to generated sound for speech '{checkDefinition.Value}'.", ex);
+          throw new ApplicationException($"Unable to generated sound for speech '{checkDefinition.Value}'.", ex);
         }
       else
         throw new NotImplementedException($"Unknown type {checkDefinition.Type}.");

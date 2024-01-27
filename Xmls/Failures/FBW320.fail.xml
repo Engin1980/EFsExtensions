@@ -32,11 +32,9 @@
       <variables>
         <g:randomVariable name="vFail" minimum="70" maximum="180"/>
       </variables>
-      <triggers>
-        <trigger probability="0.005" repetitive="false">
-          <g:property name="ias" direction="passing" expression="{vFail}"/>
-        </trigger>
-      </triggers>
+      <trigger probability="0.005" repetitive="false">
+        <g:property name="ias" direction="passing" expression="{vFail}"/>
+      </trigger>
       <failures selection="one">
         <failures selection="all">
           <failure id="eng1" />
@@ -52,9 +50,7 @@
     </incident>
     <group title="System failures">
       <incident title="Internal systems" repetitive="true">
-        <triggers>
-          <timeTrigger interval="oncePerTenMinutes" mtbfHours="10000" repetitive="true"/>
-        </triggers>
+        <timeTrigger interval="oncePerTenMinutes" mtbfHours="10000" repetitive="true"/>
         <failures selection="one">
           <failure id="pitot"/>
           <failure id="static_port"/>
@@ -63,9 +59,7 @@
     </group>
     <group title="Panel failures">
       <incident title="Panel failure" repetitive="true">
-        <triggers>
-          <timeTrigger interval="oncePerTenMinutes" mtbfHours="15000"  repetitive="true"/>
-        </triggers>
+        <timeTrigger interval="oncePerTenMinutes" mtbfHours="15000"  repetitive="true"/>
         <failures selection="one">
           <failure id="pnlAirspeed"/>
           <failure id="pnlAltimeter"/>
@@ -73,11 +67,9 @@
       </incident>
     </group>
     <incident title="Brake failures" repetitive="false">
-      <triggers>
-        <trigger probability="0.0005" repetitive="false">
-          <g:property name="height" direction="passingDown" expression="100"/>
-        </trigger>
-      </triggers>
+      <trigger probability="0.0005" repetitive="false">
+        <g:property name="height" direction="passingDown" expression="100"/>
+      </trigger>
       <failures selection="one">
         <failure id="brakeAll"/>
         <failure id="brakeLeft"/>
@@ -85,9 +77,7 @@
       </failures>
     </incident>
     <incident title="Fuel leak" repetitive="false">
-      <triggers>
-        <timeTrigger interval="oncePerHour" mtbfHours="10000" repetitive="true"/>
-      </triggers>
+      <timeTrigger interval="oncePerHour" mtbfHours="10000" repetitive="true"/>
       <failures selection="one">
         <failure id="fbw320fuelLeft"/>
         <!--<failure id="fbw320fuelLeftAux"/>-->
@@ -97,17 +87,13 @@
       </failures>
     </incident>
     <incident title="Flaps stuck" repetitive="false">
-      <triggers>
-        <timeTrigger interval="oncePerHour" mtbfHours="10000" repetitive="true"/>
-      </triggers>
+      <timeTrigger interval="oncePerHour" mtbfHours="10000" repetitive="true"/>
       <failures selection="one">
         <failure id="fbw320FlapsHandleStuck"/>
       </failures>
     </incident>
     <incident title="Pressure lost" repetitive="false">
-      <triggers>
-        <timeTrigger interval="oncePerHour" mtbfHours="15000" repetitive="false"/>
-      </triggers>
+      <timeTrigger interval="oncePerHour" mtbfHours="15000" repetitive="false"/>
       <failures selection="one">
         <failure id="fbwExitOpen0"/>
         <failure id="fbwExitOpen1"/>

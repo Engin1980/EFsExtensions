@@ -181,7 +181,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         }
         catch (Exception ex)
         {
-          throw new EXmlException($"Unable to load sound file '{speech.Value}'.", ex);
+          throw new ApplicationException($"Unable to load sound file '{speech.Value}'.", ex);
         }
       else if (speech.Type == Speech.SpeechType.Speech)
       {
@@ -198,7 +198,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         }
         catch (Exception ex)
         {
-          throw new EXmlException($"Unable to generated sound for speech '{speech.Value}'.", ex);
+          throw new ApplicationException($"Unable to generated sound for speech '{speech.Value}'.", ex);
         }
       }
       else

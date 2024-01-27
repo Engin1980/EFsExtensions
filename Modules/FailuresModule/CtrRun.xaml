@@ -57,14 +57,14 @@
               </StackPanel>
             </HierarchicalDataTemplate>
 
-            <HierarchicalDataTemplate DataType="{x:Type vm:TriggerVMS}" ItemsSource="{Binding}">
+            <!--<HierarchicalDataTemplate DataType="{x:Type vm:TriggerVMS}" ItemsSource="{Binding}">
               <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Triggers" />
                 <TextBlock Text=" (" Foreground="Gray" />
                 <TextBlock Text="{Binding Count}" Foreground="Gray" />
                 <TextBlock Text=")" Foreground="Gray" />
               </StackPanel>
-            </HierarchicalDataTemplate>
+            </HierarchicalDataTemplate>-->
             <HierarchicalDataTemplate DataType="{x:Type vm:TriggerVM}" ItemsSource="{Binding Evaluations}">
               <StackPanel Orientation="Horizontal" >
                 <TextBlock Text="Trigger" />

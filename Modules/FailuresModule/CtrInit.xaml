@@ -21,6 +21,38 @@
     <converters:PercentageToIntConverter x:Key="PercentageToIntConverter" />
     <converters:PercentageFormatter x:Key="PercentageFormatter" />
     <globalConverters:DoubleFormatter x:Key="DoubleFormatter" />
+    <globalConverters:TypeNameToVisibilityConverter x:Key="TypeNameToVisibilityConverter" />
+
+    <DataTemplate x:Key="StateCheckTriggerTemplate">
+      <StackPanel Orientation="Horizontal" DataContext="{Binding}" >
+        <TextBlock Text="Trigger (prob=" />
+        <TextBlock Text="{Binding Probability, Converter={StaticResource PercentageFormatter}, ConverterParameter=N2}" />
+        <ctrl:ProbabilityUpDown Margin="3,0,3,0" Value="{Binding Probability, Mode=TwoWay}" />
+        <TextBlock Text=", rpt=" />
+        <TextBlock Text="{Binding Repetitive}" />
+        <TextBlock Text=", cond=" />
+        <TextBlock Text="{Binding Condition.DisplayString}" />
+        <TextBlock Text=") " />
+      </StackPanel>
+    </DataTemplate>
+    <DataTemplate x:Key="TimeTriggerTemplate">
+      <StackPanel Orientation="Horizontal" DataContext="{Binding}"  >
+        <TextBlock Text="Trigger (MTBF hours=" />
+        <TextBlock Text="{Binding MtbfHours}" />
+        <ctrl:NumericUpDown Margin="3,0,3,0" Value="{Binding MtbfHours, Mode=TwoWay}" />
+        <TextBlock Text=", prob/interval=" />
+        <TextBlock Text="{Binding Probability, Converter={StaticResource PercentageFormatter}, ConverterParameter=N5}" />
+        <ctrl:ProbabilityUpDown Margin="3,0,3,0" Value="{Binding Probability, Mode=TwoWay}" />
+        <TextBlock Text=", rpt=" Foreground="Gray" />
+        <TextBlock Text="{Binding Repetitive}" Foreground="Blue" />
+        <TextBlock Text=", interval=" Foreground="Gray" />
+        <TextBlock Text="{Binding Interval}" Foreground="Blue" />
+        <TextBlock Text=") " Foreground="Gray" />
+      </StackPanel>
+    </DataTemplate>
+    <local:TriggerTemplateSelector x:Key="TriggerTemplateSelector" 
+                                   TimeTriggerTemplate="{StaticResource TimeTriggerTemplate}"
+                                   StateCheckTriggerTemplate="{StaticResource StateCheckTriggerTemplate}"/>
   </UserControl.Resources>
   <DockPanel>
     <DockPanel DockPanel.Dock="Top">
@@ -48,7 +80,7 @@
               </HierarchicalDataTemplate>
               <HierarchicalDataTemplate DataType="{x:Type modelApp:IncidentDefinition}">
                 <StackPanel Orientation="Vertical" Margin="2">
-                  <TextBlock Text="{Binding Title}" />
+                  <TextBlock Text="{Binding Title}" FontWeight="Bold" />
                   <TreeViewItem ItemsSource="{Binding Variables}">
                     <TreeViewItem.Header>
                       <StackPanel Orientation="Horizontal">
@@ -59,14 +91,9 @@
                       </StackPanel>
                     </TreeViewItem.Header>
                   </TreeViewItem>
-                  <TreeViewItem ItemsSource="{Binding Triggers}">
+                  <TreeViewItem>
                     <TreeViewItem.Header>
-                      <StackPanel Orientation="Horizontal">
-                        <TextBlock Text="Triggers" />
-                        <TextBlock Text=" (" Foreground="Gray"/>
-                        <TextBlock Text="{Binding Triggers.Count}" Foreground="Gray"/>
-                        <TextBlock Text=")" Foreground="Gray" />
-                      </StackPanel>
+                      <ContentControl Content="{Binding Trigger}" ContentTemplateSelector="{StaticResource TriggerTemplateSelector}" />
                     </TreeViewItem.Header>
                   </TreeViewItem>
                   <TreeViewItem ItemsSource="{Binding FailGroup.Items}">

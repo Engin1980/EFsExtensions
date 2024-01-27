@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.Modules.FailuresModule.Types
 {
-    internal class SanityChecker
+  internal class SanityChecker
   {
     private readonly Stack<string> context = new();
     private List<FailureDefinition> failureDefinitions;
@@ -50,19 +50,16 @@ namespace Eng.Chlaot.Modules.FailuresModule.Types
       Logger.Log(this, LogLevel.VERBOSE, "Checking sanity of incidentDefinition");
       context.Push($"{incidentDefinition.Title} (IncidentDefinition)");
       WithContext("Variables", () => CheckSanityInternal(incidentDefinition.Variables));
-      WithContext("Triggers", () => CheckSanityInternal(incidentDefinition.Triggers));
+      WithContext("Trigger", () => CheckSanityInternal(incidentDefinition.Trigger));
       AssertNotNull(incidentDefinition.FailGroup, nameof(incidentDefinition.FailGroup));
       WithContext("FailGroup", () => CheckSanityInternal(incidentDefinition.FailGroup));
       context.Pop();
     }
 
-    private void CheckSanityInternal(List<Trigger> triggers)
+    private void CheckSanityInternal(Trigger trigger)
     {
       Logger.Log(this, LogLevel.VERBOSE, "Checking sanity of triggers");
-      foreach (var trigger in triggers)
-      {
-        //TODO thle se mi nechtlěo psát zatím
-      }
+      //TODO thle se mi nechtlěo psát zatím
     }
 
     private void WithContext(string context, Action action)

@@ -146,18 +146,15 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
       foreach (var id in this.FailureSet.GetIncidentDefinitionsRecursively())
       {
-        foreach (var t in id.Triggers)
-        {
-          double p;
-          if (t is CheckStateTrigger cst)
-            p = (1 - cst.Probability);
-          else if (t is TimeTrigger tt)
-            p = (1 - (estimatedFlightLengthInHours / tt.MtbfHours));
-          else
-            throw new NotImplementedException();
-          for (int i = 0; i < estimatedOnceEventRepetitionsPerFlight; i++)
-            negativeProbabilities.Add(p);
-        }
+        double p;
+        if (id.Trigger is CheckStateTrigger cst)
+          p = (1 - cst.Probability);
+        else if (id.Trigger is TimeTrigger tt)
+          p = (1 - (estimatedFlightLengthInHours / tt.MtbfHours));
+        else
+          throw new NotImplementedException();
+        for (int i = 0; i < estimatedOnceEventRepetitionsPerFlight; i++)
+          negativeProbabilities.Add(p);
       }
 
       double m = 1 - negativeProbabilities.Aggregate(1.0, (a, b) => a * b);
