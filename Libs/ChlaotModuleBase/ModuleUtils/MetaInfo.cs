@@ -31,6 +31,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils
     {
       var tmp = this.Description
         .Trim()
+        .Replace("\n", " ")
         .Replace("\\n", "\n")
         .Replace("\\t", "\t");
       var lst = tmp.Split("\n").Select(q => q.Trim());

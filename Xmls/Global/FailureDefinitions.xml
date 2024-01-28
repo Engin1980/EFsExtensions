@@ -12,13 +12,13 @@
         <set id="engFire{i}" title="Engine {i} fire" simVar="ENG ON FIRE:{i}" />
         <set id="engTurbo{i}" title="Engine {i} turbocharger" simVar="RECIP ENG TURBOCHARGER FAILED:{i}" />
         <leak id="engCoolantRes{i}" title="Engine {i} coolant reservoir" simVar="RECIP ENG COOLANT RESERVOIR PERCENT:{i}" />
-        <sneak id="engOilTemperature{i}->eng1" title ="Engine {i} oil temperature -> eng {i} fail"
+        <sneak id="engOilTemperature->eng{i}" title ="Engine {i} oil temperature -> eng {i} fail"
                simVar="GENERAL ENG OIL TEMPERATURE:{i}"
                minimalInitialSneakValue="0.0005" maximalInitialSneakValue="0.003"
                minimalSneakAdjustPerSecond="0.00001" maximalSneakAdjustPerSecond="0.0001"
                direction="up" isPercentageBased="true" finalValue="500"
                finalFailureId="eng{i}" />
-        <sneak id="engOilPressure{i}->eng{i}" title ="Engine {i} oil pressure -> eng {i} fail" 
+        <sneak id="engOilPressure->eng{i}" title ="Engine {i} oil pressure -> eng {i} fail" 
                simVar="GENERAL ENG OIL PRESSURE:{i}"
                minimalInitialSneakValue="0" maximalInitialSneakValue="0"
                minimalSneakAdjustPerSecond="0.001" maximalSneakAdjustPerSecond="0.03"

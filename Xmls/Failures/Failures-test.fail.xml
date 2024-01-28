@@ -1,26 +1,25 @@
 ﻿<failureDefinitions
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://chlaot.org/failures.xsd"
+        xmlns:g ="http://chlaot.org/global.xsd"
         xsi:noNamespaceSchemaLocation="file://./Xsds/FailureSchema.xsd">
   <metaInfo>
-    <label>Test failure for 1engine plane</label>
-    <author>Marek Vajgl</author>
-    <description></description>
+    <g:label>Test failure for 1engine plane</g:label>
+    <g:author>Marek Vajgl</g:author>
+    <g:description></g:description>
   </metaInfo>
   <group title="Failures">
     <incident title="Internal systems" repetitive="true">
       <variables>
-        <randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
-        <randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
+        <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
+        <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
       </variables>
-      <triggers>
-        <trigger probability="1" repetitive="true">
-          <and xmlns="http://chlaot.org/global.xsd">
-            <property name="realTimeSecond" direction="exactly" expression="{secondValue}" randomness="+-0.5" />
-            <property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" randomness="+-0" />
-          </and>
-        </trigger>
-      </triggers>
+      <trigger probability="1" repetitive="true">
+        <g:and>
+          <g:property name="realTimeSecond" direction="exactly" expression="{secondValue}" randomness="+-0.5" />
+          <g:property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" randomness="+-0" />
+        </g:and >
+      </trigger>
       <failures selection="one">
         <failure id="vacuum"/>
         <failure id="electrical"/>

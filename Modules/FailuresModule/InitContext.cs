@@ -126,6 +126,13 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
         this.FailureSet = tmpData;
         this.CalculateEstimations();
+        this.FailureSet.GetIncidentDefinitionsRecursively().Select(q => q.Trigger).ForEach(q =>
+        {
+          q.PropertyChanged += (s, e) =>
+          {
+            if (e.PropertyName == nameof(Trigger.Probability)) CalculateEstimations();
+          };
+        });
         this.MetaInfo = tmpMeta;
         UpdateReadyFlag();
         logger.Invoke(LogLevel.INFO, $"Failure set file '{xmlFile}' successfully loaded.");

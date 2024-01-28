@@ -13,31 +13,26 @@
       <variables>
         <g:randomVariable name="vFail" minimum="30" maximum="80"/>
       </variables>
-      <triggers>
-        <trigger probability="0.05" repetitive="false">
-          <g:property name="ias" direction="passing" expression="{vFail}"/>
-        </trigger>
-      </triggers>
+      <trigger probability="0.01" repetitive="false">
+        <g:property name="ias" direction="passing" expression="{vFail}"/>
+      </trigger>
       <failures selection="one">
         <failure id="eng1"/>
       </failures>
     </incident>
     <group title="Engine failures">
       <incident title="Engine failure" repetitive="false">
-        <triggers>
-          <timeTrigger interval="oncePerHour" mtbfHours="5000" repetitive="true"/>
-        </triggers>
+        <timeTrigger interval="oncePerHour" mtbfHours="5000" repetitive="true"/>
         <failures selection="one">
-          <failure id="engOilPressure1->eng1"/>
-          <failure id="engOilTemperature1->eng1"/>
+          <failure id="engOilPressure->eng1"/>
+          <failure id="engOilTemperature->eng1"/>
+          <failure id="eng1"/>
         </failures>
       </incident>
     </group>
     <group title="System failures">
       <incident title="Internal systems" repetitive="true">
-        <triggers>
-          <timeTrigger interval="oncePerTenMinutes" mtbfHours="1000" repetitive="true"/>
-        </triggers>
+        <timeTrigger interval="oncePerTenMinutes" mtbfHours="2000" repetitive="true"/>
         <failures selection="one">
           <failure id="vacuum"/>
           <failure id="electrical"/>
@@ -49,11 +44,9 @@
     </group>
     <group title="Panel failures">
       <incident title="Panel failure" repetitive="true">
-        <triggers>
-          <timeTrigger interval="oncePerTenMinutes" mtbfHours="1000"  repetitive="true"/>
-        </triggers>
+        <timeTrigger interval="oncePerTenMinutes" mtbfHours="2000"  repetitive="true"/>
         <failures selection="one">
-          <!--<failure id="pnlAirspeed"/> prý nefunguje na C172-gauge-->
+          <!--<failure id="pnlAirspeed"/> not working on C172-gauge -->
           <failure id="pnlAltimeter"/>
           <failure id="pnlAttitude"/>
           <failure id="pnlCompass"/>
@@ -62,12 +55,10 @@
         </failures>
       </incident>
     </group>
-    <incident title="Brake failures" repetitive="false">
-      <triggers>
-        <trigger probability="0.03" repetitive="false">
-          <g:property name="height" direction="passingDown" expression="100"/>
-        </trigger>
-      </triggers>
+    <incident title="Brake failure" repetitive="false">
+      <trigger probability="0.01" repetitive="false">
+        <g:property name="height" direction="passingDown" expression="100"/>
+      </trigger>
       <failures selection="one">
         <failure id="brakeAll"/>
         <failure id="brakeLeft"/>
@@ -75,18 +66,14 @@
       </failures>
     </incident>
     <incident title="Fuel leak" repetitive="false">
-      <triggers>
-        <timeTrigger interval="oncePerHour" mtbfHours="1000"  repetitive="true"/>
-      </triggers>
+      <timeTrigger interval="oncePerHour" mtbfHours="2000"  repetitive="true"/>
       <failures selection="one">
         <failure id="fuelLeft"/>
         <failure id="fuelRight"/>
       </failures>
     </incident>
     <incident title="Flaps stuck" repetitive="false">
-      <triggers>
-        <timeTrigger interval="oncePerHour" mtbfHours="1000"  repetitive="true"/>
-      </triggers>
+      <timeTrigger interval="oncePerHour" mtbfHours="2000"  repetitive="true"/>
       <failures selection="one">
         <failure id="flapsLeft"/>
         <failure id="flapsRight"/>
@@ -97,17 +84,13 @@
       </failures>
     </incident>
     <incident title="Throttle stuck" repetitive="false">
-      <triggers>
-        <timeTrigger interval="oncePerHour" mtbfHours="1000" repetitive="false"/>
-      </triggers>
+      <timeTrigger interval="oncePerHour" mtbfHours="2000" repetitive="false"/>
       <failures selection="one">
         <failure id="throttle1Stuck"/>
       </failures>
     </incident>
     <incident title="Mixture stuck" repetitive="false">
-      <triggers>
-        <timeTrigger interval="oncePerHour" mtbfHours="1000" repetitive="false"/>
-      </triggers>
+      <timeTrigger interval="oncePerHour" mtbfHours="2000" repetitive="false"/>
       <failures selection="one">
         <failure id="mixture1Stuck"/>
       </failures>

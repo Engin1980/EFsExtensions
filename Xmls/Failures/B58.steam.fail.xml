@@ -9,10 +9,10 @@
     <g:version>0.3</g:version>
     <g:author>Marek Vajgl</g:author>
     <g:description>
-      Failures for SteamGauge Baron B58. Might work for the other twin-prop SteamGauge planes too.\n
+      Failures for SteamGauge Baron B58. Might work for the other twin-prop SteamGauge planes too.\n\n
       Supports eng-fail, birdstrike, system-fails, brake-fail, gear+flaps stuck fails.\n\n
-      DevInfo: SteamGauge Baron B58 is not keeping engine failure and trying to reset the flag. Therefore eng{i} failure must be redefined to
-      force engine failure repeatedly.
+      DevInfo: SteamGauge Baron B58 is not keeping engine failure and trying to reset the flag. 
+      Therefore eng{i} failure must be redefined to force engine failure repeatedly.
     </g:description>
   </metaInfo>
   <definitions title="B58 failures">
@@ -22,16 +22,14 @@
                            failValue="1" refreshIntervalInMs="500" />
     </fd:sequence>
   </definitions>
-  <group title="Failures">
+  <group title="Engine-related">
     <incident title="bird-strike" repetitive="false">
       <variables>
         <g:randomVariable name="vFail" minimum="30" maximum="110"/>
       </variables>
-      <triggers>
-        <trigger probability="0.05" repetitive="false">
-          <g:property name="ias" direction="passing" expression="{vFail}"/>
-        </trigger>
-      </triggers>
+      <trigger probability="0.01" repetitive="false">
+        <g:property name="ias" direction="passing" expression="{vFail}"/>
+      </trigger>
       <failures selection="one">
         <failure id="eng1"/>
         <failure id="eng2"/>
@@ -42,111 +40,126 @@
       </failures>
     </incident>
     <incident title="Engine fail" repetitive="true">
-      <triggers>
-        <timeTrigger interval="oncePerHour" mtbfHours="2000" repetitive="true" />
-      </triggers>
+      <timeTrigger interval="oncePerHour" mtbfHours="5000" repetitive="true" />
       <failures selection="one">
         <failure id="eng1"/>
         <failure id="eng2"/>
+        <failure id="engOilPressure->eng2"/>
+        <failure id="engOilTemperature->eng2"/>
+        <failure id="engOilPressure->eng1"/>
+        <failure id="engOilTemperature->eng1"/>
       </failures>
     </incident>
-    <group title="Common failures">
-      <group title="System failures">
-        <incident title="Internal systems" repetitive="true">
-          <variables>
-            <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
-            <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
-          </variables>
-          <triggers>
-            <trigger probability="0.0005" repetitive="true">
-              <g:and>
-                <g:property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
-                <g:property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
-              </g:and>
-            </trigger>
-          </triggers>
-          <failures selection="one">
-            <failure id="vacuum"/>
-            <failure id="electrical"/>
-            <failure id="pitot"/>
-            <failure id="static_port"/>
-            <failure id="hydraulics"/>
-          </failures>
-        </incident>
-      </group>
-      <group title="Panel failures">
-        <incident title="Panel failure" repetitive="true">
-          <variables>
-            <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
-            <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
-          </variables>
-          <triggers>
-            <trigger probability="0.0005" repetitive="true">
-              <g:and>
-                <g:property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
-                <g:property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
-              </g:and>
-            </trigger>
-          </triggers>
-          <failures selection="one">
-            <failure id="pnlAirspeed"/>
-            <failure id="pnlAltimeter"/>
-            <failure id="pnlAttitude"/>
-            <failure id="pnlCompass"/>
-            <failure id="pnlVS"/>
-          </failures>
-        </incident>
-      </group>
-      <incident title="Brake failures" repetitive="false">
-        <triggers>
-          <trigger probability="0.05" repetitive="false">
-            <g:property name="height" direction="passingDown" expression="100"/>
-          </trigger>
-        </triggers>
+    <incident title="Throttle stuck" repetitive="false">
+      <timeTrigger interval="oncePerHour" mtbfHours="5000" repetitive="false"/>
+      <failures selection="one">
+        <failure id="throttle1Stuck"/>
+        <failure id="throttle2Stuck"/>
+      </failures>
+    </incident>
+    <incident title="Mixture stuck" repetitive="false">
+      <timeTrigger interval="oncePerHour" mtbfHours="5000" repetitive="false"/>
+      <failures selection="one">
+        <failure id="mixture1Stuck"/>
+        <failure id="mixture2Stuck"/>
+      </failures>
+    </incident>
+  </group>
+  <group title="Common failures">
+    <group title="System failures">
+      <incident title="Internal systems" repetitive="true">
+        <variables>
+          <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
+          <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
+        </variables>
+        <trigger probability="0.0005" repetitive="true">
+          <g:and>
+            <g:property name="realTimeSecond" direction="exactly" expression="{secondValue}" />
+            <g:property name="realTimeMinuteLastDigit" direction="exactly" expression="{minuteValue}" />
+          </g:and>
+        </trigger>
         <failures selection="one">
-          <failure id="brakeAll"/>
-          <failure id="brakeLeft"/>
-          <failure id="brakeRight"/>
-        </failures>
-      </incident>
-      <incident title="Gear failure" repetitive="false">
-        <triggers>
-          <trigger probability="0.03" repetitive="true">
-            <g:or>
-              <g:property name="ias" direction="passingUp" expression="50"/>
-              <g:property name="height" direction="passingDown" expression="2500"/>
-            </g:or>
-          </trigger>
-        </triggers>
-        <failures selection="one">
-          <failure id="gearLeft"/>
-          <failure id="gearRight"/>
-          <failure id="gearCenter"/>
-          <failures selection="all">
-            <failure id="gearLeft"/>
-            <failure id="gearRight"/>
-            <failure id="gearCenter"/>
-          </failures>
+          <failure id="vacuum"/>
+          <failure id="electrical"/>
+          <failure id="pitot"/>
+          <failure id="static_port"/>
+          <failure id="hydraulics"/>
         </failures>
       </incident>
     </group>
+    <group title="Panel failures">
+      <incident title="Panel failure" repetitive="true">
+        <variables>
+          <g:randomVariable minimum="0" maximum="59" name="secondValue" isInteger="true" />
+          <g:randomVariable minimum="0" maximum="9" name="minuteValue" isInteger="true" />
+        </variables>
+        <timeTrigger mtbfHours="3000" interval="oncePerHour" repetitive="true"/>
+        <failures selection="one">
+          <failure id="pnlAirspeed"/>
+          <failure id="pnlAltimeter"/>
+          <failure id="pnlAttitude"/>
+          <failure id="pnlCompass"/>
+          <failure id="pnlVS"/>
+        </failures>
+      </incident>
+    </group>
+    <incident title="Brake failures" repetitive="false">
+      <trigger probability="0.01" repetitive="false">
+        <g:property name="height" direction="passingDown" expression="100"/>
+      </trigger>
+      <failures selection="one">
+        <failure id="brakeAll"/>
+        <failure id="brakeLeft"/>
+        <failure id="brakeRight"/>
+      </failures>
+    </incident>
+    <incident title="Gear failure" repetitive="false">
+      <trigger probability="0.005" repetitive="true">
+        <g:or>
+          <g:property name="ias" direction="passingUp" expression="50"/>
+          <g:property name="height" direction="passingDown" expression="2500"/>
+        </g:or>
+      </trigger>
+      <failures selection="one">
+        <failure id="gearLeft"/>
+        <failure id="gearRight"/>
+        <failure id="gearCenter"/>
+        <failures selection="all">
+          <failure id="gearLeft"/>
+          <failure id="gearRight"/>
+          <failure id="gearCenter"/>
+        </failures>
+      </failures>
+    </incident>
   </group>
-  <incident title="Throttle stuck" repetitive="false">
-    <triggers>
-      <timeTrigger interval="oncePerHour" mtbfHours="1000" repetitive="false"/>
-    </triggers>
-    <failures selection="one">
-      <failure id="throttle1Stuck"/>
-      <failure id="throttle2Stuck"/>
-    </failures>
-  </incident>
-  <incident title="Mixture stuck" repetitive="false">
-    <triggers>
-      <timeTrigger interval="oncePerHour" mtbfHours="1000" repetitive="false"/>
-    </triggers>
-    <failures selection="one">
-      <failure id="mixture1Stuck"/>
-      <failure id="mixture2Stuck"/>
-    </failures>
-  </incident>
+  <group title="Brake + Flaps">
+    <incident title="Brake failure" repetitive="false">
+      <trigger probability="0.01" repetitive="false">
+        <g:property name="height" direction="passingDown" expression="100"/>
+      </trigger>
+      <failures selection="one">
+        <failure id="brakeAll"/>
+        <failure id="brakeLeft"/>
+        <failure id="brakeRight"/>
+      </failures>
+    </incident>
+    <incident title="Fuel leak" repetitive="false">
+      <timeTrigger interval="oncePerHour" mtbfHours="2000"  repetitive="true"/>
+      <failures selection="one">
+        <failure id="fuelLeft"/>
+        <failure id="fuelRight"/>
+      </failures>
+    </incident>
+    <incident title="Flaps stuck" repetitive="false">
+      <timeTrigger interval="oncePerHour" mtbfHours="5000"  repetitive="true"/>
+      <failures selection="one">
+        <failure id="flapsLeft"/>
+        <failure id="flapsRight"/>
+        <failures selection="all">
+          <failure id="flapsLeft"/>
+          <failure id="flapsRight"/>
+        </failures>
+      </failures>
+    </incident>
+  </group>
 </failureDefinitions>
