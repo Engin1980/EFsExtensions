@@ -60,6 +60,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
       {
         this.evaluator = new StateCheckEvaluator(variables.GetAsDict, propertyVMs.GetAsDict);
         this.State = RunState.NotYet;
+        this.CanBeAutoplayed = true;
       }
 
       public bool Evaluate(IStateCheckItem item)

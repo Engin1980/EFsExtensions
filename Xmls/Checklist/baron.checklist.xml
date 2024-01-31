@@ -41,6 +41,9 @@
         <confirmation type="speech" value="Checked"/>
       </item>
     </items>
+    <trigger>
+      <g:property name="beaconLight" direction="passingUp" expression="0.5"/>
+    </trigger>
   </checklist>
   <checklist id="beforeTaxi" callSpeech="Before Taxi">
     <items>

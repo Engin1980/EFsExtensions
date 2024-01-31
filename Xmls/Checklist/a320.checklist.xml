@@ -71,9 +71,7 @@
     <trigger>
       <g:and>
         <g:property name="fbwParkingBrake" direction="above" expression="0" />
-        <g:for seconds="5">
-          <g:property name="beaconLight" direction="above" expression="0"/>
-        </g:for>
+        <g:property name="beaconLight" direction="passingUp" expression="0.5"/>
       </g:and>
     </trigger>
   </checklist>

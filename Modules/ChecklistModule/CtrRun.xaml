@@ -103,13 +103,19 @@
         <StackPanel>
           <Label Margin="8 0 0 0">
             <StackPanel Orientation="Horizontal">
-              <TextBlock Text="Condition: "/>
-              <TextBlock Text="{Binding EvaluatorRecentResultChecklistVM.CheckList.Trigger.DisplayString}" />
+              <TextBlock Text="Autoplay Condition: "/>
+              <TextBlock Text="{Binding EvaluatorRecentResultChecklistVM.CheckList.Trigger.DisplayString, FallbackValue=(none)}" />
             </StackPanel>
           </Label>
           <Label Margin="8 0 0 0">
             <StackPanel Orientation="Horizontal">
-              <TextBlock Text="Last refresh: " />
+              <TextBlock Text="Can be autoplayed: "/>
+              <TextBlock Text="{Binding EvaluatorRecentResultChecklistVM.RunTime.CanBeAutoplayed}" />
+            </StackPanel>
+          </Label>
+          <Label Margin="8 0 0 0">
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="Last eval refresh: " />
               <TextBlock Text="{Binding EvaluatorRecentResultChecklistVM.RunTime.EvaluatorRecentResultDateTime}" />
             </StackPanel>
           </Label>
