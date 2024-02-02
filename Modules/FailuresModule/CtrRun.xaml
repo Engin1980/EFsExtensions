@@ -17,8 +17,19 @@
   <UserControl.Resources>
     <converters:FailureDefinitionActiveToBoolConverter x:Key="FailureDefinitionActiveToBoolConverter" />
     <globalConverters:DoubleFormatter x:Key="DoubleToStringConverter" />
+    <globalConverters:BoolToCustomSolidBrushConverter x:Key="BoolToCustomSolidBrushConverter" />
   </UserControl.Resources>
   <DockPanel>
+    <DockPanel DockPanel.Dock="Bottom">
+      <Label>
+        <StackPanel Orientation="Horizontal">
+          <CheckBox IsChecked="{Binding IsSupressed}" />
+          <TextBlock Text=" Suppress (temporaly) failures invoking" 
+                     Background="{Binding IsSupressed, Converter={StaticResource BoolToCustomSolidBrushConverter}, ConverterParameter='Yellow;White'}"
+                     Foreground="{Binding IsSupressed, Converter={StaticResource BoolToCustomSolidBrushConverter}, ConverterParameter='Red;Black'}"/>
+        </StackPanel>
+      </Label>
+    </DockPanel>
     <TabControl>
       <TabItem Header="Overview">
         <TreeView ItemsSource="{Binding IncidentVMs}">

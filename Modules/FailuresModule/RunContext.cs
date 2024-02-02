@@ -33,6 +33,13 @@ namespace Eng.Chlaot.Modules.FailuresModule
     public List<IncidentVM> IncidentVMs { get; }
     public BindingList<FailureSustainer> Sustainers { get; }
 
+
+    public bool IsSupressed
+    {
+      get => base.GetProperty<bool>(nameof(IsSupressed))!;
+      set => base.UpdateProperty(nameof(IsSupressed), value);
+    }
+
     public int SustainersCount
     {
       get => base.GetProperty<int>(nameof(SustainersCount))!;
@@ -79,6 +86,8 @@ namespace Eng.Chlaot.Modules.FailuresModule
       IncidentVMs = top.Incidents;
       Sustainers = new();
       Sustainers.ListChanged += (s, e) => this.SustainersCount = Sustainers.Count;
+
+      this.IsSupressed = false;
     }
 
     #endregion Constructors
@@ -254,7 +263,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
     private void SimConWrapper_SimSecondElapsed()
     {
-      if (isRunning)
+      if (isRunning && !IsSupressed)
       {
         StateCheckEvaluator.UpdateDictionaryByObject(this.simConWrapper.SimData, propertyValues);
         DateTime now = DateTime.Now;
