@@ -21,12 +21,13 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel
     #region Properties
 
     public StateCheckPropertyDirection Direction { get; set; }
-    public string DisplayString => $"({Name} {Direction.ToString().ToLower()} {Expression ?? "(null)"})";
+    public string DisplayString => $"({(IsTrendBased ? "Δ" : "")}{Name}  {Direction.ToString().ToLower()} {Expression ?? "(null)"})";
     public string Expression { get; set; } = null!;
     public bool IsVariableBased { get => Expression[0] == '{'; }
     public string Name { get; set; } = null!;
     public StateCheckPropertyDeviation Randomness { get; set; } = StateCheckPropertyDeviation.Parse("+-0");
     public StateCheckPropertyDeviation Sensitivity { get; set; } = StateCheckPropertyDeviation.Parse("+-10%");
+    public bool IsTrendBased { get; set; }
 
     #endregion Properties
 

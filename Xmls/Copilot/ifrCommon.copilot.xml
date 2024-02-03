@@ -31,7 +31,10 @@
   <speechDefinition title="Acceleration announcement (100)kts">
     <speech type="speech" value="{speed} knots" />
     <trigger>
-      <g:property name="ias" direction="passingUp" expression="{speed}"/>
+      <g:and>
+        <g:property name="ias" direction="passingUp" expression="{speed}"/>
+        <g:property name="ias" isTrendBased="true" direction="above" expression="0"/>
+      </g:and>
     </trigger>
     <reactivationTrigger>
       <g:property name="ias" direction="below" expression="10" />

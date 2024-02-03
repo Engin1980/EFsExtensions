@@ -34,10 +34,12 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     };
 
     private readonly Dictionary<StateCheckDelay, int> delayCounter = new();
+    private readonly Dictionary<StateCheckWait, int> waitCounter = new();
     private readonly Dictionary<StateCheckProperty, double> extractedValues = new();
+    private readonly Dictionary<StateCheckProperty, double> trendHistory = new();
     private readonly Logger logger;
     private readonly Dictionary<StateCheckProperty, EPassingState> passingPropertiesStates = new();
-    private readonly Func<Dictionary<string,double>> propertyValuesProvider;
+    private readonly Func<Dictionary<string, double>> propertyValuesProvider;
     private readonly Func<Dictionary<string, double>> variableValuesProvider;
     private Dictionary<string, double>? currentPropertyValues = null;
     private Dictionary<string, double>? currentVariableValues = null;
@@ -139,6 +141,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       {
         this.passingPropertiesStates.Clear();
         this.delayCounter.Clear();
+        this.waitCounter.Clear();
       }
     }
 
@@ -212,6 +215,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         StateCheckDelay delay => EvaluateDelay(delay, out msg),
         StateCheckProperty property => EvaluateProperty(property, out msg),
         StateCheckTrueFalse trueFalse => EvalauteTrueFalse(trueFalse, out msg),
+        StateCheckWait wait => EvaluateWait(wait, out msg),
         _ => throw new NotImplementedException(),
       };
 
@@ -222,7 +226,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     private bool EvaluateProperty(StateCheckProperty property, out string message)
     {
       double expected = ExtractExpectedPropertyValue(property, true);
-      double actual = ResolveRealPropertyValue(property.Name);
+      double actual = ResolveCurrentPropertyValue(property);
 
       bool ret;
       switch (property.Direction)
@@ -284,6 +288,35 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       return ret;
     }
 
+    private bool EvaluateWait(StateCheckWait wait, out string message)
+    {
+      bool ret;
+
+      if (waitCounter.ContainsKey(wait))
+      {
+        waitCounter[wait]++;
+        message = $"waiting {waitCounter[wait]} of {wait.Seconds}";
+      }
+      else
+      {
+        bool tmp = EvaluateItem(wait.Item);
+        if (tmp)
+          waitCounter[wait] = 0;
+        message = $"waiting(init) => {waitCounter[wait]} / {wait.Seconds} /= {tmp}";
+      }
+
+      var value = wait.IsVariableBased
+        ? GetVariableValue(wait.GetSecondsAsVariableName())
+        : wait.GetSecondsAsDouble();
+      ret = waitCounter[wait] >= value;
+
+      recentResultSet.Add(new RecentResult(wait, ret, $"counter={waitCounter[wait]}, seconds={value}"));
+
+      if (ret) waitCounter.Remove(wait);
+
+      return ret;
+    }
+
     private double ExtractExpectedPropertyValue(StateCheckProperty property, bool applyRandomness)
     {
       double ret;
@@ -320,11 +353,29 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       this.logger.Invoke(LogLevel.INFO, $"EVAL {property.DisplayString} \t {msg} \t {ret}");
     }
 
-    private double ResolveRealPropertyValue(string propertyName)
+    private double ResolveCurrentPropertyValue(StateCheckProperty property)
     {
-      if (currentPropertyValues!.ContainsKey(propertyName) == false)
-        throw new ApplicationException($"Property {propertyName} not found in property-value dictionary.");
-      double ret = currentPropertyValues[propertyName];
+      if (currentPropertyValues!.ContainsKey(property.Name) == false)
+        throw new ApplicationException($"Property {property.Name} not found in property-value dictionary.");
+      double current = currentPropertyValues[property.Name];
+      double ret;
+
+      if (property.IsTrendBased)
+      {
+        if (trendHistory.ContainsKey(property))
+        {
+          ret = current - trendHistory[property];
+          trendHistory[property] = current;
+        } else
+        {
+          ret = 0; 
+          trendHistory[property] = current;
+        }
+      } else
+      {
+        ret = current;
+      }
+
       return ret;
     }
 

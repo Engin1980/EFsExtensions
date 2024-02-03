@@ -32,8 +32,9 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       {
         "property" => DeserializePropertyFromElement(element, targetType, context),
         "and" or "or" => DeserializeConditionFromElement(element, targetType, context),
-        "for" => DeserializeDelayfromElement(element, context),
+        "for" => DeserializeDelayFromElement(element, context),
         "true" or "false" => DeserializeTrueFalseFromElement(element),
+        "wait" => DeserializeWaitFromElement(element, context),
         _ => throw new StateCheckDeserializationException($"Unknown/Unexpected element name '{elementName}'."),
       };
       return ret;
@@ -46,7 +47,22 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       return ret;
     }
 
-    private StateCheckDelay DeserializeDelayfromElement(XElement element, EXmlContext context)
+    private StateCheckWait DeserializeWaitFromElement(XElement element, EXmlContext context)
+    {
+      //TODO this should be done via EXml
+      string s = element.Attribute("seconds")?.Value
+                 ?? throw new StateCheckDeserializationException("Argument 'seconds' is missing.");
+      IStateCheckItem val = DeserializeElement(element.Elements().First(), typeof(IStateCheckItem), context);
+      StateCheckWait ret = new()
+      {
+        Seconds = s,
+        Item = val
+      };
+      ret.PostDeserialize();
+      return ret;
+    }
+
+    private StateCheckDelay DeserializeDelayFromElement(XElement element, EXmlContext context)
     {
       //TODO this should be done via EXml
       string s = element.Attribute("seconds")?.Value

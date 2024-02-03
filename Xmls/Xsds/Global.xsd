@@ -56,6 +56,7 @@
       <xsd:element name="or" type="stateCheckConditionInternal"/>
       <xsd:element name="property" type="stateCheckProperty"/>
       <xsd:element name="for" type="stateCheckDelay" />
+      <xsd:element name="wait" type="stateCheckWait" />
       <xsd:element name="true" type="stateCheckTrueFalse" />
       <xsd:element name="false" type="stateCheckTrueFalse" />
     </xsd:choice>
@@ -70,9 +71,22 @@
       <xsd:element name="or" type="stateCheckConditionInternal"/>
       <xsd:element name="property" type="stateCheckProperty"/>
       <xsd:element name="for" type="stateCheckDelay" />
+      <xsd:element name="wait" type="stateCheckWait" />
       <xsd:element name="true" type="stateCheckTrueFalse" />
       <xsd:element name="false" type="stateCheckTrueFalse" />
     </xsd:choice>
+  </xsd:complexType>
+
+  <xsd:complexType name="stateCheckWait">
+    <xsd:choice minOccurs="1" maxOccurs="1">
+      <xsd:element name="and" type="stateCheckConditionInternal"/>
+      <xsd:element name="or" type="stateCheckConditionInternal"/>
+      <xsd:element name="property" type="stateCheckProperty"/>
+      <xsd:element name="true" type="stateCheckTrueFalse" />
+      <xsd:element name="false" type="stateCheckTrueFalse" />
+      <xsd:element name="for" type="stateCheckDelay" />
+    </xsd:choice>
+    <xsd:attribute name="seconds" type="numberOrVariable" use="required" />
   </xsd:complexType>
 
   <xsd:complexType name="stateCheckDelay">
@@ -82,6 +96,7 @@
       <xsd:element name="property" type="stateCheckProperty"/>
       <xsd:element name="true" type="stateCheckTrueFalse" />
       <xsd:element name="false" type="stateCheckTrueFalse" />
+      <xsd:element name="wait" type="stateCheckWait" />
     </xsd:choice>
     <xsd:attribute name="seconds" type="numberOrVariable" use="required" />
   </xsd:complexType>
@@ -92,6 +107,7 @@
     <xsd:attribute name="expression" type="numberOrVariable" use="optional"/>
     <xsd:attribute name="randomness" type="stateCheckPropertyValueDeviation" use="optional"/>
     <xsd:attribute name="sensitivity" type="stateCheckPropertyValueDeviation" use="optional" />
+    <xsd:attribute name="isTrendBased" type="xsd:boolean" use="optional" default="false" />
   </xsd:complexType>
 
   <xsd:simpleType name="numberOrVariable">
@@ -137,7 +153,7 @@
     <xsd:attribute name="defaultValue" type="xsd:double" use="optional" />
     <xsd:attribute name="description" type="xsd:string" use="optional" />
   </xsd:complexType>
-  
+
   <xsd:simpleType name="variableName">
     <xsd:restriction base="xsd:string">
       <xsd:pattern value="^[^\{]\S+[^\}]$" />

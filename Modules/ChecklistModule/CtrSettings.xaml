@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChecklistModule"
         mc:Ignorable="d"
-        Title="CtrSettings" Height="462" Width="800" Closed="Window_Closed">
+        SizeToContent="WidthAndHeight"
+        Title="CtrSettings" Height="500" Width="800" Closed="Window_Closed">
   <StackPanel>
     <GroupBox Header="Synthetizer" DataContext="{Binding Synthetizer}" Margin="8">
       <Grid>
