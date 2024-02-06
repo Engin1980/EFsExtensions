@@ -1,0 +1,64 @@
+﻿<UserControl x:Class="Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs.CtrElevenLabsSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+  <DockPanel>
+    <DockPanel DockPanel.Dock="Top">
+
+    </DockPanel>
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="150" />
+        <ColumnDefinition />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+      <Label Grid.Row="0" Grid.Column="0">
+        API Key:
+      </Label>
+      <DockPanel Grid.Row="0" Grid.Column="1" >
+        <Button x:Name="btnReloadVoices" Content="Reload voices" DockPanel.Dock="Right" Padding="4 0 4 0" Width="82" Click="btnReloadVoices_Click" />
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ApiKey}" />
+      </DockPanel>
+      <Label Grid.Row="1" Grid.Column="0">Voice</Label>
+      <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding Voices}" SelectedItem="{Binding Voice}" AlternationCount="2">
+        <ComboBox.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Orientation="Horizontal" x:Name="pnlComboBoxItem">
+              <TextBlock Text="{Binding Name}" />
+              <TextBlock Text=" (" />
+              <TextBlock Text="{Binding Labels.Accent}" />
+              <TextBlock Text=" " />
+              <TextBlock Text="{Binding Labels.Gender}" />
+              <TextBlock Text=", " />
+              <TextBlock Text="{Binding Labels.Age}" />
+              <TextBlock Text=") " />
+              <Button Tag="{Binding PreviewUrl}">Play</Button>
+            </StackPanel>
+            <DataTemplate.Triggers>
+              <Trigger Property="ComboBox.AlternationIndex" Value="0">
+                <Setter Property="Background" Value="White" TargetName="pnlComboBoxItem"/>
+              </Trigger>
+              <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                <Setter Property="Background" Value="Linen" TargetName="pnlComboBoxItem"/>
+              </Trigger>
+            </DataTemplate.Triggers>
+          </DataTemplate>
+        </ComboBox.ItemTemplate>
+      </ComboBox>
+      <Label Grid.Row="2" Grid.Column="0">Similarity Boost</Label>
+      <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding VoiceSettings.SimilarityBoost}" />
+      <Label Grid.Row="3" Grid.Column="0">Stability</Label>
+      <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding VoiceSettings.Stability}" />
+    </Grid>
+  </DockPanel>
+</UserControl>
