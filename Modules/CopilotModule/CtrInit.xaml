@@ -22,6 +22,9 @@
     <HierarchicalDataTemplate DataType="{x:Type sct:StateCheckDelay}" ItemsSource="{Binding Item}">
       <TextBlock Text="{Binding DisplayString}" />
     </HierarchicalDataTemplate>
+    <HierarchicalDataTemplate DataType="{x:Type sct:StateCheckWait}" ItemsSource="{Binding Item}">
+      <TextBlock Text="{Binding DisplayString}" />
+    </HierarchicalDataTemplate>
     <HierarchicalDataTemplate DataType="{x:Type sct:StateCheckCondition}" ItemsSource="{Binding Items}">
       <TextBlock Text="{Binding DisplayString}" />
     </HierarchicalDataTemplate>

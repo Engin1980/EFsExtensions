@@ -11,8 +11,20 @@
     <g:version>0.1</g:version>
   </metaInfo>
   <properties title="custom">
-    <g:property name="acceleration" simVar="PUSHBACK ATTACHED" />
   </properties>
+  <speechDefinition title="Speed alive">
+    <speech type="speech" value="Speech alive"/>
+    <trigger>
+      <g:wait seconds="5">
+        <g:property name="ias" direction="above" expression="0" isTrendBased="true" />
+      </g:wait>
+    </trigger>
+    <reactivationTrigger>
+      <g:for seconds="30">
+        <g:property name="ias" direction="below" expression="1"/>
+      </g:for>
+    </reactivationTrigger>
+  </speechDefinition>
   <speechDefinition title="Positive rate">
     <speech type="speech" value="Positive rate" />
     <trigger>
@@ -28,22 +40,7 @@
       </g:for>
     </reactivationTrigger>
   </speechDefinition>
-  <speechDefinition title="Acceleration announcement (100)kts">
-    <speech type="speech" value="{speed} knots" />
-    <trigger>
-      <g:and>
-        <g:property name="ias" direction="passingUp" expression="{speed}"/>
-        <g:property name="ias" isTrendBased="true" direction="above" expression="0"/>
-      </g:and>
-    </trigger>
-    <reactivationTrigger>
-      <g:property name="ias" direction="below" expression="10" />
-    </reactivationTrigger>
-    <variables>
-      <g:userVariable name="speed" defaultValue="100"/>
-    </variables>
-  </speechDefinition>
-  <speechDefinition title="Deceleration announcement (80)kts" >
+  <speechDefinition title="Deceleration announcement (40)kts" >
     <speech type="speech" value="{speed} knots" />
     <trigger>
       <g:and>
@@ -58,25 +55,7 @@
       </g:for>
     </reactivationTrigger>
     <variables>
-      <g:userVariable name="speed" defaultValue="80" description="Speed in kts" />
-    </variables>
-  </speechDefinition>
-  <speechDefinition title="Deceleration announcement (60)kts">
-    <speech type="speech" value="{speed} knots" />
-    <trigger>
-      <g:and>
-        <g:property name="ias" direction="passingDown" expression="{speed}" />
-        <g:property name="height" direction="below" expression="20" />
-        <g:property name="acceleration" direction="below" expression="0" />
-      </g:and>
-    </trigger>
-    <reactivationTrigger>
-      <g:for seconds="10">
-        <g:property name="ias" direction="above" expression="{speed}" />
-      </g:for>
-    </reactivationTrigger>
-    <variables>
-      <g:userVariable name="speed" defaultValue="60" description="Speed in kts" />
+      <g:userVariable name="speed" defaultValue="40" description="Speed in kts" />
     </variables>
   </speechDefinition>
   <speechDefinition title="Transition Altitude">

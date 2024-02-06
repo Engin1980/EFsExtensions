@@ -302,15 +302,23 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         bool tmp = EvaluateItem(wait.Item);
         if (tmp)
           waitCounter[wait] = 0;
-        message = $"waiting(init) => {waitCounter[wait]} / {wait.Seconds} /= {tmp}";
+        message = $"waiting(init) => {tmp}";
       }
 
-      var value = wait.IsVariableBased
-        ? GetVariableValue(wait.GetSecondsAsVariableName())
-        : wait.GetSecondsAsDouble();
-      ret = waitCounter[wait] >= value;
+      if (waitCounter.ContainsKey(wait))
+      {
+        var value = wait.IsVariableBased
+          ? GetVariableValue(wait.GetSecondsAsVariableName())
+          : wait.GetSecondsAsDouble();
+        ret = waitCounter[wait] >= value;
 
-      recentResultSet.Add(new RecentResult(wait, ret, $"counter={waitCounter[wait]}, seconds={value}"));
+        recentResultSet.Add(new RecentResult(wait, ret, $"delay={waitCounter[wait]}, target={value}"));
+      }
+      else
+      {
+        recentResultSet.Add(new RecentResult(wait, false, $"delay not initialized"));
+        ret = false;
+      }
 
       if (ret) waitCounter.Remove(wait);
 
@@ -366,12 +374,14 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
         {
           ret = current - trendHistory[property];
           trendHistory[property] = current;
-        } else
+        }
+        else
         {
-          ret = 0; 
+          ret = 0;
           trendHistory[property] = current;
         }
-      } else
+      }
+      else
       {
         ret = current;
       }

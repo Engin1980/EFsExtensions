@@ -46,8 +46,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Checklist", "Checklist", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Failures", "Failures", "{10F6197D-30D2-4517-9B58-04E7A9451A95}"
 	ProjectSection(SolutionItems) = preProject
-		Xmls\Failures\B58.steam.fail.xml = Xmls\Failures\B58.steam.fail.xml
 		Xmls\Failures\All-Failures.fail.xml = Xmls\Failures\All-Failures.fail.xml
+		Xmls\Failures\B58.steam.fail.xml = Xmls\Failures\B58.steam.fail.xml
 		Xmls\Failures\C172.gauge.fail.xml = Xmls\Failures\C172.gauge.fail.xml
 		Xmls\Failures\Failures-test.fail.xml = Xmls\Failures\Failures-test.fail.xml
 		Xmls\Failures\FBW320.fail.xml = Xmls\Failures\FBW320.fail.xml
@@ -56,7 +56,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Copilot", "Copilot", "{6F1EAD50-F00C-44CF-A9E0-4CCBDEF29773}"
 	ProjectSection(SolutionItems) = preProject
 		Xmls\Copilot\cessna172.copilot.xml = Xmls\Copilot\cessna172.copilot.xml
-		Xmls\Copilot\ifrCommon.copilot.xml = Xmls\Copilot\ifrCommon.copilot.xml
+		Xmls\Copilot\airliner.copilot.xml = Xmls\Copilot\airliner.copilot.xml
+		Xmls\Copilot\ga.copilot.xml = Xmls\Copilot\ga.copilot.xml
 		Xmls\copilot\test.copilot.xml = Xmls\copilot\test.copilot.xml
 	EndProjectSection
 EndProject
