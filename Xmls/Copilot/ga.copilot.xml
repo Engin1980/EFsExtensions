@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<copilotSet
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://chlaot.org/copilots.xsd"
+  xmlns:g="http://chlaot.org/global.xsd"
+  xsi:noNamespaceSchemaLocation="file://./Xsds/CopilotSchema.xsd">
+  <metaInfo>
+    <g:label>Common IFS copilot callouts</g:label>
+    <g:author>Marek Vajgl</g:author>
+    <g:description></g:description>
+    <g:version>0.1</g:version>
+  </metaInfo>
+  <properties title="custom">
+    <g:property name="acceleration" simVar="PUSHBACK ATTACHED" />
+  </properties>
+  <speechDefinition title="Positive rate">
+    <speech type="speech" value="Positive rate" />
+    <trigger>
+      <g:and>
+        <g:property name="height" direction="above" expression="30" />
+        <g:property name="vs" direction="above" expression="100" />
+        <g:property name="ias" direction="above" expression="40" />
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:for seconds="10">
+        <g:property name="height" direction="below" expression="1" />
+      </g:for>
+    </reactivationTrigger>
+  </speechDefinition>
+  <speechDefinition title="Acceleration announcement (100)kts">
+    <speech type="speech" value="{speed} knots" />
+    <trigger>
+      <g:and>
+        <g:property name="ias" direction="passingUp" expression="{speed}"/>
+        <g:property name="ias" isTrendBased="true" direction="above" expression="0"/>
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:property name="ias" direction="below" expression="10" />
+    </reactivationTrigger>
+    <variables>
+      <g:userVariable name="speed" defaultValue="100"/>
+    </variables>
+  </speechDefinition>
+  <speechDefinition title="Deceleration announcement (80)kts" >
+    <speech type="speech" value="{speed} knots" />
+    <trigger>
+      <g:and>
+        <g:property name="ias" direction="passingDown" expression="{speed}" />
+        <g:property name="height" direction="below" expression="20" />
+        <g:property name="acceleration" direction="below" expression="0" />
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:for seconds="10">
+        <g:property name="ias" direction="above" expression="{speed}" />
+      </g:for>
+    </reactivationTrigger>
+    <variables>
+      <g:userVariable name="speed" defaultValue="80" description="Speed in kts" />
+    </variables>
+  </speechDefinition>
+  <speechDefinition title="Deceleration announcement (60)kts">
+    <speech type="speech" value="{speed} knots" />
+    <trigger>
+      <g:and>
+        <g:property name="ias" direction="passingDown" expression="{speed}" />
+        <g:property name="height" direction="below" expression="20" />
+        <g:property name="acceleration" direction="below" expression="0" />
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:for seconds="10">
+        <g:property name="ias" direction="above" expression="{speed}" />
+      </g:for>
+    </reactivationTrigger>
+    <variables>
+      <g:userVariable name="speed" defaultValue="60" description="Speed in kts" />
+    </variables>
+  </speechDefinition>
+  <speechDefinition title="Transition Altitude">
+    <speech type="speech" value="Transition altitude" />
+    <trigger>
+      <g:and>
+        <g:property name="vs" direction="above" expression="300" />
+        <g:property name="alt" direction="passing" expression="{transition_altitude}" randomness="+-300" />
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:for seconds="10">
+        <g:true />
+      </g:for>
+    </reactivationTrigger>
+    <variables>
+      <g:userVariable name="transition_altitude" defaultValue="5000" description="Transition altitude" />
+    </variables>
+  </speechDefinition>
+  <speechDefinition title="Transition Level">
+    <speech type="speech" value="Transition level" />
+    <trigger>
+      <g:and>
+        <g:property name="vs" direction="below" expression="-300" />
+        <g:property name="alt" direction="passing" expression="{transition_level}" randomness="+-300" />
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:for seconds="10">
+        <g:true />
+      </g:for>
+    </reactivationTrigger>
+    <variables>
+      <g:userVariable name="transition_level" defaultValue="5000" description="Transition level" />
+    </variables>
+  </speechDefinition>
+  <speechDefinition title="FL100 pass">
+    <speech type="speech" value="Passing ten thousand feet" />
+    <trigger>
+      <g:and>
+        <g:property name="alt" direction="passing" expression="10000" randomness="+-300" />
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:for seconds="30">
+        <g:or>
+          <g:property name="vs" direction="above" expression="500" />
+          <g:property name="vs" direction="below" expression="-500" />
+        </g:or>
+      </g:for>
+    </reactivationTrigger>
+  </speechDefinition>
+  <speechDefinition title="v1">
+    <speech type="speech" value="V One" />
+    <trigger>
+      <g:and>
+        <g:property name="ias" direction="passing" expression="{v1}" />
+        <g:property name="acceleration" direction="above" expression="1" />
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:property name="ias" direction="below" expression="10" />
+    </reactivationTrigger>
+  </speechDefinition>
+  <speechDefinition title="vr">
+    <speech type="speech" value="V Rotate" />
+    <trigger>
+      <g:and>
+        <g:property name="ias" direction="passing" expression="{vr}" />
+        <g:property name="acceleration" direction="above" expression="1" />
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:property name="ias" direction="below" expression="10" />
+    </reactivationTrigger>
+  </speechDefinition>
+  <speechDefinition title="v2">
+    <speech type="speech" value="V Two" />
+    <trigger>
+      <g:and>
+        <g:property name="ias" direction="passing" expression="{v2}" />
+        <g:property name="acceleration" direction="above" expression="1" />
+      </g:and>
+    </trigger>
+    <reactivationTrigger>
+      <g:property name="ias" direction="below" expression="10" />
+    </reactivationTrigger>
+  </speechDefinition>
+</copilotSet>
