@@ -1,5 +1,7 @@
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs;
 using Eng.Chlaot.Modules.ChecklistModule;
 using Eng.Chlaot.Modules.ChecklistModule.Types;
 using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
@@ -36,6 +38,18 @@ namespace ChecklistModule
       InitializeComponent();
       this.context = null!;
       this.autoPlaybackManager = null!;
+
+      var ttsModules = GetTtsModules();
+      this.ctrTtss.Init(ttsModules);
+    }
+
+    private IEnumerable<ITtsModule> GetTtsModules()
+    {
+      List<ITtsModule> ret = new List<ITtsModule>()
+      {
+        new ElevenLabsTtsModule()
+      };
+      return ret;
     }
 
     public CtrInit(InitContext context) : this()
@@ -68,6 +82,7 @@ namespace ChecklistModule
     {
       new CtrSettings(context.Settings).ShowDialog();
     }
+    
     private void lblChecklist_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
       Label lbl = (Label)sender;

@@ -7,12 +7,17 @@ using System.Windows.Controls;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 {
-  public class ElevenLabsTTSModule : ITTSModule
+  public class ElevenLabsTtsModule : ITtsModule
   {
-    private ElevenLabsTts tts = new();
-    private readonly 
-    public ITTS TTS => tts;
+    private readonly CtrSettings ctr;
+    public ITts Tts => this.ctr.Tts;
+    public string Name => "ElevenLabs TTS";
 
-    public UserControl SettingsControl => throw new NotImplementedException();
+    public ElevenLabsTtsModule()
+    {
+      this.ctr = new CtrSettings();
+    }
+
+    public UserControl SettingsControl => ctr;
   }
 }

@@ -6,11 +6,12 @@ using System.Net.Http.Headers;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Xml;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 {
-  public class ElevenLabsTts : ITTS
+  public class ElevenLabsTts : ITts
   {
 
     #region Fields
@@ -157,9 +158,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 
     private HttpGetModel BuildHttpGetModel(string text)
     {
-      HttpGetModel ret = new HttpGetModel(
-          text,
-          new VoiceSettings(0.1, 0.75));
+      HttpGetModel ret = new HttpGetModel(          text);
       return ret;
     }
 

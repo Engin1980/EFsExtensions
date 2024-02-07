@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 {
-  public record struct VoiceSettings(double SimilarityBoost, double Stability, int Style = 0, bool UseSpeakerBoost = true);
-  public record struct HttpGetModel(string Text, VoiceSettings VoiceSettings);
+  public record struct VoiceSettings(double SimilarityBoost = 0.5, double Stability = 0.75, int Style = 0, bool UseSpeakerBoost = true);
+  internal record struct HttpGetModel(string Text);
 
   /*
    * '{

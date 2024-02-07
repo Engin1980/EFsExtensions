@@ -6,9 +6,10 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
 {
-  public interface ITTSModule
+  public interface ITtsModule
   {
-    public ITTs TTS { get; }
+    public ITts Tts { get; }
+    public string Name { get; }
     public System.Windows.Controls.UserControl SettingsControl { get; }
   }
 }
