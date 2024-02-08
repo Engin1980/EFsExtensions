@@ -47,7 +47,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(MetaInfo), value);
     }
 
-    public List<CheckListVM> CheckListVMs
+    internal List<CheckListVM> CheckListVMs
     {
       get => base.GetProperty<List<CheckListVM>>(nameof(CheckListVMs))!;
       set => base.UpdateProperty(nameof(CheckListVMs), value);

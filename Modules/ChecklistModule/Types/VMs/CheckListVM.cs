@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
 {
-  public class CheckListVM : NotifyPropertyChangedBase
+  internal class CheckListVM : NotifyPropertyChangedBase
   {
     public class RunTimeVM : NotifyPropertyChangedBase
     {

@@ -28,6 +28,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
     #region Properties
 
     public ElevenLabsTtsSettings Settings { get; set; }
+    public bool IsReady => this.Settings != null && !string.IsNullOrWhiteSpace(this.Settings.API) && !string.IsNullOrWhiteSpace(this.Settings.VoiceId);
 
     #endregion Properties
 
@@ -158,7 +159,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 
     private HttpGetModel BuildHttpGetModel(string text)
     {
-      HttpGetModel ret = new HttpGetModel(          text);
+      HttpGetModel ret = new HttpGetModel(text);
       return ret;
     }
 

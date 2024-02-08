@@ -29,7 +29,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
-  public partial class RunContext : NotifyPropertyChangedBase
+  internal partial class RunContext : NotifyPropertyChangedBase
   {
 
     #region Private Fields
@@ -47,13 +47,13 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     #region Public Properties
 
-    public CheckListVM EvaluatorRecentResultChecklistVM
+    internal CheckListVM EvaluatorRecentResultChecklistVM
     {
       get => base.GetProperty<CheckListVM>(nameof(EvaluatorRecentResultChecklistVM))!;
       set => base.UpdateProperty(nameof(EvaluatorRecentResultChecklistVM), value);
     }
 
-    public List<CheckListVM> CheckListVMs
+    internal List<CheckListVM> CheckListVMs
     {
       get => base.GetProperty<List<CheckListVM>>(nameof(CheckListVMs))!;
       set => base.UpdateProperty(nameof(CheckListVMs), value);

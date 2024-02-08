@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-  <DockPanel Background="LightGray">
+  <DockPanel>
     <TabControl x:Name="tabTtss" >
     </TabControl>
   </DockPanel>

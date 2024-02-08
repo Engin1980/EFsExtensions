@@ -55,8 +55,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Failures", "Failures", "{10
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Copilot", "Copilot", "{6F1EAD50-F00C-44CF-A9E0-4CCBDEF29773}"
 	ProjectSection(SolutionItems) = preProject
-		Xmls\Copilot\cessna172.copilot.xml = Xmls\Copilot\cessna172.copilot.xml
 		Xmls\Copilot\airliner.copilot.xml = Xmls\Copilot\airliner.copilot.xml
+		Xmls\Copilot\cessna172.copilot.xml = Xmls\Copilot\cessna172.copilot.xml
 		Xmls\Copilot\ga.copilot.xml = Xmls\Copilot\ga.copilot.xml
 		Xmls\copilot\test.copilot.xml = Xmls\copilot\test.copilot.xml
 	EndProjectSection
@@ -102,6 +102,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{8D41DB
 		Xmls\Global\FailureDefinitions.xml = Xmls\Global\FailureDefinitions.xml
 		Xmls\Global\SimProperties.xml = Xmls\Global\SimProperties.xml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ChecklistTTS", "ChecklistTTS\ChecklistTTS.csproj", "{EC6F5C03-1208-4FD2-812F-316D795E3664}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -161,6 +163,10 @@ Global
 		{EE75BBC5-848C-4E39-AB49-F4922FC1626F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE75BBC5-848C-4E39-AB49-F4922FC1626F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE75BBC5-848C-4E39-AB49-F4922FC1626F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC6F5C03-1208-4FD2-812F-316D795E3664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC6F5C03-1208-4FD2-812F-316D795E3664}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC6F5C03-1208-4FD2-812F-316D795E3664}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC6F5C03-1208-4FD2-812F-316D795E3664}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

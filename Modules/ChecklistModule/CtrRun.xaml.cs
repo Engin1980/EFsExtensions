@@ -32,7 +32,7 @@ namespace ChecklistModule
       this.context = null!;
     }
 
-    public CtrRun(RunContext context) : this()
+    internal CtrRun(RunContext context) : this()
     {
       this.context = context;
       this.DataContext = context;

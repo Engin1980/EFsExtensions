@@ -11,5 +11,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
     public ITts Tts { get; }
     public string Name { get; }
     public System.Windows.Controls.UserControl SettingsControl { get; }
+    public bool IsReady { get; }
   }
 }

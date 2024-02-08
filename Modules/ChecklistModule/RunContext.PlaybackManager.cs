@@ -5,9 +5,9 @@ using System;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
-  public partial class RunContext
+  internal partial class RunContext
   {
-    public class PlaybackManager
+    internal class PlaybackManager
     {
       private int currentItemIndex = 0;
       private bool isCallPlayed = false;
@@ -20,7 +20,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       public bool IsWaitingForNextChecklist { get => currentItemIndex == 0 && isEntryPlayed == false; }
       public bool IsPartlyPlayed => currentItemIndex > 0;
 
-      public PlaybackManager(CheckListVM initialChecklist, bool readConfirmations)
+      internal PlaybackManager(CheckListVM initialChecklist, bool readConfirmations)
       {
         EAssert.Argument.IsNotNull(initialChecklist, nameof(initialChecklist));
         this.readConfirmations = readConfirmations;

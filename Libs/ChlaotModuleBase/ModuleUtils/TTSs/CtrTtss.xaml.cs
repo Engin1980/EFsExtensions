@@ -24,6 +24,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
     {
       InitializeComponent();
 
+      tabTtss.SelectionChanged += TabTtss_SelectionChanged;
       tabTtss.Items.Add(new TabItem()
       {
         Header = "Not initialized",
@@ -32,7 +33,17 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
           Content = "Not initialized"
         }
       });
+
     }
+
+    public ITtsModule SelectedModule
+    {
+      get { return (ITtsModule)GetValue(SelectedModuleProperty); }
+      set { SetValue(SelectedModuleProperty, value); }
+    }
+
+    public static readonly DependencyProperty SelectedModuleProperty =
+        DependencyProperty.Register(nameof(SelectedModule), typeof(ITtsModule), typeof(CtrTtss));
 
     public void Init(IEnumerable<ITtsModule> modules)
     {
@@ -45,10 +56,18 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
         TabItem tabItem = new()
         {
           Header = module.Name,
-          Content = dck
+          Content = dck,
+          Tag = module
         };
         tabTtss.Items.Add(tabItem);
+
       }
+    }
+
+    private void TabTtss_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+      if (tabTtss.SelectedItem is TabItem ti)
+        this.SelectedModule = (ITtsModule)ti.Tag;
     }
   }
 }

@@ -8,6 +8,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
 {
   public interface ITts
   {
+    bool IsReady { get; }
+
     Task<byte[]> ConvertAsync(string text);
   }
 }

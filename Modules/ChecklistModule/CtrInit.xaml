@@ -7,8 +7,7 @@
              xmlns:types="clr-namespace:Eng.Chlaot.Modules.ChecklistModule.Types"
              xmlns:gctr="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
              xmlns:smo="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;assembly=ChlaotModuleBase"
-             xmlns:vm="clr-namespace:Eng.Chlaot.Modules.ChecklistModule.Types.VM"
-             xmlns:tts="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs;assembly=ChlaotModuleBase"
+             xmlns:vm="clr-namespace:Eng.Chlaot.Modules.ChecklistModule.Types.VM"             
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <DockPanel>
@@ -127,9 +126,6 @@
               <DataGridTextColumn Header="Count" Binding="{Binding Count}" />
             </DataGrid.Columns>
           </DataGrid>
-        </TabItem>
-        <TabItem Header="TTS">
-          <tts:CtrTtss x:Name="ctrTtss" />
         </TabItem>
       </TabControl>
     </DockPanel>

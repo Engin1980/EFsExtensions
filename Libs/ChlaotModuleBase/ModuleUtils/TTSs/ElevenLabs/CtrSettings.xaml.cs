@@ -68,6 +68,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
     private async void btnReloadVoices_Click(object sender, RoutedEventArgs e)
     {
       btnReloadVoices.IsEnabled = false;
+      var c = this.Cursor;
+      this.Cursor = Cursors.Wait;
       try
       {
         this.VM.Voices = (await this.Tts.GetVoicesAsync()).OrderBy(q => q.Name).ToList();
@@ -77,6 +79,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       {
         this.logger.Log(ELogging.LogLevel.ERROR, $"Failed to download voices. API key issue? Reason: " + ex.Message);
       }
+      this.Cursor = c;
       btnReloadVoices.IsEnabled = true;
     }
 
@@ -109,6 +112,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       public void PlayAsync(byte[] mp3)
       {
         Debug.Assert(isUsed == false, "The same simple player cannot be used twice.");
+        isUsed = true;
 
         ms = new MemoryStream(mp3);
         mp3stream = new Mp3FileReader(ms);
@@ -137,9 +141,14 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
     {
       Button btn = (Button)sender;
       btn.IsEnabled = false;
+      var c = this.Cursor;
+
+      this.Cursor = Cursors.Wait;
       string url = (string)btn.Tag;
       byte[] bytes = await DownloadPreviewMp3Async(url);
       Play(bytes);
+
+      this.Cursor = c;
       btn.IsEnabled = true;
     }
 

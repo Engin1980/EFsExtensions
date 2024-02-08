@@ -37,19 +37,7 @@ namespace ChecklistModule
     {
       InitializeComponent();
       this.context = null!;
-      this.autoPlaybackManager = null!;
-
-      var ttsModules = GetTtsModules();
-      this.ctrTtss.Init(ttsModules);
-    }
-
-    private IEnumerable<ITtsModule> GetTtsModules()
-    {
-      List<ITtsModule> ret = new List<ITtsModule>()
-      {
-        new ElevenLabsTtsModule()
-      };
-      return ret;
+      this.autoPlaybackManager = null!;      
     }
 
     public CtrInit(InitContext context) : this()
@@ -82,7 +70,7 @@ namespace ChecklistModule
     {
       new CtrSettings(context.Settings).ShowDialog();
     }
-    
+
     private void lblChecklist_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
       Label lbl = (Label)sender;
