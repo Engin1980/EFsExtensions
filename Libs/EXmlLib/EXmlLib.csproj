@@ -7,7 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ELoging\ELogging.csproj" />
+    <Reference Include="ELogging">
+      <HintPath>..\..\..\ESimConnect\DLLs\ELogging.dll</HintPath>
+    </Reference>
+    <Reference Include="ESystem">
+      <HintPath>..\..\..\ESimConnect\DLLs\ESystem.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

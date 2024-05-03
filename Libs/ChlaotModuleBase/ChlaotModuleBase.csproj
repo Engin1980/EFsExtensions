@@ -14,13 +14,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\ESystem\ESystem.csproj" />
-    <ProjectReference Include="..\ELoging\ELogging.csproj" />
     <ProjectReference Include="..\ESimConnect\ESimConnect.csproj" />
     <ProjectReference Include="..\EXmlLib\EXmlLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="ELogging">
+      <HintPath>..\..\..\ESimConnect\DLLs\ELogging.dll</HintPath>
+    </Reference>
+    <Reference Include="ESystem">
+      <HintPath>..\..\..\ESimConnect\DLLs\ESystem.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
       <HintPath>..\..\DLLs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
