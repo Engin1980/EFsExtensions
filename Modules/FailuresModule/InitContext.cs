@@ -1,7 +1,7 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using ESystem;
-using static ESystem.Functions;
+using static ESystem.Functions.TryCatch;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;

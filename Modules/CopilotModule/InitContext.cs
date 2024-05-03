@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using static ESystem.Functions;
+using static ESystem.Functions.TryCatch;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using ChlaotModuleBase.ModuleUtils.StateChecking;

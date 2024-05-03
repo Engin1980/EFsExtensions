@@ -12,7 +12,7 @@ using System.Windows.Media.Animation;
 using System.Speech.Synthesis.TtsEngine;
 using System.IO.IsolatedStorage;
 using ESystem.Asserting;
-using static ESystem.Functions;
+using static ESystem.Functions.TryCatch;
 using ESystem;
 
 namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures.Xml

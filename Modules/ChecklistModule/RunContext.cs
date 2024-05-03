@@ -103,17 +103,17 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     {
       logger?.Invoke(LogLevel.INFO, "Run");
 
-      logger?.Invoke(LogLevel.VERBOSE, "Resetting playback");
+      logger?.Invoke(LogLevel.DEBUG, "Resetting playback");
       manager.Reset();
 
-      logger?.Invoke(LogLevel.VERBOSE, "Adding key hooks");
+      logger?.Invoke(LogLevel.DEBUG, "Adding key hooks");
       this.keyHookWrapper = keyHookWrapper ?? throw new ArgumentNullException(nameof(keyHookWrapper));
       ConnectKeyHooks();
 
-      logger?.Invoke(LogLevel.VERBOSE, "Starting simObject connection");
+      logger?.Invoke(LogLevel.DEBUG, "Starting simObject connection");
       this.simObject.StartAsync();
 
-      logger?.Invoke(LogLevel.VERBOSE, "Run done");
+      logger?.Invoke(LogLevel.DEBUG, "Run done");
     }
 
     internal void Stop()

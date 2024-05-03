@@ -21,7 +21,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 using Eng.Chlaot.Modules.ChecklistModule.Types.Xml;
-using static ESystem.Functions;
+using static ESystem.Functions.TryCatch;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 
