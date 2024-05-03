@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESystem.Miscelaneous;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -64,10 +65,10 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents
     {
       this.Probability = this.Interval switch
       {
-        TimeTriggerInterval.OncePerTenSeconds => (Percentage)((double)1 / this.MtbfHours / 360),
-        TimeTriggerInterval.OncePerMinute => (Percentage)((double)1 / this.MtbfHours / 60),
-        TimeTriggerInterval.OncePerTenMinutes => (Percentage)((double)1 / this.MtbfHours / 6),
-        TimeTriggerInterval.OncePerHour => (Percentage)((double)1 / this.MtbfHours),
+        TimeTriggerInterval.OncePerTenSeconds => Percentage.Of((double)1 / this.MtbfHours / 360),
+        TimeTriggerInterval.OncePerMinute => Percentage.Of((double)1 / this.MtbfHours / 60),
+        TimeTriggerInterval.OncePerTenMinutes => Percentage.Of((double)1 / this.MtbfHours / 6),
+        TimeTriggerInterval.OncePerHour => Percentage.Of((double)1 / this.MtbfHours),
         _ => throw new NotImplementedException()
       };
     }

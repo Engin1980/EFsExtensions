@@ -18,7 +18,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders
     {
       EAssert.Argument.IsNotNull(simCon, nameof(simCon));
       this.simCon = simCon;
-      this.simCon.EventInvoked += SimCon_EventInvoked;
+      this.simCon.SystemEventInvoked += SimCon_EventInvoked;
       this.invokeSimSecondEventsOnPause = invokeSimSecondEventsOnPause;
       if (simCon.IsOpened) RegisterEvents();
       else
@@ -27,17 +27,17 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders
 
     private void RegisterEvents()
     {
-      simCon.RegisterSystemEvent(ESimConnect.SimEvents.System.Pause);
-      simCon.RegisterSystemEvent(ESimConnect.SimEvents.System._1sec);
+      simCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System.Pause);
+      simCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System._1sec);
     }
 
-    private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)
+    private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectSystemEventInvokedEventArgs e)
     {
-      if (e.Event == ESimConnect.SimEvents.System.Pause)
+      if (e.Event == ESimConnect.Enumerations.SimSystemEvents.System.Pause)
       {
         IsSimPaused = e.Value != 0;
       }
-      else if (e.Event == ESimConnect.SimEvents.System._1sec && (!IsSimPaused || invokeSimSecondEventsOnPause))
+      else if (e.Event == ESimConnect.Enumerations.SimSystemEvents.System._1sec && (!IsSimPaused || invokeSimSecondEventsOnPause))
       {
         SimSecondElapsed?.Invoke();
       }

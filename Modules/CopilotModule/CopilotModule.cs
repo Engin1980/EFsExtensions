@@ -2,6 +2,7 @@
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using ESystem;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using System.Windows.Controls;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
-  public class CopilotModule : NotifyPropertyChangedBase, IModule
+  public class CopilotModule : NotifyPropertyChanged, IModule
   {
     public bool IsReady
     {

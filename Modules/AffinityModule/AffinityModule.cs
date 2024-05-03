@@ -1,6 +1,7 @@
 ﻿using AffinityModule;
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,7 +12,7 @@ using System.Windows.Controls;
 
 namespace Eng.Chlaot.Modules.AffinityModule
 {
-  public class AffinityModule : NotifyPropertyChangedBase, IModule
+  public class AffinityModule : NotifyPropertyChanged, IModule
   {
 
     private readonly Context context;

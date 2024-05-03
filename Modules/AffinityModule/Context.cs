@@ -3,6 +3,7 @@ using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 using ESystem;
+using ESystem.Miscelaneous;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using System;
@@ -19,7 +20,7 @@ using System.Xml.Serialization;
 
 namespace Eng.Chlaot.Modules.AffinityModule
 {
-  public class Context : NotifyPropertyChangedBase
+  public class Context : NotifyPropertyChanged
   {
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;

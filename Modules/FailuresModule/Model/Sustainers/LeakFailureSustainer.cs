@@ -1,4 +1,5 @@
 ﻿using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
+using ESimConnect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
         #region Fields
 
         private readonly int expectedNumberOfTicksBeforeLeakOut;
-        private int simSecondElapsedEventId;
+        private EventId simSecondElapsedEventId;
         private readonly LeakFailureDefinition failure;
 
         #endregion Fields
@@ -48,7 +49,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
             expectedNumberOfTicksBeforeLeakOut = new Random().Next(failure.MinimumLeakTicks, failure.MaximumLeakTicks);
             ResetInternal();
             DataReceived += LeakFailureSustainer_DataReceived;
-            SimCon.EventInvoked += SimCon_EventInvoked;
+            SimCon.SystemEventInvoked += SimCon_SystemEventInvoked;
             //TODO not using custom refresh leak-tick-ms interval
         }
 
@@ -59,7 +60,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
         protected override void InitInternal()
         {
             base.InitInternal();
-            simSecondElapsedEventId = SimCon.RegisterSystemEvent(ESimConnect.SimEvents.System._1sec);
+            simSecondElapsedEventId = SimCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System._1sec);
         }
 
         protected override void ResetInternal()
@@ -94,9 +95,9 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
             }
         }
 
-        private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)
+        private void SimCon_SystemEventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectSystemEventInvokedEventArgs e)
         {
-            if (e.RequestId == simSecondElapsedEventId && CurrentValue != null && IsSimPaused == false)
+            if (e.EventId == simSecondElapsedEventId && CurrentValue != null && IsSimPaused == false)
                 ApplyLeak();
         }
 

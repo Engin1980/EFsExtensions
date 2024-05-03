@@ -1,6 +1,7 @@
 ﻿using ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes
 {
-  public class SimData : NotifyPropertyChangedBase
+  public class SimData : NotifyPropertyChanged
   {
     private const int SECONDS_PER_MINUTE = 60;
 

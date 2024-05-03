@@ -1,4 +1,5 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.Modules.SimVarTestModule
 {
-  public class SimVarCase : NotifyPropertyChangedBase
+  public class SimVarCase : NotifyPropertyChanged
   {
     public string SimVar
     {

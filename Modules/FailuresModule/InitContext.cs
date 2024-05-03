@@ -21,10 +21,11 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using System.Drawing.Text;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO.IsolatedStorage;
+using ESystem.Miscelaneous;
 
 namespace Eng.Chlaot.Modules.FailuresModule
 {
-  public class InitContext : NotifyPropertyChangedBase
+  public class InitContext : NotifyPropertyChanged
   {
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
@@ -165,7 +166,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
       }
 
       double m = 1 - negativeProbabilities.Aggregate(1.0, (a, b) => a * b);
-      this.EstimatedProbabilityPerFlight = (Percentage)m;
+      this.EstimatedProbabilityPerFlight = Percentage.Of(m);
       this.EstimatedFlighstPerFailure = 1 / m;
     }
 

@@ -3,6 +3,7 @@ using Eng.Chlaot.ChlaotModuleBase;
 using ESimConnect;
 using ESystem;
 using ESystem.Exceptions;
+using ESystem.Miscelaneous;
 using Microsoft.Windows.Themes;
 using SimVarTestModule.Model;
 using System;
@@ -17,13 +18,13 @@ using static ESystem.Functions;
 
 namespace Eng.Chlaot.Modules.SimVarTestModule
 {
-  public class Context : NotifyPropertyChangedBase
+  public class Context : NotifyPropertyChanged
   {
 
     private readonly Action onReadySet;
     private ESimConnect.ESimConnect simCon = null!;
     private Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.SimConWrapperWithSimSecond simConWrapper = null!;
-    private record SimVarId(int TypeId, int RequestId, SimVarCase Case);
+    private record SimVarId(TypeId TypeId, RequestId RequestId, SimVarCase Case);
     private readonly List<SimVarId> SimVarIds = new();
 
     public BindingList<SimVarCase> Cases { get; } = new();
@@ -87,7 +88,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
       simCon.ThrowsException += SimCon_ThrowsException;
     }
 
-    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_EXCEPTION ex)
+    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, SimConnectException ex)
     {
       Logger.Log(this, LogLevel.ERROR, $"SimCon throws error - {ex}");
     }
@@ -104,10 +105,10 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
 
     internal void RegisterNewSimVar(string name, bool validateName)
     {
-      int typeId;
+      TypeId typeId;
       try
       {
-        typeId = simCon.RegisterPrimitive<double>(name, validate: validateName);
+        typeId = simCon.Values.Register<double>(name, validate: validateName);
       }
       catch (Exception ex)
       {
@@ -115,7 +116,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
         return;
       }
 
-      simCon.RequestPrimitiveRepeatedly(typeId, out int requestId, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_PERIOD.SECOND, true, 0, 0, 0);
+      RequestId requestId = simCon.Values.RequestRepeatedly(typeId, SimConnectPeriod.SECOND, true, 0, 0, 0);
 
       SimVarCase svc = new()
       {
@@ -131,7 +132,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
     internal void SetValue(SimVarCase simVarCase, double newValue)
     {
       SimVarId sid = SimVarIds.First(q => q.Case == simVarCase);
-      simCon.SendPrimitive<double>(sid.TypeId, newValue);
+      simCon.Values.Send(sid.TypeId, newValue);
     }
 
     internal void DeleteSimVar(SimVarCase svc)
@@ -143,7 +144,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
 
     internal void SendEvent(string eventName)
     {
-      this.simCon.SendClientEvent(eventName);
+      this.simCon.ClientEvents.Invoke(eventName);
     }
   }
 }

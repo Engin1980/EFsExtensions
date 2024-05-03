@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESystem.Miscelaneous;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
 {
-  public abstract class WithValueVM : NotifyPropertyChangedBase
+  public abstract class WithValueVM : NotifyPropertyChanged
   {
     public double Value
     {

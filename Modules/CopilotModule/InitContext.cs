@@ -23,10 +23,11 @@ using static Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUti
 using Eng.Chlaot.Modules.CopilotModule.Types.VMs;
 using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
+using ESystem.Miscelaneous;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
-  public class InitContext : NotifyPropertyChangedBase
+  public class InitContext : NotifyPropertyChanged
   {
     #region Fields
 

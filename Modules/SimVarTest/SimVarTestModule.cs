@@ -1,10 +1,11 @@
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.Modules.SimVarTestModule;
+using ESystem.Miscelaneous;
 using System.Windows.Controls;
 
 namespace Eng.Chlaot.Modules.SimVarTestModule
 {
-  public class SimVarTestModule : NotifyPropertyChangedBase, IModule
+  public class SimVarTestModule : NotifyPropertyChanged, IModule
   {
 
     public Context Context

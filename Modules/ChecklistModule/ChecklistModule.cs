@@ -2,6 +2,7 @@
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using ESystem;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ using static Eng.Chlaot.ChlaotModuleBase.IModule;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
-  public class ChecklistModule : NotifyPropertyChangedBase, IModule
+  public class ChecklistModule : NotifyPropertyChanged, IModule
   {
     private Control? _InitControl;
     public Control InitControl => _InitControl ?? throw new ApplicationException("Control not provided.");

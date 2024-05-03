@@ -1,6 +1,7 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.Modules.FailuresModule;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,7 +12,7 @@ using System.Windows.Controls;
 
 namespace Eng.Chlaot.Modules.FailuresModule
 {
-  public class FailuresModule : NotifyPropertyChangedBase, IModule
+  public class FailuresModule : NotifyPropertyChanged, IModule
   {
     public bool IsReady
     {

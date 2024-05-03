@@ -6,17 +6,16 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <AssemblyVersion>1.0.0.3</AssemblyVersion>
-    <FileVersion>1.0.0.3</FileVersion>
+    <AssemblyVersion>1.0.0.6</AssemblyVersion>
+    <FileVersion>1.0.0.6</FileVersion>
   </PropertyGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Libs\ESimConnect\ESimConnect.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="ELogging">
       <HintPath>..\DLLs\ELogging.dll</HintPath>
+    </Reference>
+    <Reference Include="ESimConnect">
+      <HintPath>..\DLLs\ESimConnect.dll</HintPath>
     </Reference>
     <Reference Include="ESystem">
       <HintPath>..\DLLs\ESystem.dll</HintPath>

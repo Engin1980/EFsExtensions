@@ -1,5 +1,4 @@
-﻿using ELogging;
-using ESimConnect;
+﻿using ESimConnect;
 using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
@@ -29,7 +28,7 @@ namespace SimDataCapturer
       simCon.Disconnected += SimCon_Disconnected;
       simCon.Connected += SimCon_Connected;
       simCon.DataReceived += SimCon_DataReceived;
-      simCon.EventInvoked += SimCon_EventInvoked;
+      simCon.SystemEventInvoked += SimCon_SystemEventInvoked;
     }
 
     public void Start()
@@ -39,11 +38,11 @@ namespace SimDataCapturer
 
     public bool IsRunning { get => this.isRunning; }
 
-    private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)
+    private void SimCon_SystemEventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectSystemEventInvokedEventArgs e)
     {
-      if (e.Event == SimEvents.System.Pause)
+      if (e.Event == ESimConnect.Enumerations.SimSystemEvents.System.Pause)
         isPaused = e.Value != 0;
-      else if (e.Event == SimEvents.System._1sec && !isPaused)
+      else if (e.Event == ESimConnect.Enumerations.SimSystemEvents.System._1sec && !isPaused)
         this.OnSecondElapsed?.Invoke();
     }
 
@@ -73,9 +72,9 @@ namespace SimDataCapturer
     private void OnLeakDataUpdate(double value)
     {
       double newValue = Math.Max(0, value - simLeakStep);
-      simCon.SendPrimitive(simLeakId, newValue);
+      simCon.Values.Send(simLeakId, newValue);
       Thread.Sleep(1000);
-      simCon.RequestPrimitive(simLeakId, ++simLeakRequestId);
+      simLeakRequestId =  simCon.Values.Request(simLeakId);
     }
 
     private void OnMockPlaneDataUpdate(MockPlaneData data)
@@ -93,7 +92,7 @@ namespace SimDataCapturer
       // intentionally blank
     }
 
-    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_EXCEPTION ex)
+    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, SimConnectException ex)
     {
       throw new ApplicationException(ex.ToString());
     }
@@ -106,57 +105,57 @@ namespace SimDataCapturer
 
     internal void RequestDataManually()
     {
-      this.simCon.RequestData<MockPlaneData>();
+      this.simCon.Structs.Request<MockPlaneData>();
     }
 
-    private int simVarFailId;
+    private TypeId simVarFailId;
 
-    private int simLeakId;
-    private int simLeakRequestId = 1;
+    private TypeId simLeakId;
+    private RequestId simLeakRequestId;
     private double simLeakStep = 0.01;
 
-    private int simStuckId;
-    private int simStuckRequestId = 1;
+    private TypeId simStuckId;
+    private RequestId simStuckRequestId;
     private double simStuckValue = -1;
     internal void Open()
     {
       simCon.Open();
-      simCon.RegisterType<MockPlaneData>(validate: true);
-      simCon.RequestDataRepeatedly<MockPlaneData>(null, SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
-      simCon.RegisterSystemEvent(SimEvents.System.Pause);
-      simCon.RegisterSystemEvent(SimEvents.System._1sec);
+      simCon.Structs.Register<MockPlaneData>(validate: true);
+      simCon.Structs.RequestRepeatedly<MockPlaneData>(SimConnectPeriod.SECOND, sendOnlyOnChange: true);
+      simCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System.Pause);
+      simCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System._1sec);
 
-      simVarFailId = simCon.RegisterPrimitive<double>(SimVars.Aircraft.Engine.ENG_ON_FIRE__index + "1", "Number", "FLOAT64");
+      simVarFailId = simCon.Values.Register<double>(SimVars.Aircraft.Engine.ENG_ON_FIRE__index + "1", "Number", SimConnectSimTypeName.FLOAT64);
 
-      simLeakId = simCon.RegisterPrimitive<double>("FUEL TANK LEFT MAIN LEVEL", "Number", "FLOAT64", validate: true);
+      simLeakId = simCon.Values.Register<double>("FUEL TANK LEFT MAIN LEVEL", "Number", SimConnectSimTypeName.FLOAT64, validate: true);
 
 
       // tohle funguje blbě v defalt planech, ale vubec v FBW
       //simStuckId = simCon.RegisterPrimitive<double>(SimVars.Aircraft.Control.TRAILING_EDGE_FLAPS_LEFT_PERCENT, "Number", "FLOAT64", validate: true);
 
-      simStuckId = simCon.RegisterPrimitive<double>(SimVars.Aircraft.Control.FLAPS_HANDLE_INDEX__index + "1", "Number", "FLOAT64");
+      simStuckId = simCon.Values.Register<double>(SimVars.Aircraft.Control.FLAPS_HANDLE_INDEX__index + "1", "Number", SimConnectSimTypeName.FLOAT64);
       // not Writeable: simStuckId = simCon.RegisterPrimitive<int>(SimVars.Aircraft.Control.TRAILING_EDGE_FLAPS_LEFT_INDEX, "Number", "INT32", validate: true);
     }
 
     internal void FailEngine()
     {
-      simCon.SendClientEvent("TOGGLE_ENGINE1_FAILURE");
+      simCon.ClientEvents.Invoke("TOGGLE_ENGINE1_FAILURE");
     }
 
     internal void FailEngineFire()
     {
       double value = 1;
-      simCon.SendPrimitive(simVarFailId, value);
+      simCon.Values.Send(simVarFailId, value);
     }
 
     internal void FailLeak()
     {
-      simCon.RequestPrimitive(simLeakId, ++simLeakRequestId);
+      simLeakRequestId = simCon.Values.Request(simLeakId);
     }
 
     internal void FailStuck()
     {
-      simCon.RequestPrimitiveRepeatedly(simStuckId, out this.simStuckRequestId, SIMCONNECT_PERIOD.SIM_FRAME, sendOnlyOnChange: true);
+      this.simStuckRequestId = simCon.Values.RequestRepeatedly(simStuckId, SimConnectPeriod.SIM_FRAME, sendOnlyOnChange: true);
     }
 
     private void OnStuckDataUpdate(double value)
@@ -166,25 +165,25 @@ namespace SimDataCapturer
         simStuckValue = value;
       }
       if (value != simStuckValue)
-        simCon.SendPrimitive(simStuckId, simStuckValue);
+        simCon.Values.Send(simStuckId, simStuckValue);
     }
 
-    int lVarTypeId;
-    int lVarRequestId;
+    TypeId lVarTypeId;
+    RequestId lVarRequestId;
     private const int clientDataId = 1234;
     internal void TestExternal()
     {
       //customEventId = simCon.RegisterCustomEvent("LVAR_ACCESS.EFIS"); // A32NX.FCU_SPD_INC_434");
       // simCon.RegisterCustomPrimitive<double>("EFIS_CDA", clientDataId); // A32NX_TRANSPONDER_MODE", clientDataId);
       //lVarTypeId = simCon.RegisterPrimitive<double>("L:A32NX_COND_PACK_FLOW_1", "Number", "FLOAT64");
-      lVarTypeId = simCon.RegisterPrimitive<double>("L:LIGHTING_LANDING_2", "Number", "FLOAT64");
-      simCon.RequestPrimitive(lVarTypeId, out lVarRequestId);
+      lVarTypeId = simCon.Values.Register<double>("L:LIGHTING_LANDING_2", "Number", SimConnectSimTypeName.FLOAT64);
+      lVarRequestId = simCon.Values.Request(lVarTypeId);
     }
 
     internal void TestExternalSet()
     {
       double val = 1;
-      simCon.SendPrimitive<double>(lVarTypeId, val);
+      simCon.Values.Send(lVarTypeId, val);
     }
   }
 }

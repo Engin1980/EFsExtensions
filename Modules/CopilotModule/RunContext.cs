@@ -13,6 +13,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using Eng.Chlaot.Modules.CopilotModule.Types;
 using Eng.Chlaot.Modules.CopilotModule.Types.VMs;
 using ESystem.Asserting;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,7 +28,7 @@ using System.Windows.Forms;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
-  internal class RunContext : NotifyPropertyChangedBase
+  internal class RunContext : NotifyPropertyChanged
   {
 
     #region Fields

@@ -1,6 +1,7 @@
 ﻿using ChlaotModuleBase.ModuleUtils.SimConWrapping;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
+using ESimConnect;
 using ESystem.Asserting;
 using System;
 using System.Collections.Generic;
@@ -36,12 +37,12 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
 
     private static SimObject? _instance = null;
     private readonly OpenAsyncExtender openAsyncSimConExtender;
-    private readonly Dictionary<int, SimVarReg> requestIdMapping = new();
+    private readonly Dictionary<RequestId, SimVarReg> requestIdMapping = new();
     private readonly SimSecondElapsedExtender secondElapsedSimConExtender;
     private readonly ESimConnect.ESimConnect simCon;
     private readonly Dictionary<SimProperty, double> simPropertyValues = new();
     private readonly Dictionary<SimVarReg, List<SimProperty>> simVarReqMapping = new();
-    private readonly Dictionary<int, SimVarReg> typeIdMapping = new();
+    private readonly Dictionary<TypeId, SimVarReg> typeIdMapping = new();
 
     #endregion Private Fields
 
@@ -165,11 +166,11 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
       SimVarReg svr = new(property.SimVar, property.Unit ?? DEFAULT_PROPERTY_UNIT);
       if (simVarReqMapping.ContainsKey(svr) == false)
       {
-        int typeId = simCon.RegisterPrimitive<double>(property.SimVar, property.Unit ?? DEFAULT_PROPERTY_UNIT);
+        TypeId typeId = simCon.Values.Register<double>(property.SimVar, property.Unit ?? DEFAULT_PROPERTY_UNIT);
         typeIdMapping[typeId] = svr;
         simVarReqMapping[svr] = new();
 
-        simCon.RequestPrimitiveRepeatedly(typeId, out int requestId, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_PERIOD.SECOND);
+        RequestId requestId = simCon.Values.RequestRepeatedly(typeId, SimConnectPeriod.SECOND);
         requestIdMapping[requestId] = svr;
       }
       simVarReqMapping[svr].Add(property);
@@ -183,7 +184,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
     private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
     {
       double value = (double)e.Data;
-      int? requestId = e.RequestId;
+      RequestId? requestId = e.RequestId;
       if (requestId == null) return; // not my registered type
       if (requestIdMapping.ContainsKey(requestId.Value) == false) return; // not my registered type
       SimVarReg svr = requestIdMapping[requestId.Value];
@@ -194,7 +195,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
       }
     }
 
-    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_EXCEPTION ex)
+    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, SimConnectException ex)
     {
       throw new ApplicationException("SimCon thows exception: " + ex.ToString());
     }

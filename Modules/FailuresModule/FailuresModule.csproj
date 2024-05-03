@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <RootNamespace>Eng.Chloat.Modules.FailuresModule</RootNamespace>
-    <AssemblyVersion>1.0.0.4</AssemblyVersion>
-    <FileVersion>1.0.0.4</FileVersion>
+    <AssemblyVersion>1.0.0.14</AssemblyVersion>
+    <FileVersion>1.0.0.14</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,6 +22,9 @@
   <ItemGroup>
     <Reference Include="ELogging">
       <HintPath>..\..\DLLs\ELogging.dll</HintPath>
+    </Reference>
+    <Reference Include="ESimConnect">
+      <HintPath>..\..\DLLs\ESimConnect.dll</HintPath>
     </Reference>
     <Reference Include="ESystem">
       <HintPath>..\..\DLLs\ESystem.dll</HintPath>

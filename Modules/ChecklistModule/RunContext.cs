@@ -26,10 +26,11 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
+using ESystem.Miscelaneous;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
-  public partial class RunContext : NotifyPropertyChangedBase
+  public partial class RunContext : NotifyPropertyChanged
   {
 
     #region Private Fields

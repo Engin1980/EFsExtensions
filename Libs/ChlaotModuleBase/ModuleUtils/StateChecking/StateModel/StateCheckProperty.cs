@@ -10,7 +10,6 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows.Media.Animation;
-using static ESimConnect.SimUnits;
 using EXmlLib.Interfaces;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel

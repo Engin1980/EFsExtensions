@@ -33,10 +33,11 @@ using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using static Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
+using ESystem.Miscelaneous;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
-  public class InitContext : NotifyPropertyChangedBase
+  public class InitContext : NotifyPropertyChanged
   {
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;

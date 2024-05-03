@@ -3,6 +3,7 @@ using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,9 +11,9 @@ using System.Linq;
 
 namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
 {
-  public class CheckListVM : NotifyPropertyChangedBase
+  public class CheckListVM : NotifyPropertyChanged
   {
-    public class RunTimeVM : NotifyPropertyChangedBase
+    public class RunTimeVM : NotifyPropertyChanged
     {
       private readonly StateCheckEvaluator evaluator;
 

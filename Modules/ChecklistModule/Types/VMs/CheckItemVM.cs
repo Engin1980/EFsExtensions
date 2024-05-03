@@ -1,11 +1,12 @@
 ﻿
 using Eng.Chlaot.ChlaotModuleBase;
+using ESystem.Miscelaneous;
 
 namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
 {
-  public class CheckItemVM : NotifyPropertyChangedBase
+  public class CheckItemVM : NotifyPropertyChanged
   {
-    public class RunTimeVM : NotifyPropertyChangedBase
+    public class RunTimeVM : NotifyPropertyChanged
     {
       public RunState State
       {

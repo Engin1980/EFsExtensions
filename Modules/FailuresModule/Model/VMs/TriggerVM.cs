@@ -3,6 +3,7 @@ using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
 using ESystem.Asserting;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.Modules.FailuresModule.Model.VMs
 {
-  public class TriggerVM : NotifyPropertyChangedBase
+  public class TriggerVM : NotifyPropertyChanged
   {
     private bool recordAllTriggerFires = false;
     private readonly StateCheckEvaluator? evaluator;

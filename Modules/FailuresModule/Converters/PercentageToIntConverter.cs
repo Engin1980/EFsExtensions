@@ -1,5 +1,6 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;
 using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,7 +15,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Converters
   {
     protected sealed override int Convert(Percentage value, object parameter, CultureInfo culture) => (int)(value * 100);
 
-    protected sealed override Percentage ConvertBack(int value, object parameter, CultureInfo culture) => (Percentage)(value / 100.0);
+    protected sealed override Percentage ConvertBack(int value, object parameter, CultureInfo culture) => Percentage.Of(value);
 
     protected override int ConvertToTarget(object value, object parameter, CultureInfo culture) => (int)(double)value;
   }
