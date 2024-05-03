@@ -1,4 +1,11 @@
-copy ..\eSystem.NET\_Release\ESystem.dll .\DLLs\
-copy ..\eSystem.NET\_Release\ESystem.pdb .\DLLs\
-copy ..\eSystem.NET\_Release\ELogging.dll .\DLLs\
-copy ..\eSystem.NET\_Release\ELogging.pdb .\DLLs\
+set "local=%cd%"
+
+cd ..\ESystem.NET
+call .\_updateRelease.bat
+
+cd %local%
+copy ..\ESystem.NET\_Release\* .\DLLs\
+del .\DLLs\ESystem.WPF.dll
+del .\DLLs\ESystem.WPF.pdb
+
+pause
