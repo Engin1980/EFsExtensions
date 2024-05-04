@@ -3,3 +3,4 @@ obj
 .vs
 _Release
 TestResults
+/DLLs/ELogging.deps.json

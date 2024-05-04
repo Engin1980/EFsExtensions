@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <RootNamespace>Eng.Chloat.Modules.FailuresModule</RootNamespace>
-    <AssemblyVersion>1.0.0.14</AssemblyVersion>
-    <FileVersion>1.0.0.14</FileVersion>
+    <AssemblyVersion>1.0.0.16</AssemblyVersion>
+    <FileVersion>1.0.0.16</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -28,6 +28,9 @@
     </Reference>
     <Reference Include="ESystem">
       <HintPath>..\..\DLLs\ESystem.dll</HintPath>
+    </Reference>
+    <Reference Include="EXmlLib">
+      <HintPath>..\..\DLLs\EXmlLib.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
       <HintPath>..\..\DLLs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
