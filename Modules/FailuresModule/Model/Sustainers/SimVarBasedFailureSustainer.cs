@@ -1,6 +1,7 @@
 ﻿using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
 using ESimConnect;
 using ESimConnect.Definitions;
+using ESystem.Asserting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,8 +16,8 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
     private const string DEFAULT_UNIT = "Number";
     private const SimConnectSimTypeName DEFAULT_TYPE = SimConnectSimTypeName.FLOAT64;
     private bool isRegistered = false;
-    private TypeId typeId;
-    private RequestId requestId = new RequestId(-1);
+    private TypeId? typeId = null;
+    private RequestId? requestId = null;
     protected bool IsSimPaused { get; private set; } = false;
     protected event Action<double>? DataReceived;
 
@@ -46,14 +47,15 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
       SimCon.DataReceived += SimCon_DataReceived;
 
       string name = Failure.SimConPoint;
-      typeId = SimCon.Values.Register<double>(name, DEFAULT_UNIT, DEFAULT_TYPE);
+      this.typeId = SimCon.Values.Register<double>(name, DEFAULT_UNIT, DEFAULT_TYPE);
       isRegistered = true;
     }
 
     protected void RequestData()
     {
       RegisterIfRequired();
-      _ = SimCon.Values.Request(typeId);
+      EAssert.IsNotNull(this.typeId);
+      this.requestId = SimCon.Values.Request(this.typeId.Value);
     }
 
     private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
@@ -68,13 +70,15 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
     internal void SendData(double value)
     {
       RegisterIfRequired();
-      SimCon.Values.Send(typeId, value);
+      EAssert.IsNotNull(this.typeId);
+      SimCon.Values.Send(this.typeId.Value, value);
     }
 
     internal void RequestDataRepeatedly()
     {
       RegisterIfRequired();
-      _ = SimCon.Values.RequestRepeatedly(typeId, SimConnectPeriod.SECOND);
+      EAssert.IsNotNull(this.typeId);
+      this.requestId = SimCon.Values.RequestRepeatedly(typeId.Value, SimConnectPeriod.SECOND);
     }
   }
 }
