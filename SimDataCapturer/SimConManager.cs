@@ -1,4 +1,5 @@
 ﻿using ESimConnect;
+using ESimConnect.Definitions;
 using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
@@ -40,9 +41,9 @@ namespace SimDataCapturer
 
     private void SimCon_SystemEventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectSystemEventInvokedEventArgs e)
     {
-      if (e.Event == ESimConnect.Enumerations.SimSystemEvents.System.Pause)
+      if (e.Event == ESimConnect.Definitions.SimEvents.System.Pause)
         isPaused = e.Value != 0;
-      else if (e.Event == ESimConnect.Enumerations.SimSystemEvents.System._1sec && !isPaused)
+      else if (e.Event == ESimConnect.Definitions.SimEvents.System._1sec && !isPaused)
         this.OnSecondElapsed?.Invoke();
     }
 
@@ -122,8 +123,8 @@ namespace SimDataCapturer
       simCon.Open();
       simCon.Structs.Register<MockPlaneData>(validate: true);
       simCon.Structs.RequestRepeatedly<MockPlaneData>(SimConnectPeriod.SECOND, sendOnlyOnChange: true);
-      simCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System.Pause);
-      simCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System._1sec);
+      simCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System.Pause);
+      simCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System._1sec);
 
       simVarFailId = simCon.Values.Register<double>(SimVars.Aircraft.Engine.ENG_ON_FIRE__index + "1", "Number", SimConnectSimTypeName.FLOAT64);
 

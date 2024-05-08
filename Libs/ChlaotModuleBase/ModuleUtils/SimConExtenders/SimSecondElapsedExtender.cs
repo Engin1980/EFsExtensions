@@ -27,17 +27,17 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders
 
     private void RegisterEvents()
     {
-      simCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System.Pause);
-      simCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System._1sec);
+      simCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System.Pause);
+      simCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System._1sec);
     }
 
     private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectSystemEventInvokedEventArgs e)
     {
-      if (e.Event == ESimConnect.Enumerations.SimSystemEvents.System.Pause)
+      if (e.Event == ESimConnect.Definitions.SimEvents.System.Pause)
       {
         IsSimPaused = e.Value != 0;
       }
-      else if (e.Event == ESimConnect.Enumerations.SimSystemEvents.System._1sec && (!IsSimPaused || invokeSimSecondEventsOnPause))
+      else if (e.Event == ESimConnect.Definitions.SimEvents.System._1sec && (!IsSimPaused || invokeSimSecondEventsOnPause))
       {
         SimSecondElapsed?.Invoke();
       }

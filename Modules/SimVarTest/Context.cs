@@ -1,6 +1,7 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using ESimConnect;
+using ESimConnect.Definitions;
 using ESystem;
 using ESystem.Exceptions;
 using ESystem.Miscelaneous;

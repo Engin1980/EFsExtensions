@@ -48,8 +48,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping
       base.StartProtected();
 
       simCon.SystemEventInvoked += SimCon_EventInvoked;
-      simCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System.Pause);
-      simCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System._1sec);
+      simCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System.Pause);
+      simCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System._1sec);
     }
 
     #endregion Public Methods
@@ -59,11 +59,11 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping
     private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectSystemEventInvokedEventArgs e)
     {
       //TODO duplicit with SimSecondElapsedExtender
-      if (e.Event == ESimConnect.Enumerations.SimSystemEvents.System.Pause)
+      if (e.Event == ESimConnect.Definitions.SimEvents.System.Pause)
       {
         IsSimPaused = e.Value != 0;
       }
-      else if (e.Event == ESimConnect.Enumerations.SimSystemEvents.System._1sec)
+      else if (e.Event == ESimConnect.Definitions.SimEvents.System._1sec)
       {
         SimSecondElapsed?.Invoke();
       }

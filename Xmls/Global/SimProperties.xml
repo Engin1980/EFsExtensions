@@ -11,7 +11,7 @@
     <g:property name="height" simVar="PLANE ALT ABOVE GROUND" unit="foot" />
     <g:property name="ias" simVar="AIRSPEED INDICATED" unit="knot" />
     <g:property name="gs" simVar="GROUND VELOCITY" unit="knot" />
-    <g:property name="vs" description="Vertical speed" simVar="VERTICAL SPEED" unit="foot"/>
+    <g:property name="vs" description="Vertical speed" simVar="VERTICAL SPEED" unit="feet/minute"/>
     <g:property name="bankAngle" simVar="PLANE BANK DEGREES" unit="degree" />
   </g:properties>
   <g:properties title="Plane lights">

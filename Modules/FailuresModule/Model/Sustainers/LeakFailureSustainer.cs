@@ -61,7 +61,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
     protected override void InitInternal()
     {
       base.InitInternal();
-      simSecondElapsedEventId = SimCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System._1sec);
+      simSecondElapsedEventId = SimCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System._1sec);
     }
 
     protected override void ResetInternal()

@@ -28,15 +28,15 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
 
     protected override void InitInternal()
     {
-      SimCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System.Paused);
-      SimCon.SystemEvents.Register(ESimConnect.Enumerations.SimSystemEvents.System.Unpaused);
+      SimCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System.Paused);
+      SimCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System.Unpaused);
     }
 
     private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectSystemEventInvokedEventArgs e)
     {
-      if (e.Event == ESimConnect.Enumerations.SimSystemEvents.System.Paused)
+      if (e.Event == ESimConnect.Definitions.SimEvents.System.Paused)
         IsSimPaused = true;
-      else if (e.Event == ESimConnect.Enumerations.SimSystemEvents.System.Unpaused)
+      else if (e.Event == ESimConnect.Definitions.SimEvents.System.Unpaused)
         IsSimPaused = false;
     }
 
