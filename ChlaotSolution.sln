@@ -47,7 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Failures", "Failures", "{10
 		Xmls\Failures\All-Failures.fail.xml = Xmls\Failures\All-Failures.fail.xml
 		Xmls\Failures\B58.steam.fail.xml = Xmls\Failures\B58.steam.fail.xml
 		Xmls\Failures\C172.gauge.fail.xml = Xmls\Failures\C172.gauge.fail.xml
-		cj4.fail.xml = cj4.fail.xml
+		Xmls\Failures\cj4.fail.xml = Xmls\Failures\cj4.fail.xml
 		Xmls\Failures\Failures-test.fail.xml = Xmls\Failures\Failures-test.fail.xml
 		Xmls\Failures\FBW320.fail.xml = Xmls\Failures\FBW320.fail.xml
 	EndProjectSection

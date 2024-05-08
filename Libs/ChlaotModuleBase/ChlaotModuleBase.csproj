@@ -6,8 +6,8 @@
     <UseWPF>true</UseWPF>
     <PlatformTarget>x64</PlatformTarget>
     <RootNamespace>Eng.Chlaot.ChlaotModuleBase</RootNamespace>
-    <AssemblyVersion>1.0.0.26</AssemblyVersion>
-    <FileVersion>1.0.0.22</FileVersion>
+    <AssemblyVersion>1.0.0.31</AssemblyVersion>
+    <FileVersion>1.0.0.27</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,13 +17,13 @@
 
   <ItemGroup>
     <Reference Include="ELogging">
-      <HintPath>..\..\..\ESimConnect\DLLs\ELogging.dll</HintPath>
+      <HintPath>..\..\DLLs\ELogging.dll</HintPath>
     </Reference>
     <Reference Include="ESimConnect">
       <HintPath>..\..\DLLs\ESimConnect.dll</HintPath>
     </Reference>
     <Reference Include="ESystem">
-      <HintPath>..\..\..\ESimConnect\DLLs\ESystem.dll</HintPath>
+      <HintPath>..\..\DLLs\ESystem.dll</HintPath>
     </Reference>
     <Reference Include="EXmlLib">
       <HintPath>..\..\DLLs\EXmlLib.dll</HintPath>

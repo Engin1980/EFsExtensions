@@ -1,11 +1,11 @@
 deltree -Y _Release
 mkdir _Release
-mkdir .\_Release\ESimConnect
-copy readme.md .\_Release\ESimConnect\_Readme.md
-copy License .\_Release\ESimConnect\_License.txt
-xcopy /e /i /Y ESimConnect\bin\debug\net6.0-windows\* .\_Release\ESimConnect
+mkdir .\_Release\Chlaot
+copy readme.md .\_Release\Chlaot\_Readme.md
+copy License .\_Release\Chlaot\_License.txt
+xcopy /e /i /Y Chlaot\bin\debug\net6.0-windows\* .\_Release\Chlaot
 cd .\_Release
-tar.exe -c -f ESimConnect.zip ESimConnect
+tar.exe -c -f Chlaot.zip Chlaot
 
 
 

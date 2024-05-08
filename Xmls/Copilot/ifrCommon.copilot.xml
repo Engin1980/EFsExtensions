@@ -120,8 +120,8 @@
     <reactivationTrigger>
       <g:for seconds="30">
         <g:or>
-          <g:property name="altitude" direction="below" expression="9000" />
-          <g:property name="altitude" direction="above" expression="11000" />
+          <g:property name="alt" direction="below" expression="9000" />
+          <g:property name="alt" direction="above" expression="11000" />
         </g:or>
       </g:for>
     </reactivationTrigger>
