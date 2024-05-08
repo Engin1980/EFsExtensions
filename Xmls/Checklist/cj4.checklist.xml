@@ -33,6 +33,14 @@
         <confirmation type="speech" value="on"/>
       </item>
       <item>
+        <call type="speech" value="Frequency"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="Squawk code"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
         <call type="speech" value="Parking Brake"/>
         <confirmation type="speech" value="Set"/>
       </item>
@@ -65,6 +73,22 @@
         <confirmation type="speech" value="On"/>
       </item>
       <item>
+        <call type="speech" value="Q N H"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="Altitude"/>
+        <confirmation type="speech" value="Set"/>
+      </item>
+      <item>
+        <call type="speech" value="Flaps" />
+        <confirmation type="speech" value="Set" />
+      </item>
+      <item>
+        <call type="speech" value="Speed brake" />
+        <confirmation type="speech" value="None" />
+      </item>
+      <item>
         <call type="speech" value="Climate Control Selector"/>
         <confirmation type="speech" value="On"/>
       </item>
@@ -76,8 +100,8 @@
     <trigger>
       <g:and>
         <g:property name="pushbackTugConnected" direction="below" expression="1" />
-        <g:property name="engine1Started" direction="above" expression="0"/>
-        <g:property name="engine2Started" direction="above" expression="0"/>
+        <g:property name="engine1Running" direction="above" expression="0"/>
+        <g:property name="engine2Running" direction="above" expression="0"/>
         <g:for seconds="3">
           <g:property name="parkingBrakeSet" direction="below" expression="1"/>
         </g:for>
@@ -97,10 +121,6 @@
       <item>
         <call type="speech" value="Pitot Heat" />
         <confirmation type="speech" value="On" />
-      </item>
-      <item>
-        <call type="speech" value="Flaps" />
-        <confirmation type="speech" value="Set" />
       </item>
       <item>
         <call type="speech" value="Lights" />
@@ -152,8 +172,8 @@
   <checklist id="descend" callSpeech="Descend">
     <items>
       <item>
-        <call type="speech" value="Arrival"/>
-        <confirmation type="speech" value="Set"/>
+        <call type="speech" value="Metar and Q N H" />
+        <confirmation type="speech" value="Obtained" />
       </item>
       <item>
         <call type="speech" value="Arrival and approach"/>
@@ -172,7 +192,7 @@
       <g:and>
         <g:property name="alt" direction="below" expression="18000"/>
         <g:for seconds="60">
-          <g:property name="vs" direction="below" expression="-1800"/>
+          <g:property name="vs" direction="below" expression="-900"/>
         </g:for>
       </g:and>
     </trigger>

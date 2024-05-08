@@ -13,6 +13,7 @@
       \n\nNote that A32NX is not using classical 'parkingBrake' flag and also
       GSX does not use pushback-attached flag.
     </g:description>
+    <g:version>0.2</g:version>
   </meta>
   <properties title="FBW Properties">
     <g:property name="fbwParkingBrake" simVar="L:A32NX_PARK_BRAKE_LEVER_POS"/>
@@ -331,6 +332,10 @@
       <item>
         <call type="speech" value="Windshear prediction" />
         <confirmation type="speech" value="Off" />
+      </item>
+      <item>
+        <call type="speech" value="A P U" />
+        <confirmation type="speech" value="Starting" />
       </item>
     </items>
   </checklist>
