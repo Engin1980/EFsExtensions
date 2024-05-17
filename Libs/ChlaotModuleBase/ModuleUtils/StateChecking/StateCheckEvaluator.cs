@@ -134,7 +134,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       }
       return ret;
     }
-
     public void Reset()
     {
       lock (this)
@@ -328,18 +327,45 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     private double ExtractExpectedPropertyValue(StateCheckProperty property, bool applyRandomness)
     {
       double ret;
-      if (extractedValues.ContainsKey(property))
-        ret = extractedValues[property];
+
+      //TODO tady je to divne. 
+      // nejak je tu snaha, aby se to cacheovalo, ale protoze nejsem jednoznacne
+      // schopny poznat, pro ktery property se to naposledy evaluovalo, tak ta cache
+      // asi nedava smysl; problem je, kdyz se zmeni hodnota vlasntosti, ze to nemam jak poznat
+      // asi idealne prepsat, aby se to definovalo per IStateCheckItem a kazdy mel svuj
+      // vlastni vyhodnocovaci objekt
+
+      toto zvazit!!
+
+      if (property.IsVariableBased)
+      {
+        ret = GetVariableValue(property.GetExpressionAsVariableName());
+        if (applyRandomness) ret = ApplyPropertyRandomness(property, ret);
+      }
       else
       {
-        if (property.IsVariableBased == false)
-          ret = property.GetExpressionAsDouble();
+        if (extractedValues.ContainsKey(property))
+          ret = extractedValues[property];
         else
-          ret = GetVariableValue(property.GetExpressionAsVariableName());
+          ret = property.GetExpressionAsDouble();
         if (applyRandomness) ret = ApplyPropertyRandomness(property, ret);
         extractedValues[property] = ret;
       }
+
       return ret;
+
+      //if (extractedValues.ContainsKey(property))
+      //  ret = extractedValues[property];
+      //else
+      //{
+      //  if (property.IsVariableBased == false)
+      //    ret = property.GetExpressionAsDouble();
+      //  else
+      //    ret = GetVariableValue(property.GetExpressionAsVariableName());
+      //  if (applyRandomness) ret = ApplyPropertyRandomness(property, ret);
+      //  extractedValues[property] = ret;
+      //}
+      //return ret;
     }
 
     private double GetVariableValue(string variableName)

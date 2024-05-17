@@ -20,7 +20,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel
     public virtual void PostDeserialize()
     {
       EAssert.IsNonEmptyString(Name, nameof(Name));
-      EAssert.IsTrue(Regex.IsMatch(this.Name, @"^[^\{]\S+[^\}]$"), $"Invalid variable name '{this.Name}'");
+      EAssert.IsTrue(Regex.IsMatch(this.Name, @"^[a-zA-Z][a-zA-Z0-9-_~^]*$"), $"Invalid variable name '{this.Name}'");
     }
   }
 }
