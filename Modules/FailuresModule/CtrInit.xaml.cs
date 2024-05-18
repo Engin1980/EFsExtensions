@@ -37,7 +37,8 @@ namespace Eng.Chlaot.Modules.FailuresModule
       this.DataContext = context;
     }
 
-    private string recentXmlFile;
+    private string? recentXmlFile;
+
     private void btnLoad_Click(object sender, RoutedEventArgs e)
     {
       var dialog = new CommonOpenFileDialog()
