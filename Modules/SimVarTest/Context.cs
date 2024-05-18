@@ -49,7 +49,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
     {
       this.onReadySet = onReadySet;
       this.PredefinedSimVars = DecodePredefinedSimVarSet(typeof(SimVars));
-      this.PredefinedSimEvents = DecodePredefinedSimVarSet(typeof(SimClientEvents));
+      this.PredefinedSimEvents = DecodePredefinedSimVarSet(typeof(SimEvents.Client));
     }
 
     private static List<IStringGroupItem> DecodePredefinedSimVarSet(Type baseType)

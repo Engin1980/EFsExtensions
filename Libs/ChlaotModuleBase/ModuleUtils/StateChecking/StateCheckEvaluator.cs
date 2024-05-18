@@ -360,7 +360,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       double ret;
       ret = this.cachedNonVariablePropertyValues.GetOrAdd(
         property,
-        () => property.GetExpressionAsDouble().SelectIf(applyRandomness, q => ApplyPropertyRandomness(property, q)));
+        () => property.GetExpressionAsDouble().Select(q =>  applyRandomness ? ApplyPropertyRandomness(property, q) : q));
       return ret;
     }
 
