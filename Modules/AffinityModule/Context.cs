@@ -28,7 +28,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
     private Timer? refreshTimer = null;
     public delegate void SingleProcessAdjustmentCompletedHandler(ProcessAdjustResult processAdjustResult);
     public event SingleProcessAdjustmentCompletedHandler? SingleProcessAdjustmentCompleted;
-    public event Action AllProcessesAdjustmentCompleted;
+    public event Action? AllProcessesAdjustmentCompleted;
 
     public Context(Action<bool> setIsReadyFlagAction)
     {

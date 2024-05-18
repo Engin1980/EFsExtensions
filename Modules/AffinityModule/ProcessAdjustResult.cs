@@ -19,7 +19,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
     }
 
     public int Id { get; set; }
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
     public string? WindowTitle { get; set; }
     public int ThreadCount { get; set; }
     public IntPtr? AffinityPre { get; set; }
