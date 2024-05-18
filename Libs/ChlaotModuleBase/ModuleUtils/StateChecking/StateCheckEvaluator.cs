@@ -8,12 +8,16 @@ using System.Text;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
 using System.Reflection;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
+using System.Windows;
+using ESystem;
+using System.Runtime.CompilerServices;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 {
   public class StateCheckEvaluator
   {
     public record RecentResult(IStateCheckItem StateCheckItem, bool Result, string Note);
+    private record VariablePropertyInfo(string VariableName, double PreviousVariableOriginalValue, double RandomizedValue);
 
     #region Private Enums
 
@@ -27,15 +31,15 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 
     #region Private Fields
 
+
     private readonly static Random random = new();
-    private static Type[] updatedTypesNumerical =
+    private readonly static Type[] updatedTypesNumerical =
     {
       typeof(int), typeof(double), typeof(bool)
     };
 
     private readonly Dictionary<StateCheckDelay, int> delayCounter = new();
     private readonly Dictionary<StateCheckWait, int> waitCounter = new();
-    private readonly Dictionary<StateCheckProperty, double> extractedValues = new();
     private readonly Dictionary<StateCheckProperty, double> trendHistory = new();
     private readonly Logger logger;
     private readonly Dictionary<StateCheckProperty, EPassingState> passingPropertiesStates = new();
@@ -44,6 +48,9 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     private Dictionary<string, double>? currentPropertyValues = null;
     private Dictionary<string, double>? currentVariableValues = null;
     private readonly List<RecentResult> recentResultSet = new();
+
+    private readonly Dictionary<StateCheckProperty, double> cachedNonVariablePropertyValues = new();
+    private readonly Dictionary<StateCheckProperty, VariablePropertyInfo> cachedVariablePropertyInfo = new();
 
     #endregion Private Fields
 
@@ -147,15 +154,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
     #endregion Public Methods
 
     #region Private Methods
-
-    private double ApplyPropertyRandomness(StateCheckProperty property, double value)
-    {
-      var randomness = property.Randomness;
-      double absUpper = value + randomness.Above.GetValue(value);
-      double absLower = value + randomness.Below.GetValue(value);
-      double ret = random.NextDouble(absLower, absUpper);
-      return ret;
-    }
 
     private bool EvalauteTrueFalse(StateCheckTrueFalse trueFalse, out string message)
     {
@@ -326,52 +324,64 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
 
     private double ExtractExpectedPropertyValue(StateCheckProperty property, bool applyRandomness)
     {
+      double ret = GetExpectedPropertyValue(property, applyRandomness);
+      return ret;
+    }
+
+    public double GetExpectedPropertyValue(StateCheckProperty property, bool applyRandomness)
+    {
       double ret;
 
-      //TODO tady je to divne. 
-      // nejak je tu snaha, aby se to cacheovalo, ale protoze nejsem jednoznacne
-      // schopny poznat, pro ktery property se to naposledy evaluovalo, tak ta cache
-      // asi nedava smysl; problem je, kdyz se zmeni hodnota vlasntosti, ze to nemam jak poznat
-      // asi idealne prepsat, aby se to definovalo per IStateCheckItem a kazdy mel svuj
-      // vlastni vyhodnocovaci objekt
-
-      toto zvazit!!
-
-      if (property.IsVariableBased)
-      {
-        ret = GetVariableValue(property.GetExpressionAsVariableName());
-        if (applyRandomness) ret = ApplyPropertyRandomness(property, ret);
-      }
-      else
-      {
-        if (extractedValues.ContainsKey(property))
-          ret = extractedValues[property];
-        else
-          ret = property.GetExpressionAsDouble();
-        if (applyRandomness) ret = ApplyPropertyRandomness(property, ret);
-        extractedValues[property] = ret;
-      }
+      ret = property.IsVariableBased
+        ? GetExpectedVariableBasedPropertyValue(property, applyRandomness)
+        : GetExpectedNonVariableBasedPropertyValue(property, applyRandomness);
 
       return ret;
+    }
 
-      //if (extractedValues.ContainsKey(property))
-      //  ret = extractedValues[property];
-      //else
-      //{
-      //  if (property.IsVariableBased == false)
-      //    ret = property.GetExpressionAsDouble();
-      //  else
-      //    ret = GetVariableValue(property.GetExpressionAsVariableName());
-      //  if (applyRandomness) ret = ApplyPropertyRandomness(property, ret);
-      //  extractedValues[property] = ret;
-      //}
-      //return ret;
+    private static double ApplyPropertyRandomness(StateCheckProperty property, double value)
+    {
+      var randomness = property.Randomness;
+      double absUpper = value + randomness.Above.GetValue(value);
+      double absLower = value + randomness.Below.GetValue(value);
+      double ret = random.NextDouble(absLower, absUpper);
+      return ret;
     }
 
     private double GetVariableValue(string variableName)
     {
       if (!this.currentVariableValues!.TryGetValue(variableName, out double ret))
         throw new StateCheckException($"Unable resolve value of variable '{variableName}'.");
+      return ret;
+    }
+
+    private double GetExpectedNonVariableBasedPropertyValue(StateCheckProperty property, bool applyRandomness)
+    {
+      double ret;
+      ret = this.cachedNonVariablePropertyValues.GetOrAdd(
+        property,
+        () => property.GetExpressionAsDouble().SelectIf(applyRandomness, q => ApplyPropertyRandomness(property, q)));
+      return ret;
+    }
+
+    private double GetExpectedVariableBasedPropertyValue(StateCheckProperty property, bool applyRandomness)
+    {
+      double ret;
+
+      VariablePropertyInfo? vpi = cachedVariablePropertyInfo.TryGet(property);
+      string variableName = vpi == null ? property.GetExpressionAsVariableName() : vpi.VariableName;
+      double variableValue = this.currentVariableValues![variableName];
+      if (vpi == null || variableValue != vpi.PreviousVariableOriginalValue)
+      {
+        if (applyRandomness)
+          ret = ApplyPropertyRandomness(property, variableValue);
+        else
+          ret = variableValue;
+        this.cachedVariablePropertyInfo[property] = new(variableName, variableValue, ret);
+      }
+      else
+        ret = vpi.RandomizedValue;
+
       return ret;
     }
 
