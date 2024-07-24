@@ -29,6 +29,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
     public delegate void SingleProcessAdjustmentCompletedHandler(ProcessAdjustResult processAdjustResult);
     public event SingleProcessAdjustmentCompletedHandler? SingleProcessAdjustmentCompleted;
     public event Action? AllProcessesAdjustmentCompleted;
+    public string? LastLoadedFileName { get; private set; }
 
     public Context(Action<bool> setIsReadyFlagAction)
     {
@@ -77,6 +78,7 @@ namespace Eng.Chlaot.Modules.AffinityModule
         this.RuleBase = tmp;
         this.MetaInfo = tmpMeta;
         this.setIsReadyFlagAction(true);
+        this.LastLoadedFileName = xmlFile;
       }
       catch (Exception ex)
       {

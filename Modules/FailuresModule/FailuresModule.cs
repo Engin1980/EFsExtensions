@@ -60,5 +60,26 @@ namespace Eng.Chlaot.Modules.FailuresModule
     {
       throw new NotImplementedException();
     }
+
+    public Dictionary<string, string>? TryGetRestoreData()
+    {
+      if (this.InitContext != null && this.InitContext.LastLoadedFile != null)
+        return new Dictionary<string, string> { { "fileName", this.InitContext.LastLoadedFile } };
+      else
+        return null;
+    }
+
+    public void Restore(Dictionary<string, string> restoreData)
+    {
+      try
+      {
+        string file = restoreData["fileName"];
+        this.InitContext!.LoadFile(file);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Failed to restore.", ex);
+      }
+    }
   }
 }

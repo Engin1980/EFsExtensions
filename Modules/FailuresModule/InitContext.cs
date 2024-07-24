@@ -44,6 +44,8 @@ namespace Eng.Chlaot.Modules.FailuresModule
     public List<FailureDefinitionBase> FailureDefinitions { get; set; }
 
 
+    public string? LastLoadedFile { get; private set; }
+
     public Percentage EstimatedProbabilityPerFlight
     {
       get => base.GetProperty<Percentage>(nameof(EstimatedProbabilityPerFlight))!;
@@ -136,6 +138,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
         });
         this.MetaInfo = tmpMeta;
         UpdateReadyFlag();
+        this.LastLoadedFile = xmlFile;
         logger.Invoke(LogLevel.INFO, $"Failure set file '{xmlFile}' successfully loaded.");
         this.setIsReadyFlagAction(true);
       }

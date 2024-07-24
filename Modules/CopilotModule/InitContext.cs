@@ -38,6 +38,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     #region Properties
 
+    public string? LastLoadedFile { get; private set; }
     public MetaInfo MetaInfo
     {
       get => base.GetProperty<MetaInfo>(nameof(MetaInfo))!;
@@ -149,6 +150,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         BindPropertyChangedEvents();
 
         UpdateReadyFlag();
+        this.LastLoadedFile = xmlFile;
         logger.Invoke(LogLevel.INFO, $"Copilot set file '{xmlFile}' successfully loaded.");
 
       }

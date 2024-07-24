@@ -34,6 +34,7 @@ using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using static Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
 using ESystem.Miscelaneous;
+using System.Windows.Markup;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -41,6 +42,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
   {
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
+    public string LastLoadedFile { get; private set; }
 
     public MetaInfo MetaInfo
     {
@@ -175,6 +177,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         }).ToList();
 
         this.setIsReadyFlagAction(true);
+        this.LastLoadedFile = xmlFile;
         logger.Invoke(LogLevel.INFO, $"Checklist file '{xmlFile}' successfully loaded.");
       }
       catch (Exception ex)

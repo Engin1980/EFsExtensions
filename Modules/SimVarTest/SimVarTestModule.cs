@@ -47,6 +47,46 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
     public void Stop()
     {
     }
-  }
 
+    public void Restore(Dictionary<string, string> restoreData)
+    {
+      try
+      {
+        string state = restoreData["state"];
+        switch (state)
+        {
+          case "null":
+            this.Context.IsEnabled = null;
+            break;
+          case "true":
+            this.Context.IsEnabled = true;
+            break;
+          case "false":
+            this.Context.IsEnabled = false;
+            break;
+        }
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Failed to restore.", ex);
+      }
+    }
+
+    public Dictionary<string, string>? TryGetRestoreData()
+    {
+      if (this.Context == null)
+        return null;
+      else
+      {
+        string state;
+        if (this.Context.IsEnabled == null)
+          state = "null";
+        else if (this.Context.IsEnabled.Value)
+          state = "true";
+        else
+          state = "false";
+        return new Dictionary<string, string> { { "state", state } };
+      }
+    }
+  }
 }

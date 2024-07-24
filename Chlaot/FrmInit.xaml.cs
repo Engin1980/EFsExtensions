@@ -1,6 +1,9 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
 using ESystem;
+using ESystem.Asserting;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
@@ -19,6 +22,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace Chlaot
@@ -91,6 +95,132 @@ namespace Chlaot
     {
       txtConsole.AppendText(s);
       txtConsole.ScrollToEnd();
+    }
+
+    private void btnLoadSet_Click(object sender, RoutedEventArgs e)
+    {
+      const string DEFAULT_EXT = "storeset.xml";
+      var dialog = new CommonOpenFileDialog()
+      {
+        AddToMostRecentlyUsedList = true,
+        Multiselect = false,
+        Title = "Select XML file with stored data..."
+      };
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("Stored set", DEFAULT_EXT));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("XML files", "xml"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("All files", "*"));
+      if (dialog.ShowDialog() != CommonFileDialogResult.Ok || dialog.FileName == null) return;
+
+      XDocument doc;
+      try
+      {
+        doc = XDocument.Load(dialog.FileName);
+      }
+      catch (Exception ex)
+      {
+        // TODO better handling
+        throw new ApplicationException("Failed to load Xml document from " + dialog.FileName, ex);
+      }
+
+      Dictionary<string, Dictionary<string, string>> restoreSets = new();
+      try
+      {
+        XElement root = doc.Root!;
+
+        foreach (XElement moduleElement in root.Elements())
+        {
+          var curr = restoreSets[moduleElement.Name.LocalName] = new();
+          foreach (XElement elm in moduleElement.Elements())
+          {
+            string key = elm.Name.LocalName;
+            string value = elm.Value;
+            curr[key] = value;
+          }
+        }
+      }
+      catch (Exception ex)
+      {
+        // TODO better handling
+        throw new ApplicationException("Failed to extract data from XML Document - probably invalid content?", ex);
+      }
+
+      foreach (var entry in restoreSets)
+      {
+        var module = this.context.Modules.FirstOrDefault(q => q.Name == entry.Key);
+        if (module == null) continue;
+        try
+        {
+          module.Restore(entry.Value);
+        }
+        catch (Exception ex)
+        {
+          // TODO better error handling
+          throw new ApplicationException("Failed to restore module from data.", ex);
+        }
+      }
+
+      MessageBox.Show("Loaded.");
+    }
+
+    private void btnSaveSet_Click(object sender, RoutedEventArgs e)
+    {
+      const string DEFAULT_EXT = "storeset.xml";
+      var dialog = new CommonSaveFileDialog()
+      {
+        AddToMostRecentlyUsedList = true,
+        DefaultFileName = "default." + DEFAULT_EXT,
+        Title = "Select XML file to store data...",
+        DefaultExtension = DEFAULT_EXT,
+      };
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("Stored set", DEFAULT_EXT));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("XML files", "xml"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("All files", "*"));
+      if (dialog.ShowDialog() != CommonFileDialogResult.Ok || dialog.FileName == null) return;
+
+
+      Dictionary<string, Dictionary<string, string>> restoreSets = this.context.Modules
+        .Select(q => new { Key = q.Name.Replace(" ", "_"), Value = q.TryGetRestoreData() })
+        .Where(q => q.Value != null)
+        .ToDictionary(q => q.Key, q => q.Value!);
+
+      XDocument doc;
+      try
+      {
+        XElement root = new(XName.Get("restoreData"));
+        foreach (var restoreEntry in restoreSets)
+        {
+          XElement moduleElement = new(XName.Get(restoreEntry.Key));
+          foreach (var entry in restoreEntry.Value)
+          {
+            XElement elm = new(XName.Get(entry.Key));
+            elm.Value = entry.Value;
+            moduleElement.Add(elm);
+          }
+          root.Add(moduleElement);
+        }
+
+        doc = new XDocument(
+            new XDeclaration("1.0", "utf-8", "yes"),
+            root
+        );
+      }
+      catch (Exception ex)
+      {
+        //TODO better handling
+        throw new ApplicationException("Failed to create Xml document with data.", ex);
+      }
+
+      try
+      {
+        doc.Save(dialog.FileName);
+      }
+      catch (Exception ex)
+      {
+        //TODO better handling
+        throw new ApplicationException("Failed to save Xml document to " + dialog.FileName, ex);
+      }
+
+      MessageBox.Show("Saved.");
     }
   }
 }

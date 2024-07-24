@@ -226,7 +226,7 @@
     <trigger>
       <g:and>
         <g:property name="alt" direction="below" expression="{alt}"/>
-        <g:property name="vs" direction="below" expression="0"/>
+        <g:property name="vs" direction="below" expression="900"/>
       </g:and>
     </trigger>
   </checklist>

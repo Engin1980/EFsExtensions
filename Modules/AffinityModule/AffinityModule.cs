@@ -57,5 +57,28 @@ namespace Eng.Chlaot.Modules.AffinityModule
     {
       this.context.Stop();
     }
+
+    public Dictionary<string, string>? TryGetRestoreData()
+    {
+      Dictionary<string, string>? ret;
+      if (this.context.LastLoadedFileName != null)
+        ret = new Dictionary<string, string> { { "fileName", this.context.LastLoadedFileName } };
+      else
+        ret = null;
+      return ret;
+    }
+
+    public void Restore(Dictionary<string, string> restoreData)
+    {
+      try
+      {
+        string file = restoreData["fileName"];
+        this.context.LoadRuleBase(file);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Failed to restore.", ex);
+      }
+    }
   }
 }

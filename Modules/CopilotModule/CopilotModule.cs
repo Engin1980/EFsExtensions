@@ -73,5 +73,26 @@ namespace Eng.Chlaot.Modules.CopilotModule
     {
       this.runContext?.Stop();
     }
+
+    public Dictionary<string, string>? TryGetRestoreData()
+    {
+      if (initContext != null && initContext.LastLoadedFile != null)
+        return new Dictionary<string, string> { { "fileName", initContext.LastLoadedFile } };
+      else
+        return null;
+    }
+
+    public void Restore(Dictionary<string, string> restoreData)
+    {
+      try
+      {
+        string file = restoreData["fileName"];
+        this.initContext!.LoadFile(file);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Failed to restore.", ex);
+      }
+    }
   }
 }

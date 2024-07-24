@@ -76,5 +76,26 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     {
       this.runContext?.Stop();
     }
+
+    public Dictionary<string, string>? TryGetRestoreData()
+    {
+      if (initContext != null && initContext.LastLoadedFile != null)
+        return new Dictionary<string, string> { { "fileName", initContext.LastLoadedFile } };
+      else
+        return null;
+    }
+
+    public void Restore(Dictionary<string, string> restoreData)
+    {
+      try
+      {
+        string xmlName = restoreData["fileName"];
+        initContext!.LoadFile(xmlName);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Failed to restore.", ex);
+      }
+    }
   }
 }
