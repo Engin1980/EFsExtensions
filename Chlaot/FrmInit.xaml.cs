@@ -25,6 +25,9 @@ using System.Windows.Shapes;
 using System.Xml.Linq;
 using static System.Net.Mime.MediaTypeNames;
 
+using ModuleRestoreDict = System.Collections.Generic.Dictionary<string, string>;
+using ModulesRestoreData = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>>;
+
 namespace Chlaot
 {
   /// <summary>
@@ -34,6 +37,7 @@ namespace Chlaot
   {
     private readonly Context context = new Context();
     private Settings appSettings;
+    private static ModulesRestoreData lastRunModuleRestoreData = new ModulesRestoreData();
 
     public FrmInit()
     {
@@ -47,10 +51,18 @@ namespace Chlaot
       {
         Logger.Log(this, LogLevel.ERROR, "Any module ready, cannot start.");
       }
+
+      SaveModulesResetData();
+
       FrmRun frmRun = new(this.context, appSettings);
       Logger.UnregisterLogAction(this);
       this.Close();
       frmRun.Show();
+    }
+
+    private void SaveModulesResetData()
+    {
+      lastRunModuleRestoreData = CreateModulesRestoreData();
     }
 
     [SuppressMessage("", "IDE1006")]
@@ -122,7 +134,7 @@ namespace Chlaot
         throw new ApplicationException("Failed to load Xml document from " + dialog.FileName, ex);
       }
 
-      Dictionary<string, Dictionary<string, string>> modulesRestoreData = new();
+      ModulesRestoreData modulesRestoreData = new();
       try
       {
         XElement root = doc.Root!;
@@ -144,6 +156,13 @@ namespace Chlaot
         throw new ApplicationException("Failed to extract data from XML Document - probably invalid content?", ex);
       }
 
+      ApplyModuleRestoreData(modulesRestoreData);
+
+      MessageBox.Show("Loaded.");
+    }
+
+    private void ApplyModuleRestoreData(ModulesRestoreData modulesRestoreData)
+    {
       foreach (var entry in modulesRestoreData)
       {
         var module = this.context.Modules.FirstOrDefault(q => q.Name == entry.Key);
@@ -158,8 +177,15 @@ namespace Chlaot
           throw new ApplicationException("Failed to restore module from data.", ex);
         }
       }
+    }
 
-      MessageBox.Show("Loaded.");
+    private ModulesRestoreData CreateModulesRestoreData()
+    {
+      ModulesRestoreData ret = this.context.Modules
+        .Select(q => new { Key = q.Name.Replace(" ", "_"), Value = q.TryGetRestoreData() })
+        .Where(q => q.Value != null)
+        .ToDictionary(q => q.Key, q => q.Value!);
+      return ret;
     }
 
     private void btnSaveSet_Click(object sender, RoutedEventArgs e)
@@ -178,10 +204,7 @@ namespace Chlaot
       if (dialog.ShowDialog() != CommonFileDialogResult.Ok || dialog.FileName == null) return;
 
 
-      Dictionary<string, Dictionary<string, string>> modulesRestoreData = this.context.Modules
-        .Select(q => new { Key = q.Name.Replace(" ", "_"), Value = q.TryGetRestoreData() })
-        .Where(q => q.Value != null)
-        .ToDictionary(q => q.Key, q => q.Value!);
+      ModulesRestoreData modulesRestoreData = CreateModulesRestoreData();
 
       XDocument doc;
       try
@@ -223,23 +246,9 @@ namespace Chlaot
       MessageBox.Show("Saved.");
     }
 
-    internal void ResetModules(Dictionary<string, Dictionary<string, string>?> modulesRestoreData)
+    internal void ResetModules()
     {
-      foreach (var entry in modulesRestoreData)
-      {
-        var module = this.context.Modules.FirstOrDefault(q => q.Name == entry.Key);
-        if (module == null) continue;
-        if (entry.Value == null) continue;
-        try
-        {
-          module.Restore(entry.Value);
-        }
-        catch (Exception ex)
-        {
-          // TODO better error handling
-          throw new ApplicationException("Failed to restore module from data.", ex);
-        }
-      }
+      ApplyModuleRestoreData(lastRunModuleRestoreData);
     }
   }
 }

@@ -77,18 +77,9 @@ namespace Chlaot
 
     private void DoAppReset(bool reloadModules)
     {
-      Dictionary<string, Dictionary<string, string>?> stores = new();
-      if (reloadModules)
-      {
-        foreach (var module in this.context.Modules)
-        {
-          stores[module.Name] = module.TryGetRestoreData();
-        }
-      }
-
       FrmInit frm = new FrmInit();
-      frm.ResetModules(stores);
-
+      if (reloadModules)
+        frm.ResetModules();
       frm.Show();
     }
 
@@ -116,6 +107,8 @@ namespace Chlaot
       FrmResetOrQuit frm = new FrmResetOrQuit();
       frm.ShowDialog();
       closeDialogResult = frm.DialogResult;
+      if (closeDialogResult == FrmResetOrQuit.ResetQuitDialogResult.Cancel)
+        e.Cancel = true;
     }
   }
 }

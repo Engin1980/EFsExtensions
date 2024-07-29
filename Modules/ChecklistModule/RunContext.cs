@@ -119,7 +119,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     internal void Stop()
     {
-      throw new NotImplementedException();
+      //TODO implement
+      logger?.Invoke(LogLevel.WARNING, "Stop for RunContext of CheckListModule is not implemented.");
     }
 
     #endregion Internal Methods
