@@ -122,14 +122,14 @@ namespace Chlaot
         throw new ApplicationException("Failed to load Xml document from " + dialog.FileName, ex);
       }
 
-      Dictionary<string, Dictionary<string, string>> restoreSets = new();
+      Dictionary<string, Dictionary<string, string>> modulesRestoreData = new();
       try
       {
         XElement root = doc.Root!;
 
         foreach (XElement moduleElement in root.Elements())
         {
-          var curr = restoreSets[moduleElement.Name.LocalName] = new();
+          var curr = modulesRestoreData[moduleElement.Name.LocalName] = new();
           foreach (XElement elm in moduleElement.Elements())
           {
             string key = elm.Name.LocalName;
@@ -144,7 +144,7 @@ namespace Chlaot
         throw new ApplicationException("Failed to extract data from XML Document - probably invalid content?", ex);
       }
 
-      foreach (var entry in restoreSets)
+      foreach (var entry in modulesRestoreData)
       {
         var module = this.context.Modules.FirstOrDefault(q => q.Name == entry.Key);
         if (module == null) continue;
@@ -178,7 +178,7 @@ namespace Chlaot
       if (dialog.ShowDialog() != CommonFileDialogResult.Ok || dialog.FileName == null) return;
 
 
-      Dictionary<string, Dictionary<string, string>> restoreSets = this.context.Modules
+      Dictionary<string, Dictionary<string, string>> modulesRestoreData = this.context.Modules
         .Select(q => new { Key = q.Name.Replace(" ", "_"), Value = q.TryGetRestoreData() })
         .Where(q => q.Value != null)
         .ToDictionary(q => q.Key, q => q.Value!);
@@ -187,7 +187,7 @@ namespace Chlaot
       try
       {
         XElement root = new(XName.Get("restoreData"));
-        foreach (var restoreEntry in restoreSets)
+        foreach (var restoreEntry in modulesRestoreData)
         {
           XElement moduleElement = new(XName.Get(restoreEntry.Key));
           foreach (var entry in restoreEntry.Value)
@@ -221,6 +221,25 @@ namespace Chlaot
       }
 
       MessageBox.Show("Saved.");
+    }
+
+    internal void ResetModules(Dictionary<string, Dictionary<string, string>?> modulesRestoreData)
+    {
+      foreach (var entry in modulesRestoreData)
+      {
+        var module = this.context.Modules.FirstOrDefault(q => q.Name == entry.Key);
+        if (module == null) continue;
+        if (entry.Value == null) continue;
+        try
+        {
+          module.Restore(entry.Value);
+        }
+        catch (Exception ex)
+        {
+          // TODO better error handling
+          throw new ApplicationException("Failed to restore module from data.", ex);
+        }
+      }
     }
   }
 }

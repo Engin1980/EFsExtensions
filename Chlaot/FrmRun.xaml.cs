@@ -55,8 +55,44 @@ namespace Chlaot
       if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
     }
 
+    private FrmResetOrQuit.ResetQuitDialogResult closeDialogResult = FrmResetOrQuit.ResetQuitDialogResult.Cancel;
     private bool isClosing = false;
     private void Window_Closed(object sender, EventArgs e)
+    {
+      switch (closeDialogResult)
+      {
+        case FrmResetOrQuit.ResetQuitDialogResult.Quit:
+          ShutdownTheApp();
+          break;
+        case FrmResetOrQuit.ResetQuitDialogResult.Init:
+          DoAppReset(false);
+          break;
+        case FrmResetOrQuit.ResetQuitDialogResult.InitAndReset:
+          DoAppReset(true);
+          break;
+        case FrmResetOrQuit.ResetQuitDialogResult.Cancel:
+          return;
+      }
+    }
+
+    private void DoAppReset(bool reloadModules)
+    {
+      Dictionary<string, Dictionary<string, string>?> stores = new();
+      if (reloadModules)
+      {
+        foreach (var module in this.context.Modules)
+        {
+          stores[module.Name] = module.TryGetRestoreData();
+        }
+      }
+
+      FrmInit frm = new FrmInit();
+      frm.ResetModules(stores);
+
+      frm.Show();
+    }
+
+    private void ShutdownTheApp()
     {
       lock (this)
       {
@@ -73,6 +109,13 @@ namespace Chlaot
       Task.WaitAll(stopTasks);
 
       Application.Current.Shutdown();
+    }
+
+    private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+      FrmResetOrQuit frm = new FrmResetOrQuit();
+      frm.ShowDialog();
+      closeDialogResult = frm.DialogResult;
     }
   }
 }

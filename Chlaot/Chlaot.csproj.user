@@ -7,12 +7,18 @@
     </ApplicationDefinition>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="FrmResetOrQuit.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="FrmRun.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="FrmInit.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="FrmResetOrQuit.xaml">
       <SubType>Designer</SubType>
     </Page>
     <Page Update="FrmRun.xaml">
