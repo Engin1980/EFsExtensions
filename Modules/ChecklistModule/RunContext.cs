@@ -119,8 +119,12 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     internal void Stop()
     {
-      //TODO implement
+      logger?.Invoke(LogLevel.INFO, "Stopping");
       logger?.Invoke(LogLevel.WARNING, "Stop for RunContext of CheckListModule is not implemented.");
+      this.simObject.Started -= SimObject_Started;
+      this.simObject.SimPropertyChanged -= SimObject_SimPropertyChanged;
+      this.keyHookWrapper!.UnregisterAllKeyHooks();
+      logger?.Invoke(LogLevel.INFO, "Stopped");
     }
 
     #endregion Internal Methods

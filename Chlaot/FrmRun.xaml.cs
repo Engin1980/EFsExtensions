@@ -62,12 +62,15 @@ namespace Chlaot
       switch (closeDialogResult)
       {
         case FrmResetOrQuit.ResetQuitDialogResult.Quit:
+          UnregisterRunningStuffOnFormClosing();
           ShutdownTheApp();
           break;
         case FrmResetOrQuit.ResetQuitDialogResult.Init:
+          UnregisterRunningStuffOnFormClosing();
           DoAppReset(false);
           break;
         case FrmResetOrQuit.ResetQuitDialogResult.InitAndReset:
+          UnregisterRunningStuffOnFormClosing();
           DoAppReset(true);
           break;
         case FrmResetOrQuit.ResetQuitDialogResult.Cancel:
@@ -83,7 +86,7 @@ namespace Chlaot
       frm.Show();
     }
 
-    private void ShutdownTheApp()
+    private void UnregisterRunningStuffOnFormClosing()
     {
       lock (this)
       {
@@ -91,14 +94,16 @@ namespace Chlaot
         isClosing = true;
       }
 
-      Logger.UnregisterLogAction(this);
-
       Task[] stopTasks = context.Modules
         .Select(q => Task.Run(q.Stop))
         .ToArray();
 
       Task.WaitAll(stopTasks);
+    }
 
+    private void ShutdownTheApp()
+    {
+      Logger.UnregisterLogAction(this);
       Application.Current.Shutdown();
     }
 
