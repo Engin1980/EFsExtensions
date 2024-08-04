@@ -10,3 +10,4 @@ copy .\Affinity\*.xml ..\Chlaot\bin\debug\net6.0-windows\Xmls
 
 if not exist "..\Chlaot\bin\debug\net6.0-windows\Xmls\Xsds" mkdir "..\Chlaot\bin\debug\net6.0-windows\Xmls\Xsds"
 copy .\Xsds\*.xsd ..\Chlaot\bin\debug\net6.0-windows\Xmls\Xsds
+

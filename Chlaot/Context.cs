@@ -45,6 +45,10 @@ namespace Chlaot
       module = new Eng.Chlaot.Modules.AffinityModule.AffinityModule();
       TryAddModule(module);
 
+      logger.Invoke(LogLevel.INFO, "Loading flight-log module...");
+      module = new Eng.Chlaot.Modules.FlightLogModule.FlightLogModule();
+      TryAddModule(module);
+
       logger.Invoke(LogLevel.INFO, "Setting up modules...");
       Modules.ToList().ForEach(q => q.SetUp(
         new ModuleSetUpInfo()));
