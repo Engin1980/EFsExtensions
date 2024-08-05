@@ -37,7 +37,7 @@ namespace Eng.Chlaot.Modules.FlightLogModule
     {
       var airports = LoadNavdata();
 
-      this.Context = new Context()
+      this.Context = new Context(() => this.IsReady = true)
       {
         AirportsDict = airports
       };
@@ -62,7 +62,7 @@ namespace Eng.Chlaot.Modules.FlightLogModule
 
     public void Run()
     {
-      //throw new NotImplementedException();
+      this.RunControl = new CtrRun(this.Context);
     }
 
     public void SetUp(ModuleSetUpInfo setUpInfo)

@@ -1,5 +1,7 @@
 ﻿using Eng.Chlaot.Modules.FlightLogModule.Navdata;
+using ESystem.Asserting;
 using ESystem.Miscelaneous;
+using FlightLogModule.RunModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +12,13 @@ namespace Eng.Chlaot.Modules.FlightLogModule
 {
   public class Context : NotifyPropertyChanged
   {
+    private readonly Action onReadySet;
+
+    public Context(Action onReadySet)
+    {
+      EAssert.Argument.IsNotNull(onReadySet, nameof(onReadySet));
+      this.onReadySet = onReadySet;
+    }
 
     public Dictionary<string, Airport> AirportsDict
     {
@@ -22,10 +31,31 @@ namespace Eng.Chlaot.Modules.FlightLogModule
     }
 
 
+    internal RunModel RunModel
+    {
+      get { return base.GetProperty<RunModel>(nameof(RunModel))!; }
+      set { base.UpdateProperty(nameof(RunModel), value); }
+    }
+
+
+
     public List<Airport> AirportsList
     {
       get { return base.GetProperty<List<Airport>>(nameof(AirportsList))!; }
       private set { base.UpdateProperty(nameof(AirportsList), value); }
     }
+
+
+    public bool IsReady
+    {
+      get { return base.GetProperty<bool>(nameof(IsReady))!; }
+      set
+      {
+        base.UpdateProperty(nameof(IsReady), value);
+        if (value) onReadySet();
+      }
+    }
+
+
   }
 }

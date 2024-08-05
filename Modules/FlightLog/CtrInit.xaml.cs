@@ -21,16 +21,32 @@ namespace FlightLogModule
   /// </summary>
   public partial class CtrInit : UserControl
   {
-    private Context Context = null!;
+    private readonly Context Context = null!;
+    private bool isInitializing = false;
+
     public CtrInit()
     {
+      isInitializing = true;
       InitializeComponent();
+      isInitializing = false;
     }
 
-    public CtrInit(Context context):this()
+    public CtrInit(Context context) : this()
     {
       this.Context = context;
       this.DataContext = context;
+    }
+
+    private void tabMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+      if (tabMain.SelectedIndex == 1)
+        lblTakeLong.Visibility = Visibility.Collapsed;
+    }
+
+    private void cmbProfile_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+      if (isInitializing) return;
+      Context.IsReady = cmbProfile.SelectedIndex != 0;
     }
   }
 }

@@ -16,6 +16,17 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
     public string SimVar { get; set; } = null!;
     public string? Unit { get; set; } = null;
 
+    public SimProperty()
+    {
+    }
+
+    public SimProperty(string name, string simVar, string? unit)
+    {
+      Name = name;
+      SimVar = simVar;
+      Unit = unit;
+    }
+
     public override int GetHashCode() => string.GetHashCode(this.Name) + string.GetHashCode(SimVar);
 
     public override bool Equals(object? obj)
