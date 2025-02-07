@@ -100,7 +100,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
 
     public string DisplayString
     {
-      get => base.GetProperty<string>(nameof(DisplayString))!;
+      get => base.GetProperty<string>(nameof(DisplayString)) ?? this.CheckList.Id;
       set => base.UpdateProperty(nameof(DisplayString), value);
     }
 

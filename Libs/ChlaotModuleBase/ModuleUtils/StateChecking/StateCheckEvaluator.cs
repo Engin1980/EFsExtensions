@@ -122,8 +122,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
       }
     }
 
-
-
     public bool Evaluate(IStateCheckItem item)
     {
       bool ret;

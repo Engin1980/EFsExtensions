@@ -19,7 +19,7 @@
       </g:and>
     </trigger>
     <reactivationTrigger>
-      <g:property name="ias" direction="below" expression="10" />
+      <g:property name="acceleration" direction="below" expression="0" />
     </reactivationTrigger>
     <variables>
       <g:userVariable name="v1" defaultValue="20" />

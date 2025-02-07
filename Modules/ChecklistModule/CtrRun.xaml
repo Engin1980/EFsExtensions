@@ -26,7 +26,13 @@
         <TreeView.Resources>
           <HierarchicalDataTemplate DataType="{x:Type vm:CheckListVM}" ItemsSource="{Binding Items}">
             <Label x:Name="lblChecklist" Margin="0" Padding="0" 
-                    Background="{Binding RunTime.State, Converter={StaticResource RunStateToSolidBrushColorConverter}}">
+                    Background="{Binding RunTime.State, Converter={StaticResource RunStateToSolidBrushColorConverter}}"
+                   >
+              <Label.ContextMenu>
+                <ContextMenu>
+                  <MenuItem Header="Set as current" Tag="{Binding}" Click="btnSetAsCurrentChecklist_Click"/>
+                </ContextMenu>
+              </Label.ContextMenu>
               <Label.Content>
                 <StackPanel Orientation="Horizontal" >
                   <TextBlock Text="{Binding CheckList.CallSpeech}" />
@@ -51,6 +57,67 @@
           </HierarchicalDataTemplate>
         </TreeView.Resources>
       </TreeView>
+    </TabItem>
+    <TabItem Header="Checklist conditions">
+      <DataGrid ItemsSource="{Binding CheckListVMs}" AutoGenerateColumns="False" CanUserAddRows="False">
+        <DataGrid.Columns>
+          <DataGridTemplateColumn Header="Checklist">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding CheckList.CallSpeech}" />
+                    <TextBlock Text=" (id=" FontSize="10"  VerticalAlignment="Bottom" Foreground="Gray"/>
+                    <TextBlock Text="{Binding CheckList.Id}" FontSize="10"   VerticalAlignment="Bottom" Foreground="Blue"/>
+                    <TextBlock Text=")" FontSize="10"   VerticalAlignment="Bottom" Foreground="Gray"/>
+                  </StackPanel>
+                </Label>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="State">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding RunTime.State}" />
+                  </StackPanel>
+                </Label>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="Is-Active">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding RunTime.IsActive}" />
+                  </StackPanel>
+                </Label>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="Following">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <ItemsControl ItemsSource="{Binding CheckList.NextChecklists}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding CallSpeech}" />
+                        <TextBlock Text=" (id=" FontSize="10"  VerticalAlignment="Bottom" Foreground="Gray"/>
+                        <TextBlock Text="{Binding Id}" FontSize="10"   VerticalAlignment="Bottom" Foreground="Blue"/>
+                        <TextBlock Text=")" FontSize="10"   VerticalAlignment="Bottom" Foreground="Gray"/>
+                      </StackPanel>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTextColumn Header="Autoplay Condition" Binding="{Binding CheckList.Trigger.DisplayString, FallbackValue=(None)}" />
+        </DataGrid.Columns>
+      </DataGrid>
     </TabItem>
     <TabItem Header="Property Values">
       <gWpf:PropertiesDataGrid Properties="{Binding PropertyVMs}" />
