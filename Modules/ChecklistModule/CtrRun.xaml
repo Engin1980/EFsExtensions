@@ -26,7 +26,13 @@
         <TreeView.Resources>
           <HierarchicalDataTemplate DataType="{x:Type vm:CheckListVM}" ItemsSource="{Binding Items}">
             <Label x:Name="lblChecklist" Margin="0" Padding="0" 
-                    Background="{Binding RunTime.State, Converter={StaticResource RunStateToSolidBrushColorConverter}}">
+                    Background="{Binding RunTime.State, Converter={StaticResource RunStateToSolidBrushColorConverter}}"
+                   >
+              <Label.ContextMenu>
+                <ContextMenu>
+                  <MenuItem Header="Set as current" Tag="{Binding}" Click="btnSetAsCurrentChecklist_Click"/>
+                </ContextMenu>
+              </Label.ContextMenu>
               <Label.Content>
                 <StackPanel Orientation="Horizontal" >
                   <TextBlock Text="{Binding CheckList.CallSpeech}" />

@@ -100,6 +100,11 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     #region Internal Methods
 
+    internal void SetCurrentChecklist(CheckListVM vm)
+    {
+      this.manager.SetCurrentChecklist(vm);
+    }
+
     internal void Run(KeyHookWrapper keyHookWrapper)
     {
       logger?.Invoke(LogLevel.INFO, "Run");

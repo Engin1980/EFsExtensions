@@ -98,7 +98,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           this.active.Add(this.previous);
           this.all.ForEach(q => q.RunTime.IsActive = active.Contains(q));
           this.previous.RunTime.ResetEvaluator();
-          this.previous = this.all.FirstOrDefault(q => q.CheckList.NextChecklists.First() == this.previous.CheckList); // tries to get previous;
+          this.previous = this.all.FirstOrDefault(q => q.CheckList.NextChecklists.First() == this.previous.CheckList); // tries to get previous of previous;
         }
         this.playbackManager.Play();
       }
@@ -130,6 +130,20 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
           this.playbackManager.SetCurrent(readyCheckList);
           this.playbackManager.TogglePlay();
+        }
+      }
+
+      internal void SetCurrentChecklist(CheckListVM vm)
+      {
+        this.current = vm;
+        playbackManager.SetCurrent(vm);
+        this.active.Clear();
+        this.active.Add(vm);
+        this.all.ForEach(q => q.RunTime.IsActive = active.Contains(q));
+
+        if (this.previous != null) { 
+          this.previous.RunTime.ResetEvaluator();
+          this.previous = this.all.FirstOrDefault(q => q.CheckList.NextChecklists.First() == this.previous.CheckList); // tries to get previous of previous;
         }
       }
     }

@@ -1,5 +1,6 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking;
 using Eng.Chlaot.Modules.ChecklistModule;
+using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -39,6 +40,12 @@ namespace ChecklistModule
 
       var keyHookWrapper = new KeyHookWrapper();
       this.context.Run(keyHookWrapper);
+    }
+
+    private void btnSetAsCurrentChecklist_Click(object sender, RoutedEventArgs e)
+    {
+      CheckListVM vm = ((MenuItem)sender).Tag as CheckListVM;
+      this.context.SetCurrentChecklist(vm);
     }
   }
 }
