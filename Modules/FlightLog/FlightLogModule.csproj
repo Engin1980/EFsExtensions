@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyVersion>1.0.0.39</AssemblyVersion>
-    <FileVersion>1.0.0.39</FileVersion>
+    <AssemblyVersion>1.0.0.48</AssemblyVersion>
+    <FileVersion>1.0.0.48</FileVersion>
     <RootNamespace>Eng.Chlaot.Modules.FlightLogModule</RootNamespace>
   </PropertyGroup>
 

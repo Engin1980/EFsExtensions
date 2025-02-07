@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 using Eng.Chlaot.Modules.FlightLogModule.Navdata;
-using Eng.Chlaot.Modules.FlightLogModule.RunModel;
+using Eng.Chlaot.Modules.FlightLogModule;
 using ESystem;
 using ESystem.Asserting;
 
@@ -13,7 +13,7 @@ namespace Eng.Chlaot.Modules.FlightLogModule.LogModel
 {
   internal static class Convertor
   {
-    public static Flight Convert(RunModel.RunModel run, IEnumerable<Airport> airports)
+    public static Flight Convert(RunModel run, IEnumerable<Airport> airports)
     {
       EAssert.IsNotNull(run.StartUpCache);
       EAssert.IsNotNull(run.TakeOffCache);

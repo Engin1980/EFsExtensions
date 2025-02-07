@@ -40,7 +40,7 @@ namespace FlightLogModule
     public CtrRun(Context context) : this()
     {
       this.Context = context;
-      this.Context.RunModel = new RunModel.RunModel();
+      this.Context.RunModel = new RunModel();
 
       this.DataContext = this.Context;
 
@@ -56,16 +56,16 @@ namespace FlightLogModule
     {
       switch (Context.RunModel.State)
       {
-        case RunModel.RunModel.RunModelState.WaitingForStartup:
+        case RunModel.RunModelState.WaitingForStartup:
           ProcessWaitForStartupSecondElapsed();
           break;
-        case RunModel.RunModel.RunModelState.StartedWaitingForTakeOff:
+        case RunModel.RunModelState.StartedWaitingForTakeOff:
           ProcessStartedWaitingForTakeOffSecondElapsed();
           break;
-        case RunModel.RunModel.RunModelState.InFlightWaitingForLanding:
+        case RunModel.RunModelState.InFlightWaitingForLanding:
           InFlightWaitingForLandingSecondElapsed();
           break;
-        case RunModel.RunModel.RunModelState.LandedWaitingForShutdown:
+        case RunModel.RunModelState.LandedWaitingForShutdown:
           LandedWaitingForShutdown();
           break;
         default:
@@ -110,7 +110,7 @@ namespace FlightLogModule
       if (airborneCounter > AIRBORNE_COUNTER_THRESHOLD)
       {
         airborneCounter = 0;
-        Context.RunModel.State = RunModel.RunModel.RunModelState.InFlightWaitingForLanding;
+        Context.RunModel.State = RunModel.RunModelState.InFlightWaitingForLanding;
       }
     }
 
@@ -119,7 +119,7 @@ namespace FlightLogModule
       if (this.simObject[SimProperties.Eng1Running] == 0) return;
 
       Context.RunModel.StartUpCache = new(DateTime.Now);
-      Context.RunModel.State = RunModel.RunModel.RunModelState.StartedWaitingForTakeOff;
+      Context.RunModel.State = RunModel.RunModelState.StartedWaitingForTakeOff;
     }
   }
 }

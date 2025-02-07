@@ -1,7 +1,6 @@
 ﻿using Eng.Chlaot.Modules.FlightLogModule.Navdata;
 using ESystem.Asserting;
 using ESystem.Miscelaneous;
-using FlightLogModule.RunModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,21 +29,17 @@ namespace Eng.Chlaot.Modules.FlightLogModule
       }
     }
 
-
     internal RunModel RunModel
     {
       get { return base.GetProperty<RunModel>(nameof(RunModel))!; }
       set { base.UpdateProperty(nameof(RunModel), value); }
     }
 
-
-
     public List<Airport> AirportsList
     {
       get { return base.GetProperty<List<Airport>>(nameof(AirportsList))!; }
       private set { base.UpdateProperty(nameof(AirportsList), value); }
     }
-
 
     public bool IsReady
     {
@@ -55,7 +50,5 @@ namespace Eng.Chlaot.Modules.FlightLogModule
         if (value) onReadySet();
       }
     }
-
-
   }
 }

@@ -35,37 +35,45 @@
           <TextBlock x:Name="lblTakeLong" Text=" (loading may take long)" />
         </StackPanel>
       </TabItem.Header>
-      <TreeView ItemsSource="{Binding AirportsList}">
-        <TreeView.Resources>
-          <HierarchicalDataTemplate DataType="{x:Type nav:Airport}" ItemsSource="{Binding Runways}">
-            <StackPanel Orientation="Horizontal">
-              <TextBlock FontWeight="Bold" Text="{Binding ICAO}" />
-              <TextBlock Text=" - "/>
-              <TextBlock Text="{Binding Name}" />
-              <TextBlock Text=", " />
-              <TextBlock Text="{Binding City}" />
-              <TextBlock Text=", " />
-              <TextBlock Text="{Binding CountryCode}" />
-            </StackPanel>
-          </HierarchicalDataTemplate>
+      <StackPanel x:Name="pnlFilteredAirportList" >
+        <GroupBox Header="Filter">
+          <StackPanel Orientation="Horizontal">
+            <TextBox x:Name="txtICAO" Width="100" Text="{Binding Filter.Text}" />
+            <CheckBox x:Name="chkICAOOnly" Margin="4 4 0 0" Content="ICAO only" IsChecked="{Binding Filter.IcaoOnly}" />
+          </StackPanel>
+        </GroupBox>
+        <TreeView ItemsSource="{Binding AirportList}">
+          <TreeView.Resources>
+            <HierarchicalDataTemplate DataType="{x:Type nav:Airport}" ItemsSource="{Binding Runways}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock FontWeight="Bold" Text="{Binding ICAO}" />
+                <TextBlock Text=" - "/>
+                <TextBlock Text="{Binding Name}" />
+                <TextBlock Text=", " />
+                <TextBlock Text="{Binding City}" />
+                <TextBlock Text=", " />
+                <TextBlock Text="{Binding CountryCode}" />
+              </StackPanel>
+            </HierarchicalDataTemplate>
 
-          <HierarchicalDataTemplate DataType="{x:Type nav:Runway}" ItemsSource="{Binding Thresholds}">
-            <StackPanel Orientation="Horizontal">
-              <TextBlock Text="{Binding Designator}" />
-            </StackPanel>
-          </HierarchicalDataTemplate>
+            <HierarchicalDataTemplate DataType="{x:Type nav:Runway}" ItemsSource="{Binding Thresholds}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Designator}" />
+              </StackPanel>
+            </HierarchicalDataTemplate>
 
-          <HierarchicalDataTemplate DataType="{x:Type nav:RunwayThreshold}">
-            <StackPanel Orientation="Horizontal">
-              <TextBlock Text="{Binding Designator}" />
-              <TextBlock Text=" - Loc: " />
-              <TextBlock Text="{Binding Coordinate.Latitude, Converter={StaticResource DoubleFormatter}, ConverterParameter=N5}" />
-              <TextBlock Text=" " />
-              <TextBlock Text="{Binding Coordinate.Longitude, Converter={StaticResource DoubleFormatter}, ConverterParameter=N5}" />
-            </StackPanel>
-          </HierarchicalDataTemplate>
-        </TreeView.Resources>
-      </TreeView>
+            <HierarchicalDataTemplate DataType="{x:Type nav:RunwayThreshold}">
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding Designator}" />
+                <TextBlock Text=" - Loc: " />
+                <TextBlock Text="{Binding Coordinate.Latitude, Converter={StaticResource DoubleFormatter}, ConverterParameter=N5}" />
+                <TextBlock Text=" " />
+                <TextBlock Text="{Binding Coordinate.Longitude, Converter={StaticResource DoubleFormatter}, ConverterParameter=N5}" />
+              </StackPanel>
+            </HierarchicalDataTemplate>
+          </TreeView.Resources>
+        </TreeView>
+      </StackPanel>
     </TabItem>
   </TabControl>
 </UserControl>
