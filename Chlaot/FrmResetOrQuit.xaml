@@ -1,0 +1,34 @@
+﻿<Window x:Class="Chlaot.FrmResetOrQuit"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Chlaot"
+        mc:Ignorable="d"
+        Title="FrmResetOrQuit" Height="180" Width="800"  SizeToContent="WidthAndHeight">
+  <Grid>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition />
+      <ColumnDefinition />
+      <ColumnDefinition />
+      <ColumnDefinition />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="*" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <Label Grid.ColumnSpan="4" Grid.Row="0" Grid.Column="0" >
+      <TextBlock>
+        You have selected to close the window. You can:<LineBreak />
+        - <Bold>Cancel</Bold> - to close this dialog and return to the previous window.<LineBreak />
+        - <Bold>Init</Bold> - to return to Init window with no modules preselected.<LineBreak />
+        - <Bold>Reset to Init</Bold> - to return to the Init window and load the current modules to their initial state.<LineBreak />
+        - <Bold>Quit</Bold> - to close the application.
+      </TextBlock>
+    </Label>
+    <Button x:Name="btnCancel" Grid.Row="1" Grid.Column="0" Content="Cancel" Margin="4" Click="btnCancel_Click" />
+    <Button x:Name="btnInit" Grid.Row="1" Grid.Column="1" Content="Init" Margin="4" Click="btnInit_Click" />
+    <Button x:Name="btnInitReset" Grid.Row="1" Grid.Column="2" Content="Reset to Init" Margin="4" Click="btnInitReset_Click" />
+    <Button x:Name="btnQuit" Grid.Row="1" Grid.Column="3" Content="Quit" Margin="4" Click="btnQuit_Click" />
+  </Grid>
+</Window>

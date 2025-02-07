@@ -12,10 +12,11 @@ using System.Linq;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using Eng.Chlaot.Modules.FailuresModule.Model.VMs;
 using Eng.Chlaot.Modules.FailuresModule.Model.Sustainers;
+using ESystem.Miscelaneous;
 
 namespace Eng.Chlaot.Modules.FailuresModule
 {
-  public class RunContext : NotifyPropertyChangedBase
+  public class RunContext : NotifyPropertyChanged
   {
     #region Fields
 

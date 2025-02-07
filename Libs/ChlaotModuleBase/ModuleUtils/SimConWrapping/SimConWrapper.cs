@@ -1,4 +1,5 @@
 ﻿using ChlaotModuleBase.ModuleUtils.SimConWrapping.Exceptions;
+using ESimConnect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,7 @@ namespace ChlaotModuleBase.ModuleUtils.SimConWrapping
       this.simCon.ThrowsException += SimCon_ThrowsException;
     }
 
-    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, Microsoft.FlightSimulator.SimConnect.SIMCONNECT_EXCEPTION ex)
+    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, SimConnectException ex)
     {
       SimConWrapperSimConException scex = new SimConWrapperSimConException(ex.ToString());
       SimConErrorRaised?.Invoke(scex);

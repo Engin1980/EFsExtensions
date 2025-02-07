@@ -156,7 +156,7 @@
 
   <xsd:simpleType name="variableName">
     <xsd:restriction base="xsd:string">
-      <xsd:pattern value="^[^\{]\S+[^\}]$" />
+      <xsd:pattern value="^[a-zA-Z][a-zA-Z0-9-_~^]*$" />
     </xsd:restriction>
   </xsd:simpleType>
 

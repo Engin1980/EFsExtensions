@@ -1,4 +1,5 @@
 ﻿using ESimConnect;
+using ESimConnect.Definitions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

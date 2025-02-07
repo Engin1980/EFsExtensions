@@ -1,4 +1,5 @@
 ﻿using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Controls
       set
       {
         double v = Math.Max(0, Math.Min(1, value));
-        Percentage p = (Percentage)v;
+        Percentage p = Percentage.Of(v);
         SetValue(ValueProperty, p);
       }
     }
@@ -56,7 +57,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Controls
       else
         value += 0.1;
       value = Math.Round(value, 4);
-      Value = (Percentage)value;
+      Value = Percentage.Of(value);
     }
 
     public void DecreaseValue()
@@ -71,7 +72,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Controls
       else
         value -= 0.1;
       value = Math.Round(value, 4);
-      Value = (Percentage)value;
+      Value = Percentage.Of(value);
     }
 
     private void btnUp_Click(object sender, RoutedEventArgs e)

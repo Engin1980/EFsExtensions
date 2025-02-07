@@ -1,6 +1,8 @@
 ﻿using CopilotModule;
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using ESystem;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +12,7 @@ using System.Windows.Controls;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
-  public class CopilotModule : NotifyPropertyChangedBase, IModule
+  public class CopilotModule : NotifyPropertyChanged, IModule
   {
     public bool IsReady
     {
@@ -70,6 +72,27 @@ namespace Eng.Chlaot.Modules.CopilotModule
     public void Stop()
     {
       this.runContext?.Stop();
+    }
+
+    public Dictionary<string, string>? TryGetRestoreData()
+    {
+      if (initContext != null && initContext.LastLoadedFile != null)
+        return new Dictionary<string, string> { { "fileName", initContext.LastLoadedFile } };
+      else
+        return null;
+    }
+
+    public void Restore(Dictionary<string, string> restoreData)
+    {
+      try
+      {
+        string file = restoreData["fileName"];
+        this.initContext!.LoadFile(file);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Failed to restore.", ex);
+      }
     }
   }
 }

@@ -1,4 +1,5 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase;
+using ESystem.Miscelaneous;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents
 {
-  public abstract class Trigger : NotifyPropertyChangedBase
+  public abstract class Trigger : NotifyPropertyChanged
   {
 
     public Percentage Probability

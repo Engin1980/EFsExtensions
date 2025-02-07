@@ -23,5 +23,7 @@ namespace Eng.Chlaot.ChlaotModuleBase
     public Control InitControl { get; }
     public Control RunControl { get; }
     public string Name { get; }
+    public Dictionary<string, string>? TryGetRestoreData();
+    public void Restore(Dictionary<string, string> restoreData);
   }
 }

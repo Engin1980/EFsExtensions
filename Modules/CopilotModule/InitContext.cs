@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
-using static ESystem.Functions;
+using static ESystem.Functions.TryCatch;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
@@ -23,10 +23,11 @@ using static Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUti
 using Eng.Chlaot.Modules.CopilotModule.Types.VMs;
 using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
+using ESystem.Miscelaneous;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
-  public class InitContext : NotifyPropertyChangedBase
+  public class InitContext : NotifyPropertyChanged
   {
     #region Fields
 
@@ -37,6 +38,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     #region Properties
 
+    public string? LastLoadedFile { get; private set; }
     public MetaInfo MetaInfo
     {
       get => base.GetProperty<MetaInfo>(nameof(MetaInfo))!;
@@ -148,6 +150,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         BindPropertyChangedEvents();
 
         UpdateReadyFlag();
+        this.LastLoadedFile = xmlFile;
         logger.Invoke(LogLevel.INFO, $"Copilot set file '{xmlFile}' successfully loaded.");
 
       }

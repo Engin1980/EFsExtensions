@@ -1,6 +1,6 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
-using ESimConnect;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
 {
-    public abstract class FailureSustainer : NotifyPropertyChangedBase
+    public abstract class FailureSustainer : NotifyPropertyChanged
     {
         #region Fields
 

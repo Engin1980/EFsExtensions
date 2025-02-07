@@ -23,15 +23,15 @@ namespace Chlaot
       [XmlAttribute] public bool Warning { get; set; }
       [XmlAttribute] public bool Error { get; set; }
 
-      internal ELogging.Model.LogRule ToELogRule()
+      internal ELogging.LogRule ToELogRule() //TODO update according new implementation of ELogging
       {
-        LogLevel ll = LogLevel.Unused;
-        if (this.Verbose) ll |= LogLevel.VERBOSE;
-        if (this.Info) ll |= LogLevel.INFO;
-        if (this.Warning) ll |= LogLevel.WARNING;
-        if (this.Error) ll |= LogLevel.ERROR;
+        LogLevel ll = this.Error ? LogLevel.ERROR
+          : this.Warning ? LogLevel.WARNING
+          : this.Info ? LogLevel.INFO
+          : this.Verbose ? LogLevel.DEBUG
+          : LogLevel.TRACE;
 
-        ELogging.Model.LogRule ret = new ELogging.Model.LogRule(this.Regex, ll);
+        ELogging.LogRule ret = new(this.Regex, ll);
         return ret;
       }
     }
@@ -72,12 +72,6 @@ namespace Chlaot
 
     public static Settings Load(string fileName, out string? errorText)
     {
-      //Settings tmp = Settings.CreateDefault();
-      //XmlSerializer tmps = new XmlSerializer(typeof(Settings));
-      //FileStream tmpf = new FileStream(fileName, FileMode.Create);
-      //tmps.Serialize(tmpf, tmp);
-      //tmpf.Close();
-
       Settings ret;
       try
       {

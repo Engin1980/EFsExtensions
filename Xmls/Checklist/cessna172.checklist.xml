@@ -143,6 +143,9 @@
         <confirmation type="speech" value="Checked"/>
       </item>
     </items>
+    <trigger>
+      <g:property name="vs" direction="above" expression="500" />
+    </trigger>
   </checklist>
   <checklist id="vacated" callSpeech="Vacated">
     <items>

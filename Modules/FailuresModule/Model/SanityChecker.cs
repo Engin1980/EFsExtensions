@@ -29,7 +29,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Types
 
     private void CheckSanityInternal(List<Incident> incidents)
     {
-      Logger.Log(this, LogLevel.VERBOSE, "Checking sanity of incidents");
+      Logger.Log(this, LogLevel.DEBUG, "Checking sanity of incidents");
       foreach (Incident incident in incidents)
       {
         if (incident is IncidentGroup incidentGroup)
@@ -47,7 +47,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Types
 
     private void CheckSanityInternal(IncidentDefinition incidentDefinition)
     {
-      Logger.Log(this, LogLevel.VERBOSE, "Checking sanity of incidentDefinition");
+      Logger.Log(this, LogLevel.DEBUG, "Checking sanity of incidentDefinition");
       context.Push($"{incidentDefinition.Title} (IncidentDefinition)");
       WithContext("Variables", () => CheckSanityInternal(incidentDefinition.Variables));
       WithContext("Trigger", () => CheckSanityInternal(incidentDefinition.Trigger));
@@ -58,7 +58,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Types
 
     private void CheckSanityInternal(Trigger trigger)
     {
-      Logger.Log(this, LogLevel.VERBOSE, "Checking sanity of triggers");
+      Logger.Log(this, LogLevel.DEBUG, "Checking sanity of triggers");
       //TODO thle se mi nechtlěo psát zatím
     }
 
@@ -71,7 +71,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Types
 
     private void CheckSanityInternal(List<Variable> variables)
     {
-      Logger.Log(this, LogLevel.VERBOSE, "Checking sanity of variables");
+      Logger.Log(this, LogLevel.DEBUG, "Checking sanity of variables");
       foreach (var variable in variables)
       {
         AssertTrue(string.IsNullOrWhiteSpace(variable.Name) == false, "Variable name is null or whitespace.");
@@ -94,7 +94,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Types
 
     private void CheckSanityInternal(Fail failItem)
     {
-      Logger.Log(this, LogLevel.VERBOSE, "Checking sanity of failItem");
+      Logger.Log(this, LogLevel.DEBUG, "Checking sanity of failItem");
       AssertTrue(failItem.Weight >= 0, $"Weight must be >=0 (provided={failItem.Weight})");
       if (failItem is FailId failure)
       {
@@ -109,7 +109,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Types
 
     private void CheckSanityInternal(IncidentGroup failureSet)
     {
-      Logger.Log(this, LogLevel.VERBOSE, "Checking sanity of failureSet");
+      Logger.Log(this, LogLevel.DEBUG, "Checking sanity of failureSet");
       context.Push($"Failure-set '{failureSet.Title}'");
       CheckSanityInternal(failureSet.Incidents);
       context.Pop();

@@ -10,33 +10,32 @@ using System.Transactions;
 
 namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
 {
-    internal class ToggleFailureSustainer : FailureSustainer
+  internal class ToggleFailureSustainer : FailureSustainer
+  {
+    public ToggleFailureSustainer(ToggleFailureDefinition failure) : base(failure)
     {
-        public ToggleFailureSustainer(ToggleFailureDefinition failure) : base(failure)
-        {
-            // intentionally blank
-        }
-
-        protected override void InitInternal()
-        {
-            // intentionally blank
-        }
-
-        protected override void ResetInternal()
-        {
-            SendEvent();
-        }
-
-        protected override void StartInternal()
-        {
-            SendEvent();
-        }
-
-        private void SendEvent()
-        {
-            string @event = Failure.SimConPoint;
-            uint arg = 0;
-            SimCon.SendClientEvent(@event, new uint[] { }, true);
-        }
+      // intentionally blank
     }
+
+    protected override void InitInternal()
+    {
+      // intentionally blank
+    }
+
+    protected override void ResetInternal()
+    {
+      SendEvent();
+    }
+
+    protected override void StartInternal()
+    {
+      SendEvent();
+    }
+
+    private void SendEvent()
+    {
+      string @event = Failure.SimConPoint;
+      SimCon.ClientEvents.Invoke(@event, validate: true);
+    }
+  }
 }

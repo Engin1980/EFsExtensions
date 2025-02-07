@@ -65,8 +65,8 @@ namespace ESimConnectWpfTest
     private void Update()
     {
       Log("Requesting Update");
-      this.simCon.RequestData<DataStruct>();
-      this.simCon.RequestDataRepeatedly<DataStruct>(null, SIMCONNECT_PERIOD.SECOND);
+      this.simCon.Structs.Request<DataStruct>();
+      this.simCon.Structs.RequestRepeatedly<DataStruct>(SimConnectPeriod.SECOND);
       //this.simCon.RegisterSystemEvent(SimEvents.System._4sec);
       Log("Requested Update");
     }
@@ -92,7 +92,7 @@ namespace ESimConnectWpfTest
         simCon.Connected += SimCon_Connected;
         simCon.DataReceived += SimCon_DataReceived;
         simCon.ThrowsException += SimCon_ThrowsException;
-        simCon.EventInvoked += SimCon_EventInvoked;
+        simCon.SystemEventInvoked += SimCon_SystemEventInvoked;
         Log("Events registered");
       }
       catch (Exception ex)
@@ -104,7 +104,7 @@ namespace ESimConnectWpfTest
       Log("Registering type");
       try
       {
-        simCon.RegisterType<DataStruct>();
+        simCon.Structs.Register<DataStruct>();
         Log("Type registered.");
       }
       catch (Exception ex)
@@ -114,12 +114,12 @@ namespace ESimConnectWpfTest
       }
     }
 
-    private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectEventInvokedEventArgs e)
+    private void SimCon_SystemEventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectSystemEventInvokedEventArgs e)
     {
       Log("SimConnect-internal Event raised with request " + e.Event + " and value " + e.Value);
     }
 
-    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, SIMCONNECT_EXCEPTION ex)
+    private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, SimConnectException ex)
     {
       Log("SimConnect-internal throws an exception: " + ex.ToString());
     }

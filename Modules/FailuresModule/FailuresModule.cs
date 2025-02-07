@@ -1,6 +1,7 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.Modules.FailuresModule;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,7 +12,7 @@ using System.Windows.Controls;
 
 namespace Eng.Chlaot.Modules.FailuresModule
 {
-  public class FailuresModule : NotifyPropertyChangedBase, IModule
+  public class FailuresModule : NotifyPropertyChanged, IModule
   {
     public bool IsReady
     {
@@ -58,6 +59,27 @@ namespace Eng.Chlaot.Modules.FailuresModule
     public void Stop()
     {
       throw new NotImplementedException();
+    }
+
+    public Dictionary<string, string>? TryGetRestoreData()
+    {
+      if (this.InitContext != null && this.InitContext.LastLoadedFile != null)
+        return new Dictionary<string, string> { { "fileName", this.InitContext.LastLoadedFile } };
+      else
+        return null;
+    }
+
+    public void Restore(Dictionary<string, string> restoreData)
+    {
+      try
+      {
+        string file = restoreData["fileName"];
+        this.InitContext!.LoadFile(file);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Failed to restore.", ex);
+      }
     }
   }
 }

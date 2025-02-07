@@ -55,8 +55,38 @@ namespace Chlaot
       if (lstModules.Items.Count > 0) lstModules.SelectedIndex = 0;
     }
 
+    private FrmResetOrQuit.ResetQuitDialogResult closeDialogResult = FrmResetOrQuit.ResetQuitDialogResult.Cancel;
     private bool isClosing = false;
     private void Window_Closed(object sender, EventArgs e)
+    {
+      switch (closeDialogResult)
+      {
+        case FrmResetOrQuit.ResetQuitDialogResult.Quit:
+          UnregisterRunningStuffOnFormClosing();
+          ShutdownTheApp();
+          break;
+        case FrmResetOrQuit.ResetQuitDialogResult.Init:
+          UnregisterRunningStuffOnFormClosing();
+          DoAppReset(false);
+          break;
+        case FrmResetOrQuit.ResetQuitDialogResult.InitAndReset:
+          UnregisterRunningStuffOnFormClosing();
+          DoAppReset(true);
+          break;
+        case FrmResetOrQuit.ResetQuitDialogResult.Cancel:
+          return;
+      }
+    }
+
+    private void DoAppReset(bool reloadModules)
+    {
+      FrmInit frm = new FrmInit();
+      if (reloadModules)
+        frm.ResetModules();
+      frm.Show();
+    }
+
+    private void UnregisterRunningStuffOnFormClosing()
     {
       lock (this)
       {
@@ -64,15 +94,26 @@ namespace Chlaot
         isClosing = true;
       }
 
-      Logger.UnregisterLogAction(this);
-
       Task[] stopTasks = context.Modules
         .Select(q => Task.Run(q.Stop))
         .ToArray();
 
       Task.WaitAll(stopTasks);
+    }
 
+    private void ShutdownTheApp()
+    {
+      Logger.UnregisterLogAction(this);
       Application.Current.Shutdown();
+    }
+
+    private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+    {
+      FrmResetOrQuit frm = new FrmResetOrQuit();
+      frm.ShowDialog();
+      closeDialogResult = frm.DialogResult;
+      if (closeDialogResult == FrmResetOrQuit.ResetQuitDialogResult.Cancel)
+        e.Cancel = true;
     }
   }
 }

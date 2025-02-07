@@ -1,4 +1,5 @@
-﻿using Microsoft.FlightSimulator.SimConnect;
+﻿using ESystem.Miscelaneous;
+using Microsoft.FlightSimulator.SimConnect;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +10,7 @@ using System.Xml.Serialization;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable
 {
-  public abstract class StorableObject : NotifyPropertyChangedBase
+  public abstract class StorableObject : NotifyPropertyChanged
   {
     public void Load(string fileName)
     {

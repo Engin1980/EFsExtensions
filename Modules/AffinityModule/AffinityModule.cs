@@ -1,6 +1,7 @@
 ﻿using AffinityModule;
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,7 +12,7 @@ using System.Windows.Controls;
 
 namespace Eng.Chlaot.Modules.AffinityModule
 {
-  public class AffinityModule : NotifyPropertyChangedBase, IModule
+  public class AffinityModule : NotifyPropertyChanged, IModule
   {
 
     private readonly Context context;
@@ -55,6 +56,29 @@ namespace Eng.Chlaot.Modules.AffinityModule
     public void Stop()
     {
       this.context.Stop();
+    }
+
+    public Dictionary<string, string>? TryGetRestoreData()
+    {
+      Dictionary<string, string>? ret;
+      if (this.context.LastLoadedFileName != null)
+        ret = new Dictionary<string, string> { { "fileName", this.context.LastLoadedFileName } };
+      else
+        ret = null;
+      return ret;
+    }
+
+    public void Restore(Dictionary<string, string> restoreData)
+    {
+      try
+      {
+        string file = restoreData["fileName"];
+        this.context.LoadRuleBase(file);
+      }
+      catch (Exception ex)
+      {
+        throw new ApplicationException("Failed to restore.", ex);
+      }
     }
   }
 }

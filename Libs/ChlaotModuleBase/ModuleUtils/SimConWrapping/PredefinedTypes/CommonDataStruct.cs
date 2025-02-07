@@ -1,4 +1,5 @@
 ﻿using ESimConnect;
+using ESimConnect.Definitions;
 using System.Runtime.InteropServices;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes

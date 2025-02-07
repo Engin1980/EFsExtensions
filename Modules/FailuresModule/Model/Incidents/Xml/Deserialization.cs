@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
+using ESystem.Miscelaneous;
 
 namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents.Xml
 {
@@ -32,7 +33,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents.Xml
         {
           throw new ApplicationException($"Percentage-deserialzer failed to deserialize percentage value from attribute {attribute.Name} with value {attribute.Value}.");
         }
-        Percentage ret = (Percentage)res;
+        Percentage ret = Percentage.Of(res);
         return ret;
       }
 

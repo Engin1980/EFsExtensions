@@ -6,13 +6,14 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <PlatformTarget>x64</PlatformTarget>
+    <AssemblyVersion>1.0.0.8</AssemblyVersion>
+    <FileVersion>1.0.0.8</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Libs\ESimConnect\ESimConnect.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <Reference Include="ESimConnect">
+      <HintPath>..\DLLs\ESimConnect.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
       <HintPath>..\DLLs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>

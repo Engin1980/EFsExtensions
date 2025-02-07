@@ -26,6 +26,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
+using ESystem.Miscelaneous;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -99,26 +100,36 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     #region Internal Methods
 
+    internal void SetCurrentChecklist(CheckListVM vm)
+    {
+      this.manager.SetCurrentChecklist(vm);
+    }
+
     internal void Run(KeyHookWrapper keyHookWrapper)
     {
       logger?.Invoke(LogLevel.INFO, "Run");
 
-      logger?.Invoke(LogLevel.VERBOSE, "Resetting playback");
+      logger?.Invoke(LogLevel.DEBUG, "Resetting playback");
       manager.Reset();
 
-      logger?.Invoke(LogLevel.VERBOSE, "Adding key hooks");
+      logger?.Invoke(LogLevel.DEBUG, "Adding key hooks");
       this.keyHookWrapper = keyHookWrapper ?? throw new ArgumentNullException(nameof(keyHookWrapper));
       ConnectKeyHooks();
 
-      logger?.Invoke(LogLevel.VERBOSE, "Starting simObject connection");
+      logger?.Invoke(LogLevel.DEBUG, "Starting simObject connection");
       this.simObject.StartAsync();
 
-      logger?.Invoke(LogLevel.VERBOSE, "Run done");
+      logger?.Invoke(LogLevel.DEBUG, "Run done");
     }
 
     internal void Stop()
     {
-      throw new NotImplementedException();
+      logger?.Invoke(LogLevel.INFO, "Stopping");
+      logger?.Invoke(LogLevel.WARNING, "Stop for RunContext of CheckListModule is not implemented.");
+      this.simObject.Started -= SimObject_Started;
+      this.simObject.SimPropertyChanged -= SimObject_SimPropertyChanged;
+      this.keyHookWrapper!.UnregisterAllKeyHooks();
+      logger?.Invoke(LogLevel.INFO, "Stopped");
     }
 
     #endregion Internal Methods

@@ -1,5 +1,6 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +14,7 @@ using System.Xml.Serialization;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
-  public class Settings : NotifyPropertyChangedBase
+  public class Settings : NotifyPropertyChanged
   {
 
     private const string FILE_NAME = "copilot-module-settings.xml";

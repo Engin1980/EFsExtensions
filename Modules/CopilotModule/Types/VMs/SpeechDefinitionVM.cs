@@ -4,6 +4,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using Eng.Chlaot.Modules.CopilotModule.Types;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,9 +14,9 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.Modules.CopilotModule.Types.VMs
 {
-  public class SpeechDefinitionVM : NotifyPropertyChangedBase
+  public class SpeechDefinitionVM : NotifyPropertyChanged
   {
-    public class RunTimeVM : NotifyPropertyChangedBase
+    public class RunTimeVM : NotifyPropertyChanged
     {
       private readonly StateCheckEvaluator evaluator;
 

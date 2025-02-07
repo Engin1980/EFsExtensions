@@ -1,5 +1,6 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;
 using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

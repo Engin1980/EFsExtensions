@@ -37,13 +37,13 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils
       var lst = tmp.Split("\n").Select(q => q.Trim());
       this.Description = string.Join("\n", lst);
     }
-    public string Version { get; set; }
-    public string Label { get; set; }
-    public string Author { get; set; }
-    public string Description { get; set; }
-    public string Web { get; set; }
-    public string Email { get; set; }
-    public string License { get; set; }
+    public string Version { get; set; } = null!;
+    public string Label { get; set; } = null!;
+    public string Author { get; set; } = null!;
+    public string Description { get; set; } = null!;
+    public string Web { get; set; } = null!;
+    public string Email { get; set; } = null!;
+    public string License { get; set; } = null!;
     public string LabelAndVersion => Label + (string.IsNullOrWhiteSpace(Version) ? "" : $" (ver.: {Version})");
   }
 }

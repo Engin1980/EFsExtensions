@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ESystem.Miscelaneous;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Speech.Synthesis;
@@ -8,7 +9,7 @@ using System.Xml.Serialization;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization
 {
-  public class SynthetizerSettings : NotifyPropertyChangedBase
+  public class SynthetizerSettings : NotifyPropertyChanged
   {
     [XmlIgnore]
     public string[] AvailableVoices { get; set; }

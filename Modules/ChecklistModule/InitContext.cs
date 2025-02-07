@@ -21,7 +21,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 using Eng.Chlaot.Modules.ChecklistModule.Types.Xml;
-using static ESystem.Functions;
+using static ESystem.Functions.TryCatch;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
 using ChlaotModuleBase.ModuleUtils.StateChecking;
 
@@ -33,13 +33,16 @@ using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using static Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
+using ESystem.Miscelaneous;
+using System.Windows.Markup;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
-  public class InitContext : NotifyPropertyChangedBase
+  public class InitContext : NotifyPropertyChanged
   {
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
+    public string LastLoadedFile { get; private set; }
 
     public MetaInfo MetaInfo
     {
@@ -174,6 +177,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         }).ToList();
 
         this.setIsReadyFlagAction(true);
+        this.LastLoadedFile = xmlFile;
         logger.Invoke(LogLevel.INFO, $"Checklist file '{xmlFile}' successfully loaded.");
       }
       catch (Exception ex)

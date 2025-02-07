@@ -1,7 +1,7 @@
 ﻿using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
 using ESystem;
-using static ESystem.Functions;
+using static ESystem.Functions.TryCatch;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
@@ -21,10 +21,11 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
 using System.Drawing.Text;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO.IsolatedStorage;
+using ESystem.Miscelaneous;
 
 namespace Eng.Chlaot.Modules.FailuresModule
 {
-  public class InitContext : NotifyPropertyChangedBase
+  public class InitContext : NotifyPropertyChanged
   {
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
@@ -42,6 +43,8 @@ namespace Eng.Chlaot.Modules.FailuresModule
 
     public List<FailureDefinitionBase> FailureDefinitions { get; set; }
 
+
+    public string? LastLoadedFile { get; private set; }
 
     public Percentage EstimatedProbabilityPerFlight
     {
@@ -135,6 +138,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
         });
         this.MetaInfo = tmpMeta;
         UpdateReadyFlag();
+        this.LastLoadedFile = xmlFile;
         logger.Invoke(LogLevel.INFO, $"Failure set file '{xmlFile}' successfully loaded.");
         this.setIsReadyFlagAction(true);
       }
@@ -165,7 +169,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
       }
 
       double m = 1 - negativeProbabilities.Aggregate(1.0, (a, b) => a * b);
-      this.EstimatedProbabilityPerFlight = (Percentage)m;
+      this.EstimatedProbabilityPerFlight = Percentage.Of(m);
       this.EstimatedFlighstPerFailure = 1 / m;
     }
 

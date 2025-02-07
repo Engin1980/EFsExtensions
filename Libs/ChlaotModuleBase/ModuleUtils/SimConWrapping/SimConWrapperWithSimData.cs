@@ -1,4 +1,5 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
+using ESimConnect;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,11 +42,11 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping
     {
       base.StartProtected();
 
-      base.simCon.RegisterType<CommonDataStruct>();
-      base.simCon.RequestDataRepeatedly<CommonDataStruct>(Microsoft.FlightSimulator.SimConnect.SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
+      base.simCon.Structs.Register<CommonDataStruct>();
+      base.simCon.Structs.RequestRepeatedly<CommonDataStruct>(SimConnectPeriod.SECOND, sendOnlyOnChange: true);
 
-      base.simCon.RegisterType<RareDataStruct>();
-      base.simCon.RequestDataRepeatedly<RareDataStruct>(Microsoft.FlightSimulator.SimConnect.SIMCONNECT_PERIOD.SECOND, sendOnlyOnChange: true);
+      base.simCon.Structs.Register<RareDataStruct>();
+      base.simCon.Structs.RequestRepeatedly<RareDataStruct>(SimConnectPeriod.SECOND, sendOnlyOnChange: true);
 
       base.simCon.DataReceived += SimCon_DataReceived;
     }

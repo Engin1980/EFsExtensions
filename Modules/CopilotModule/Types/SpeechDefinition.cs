@@ -71,12 +71,14 @@ namespace Eng.Chlaot.Modules.CopilotModule.Types
       return ret;
     }
 
-    private Collection<IStateCheckItem> CreateCollectionWith(IStateCheckItem item)
+    private Collection<IStateCheckItem> CreateCollectionWith(IStateCheckItem? item)
     {
-      Collection<IStateCheckItem> ret = new()
-      {
-        item
-      };
+      Collection<IStateCheckItem> ret = item != null 
+        ? new()
+        {
+          item
+        }
+        : new();
       return ret;
     }
   }

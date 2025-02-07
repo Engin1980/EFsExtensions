@@ -61,7 +61,7 @@ namespace ChecklistModule
       dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("XML files", "xml"));
       dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("All files", "*"));
       if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
-      recentXmlFile = dialog.FileName;
+      recentXmlFile = dialog.FileName!;
 
       this.context.LoadFile(recentXmlFile);
     }

@@ -13,6 +13,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
 using Eng.Chlaot.Modules.CopilotModule.Types;
 using Eng.Chlaot.Modules.CopilotModule.Types.VMs;
 using ESystem.Asserting;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -27,7 +28,7 @@ using System.Windows.Forms;
 
 namespace Eng.Chlaot.Modules.CopilotModule
 {
-  internal class RunContext : NotifyPropertyChangedBase
+  internal class RunContext : NotifyPropertyChanged
   {
 
     #region Fields
@@ -81,7 +82,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
     {
       Log(LogLevel.INFO, "Run");
 
-      logger?.Invoke(LogLevel.VERBOSE, "Starting simObject connection");
+      logger?.Invoke(LogLevel.DEBUG, "Starting simObject connection");
       this.simObject.StartAsync();
     }
 
@@ -104,22 +105,19 @@ namespace Eng.Chlaot.Modules.CopilotModule
         player.PlayAsync();
 
         activated.RunTime.IsReadyToBeSpoken = false;
-        this.logger.Invoke(LogLevel.VERBOSE,
+        this.logger.Invoke(LogLevel.DEBUG,
           $"Activated speech {activated.SpeechDefinition.Title}");
       }
     }
 
     private void EvaluateForSpeeches()
     {
-      //TODO xa probalby can delete this line
-      //this.PropertyVMs.UpdateBySimObject(simObject);
-
       var readys = this.SpeechDefinitionVMs.Where(q => q.RunTime.IsReadyToBeSpoken);
-      this.logger.Invoke(LogLevel.VERBOSE, $"Evaluating {readys.Count()} readys");
+      this.logger.Invoke(LogLevel.DEBUG, $"Evaluating {readys.Count()} readys");
       EvaluateActives(readys);
 
       var waits = this.SpeechDefinitionVMs.Where(q => !q.RunTime.IsReadyToBeSpoken);
-      this.logger.Invoke(LogLevel.VERBOSE, $"Evaluating {waits.Count()} waits");
+      this.logger.Invoke(LogLevel.DEBUG, $"Evaluating {waits.Count()} waits");
       EvaluateInactives(waits);
     }
 
@@ -131,7 +129,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
         .ForEach(q =>
         {
           q.RunTime.IsReadyToBeSpoken = true;
-          this.logger.Invoke(LogLevel.VERBOSE,
+          this.logger.Invoke(LogLevel.DEBUG,
           $"Reactivated speech {q.SpeechDefinition.Title}");
         });
     }
@@ -148,7 +146,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
     private void SimObject_SimSecondElapsed()
     {
       if (this.simObject.IsSimPaused) return;
-      this.logger.Invoke(LogLevel.VERBOSE, "SimSecondElapsed (non-paused)");
+      this.logger.Invoke(LogLevel.DEBUG, "SimSecondElapsed (non-paused)");
 
       if (Monitor.TryEnter(this) == false)
       {
