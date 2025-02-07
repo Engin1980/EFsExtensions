@@ -48,9 +48,20 @@
             <DataTemplate>
               <StackPanel x:Name="pnlSpeech" >
                 <Label Content="{Binding SpeechDefinition.Title}" />
-                <Label >
-                  <TextBlock Margin="8 0 0 0" FontSize="10" Text="{Binding SpeechDefinition.Trigger.DisplayString}" />
-                </Label>
+                <StackPanel Margin="8 0 0 0">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock FontSize="10" FontWeight="Bold" Text="Trigger: " />
+                    <TextBlock FontSize="10" Text="{Binding SpeechDefinition.Trigger.DisplayString}" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock FontSize="10" FontWeight="Bold" Text="Reset-trigger: " />
+                    <TextBlock FontSize="10" Text="{Binding SpeechDefinition.ReactivationTrigger.DisplayString}" />
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock FontSize="10" FontWeight="Bold" Text="Is-active: " />
+                    <TextBlock FontSize="10" Text="{Binding RunTime.IsReadyToBeSpoken}" />
+                  </StackPanel>
+                </StackPanel>
               </StackPanel>
             </DataTemplate>
           </ListView.ItemTemplate>

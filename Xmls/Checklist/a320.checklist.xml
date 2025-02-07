@@ -261,6 +261,7 @@
       <g:and>
         <g:property name="height" direction="below" expression="4000"/>
         <g:property name="ias" direction="below" expression="190"/>
+        <g:property name="vs" direction="below" expression="0"/> <!-- to prevent autostart after go around -->
       </g:and>
     </trigger>
   </checklist>
