@@ -121,6 +121,13 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
         if (readyCheckList != null)
         {
+          if (this.current != readyCheckList)
+          {
+            this.current.RunTime.State = RunState.NotYet;
+            this.current = readyCheckList;
+            this.current.RunTime.State = RunState.Current;
+          }
+
           this.playbackManager.SetCurrent(readyCheckList);
           this.playbackManager.TogglePlay();
         }

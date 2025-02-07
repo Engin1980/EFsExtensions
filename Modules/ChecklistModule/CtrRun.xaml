@@ -69,12 +69,23 @@
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
           </DataGridTemplateColumn>
-          <DataGridTemplateColumn Header="Is Armed">
+          <DataGridTemplateColumn Header="State">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Label>
                   <StackPanel Orientation="Horizontal">
                     <TextBlock Text="{Binding RunTime.State}" />
+                  </StackPanel>
+                </Label>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="Is-Active">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding RunTime.IsActive}" />
                   </StackPanel>
                 </Label>
               </DataTemplate>
