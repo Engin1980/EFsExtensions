@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Eng.Chlaot.Modules.RaaSModule</RootNamespace>
+    <AssemblyVersion>1.0.0.17</AssemblyVersion>
+    <FileVersion>1.0.0.17</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\AirportsLib\AirportsLib.csproj" />
+    <ProjectReference Include="..\..\Libs\ChlaotModuleBase\ChlaotModuleBase.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ESystem">
+      <HintPath>..\..\DLLs\ESystem.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
