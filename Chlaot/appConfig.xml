@@ -6,7 +6,7 @@
   <WindowLogRules>
     <LogRule Regex="ObjectElementDeserializer" Verbose="false" Info="false" Warning="true" Error="true" />
     <LogRule Regex=".+StateCheckEvaluator.+" Verbose="false" Info="false" Warning="true" Error="true" />
-    <LogRule Regex=".+" Verbose="false" Info="true" Warning="true" Error="true" />
+    <LogRule Regex=".+" Verbose="true" Info="true" Warning="true" Error="true" />
   </WindowLogRules>
   <ModuleRules />
 </Settings>

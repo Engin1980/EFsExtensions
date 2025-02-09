@@ -24,24 +24,25 @@ namespace Eng.Chlaot.Modules.RaaSModule
   {
     private readonly Logger logger;
     private readonly Action<bool> updateReadyFlag;
-    private SimDataStruct __simDataUnsafe;
     private readonly object __simDataUnsafeLock = new();
     private readonly System.Timers.Timer timer;
     private readonly ESimConnect.ESimConnect simConnect;
-    private SimDataStruct simData
+    public SimDataStruct SimData
     {
       get
       {
+        SimDataStruct ret;
         lock (this.__simDataUnsafeLock)
         {
-          return this.__simDataUnsafe;
+          ret = GetProperty<SimDataStruct>(nameof(SimData))!;
         }
+        return ret;
       }
       set
       {
         lock (this.__simDataUnsafeLock)
         {
-          this.__simDataUnsafe = value;
+          UpdateProperty<SimDataStruct>(nameof(SimData), value);
         }
       }
     }
@@ -180,7 +181,8 @@ namespace Eng.Chlaot.Modules.RaaSModule
       ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
     {
       var data = (SimDataStruct)e.Data;
-      this.simData = data;
+      this.SimData = data;
+      this.logger.Log(LogLevel.DEBUG, "Received data from SimConnect");
     }
 
     private void simConnect_ThrowsException(ESimConnect.ESimConnect eSimCon, SimConnectException ex)

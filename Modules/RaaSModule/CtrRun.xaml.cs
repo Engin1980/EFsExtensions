@@ -29,7 +29,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
     internal CtrRun(Context context)
     {
       InitializeComponent();
-      this.context = context;
+      this.DataContext = this.context = context;
     }
   }
 }

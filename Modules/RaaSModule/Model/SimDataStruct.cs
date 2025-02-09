@@ -14,15 +14,20 @@ namespace Eng.Chlaot.Modules.RaaSModule.Model
   {
     [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND, SimUnits.Length.FOOT)]
     public int height;
+    public readonly int Height => height;
 
     [DataDefinition(SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED, SimUnits.Speed.KNOT)]
     public int indicatedSpeed;
+    public readonly int IndicatedSpeed => indicatedSpeed;
+
 
     [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_LATITUDE)]
     public double latitude;
+    public readonly double Latitude => latitude;
 
     [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_LONGITUDE)]
     public double longitude;
+    public readonly double Longitude => longitude;
 
     //[DataDefinition(SimVars.Aircraft.Miscelaneous.VERTICAL_SPEED, SimUnits.Length.FOOT)]
     //public int verticalSpeed;
