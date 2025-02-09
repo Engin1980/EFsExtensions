@@ -12,6 +12,11 @@ using System.Text;
 using System.Threading.Tasks;
 using static ESystem.Functions.TryCatch;
 using System.Xml.Linq;
+using ChlaotModuleBase.ModuleUtils.SimConWrapping;
+using ESimConnect;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
+using System.Timers;
 
 namespace Eng.Chlaot.Modules.RaaSModule
 {
@@ -19,7 +24,27 @@ namespace Eng.Chlaot.Modules.RaaSModule
   {
     private readonly Logger logger;
     private readonly Action<bool> updateReadyFlag;
-
+    private SimDataStruct __simDataUnsafe;
+    private readonly object __simDataUnsafeLock = new();
+    private readonly System.Timers.Timer timer;
+    private readonly ESimConnect.ESimConnect simConnect;
+    private SimDataStruct simData
+    {
+      get
+      {
+        lock (this.__simDataUnsafeLock)
+        {
+          return this.__simDataUnsafe;
+        }
+      }
+      set
+      {
+        lock (this.__simDataUnsafeLock)
+        {
+          this.__simDataUnsafe = value;
+        }
+      }
+    }
 
     public MetaInfo MetaInfo
     {
@@ -43,11 +68,24 @@ namespace Eng.Chlaot.Modules.RaaSModule
     {
       this.logger = Logger.Create(this);
       this.updateReadyFlag = updateReadyFlag;
+      this.timer = new(1000)
+      {
+        AutoReset = true,
+        Enabled = false,
+      };
+      this.timer.Elapsed += timer_Elapsed;
+
+      this.simConnect = new();
+      simConnect.Connected += simConnect_Connected;
+      simConnect.ThrowsException += simConnect_ThrowsException;
+      simConnect.Disconnected += simConnect_Disconnected;
+      simConnect.DataReceived += simConnect_DataReceived;
     }
 
     internal void LoadAirportsFile(string recentXmlFile)
     {
       this.Airports = XmlLoader.Load(recentXmlFile);
+      this.CheckReadyStatus();
     }
 
     internal void LoadRaasFile(string xmlFile)
@@ -98,6 +136,71 @@ namespace Eng.Chlaot.Modules.RaaSModule
     private void CheckReadyStatus()
     {
       this.updateReadyFlag(this.RaaS != null && this.Airports.Count > 0);
+    }
+
+    public void Start()
+    {
+      this.timer.Enabled = true;
+    }
+
+    private void TryConnect()
+    {
+      try
+      {
+        logger.Log(LogLevel.DEBUG, "Opening simConnect");
+        simConnect.Open();
+      }
+      catch (Exception ex)
+      {
+        logger.Log(LogLevel.ERROR, "Failed to open simConnect: " + ex.ToString());
+        return;
+      }
+
+      logger.Log(LogLevel.DEBUG, "Registering simConnect type");
+      simConnect.Structs.Register<SimDataStruct>();
+
+      logger.Log(LogLevel.DEBUG, "Registering simConnect repeated-requests");
+      simConnect.Structs.RequestRepeatedly<SimDataStruct>(SimConnectPeriod.SECOND, sendOnlyOnChange: true);
+    }
+
+    private void timer_Elapsed(object? sender, ElapsedEventArgs e)
+    {
+      if (!simConnect.IsOpened)
+      {
+        TryConnect();
+      }
+      else
+      {
+        // TODO implement tests here
+      }
+    }
+
+    private void simConnect_DataReceived(
+      ESimConnect.ESimConnect eSimCon,
+      ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
+    {
+      var data = (SimDataStruct)e.Data;
+      this.simData = data;
+    }
+
+    private void simConnect_ThrowsException(ESimConnect.ESimConnect eSimCon, SimConnectException ex)
+    {
+      this.logger.Log(LogLevel.ERROR, "SimConnect exception: " + ex.ToString());
+    }
+
+    private void simConnect_Disconnected(ESimConnect.ESimConnect eSimCon)
+    {
+      this.logger.Log(LogLevel.INFO, "Disconnected from SimConnect");
+    }
+
+    private void simConnect_Connected(ESimConnect.ESimConnect eSimCon)
+    {
+      this.logger.Log(LogLevel.INFO, "Connected to SimConnect");
+    }
+
+    public void Stop()
+    {
+
     }
   }
 }

@@ -20,9 +20,16 @@ namespace Eng.Chlaot.Modules.RaaSModule
   /// </summary>
   public partial class CtrRun : UserControl
   {
+    private Context context;
     public CtrRun()
     {
       InitializeComponent();
+    }
+
+    internal CtrRun(Context context)
+    {
+      InitializeComponent();
+      this.context = context;
     }
   }
 }

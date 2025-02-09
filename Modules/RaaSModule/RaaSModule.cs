@@ -41,7 +41,8 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     public void Run()
     {
-      throw new NotImplementedException();
+      this.ctrRun = new(this.context);
+      this.context.Start();
     }
 
     public void SetUp(ModuleSetUpInfo setUpInfo)
@@ -52,12 +53,14 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     public void Stop()
     {
-      throw new NotImplementedException();
+      this.context.Stop();
     }
 
     public Dictionary<string, string>? TryGetRestoreData()
     {
-      throw new NotImplementedException();
+      //TODO implement if required
+      //throw new NotImplementedException();
+      return new Dictionary<string, string>();
     }
   }
 }
