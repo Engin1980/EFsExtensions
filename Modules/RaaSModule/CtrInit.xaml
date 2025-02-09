@@ -5,17 +5,27 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Eng.Chlaot.Modules.RaaSModule"
              xmlns:cvt="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"             
+             xmlns:lcvt ="clr-namespace:Eng.Chlaot.Modules.RaaSModule.Converters"
              xmlns:nav="clr-namespace:Eng.Chlaot.Libs.AirportsLib;assembly=AirportsLib"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <cvt:DoubleFormatter x:Key="DoubleFormatter" />
-  </UserControl.Resources>  
+    <lcvt:RaasDistanceIsValidSolidBrushConverter x:Key="RaasDistanceIsValidSolidBrushConverter" />
+    <lcvt:TextToRaasDistanceConverter x:Key="TextToRaasDistanceConverter" />
+  </UserControl.Resources>
   <DockPanel>
     <DockPanel DockPanel.Dock="Top">
-      <Button x:Name="btnSettings" DockPanel.Dock="Right"
-        Margin="8" Padding="8" Click="btnSettings_Click">Settings</Button>
-      <Button x:Name="btnLoadAirports" Click="btnLoadAirports_Click" Margin="8" Padding="8">Load Airports</Button>
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+        <Button x:Name="btnLoadAirports" Click="btnLoadAirports_Click" Grid.Column="0" Margin="8" Padding="8">Load Airports</Button>
+        <Button x:Name="btnLoadRaas" Click="btnLoadRaas_Click" Grid.Column="1" Margin="8" Padding="8">Load RaaS</Button>
+        <Button x:Name="btnSettings" Grid.Column="2" Margin="8" Padding="8" Click="btnSettings_Click">Settings</Button>
+      </Grid>
     </DockPanel>
     <TabControl>
       <TabItem Header="Metainfo">
@@ -67,6 +77,94 @@
             </TreeView.Resources>
           </TreeView>
         </DockPanel>
+      </TabItem>
+      <TabItem Header="RaaS speeches">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <Label Grid.Column="0" Grid.Row="0" Content="Type" FontWeight="Bold" />
+          <Label Grid.Column="1" Grid.Row="0" Content="Speech" FontWeight="Bold" />
+          <Label Grid.Column="2" Grid.Row="0" Content="Distance" FontWeight="Bold" />
+
+          <Label Grid.Column="0" Grid.Row="1" Content="Taxi to Runway" />
+          <Label Grid.Column="1" Grid.Row="1" Content="{Binding RaaS.Speeches.TaxiToRunway.Speech}" />
+          <Label Grid.Column="2" Grid.Row="1" Content="{Binding RaaS.Speeches.TaxiToRunway.Distance}" />
+
+          <Label Grid.Column="0" Grid.Row="2" Content="Taxi to Short Runway" />
+          <Label Grid.Column="1" Grid.Row="2" Content="{Binding RaaS.Speeches.TaxiToShortRunway.Speech}" />
+          <Label Grid.Column="2" Grid.Row="2" Content="{Binding RaaS.Speeches.TaxiToShortRunway.Distance}" />
+
+          <Label Grid.Column="0" Grid.Row="3" Content="On Runway" />
+          <Label Grid.Column="1" Grid.Row="3" Content="{Binding RaaS.Speeches.OnRunway.Speech}" />
+
+          <Label Grid.Column="0" Grid.Row="4" Content="On Short Runway" />
+          <Label Grid.Column="1" Grid.Row="4" Content="{Binding RaaS.Speeches.OnShortRunway.Speech}" />
+
+          <Label Grid.Column="0" Grid.Row="5" Content="Landing Runway" />
+          <Label Grid.Column="1" Grid.Row="5" Content="{Binding RaaS.Speeches.LandingRunway.Speech}" />
+          <Label Grid.Column="2" Grid.Row="5" Content="{Binding RaaS.Speeches.LandingRunway.Distance}" />
+
+          <Label Grid.Column="0" Grid.Row="6" Content="Distance Remaining" />
+          <Label Grid.Column="1" Grid.Row="6" Content="{Binding RaaS.Speeches.DistanceRemaining.Speech}" />
+          <Label Grid.Column="2" Grid.Row="6" >
+            <ItemsControl ItemsSource="{Binding RaaS.Speeches.DistanceRemaining.Distances}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </Label>
+        </Grid>
+      </TabItem>
+      <TabItem Header="RaaS Variables">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+
+          <Label Grid.Column="0" Grid.Row="0" Content="Variable" FontWeight="Bold" />
+          <Label Grid.Column="1" Grid.Row="0" Content="Value" FontWeight="Bold" />
+          <Label Grid.Column="2" Grid.Row="0" Content="(Default)" FontWeight="Bold" />
+
+          <Label Grid.Column="0" Grid.Row="1" Content="Minimal Take Off Distance" />
+          <Label Grid.Column="1" Grid.Row="1">
+            <TextBox Width="200" 
+                     Text="{Binding RaaS.Variables.MinimalTakeOffDistance.Value, Converter={StaticResource TextToRaasDistanceConverter}}"
+                     Background="{Binding Text, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource Self}, Converter={StaticResource RaasDistanceIsValidSolidBrushConverter}, ConverterParameter=#AFA;#FAA}"/>
+          </Label>
+          <Label Grid.Column="2" Grid.Row="1" Content="{Binding RaaS.Variables.MinimalTakeOffDistance.Default}" />
+
+          <Label Grid.Column="0" Grid.Row="2" Content="Minimal Landing Distance" />
+          <Label Grid.Column="1" Grid.Row="2">
+            <TextBox Width="200" 
+                     Text="{Binding RaaS.Variables.MinimalLandingDistance.Value, Converter={StaticResource TextToRaasDistanceConverter}}"
+                     Background="{Binding Text, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource Self}, Converter={StaticResource RaasDistanceIsValidSolidBrushConverter}, ConverterParameter=#AFA;#FAA}"/>
+          </Label>
+          <Label Grid.Column="2" Grid.Row="2" Content="{Binding RaaS.Variables.MinimalLandingDistance.Default}" />
+        </Grid>
+
       </TabItem>
     </TabControl>
   </DockPanel>

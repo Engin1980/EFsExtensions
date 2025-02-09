@@ -73,7 +73,8 @@ namespace Eng.Chlaot.Modules.RaaSModule
       }
     }
 
-    private string? recentXmlFile;
+    private string? recentArportsXmlFile;
+    private string?  recentRaasXmlFile;
 
     public CtrInit()
     {
@@ -82,12 +83,10 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     private readonly Context context = null!;
     private readonly FilteredAirports filteredAirports = null!;
-    private readonly Action setReadyCallback;
-    internal CtrInit(Context context, Action setReadyCallback) : this()
+    internal CtrInit(Context context) : this()
     {
       this.DataContext = this.context = context;
       this.tabAirports.DataContext = this.filteredAirports = new();
-      this.setReadyCallback = setReadyCallback;
     }
 
     private void btnLoadAirports_Click(object sender, RoutedEventArgs e)
@@ -96,7 +95,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
       {
         AddToMostRecentlyUsedList = true,
         EnsureFileExists = true,
-        DefaultFileName = recentXmlFile,
+        DefaultFileName = recentArportsXmlFile,
         Multiselect = false,
         Title = "Select XML file with airports data..."
       };
@@ -105,16 +104,34 @@ namespace Eng.Chlaot.Modules.RaaSModule
       dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("All files", "*"));
       if (dialog.ShowDialog() != CommonFileDialogResult.Ok || dialog.FileName == null) return;
 
-      recentXmlFile = dialog.FileName;
-      this.context.LoadFile(recentXmlFile);
+      recentArportsXmlFile = dialog.FileName;
+      this.context.LoadAirportsFile(recentArportsXmlFile);
       this.filteredAirports.SetBaseAirports(this.context.Airports);
       this.txtAirportsCount.Text = $" ({this.context.Airports.Count})";
-      this.setReadyCallback();
     }
 
     private void btnSettings_Click(object sender, RoutedEventArgs e)
     {
       //TODO: Implement settings
+    }
+
+    private void btnLoadRaas_Click(object sender, RoutedEventArgs e)
+    {
+      var dialog = new CommonOpenFileDialog()
+      {
+        AddToMostRecentlyUsedList = true,
+        EnsureFileExists = true,
+        DefaultFileName = recentRaasXmlFile,
+        Multiselect = false,
+        Title = "Select XML file with RaaS data..."
+      };
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("RaaS files", "raas.xml"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("XML files", "xml"));
+      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("All files", "*"));
+      if (dialog.ShowDialog() != CommonFileDialogResult.Ok || dialog.FileName == null) return;
+
+      recentRaasXmlFile = dialog.FileName;
+      this.context.LoadRaasFile(recentRaasXmlFile);
     }
   }
 }

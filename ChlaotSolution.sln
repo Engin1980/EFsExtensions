@@ -31,6 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xsds", "Xsds", "{404576BE-5
 		Xmls\Xsds\FailureDefinitionSchema.xsd = Xmls\Xsds\FailureDefinitionSchema.xsd
 		Xmls\Xsds\FailureSchema.xsd = Xmls\Xsds\FailureSchema.xsd
 		Xmls\Xsds\Global.xsd = Xmls\Xsds\Global.xsd
+		Xmls\Xsds\RaasSchema.xsd = Xmls\Xsds\RaasSchema.xsd
 		Xmls\Xsds\SimPropertiesSchema.xsd = Xmls\Xsds\SimPropertiesSchema.xsd
 	EndProjectSection
 EndProject
@@ -97,14 +98,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{8D41DB
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OurAirportsToXmlConverter", "Tools\OurAirportsToXmlConverter\OurAirportsToXmlConverter.csproj", "{D7031880-F2D7-4A95-A45D-A580B554EB76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaaSModule", "Modules\RaaSModule\RaaSModule.csproj", "{6BBFB239-7B33-4EB0-9BF2-AE731DD6BB52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaaSModule", "Modules\RaaSModule\RaaSModule.csproj", "{6BBFB239-7B33-4EB0-9BF2-AE731DD6BB52}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RaaS", "RaaS", "{3247B39A-7EA2-4D34-BA9A-27736AF6859E}"
 	ProjectSection(SolutionItems) = preProject
 		Xmls\RaaS\airports.airports.xml = Xmls\RaaS\airports.airports.xml
+		Xmls\RaaS\speeches.raas.xml = Xmls\RaaS\speeches.raas.xml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AirportsLib", "AirportsLib\AirportsLib.csproj", "{FDA05C00-8EDB-49D4-BAD0-F5A7A1132DDC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirportsLib", "AirportsLib\AirportsLib.csproj", "{FDA05C00-8EDB-49D4-BAD0-F5A7A1132DDC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

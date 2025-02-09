@@ -11,7 +11,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
 {
   public class RaaSModule : NotifyPropertyChanged, IModule
   {
-    private readonly Context context = new();
+    private readonly Context context;
     private CtrInit? ctrInit;
     private CtrRun? ctrRun;
 
@@ -24,9 +24,14 @@ namespace Eng.Chlaot.Modules.RaaSModule
       set => base.UpdateProperty(nameof(IsReady), value);
     }
 
+    public RaaSModule()
+    {
+      this.context = new Context(q => this.IsReady = q);
+    }
+
     public void Init()
     {
-      this.ctrInit = new(this.context, () => this.IsReady = true);
+      this.ctrInit = new(this.context);
     }
 
     public void Restore(Dictionary<string, string> restoreData)

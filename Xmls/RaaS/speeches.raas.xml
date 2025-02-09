@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<raas
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://chlaot.org/raas.xsd"
+  xmlns:g="http://chlaot.org/global.xsd"
+  xsi:noNamespaceSchemaLocation="file://./Xsds/ChecklistSchema.xsd">
+  <metaInfo>
+    <g:author>Marek Vajgl</g:author>
+    <g:label>Default RaaS Speeches</g:label>
+    <g:version>0.1</g:version>
+  </metaInfo>
+  <speeches>
+    <taxiToRunway distance="100m" speech="Approaching runway %rwy" />
+    <taxiToShortRunway distance="100m" speech="Approaching short runway %rwy" />
+    <onRunway speech="On runway %rwy"/>
+    <onShortRunway speech="On runway %rwy, short runway"/>
+    <landingRunway distance="3nm" speech="Approaching runway %rwy" />
+    <distanceRemaining distances="1000ft;500ft;250ft" speech="Distance remaining %dist" />
+  </speeches>
+  <variables>
+    <minimalTakeOffDistance default="1000ft" />
+    <minimalLandingDistance default="500ft" />
+  </variables>
+</raas>
