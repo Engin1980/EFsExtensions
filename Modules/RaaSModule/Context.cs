@@ -281,15 +281,11 @@ namespace Eng.Chlaot.Modules.RaaSModule
         }
       }
 
-      //TODO rewrite back to better form in one cycle without lists
       var closeAirports = Airports
-        .Where(q => q.Coordinate.Latitude > SimData.latitude - 1).ToList();
-      closeAirports = closeAirports.
-        Where(q => q.Coordinate.Latitude < SimData.latitude + 1).ToList();
-      closeAirports = closeAirports.
-        Where(q => q.Coordinate.Longitude > SimData.longitude - 1).ToList();
-      closeAirports = closeAirports.
-        Where(q => q.Coordinate.Longitude < SimData.longitude + 1).ToList();
+        .Where(q => q.Coordinate.Latitude > SimData.latitude - 1)
+        .Where(q => q.Coordinate.Latitude < SimData.latitude + 1)
+        .Where(q => q.Coordinate.Longitude > SimData.longitude - 1)
+        .Where(q => q.Coordinate.Longitude < SimData.longitude + 1);
 
       var closestAirportWithDistance = closeAirports
         .Select(q => new { Airport = q, Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, SimData.latitude, SimData.longitude) })
