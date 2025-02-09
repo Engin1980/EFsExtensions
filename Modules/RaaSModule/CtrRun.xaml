@@ -14,6 +14,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
           </Grid.RowDefinitions>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -29,11 +30,14 @@
             </StackPanel>
           </Label>
 
-          <Label Grid.Row="1" Grid.Column="0" Content="Height" />
-          <Label Grid.Row="1" Grid.Column="1" Content="{Binding SimData.Height}" />
+          <Label Grid.Row="1" Grid.Column="0" Content="Heading" />
+          <Label Grid.Row="1" Grid.Column="1" Content="{Binding SimData.Heading}" />
 
-          <Label Grid.Row="2" Grid.Column="0" Content="IAS" />s
-          <Label Grid.Row="2" Grid.Column="1" Content="{Binding SimData.IndicatedSpeed}" />
+          <Label Grid.Row="2" Grid.Column="0" Content="Height" />
+          <Label Grid.Row="2" Grid.Column="1" Content="{Binding SimData.Height}" />
+
+          <Label Grid.Row="3" Grid.Column="0" Content="IAS" />
+          <Label Grid.Row="3" Grid.Column="1" Content="{Binding SimData.IndicatedSpeed}" />
         </Grid>
       </TabItem>
     </TabControl>

@@ -20,6 +20,9 @@ using System.Timers;
 using System.Reflection.Metadata.Ecma335;
 using System.Speech.Synthesis;
 using ESystem.Exceptions;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
+using System.Diagnostics;
 
 namespace Eng.Chlaot.Modules.RaaSModule
 {
@@ -27,11 +30,15 @@ namespace Eng.Chlaot.Modules.RaaSModule
   {
     private const int DO_NOT_CHECK_CLOSER_AIRPORT_IF_BELOW_THIS_DISTANCE_IN_KM = 8; //KM
     private const int IS_ON_RUNWAY_CENTER_DISTANCE_IN_M = 15;
+    private const int ALIGNED_ON_RUNWAY_MAX_HEADING_DELTA_THRESHOLD_DEGREES = 20;
     private readonly Logger logger;
     private readonly Action<bool> updateReadyFlag;
     private readonly object __simDataUnsafeLock = new();
     private readonly System.Timers.Timer timer;
     private readonly ESimConnect.ESimConnect simConnect;
+    private Synthetizer? synthetizer;
+    private bool isPlayerPlaying = false;
+
     public SimDataStruct SimData
     {
       get
@@ -146,6 +153,8 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     public void Start()
     {
+      this.synthetizer = Synthetizer.CreateDefault(); //TODO load from settings
+
       this.timer.Enabled = true;
     }
 
@@ -169,16 +178,27 @@ namespace Eng.Chlaot.Modules.RaaSModule
       simConnect.Structs.RequestRepeatedly<SimDataStruct>(SimConnectPeriod.SECOND, sendOnlyOnChange: true);
     }
 
+    private bool isBusy = false;
     private void timer_Elapsed(object? sender, ElapsedEventArgs e)
     {
+      if (isBusy) return;
+      isBusy = true;
       if (!simConnect.IsOpened)
       {
         TryConnect();
       }
       else
       {
-        EvaluateRaas();
+        try
+        {
+          EvaluateRaas();
+        }
+        catch (Exception ex)
+        {
+          logger.Log(LogLevel.ERROR, "Error in EvaluateRaas: " + ex.ToString());
+        }
       }
+      isBusy = false;
     }
 
     private void EvaluateRaas()
@@ -232,6 +252,18 @@ namespace Eng.Chlaot.Modules.RaaSModule
       string s = speech.Speech.Replace("%rwy", d);
 
       logger.Log(LogLevel.INFO, "Saying: " + s);
+
+      Debug.Assert(synthetizer != null);
+      var bytes = synthetizer!.Generate(s);
+      isPlayerPlaying = true;
+      Player player = new(bytes);
+      player.PlaybackFinished += Player_PlaybackFinished;
+      player.Play();
+    }
+
+    private void Player_PlaybackFinished(Player sender)
+    {
+      isPlayerPlaying = false;
     }
 
     private RunwayThreshold? lastLandingThreshold = null;
@@ -249,9 +281,15 @@ namespace Eng.Chlaot.Modules.RaaSModule
         }
       }
 
+      //TODO rewrite back to better form in one cycle without lists
       var closeAirports = Airports
-        .Where(q => q.Coordinate.Latitude > SimData.latitude - 1 && q.Coordinate.Latitude < SimData.latitude + 1)
-        .Where(q => q.Coordinate.Longitude > SimData.longitude - 1 && q.Coordinate.Longitude < SimData.longitude + 1);
+        .Where(q => q.Coordinate.Latitude > SimData.latitude - 1).ToList();
+      closeAirports = closeAirports.
+        Where(q => q.Coordinate.Latitude < SimData.latitude + 1).ToList();
+      closeAirports = closeAirports.
+        Where(q => q.Coordinate.Longitude > SimData.longitude - 1).ToList();
+      closeAirports = closeAirports.
+        Where(q => q.Coordinate.Longitude < SimData.longitude + 1).ToList();
 
       var closestAirportWithDistance = closeAirports
         .Select(q => new { Airport = q, Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, SimData.latitude, SimData.longitude) })
@@ -340,7 +378,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
           Say(RaaS.Speeches.TaxiToRunway, closerThreshold);
         }
       }
-      else if (rwyWithMinDistance.Distance < IS_ON_RUNWAY_CENTER_DISTANCE_IN_M)
+      if (rwyWithMinDistance.Distance < IS_ON_RUNWAY_CENTER_DISTANCE_IN_M)
       {
         //TODO remove distance if not used
         var thresholdsWithBearingsAndDistances = rwyWithMinDistance.Runway.Thresholds
@@ -352,11 +390,11 @@ namespace Eng.Chlaot.Modules.RaaSModule
           });
 
         var thresholdsWithBearingAndDistancesAndHeadingDelta = thresholdsWithBearingsAndDistances
-          .Select(q => new { q.Threshold, q.Bearing, q.Distance, HeadingDelta = Math.Abs(q.Bearing - SimData.Heading) });
+          .Select(q => new { q.Threshold, q.Bearing, q.Distance, HeadingDelta = Math.Abs((double)q.Threshold.Heading! - (double)SimData.Heading) });
 
         var thresholdCandidate = thresholdsWithBearingAndDistancesAndHeadingDelta.MinBy(q => q.HeadingDelta);
 
-        if (thresholdCandidate.HeadingDelta < 10)
+        if (thresholdCandidate.HeadingDelta < ALIGNED_ON_RUNWAY_MAX_HEADING_DELTA_THRESHOLD_DEGREES)
         {
           if (lastLineUpThreshold != thresholdCandidate.Threshold)
           {

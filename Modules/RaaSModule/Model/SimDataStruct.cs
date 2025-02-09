@@ -20,16 +20,16 @@ namespace Eng.Chlaot.Modules.RaaSModule.Model
     public int indicatedSpeed;
     public readonly int IndicatedSpeed => indicatedSpeed;
 
-    [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_HEADING_DEGREES_MAGNETIC)]
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_HEADING_DEGREES_MAGNETIC, SimUnits.Angle.DEGREE)]
     public int heading;
     public readonly int Heading => heading;
 
 
-    [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_LATITUDE)]
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_LATITUDE, SimUnits.Angle.DEGREE)]
     public double latitude;
     public readonly double Latitude => latitude;
 
-    [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_LONGITUDE)]
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_LONGITUDE, SimUnits.Angle.DEGREE)]
     public double longitude;
     public readonly double Longitude => longitude;
 

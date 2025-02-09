@@ -26,6 +26,8 @@ namespace Eng.Chlaot.Libs.AirportsLib
       if (invalids.Count > 0)
         throw new InvalidDataException($"Invalid runways (non-2-thresholds) in airports: {string.Join(", ", invalids.Select(q => q.ICAO))}");
 
+      //TODO calculate heading for every threshold with heading==null as bearing between thresholds
+
       return ret;
     }
   }
