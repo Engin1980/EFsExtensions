@@ -1,5 +1,6 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
 using Eng.Chlaot.Libs.AirportsLib;
+using Eng.Chlaot.Modules.RaaSModule.CopilotModule;
 using ESystem.Miscelaneous;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
@@ -112,7 +113,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     private void btnSettings_Click(object sender, RoutedEventArgs e)
     {
-      //TODO: Implement settings
+      new CtrSettings(context.Settings).ShowDialog();
     }
 
     private void btnLoadRaas_Click(object sender, RoutedEventArgs e)

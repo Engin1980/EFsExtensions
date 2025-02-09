@@ -39,6 +39,8 @@ namespace Eng.Chlaot.Modules.RaaSModule
     private Synthetizer? synthetizer;
     private bool isPlayerPlaying = false;
 
+    public Settings Settings { get; set; } = new Settings();
+
     public SimDataStruct SimData
     {
       get
@@ -77,9 +79,9 @@ namespace Eng.Chlaot.Modules.RaaSModule
       set { base.UpdateProperty(nameof(RaaS), value); }
     }
 
-    public Context(Action<bool> updateReadyFlag)
+    public Context(Logger logger, Action<bool> updateReadyFlag)
     {
-      this.logger = Logger.Create(this);
+      this.logger = logger;
       this.updateReadyFlag = updateReadyFlag;
       this.timer = new(1000)
       {

@@ -1,30 +1,34 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Speech.Synthesis;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Input;
 using System.Xml.Serialization;
 
-namespace Eng.Chlaot.Modules.CopilotModule
+namespace Eng.Chlaot.Modules.RaaSModule
 {
   public class Settings : NotifyPropertyChanged
   {
 
-    private const string FILE_NAME = "copilot-module-settings.xml";
-    public bool LogSimConnectToFile
+    private const string FILE_NAME = "raas-module-settings.xml";
+    
+    public SynthetizerSettings Synthetizer { get; set; } = new();
+
+
+    public string? AutoLoadedAirportsFile
     {
-      get => base.GetProperty<bool>(nameof(LogSimConnectToFile))!;
-      set => base.UpdateProperty(nameof(LogSimConnectToFile), value);
+      get { return base.GetProperty<string?>(nameof(AutoLoadedAirportsFile))!; }
+      set { base.UpdateProperty(nameof(AutoLoadedAirportsFile), value); }
     }
 
-    public SynthetizerSettings Synthetizer { get; set; } = new();
+    public string? AutoLoadedRaasFile
+    {
+      get { return base.GetProperty<string?>(nameof(AutoLoadedRaasFile))!; }
+      set { base.UpdateProperty(nameof(AutoLoadedRaasFile), value); }
+    }
 
     public static Settings Load()
     {

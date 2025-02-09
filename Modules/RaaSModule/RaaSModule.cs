@@ -1,4 +1,6 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
+﻿using ELogging;
+using Eng.Chlaot.ChlaotModuleBase;
+using ESystem;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -12,6 +14,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
   public class RaaSModule : NotifyPropertyChanged, IModule
   {
     private readonly Context context;
+    private readonly Logger logger = ELogging.Logger.Create(typeof(RaaSModule));
     private CtrInit? ctrInit;
     private CtrRun? ctrRun;
 
@@ -26,12 +29,20 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     public RaaSModule()
     {
-      this.context = new Context(q => this.IsReady = q);
+      this.context = new Context(this.logger, q => this.IsReady = q);
     }
 
     public void Init()
     {
       this.ctrInit = new(this.context);
+      if (this.context.Settings.AutoLoadedAirportsFile != null)
+      {
+        this.context.LoadAirportsFile(this.context.Settings.AutoLoadedAirportsFile);
+      }
+      if (this.context.Settings.AutoLoadedRaasFile != null)
+      {
+        this.context.LoadRaasFile(this.context.Settings.AutoLoadedRaasFile);
+      }
     }
 
     public void Restore(Dictionary<string, string> restoreData)
@@ -48,6 +59,17 @@ namespace Eng.Chlaot.Modules.RaaSModule
     public void SetUp(ModuleSetUpInfo setUpInfo)
     {
       this.context.Airports = new();
+
+      try
+      {
+        this.context.Settings = Settings.Load();
+        logger.Invoke(LogLevel.INFO, "Settings loaded.");
+      }
+      catch (Exception ex)
+      {
+        logger.Invoke(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
+        logger.Invoke(LogLevel.INFO, "Default settings used.");
+      }
 
     }
 
