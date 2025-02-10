@@ -40,6 +40,12 @@
           <Label Grid.Row="3" Grid.Column="1" Content="{Binding SimData.IndicatedSpeed}" />
         </Grid>
       </TabItem>
+      <TabItem Header="RaaS State - Ground">
+        
+      </TabItem>
+      <TabItem Header="RaaS State - Flight">
+
+      </TabItem>
     </TabControl>
   </DockPanel>
 </UserControl>

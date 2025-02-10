@@ -12,7 +12,9 @@ namespace Eng.Chlaot.Modules.RaaSModule.Model
     }
 
     private readonly double value;
+    public readonly double Value => value;
     private readonly RaasDistanceUnit unit;
+    public readonly RaasDistanceUnit Unit => unit;
 
     public override string ToString() => $"{value:0} {unit}";
 
