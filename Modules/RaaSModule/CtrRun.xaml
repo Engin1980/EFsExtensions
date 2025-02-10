@@ -40,11 +40,54 @@
           <Label Grid.Row="3" Grid.Column="1" Content="{Binding SimData.IndicatedSpeed}" />
         </Grid>
       </TabItem>
-      <TabItem Header="RaaS State - Ground">
-        
-      </TabItem>
-      <TabItem Header="RaaS State - Flight">
+      <TabItem Header="RaaS State - Ground - Taxi">
+        <DockPanel>
+          <Label Content="{Binding RuntimeData.GroundTaxiStatus}" DockPanel.Dock="Bottom" />
+          <DataGrid ItemsSource="{Binding RuntimeData.GroundTaxi}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="ICAO" Binding="{Binding Airport.ICAO}" />
+              <DataGridTextColumn Header="Runway" Binding="{Binding Runway.Designator}" />
+              <DataGridTextColumn Header="Shift-Distance (m)" Binding="{Binding ShiftDistance, StringFormat=N3}" >
+                <DataGridTextColumn.ElementStyle>
+                  <Style TargetType="{x:Type TextBlock}">
+                    <Setter Property="HorizontalAlignment" Value="Right" />
+                  </Style>
+                </DataGridTextColumn.ElementStyle>
+              </DataGridTextColumn>
+            </DataGrid.Columns>
+          </DataGrid>
 
+        </DockPanel>
+      </TabItem>
+      <TabItem Header="RaaS State - Ground - LineUp">
+        <DockPanel>
+          <Label Content="{Binding RuntimeData.GroundLineUpStatus}" DockPanel.Dock="Bottom" />
+          <DataGrid ItemsSource="{Binding RuntimeData.GroundLineUp}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="ICAO" Binding="{Binding Airport.ICAO}" />
+              <DataGridTextColumn Header="Runway" Binding="{Binding Runway.Designator}" />
+              <DataGridTextColumn Header="Threshold" Binding="{Binding Threshold.Designator}" />
+              <DataGridTextColumn Header="Distance (m)" Binding="{Binding Distance, StringFormat=N0}" />
+              <DataGridTextColumn Header="Bearing" Binding="{Binding Bearing}" />
+              <DataGridTextColumn Header="Delta-Heading" Binding="{Binding DeltaHeading}" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </DockPanel>
+      </TabItem>
+      <TabItem Header="RaaS State - Landing">
+        <DockPanel>
+          <Label Content="{Binding RuntimeData.LandingStatus}" DockPanel.Dock="Bottom" />
+          <DataGrid ItemsSource="{Binding RuntimeData.Landing}" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="ICAO" Binding="{Binding Airport.ICAO}" />
+              <DataGridTextColumn Header="Runway" Binding="{Binding Runway.Designator}" />
+              <DataGridTextColumn Header="Threshold" Binding="{Binding Threshold.Designator}" />
+              <DataGridTextColumn Header="Distance (m)" Binding="{Binding ThresholdDistance, StringFormat=N0}" />
+              <DataGridTextColumn Header="Shift-Distance (m)" Binding="{Binding ShiftDistance, StringFormat=N0}" />
+              <DataGridTextColumn Header="Bearing" Binding="{Binding Bearing}" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </DockPanel>
       </TabItem>
     </TabControl>
   </DockPanel>

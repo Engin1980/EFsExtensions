@@ -67,6 +67,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
         double brng12 = InitialBearing(lat1, lon1, lat2, lon2);
 
         double ret = Math.Asin(Math.Sin(d13) * Math.Sin(ToRadians(brng13 - brng12))) * EarthRadiusKm;
+        ret = Math.Abs(ret);
         return ret;
       }
 
@@ -97,18 +98,16 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     #region Private Fields
 
-    private const int MINIMAL_DISTANCE_TO_DO_EVALUATIONS_IN_M = 8_000;
-    private const int MAXIMAL_SHIFT_DISTANCE_FROM_RUNWAY_TO_BE_ON_RUNWAY_IN_M = 70;
-    private const int ALIGNED_ON_RUNWAY_MAX_HEADING_DELTA_THRESHOLD_DEGREES = 20;
-    private const int DO_NOT_CHECK_CLOSER_AIRPORT_IF_BELOW_THIS_DISTANCE_IN_KM = 8; //KM
-    private const int IS_ON_RUNWAY_CENTER_DISTANCE_IN_M = 15;
+    private const int HOLDING_POINT_SHIFT_DISTANCE = 100;
+    private const int MIN_DISTANCE_TO_DO_EVALUATIONS_IN_M = 8_000;
+    private const int MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_ON_GROUND_IN_M = 50;
+    private const int MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_IN_FLIGHT_IN_M = 350;
+    private const int MAX_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY = 15;
     private readonly object __simDataUnsafeLock = new();
     private readonly Logger logger;
     private readonly ESimConnect.ESimConnect simConnect;
     private readonly System.Timers.Timer timer;
     private readonly Action<bool> updateReadyFlag;
-    private const int MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_IN_M = 50;
-    private const int MAXIMAL_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY = 15;
     private bool isBusy = false;
     private RunwayThreshold? lastLandingThreshold = null;
     private RunwayThreshold? lastLineUpThreshold = null;
@@ -263,7 +262,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
       Debug.Assert(this.RuntimeData.NearestAirport != null);
       var airport = this.RuntimeData.NearestAirport.Airport;
 
-      var tmpR = this.RuntimeData.NearestRunways;
+      var tmpR = this.RuntimeData.NearestRunways; //TODO calculate the next only for the closest runway?
       var tmpT = tmpR.SelectMany(q => q.Runway.Thresholds, (r, t) => new
       {
         Runway = r.Runway,
@@ -285,11 +284,11 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
       if (thrsCandidate.ThresholdDistance > RaaS.Speeches.LandingRunway.Distance.GetInMeters())
       {
-        RuntimeData.LandingStatus = $"{thrsCandidate.Airport}/{thrsCandidate.Threshold.Designator} threshold-distance {thrsCandidate.ThresholdDistance} over limit {RaaS.Speeches.LandingRunway.Distance.GetInMeters()}";
+        RuntimeData.LandingStatus = $"{thrsCandidate.Airport.ICAO}/{thrsCandidate.Threshold.Designator} threshold-distance {thrsCandidate.ThresholdDistance} over limit {RaaS.Speeches.LandingRunway.Distance.GetInMeters()}";
       }
-      else if (thrsCandidate.ShiftDistance > MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_IN_M)
+      else if (thrsCandidate.ShiftDistance > MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_IN_FLIGHT_IN_M)
       {
-        RuntimeData.LandingStatus = $"{thrsCandidate.Airport}/{thrsCandidate.Threshold.Designator} shift-distance {thrsCandidate.ShiftDistance} over limit {MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_IN_M}";
+        RuntimeData.LandingStatus = $"{thrsCandidate.Airport.ICAO}/{thrsCandidate.Threshold.Designator} shift-distance {thrsCandidate.ShiftDistance} over limit {MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_IN_FLIGHT_IN_M}";
       }
       else
       {
@@ -297,11 +296,11 @@ namespace Eng.Chlaot.Modules.RaaSModule
         {
           lastLandingThreshold = thrsCandidate.Threshold;
           Say(RaaS.Speeches.LandingRunway, thrsCandidate.Threshold);
-          RuntimeData.LandingStatus = $"{thrsCandidate.Airport}/{thrsCandidate.Threshold.Designator} announced";
+          RuntimeData.LandingStatus = $"{thrsCandidate.Airport.ICAO}/{thrsCandidate.Threshold.Designator} announced";
         }
         else
         {
-          RuntimeData.LandingStatus = $"{thrsCandidate.Airport}/{thrsCandidate.Threshold.Designator} already announced";
+          RuntimeData.LandingStatus = $"{thrsCandidate.Airport.ICAO}/{thrsCandidate.Threshold.Designator} already announced";
         }
       }
     }
@@ -369,6 +368,8 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     }
     public RuntimeDataBox RuntimeData { get; set; } = new();
+
+
     private void EvaluateGroundTaxiRaas()
     {
       Debug.Assert(RuntimeData.NearestAirport != null);
@@ -394,12 +395,12 @@ namespace Eng.Chlaot.Modules.RaaSModule
         }
         else
         {
-          RuntimeData.GroundTaxiStatus = $"Threshold {grtd.Airport}/{grtd.Runway.Designator} already announced";
+          RuntimeData.GroundTaxiStatus = $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} already announced";
         }
       }
       else
       {
-        RuntimeData.GroundTaxiStatus = $"Threshold {grtd.Airport}/{grtd.Runway.Designator} shift-distance {grtd.ShiftDistance} over threshold {RaaS.Speeches.TaxiToRunway.Distance.GetInMeters()}";
+        RuntimeData.GroundTaxiStatus = $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} shift-distance {grtd.ShiftDistance} over threshold {RaaS.Speeches.TaxiToRunway.Distance.GetInMeters()}";
       }
     }
     private void EvaluateGroundLineUpRaas()
@@ -407,9 +408,9 @@ namespace Eng.Chlaot.Modules.RaaSModule
       Debug.Assert(RuntimeData.NearestAirport != null);
 
       var rwyWithMinDistance = this.RuntimeData.NearestRunways.First();
-      if (rwyWithMinDistance.ShiftDistance > MAXIMAL_SHIFT_DISTANCE_FROM_RUNWAY_TO_BE_ON_RUNWAY_IN_M)
+      if (rwyWithMinDistance.ShiftDistance > MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_ON_GROUND_IN_M)
       {
-        RuntimeData.GroundLineUpStatus = $"Threshold {RuntimeData.NearestAirport.Airport.ICAO}/{rwyWithMinDistance.Runway.Designator} Align delta {thresholdCandidate.DeltaHeading} over threshold {MAXIMAL_SHIFT_DISTANCE_FROM_RUNWAY_TO_BE_ON_RUNWAY_IN_M}";
+        RuntimeData.GroundLineUpStatus = $"Threshold {RuntimeData.NearestAirport.Airport.ICAO}/{rwyWithMinDistance.Runway.Designator} shift-distance {rwyWithMinDistance.ShiftDistance} over threshold {MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_ON_GROUND_IN_M}";
       }
       else
       {
@@ -431,19 +432,19 @@ namespace Eng.Chlaot.Modules.RaaSModule
           .ToList();
 
         var thresholdCandidate = this.RuntimeData.GroundLineUp.MinBy(q => q.DeltaHeading) ?? throw new UnexpectedNullException();
-        if (thresholdCandidate.DeltaHeading < ALIGNED_ON_RUNWAY_MAX_HEADING_DELTA_THRESHOLD_DEGREES)
+        if (thresholdCandidate.DeltaHeading < HOLDING_POINT_SHIFT_DISTANCE)
         {
           if (lastLineUpThreshold != thresholdCandidate.Threshold)
           {
             lastLineUpThreshold = thresholdCandidate.Threshold;
             Say(RaaS.Speeches.OnRunway, thresholdCandidate.Threshold);
             RuntimeData.GroundLineUpStatus =
-              $"Threshold {thresholdCandidate.Airport}/{thresholdCandidate.Threshold.Designator} announced";
+              $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} announced";
           }
           else
           {
             RuntimeData.GroundLineUpStatus =
-              $"Threshold {thresholdCandidate.Airport}/{thresholdCandidate.Threshold.Designator} already announced";
+              $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} already announced";
           }
         }
       }
@@ -455,9 +456,9 @@ namespace Eng.Chlaot.Modules.RaaSModule
       var airport = RuntimeData.NearestAirport.Airport;
 
       var candidateRwy = RuntimeData.NearestRunways.First();
-      if (candidateRwy.ShiftDistance > MAXIMAL_SHIFT_DISTANCE_FROM_RUNWAY_TO_BE_ON_RUNWAY_IN_M)
+      if (candidateRwy.ShiftDistance > MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_ON_GROUND_IN_M)
       {
-        RuntimeData.DistanceStatus = $"{airport.ICAO}/{candidateRwy.Runway.Designator} shift-distance {candidateRwy.ShiftDistance} over threshold {MAXIMAL_SHIFT_DISTANCE_FROM_RUNWAY_TO_BE_ON_RUNWAY_IN_M}m";
+        RuntimeData.DistanceStatus = $"{airport.ICAO}/{candidateRwy.Runway.Designator} shift-distance {candidateRwy.ShiftDistance} over threshold {MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_ON_GROUND_IN_M}m";
         return;
       }
 
@@ -465,16 +466,18 @@ namespace Eng.Chlaot.Modules.RaaSModule
         .Select(q => new
         {
           Threshold = q,
-          DeltaBearing = Math.Abs((double)((Heading)SimData.Heading - (Heading)q.Heading!))
+          DeltaBearing = Math.Abs((double)(SimData.Heading - (double)((Heading)q.Heading! + 180))) //TODO rewrite to be valid w.r.t headings
         })
-        .Where(q => q.DeltaBearing < MAXIMAL_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY)
+        .ToList();
+      tmps = tmps
+        .Where(q => q.DeltaBearing < MAX_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY)
         .OrderBy(q => q.DeltaBearing)
         .ToList();
 
       if (tmps.Count == 0)
       {
         RuntimeData.DistanceStatus =
-          $"{airport.ICAO}/{candidateRwy.Runway.Designator} no threshold within {MAXIMAL_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY} degrees bearing-delta";
+          $"{airport.ICAO}/{candidateRwy.Runway.Designator} no threshold within {MAX_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY} degrees bearing-delta";
         return;
       }
 
@@ -504,7 +507,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
       if (SimData.height > 3000) return; // too high, do nothing
 
       EvaluateNearestAirport();
-      if (RuntimeData.NearestAirport != null && RuntimeData.NearestAirport.Distance < MINIMAL_DISTANCE_TO_DO_EVALUATIONS_IN_M)
+      if (RuntimeData.NearestAirport != null && RuntimeData.NearestAirport.Distance < MIN_DISTANCE_TO_DO_EVALUATIONS_IN_M)
       {
         EvaluateNearestRunways();
         if (SimData.height < 10)
@@ -514,7 +517,9 @@ namespace Eng.Chlaot.Modules.RaaSModule
           EvaluateDistanceRaas();
         }
         else
+        {
           EvaluateAirborneRaas();
+        }
       }
     }
 
@@ -568,7 +573,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
       Debug.Assert(tmpA != null && tmpD != null);
 
-      if (tmpD > MINIMAL_DISTANCE_TO_DO_EVALUATIONS_IN_M)
+      if (tmpD > MIN_DISTANCE_TO_DO_EVALUATIONS_IN_M)
       {
         RuntimeData.NearestAirport = new NearestAirport(tmpA, tmpD.Value, new List<RunwayShifts>());
       }
@@ -609,7 +614,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
     private void Say(RaasDistancesSpeech speech, RaasDistance candidateDistance)
     {
       string s = speech.Speech;
-      s = s.Replace("%dist", candidateDistance + " " + candidateDistance.Unit switch
+      s = s.Replace("%dist", candidateDistance.Value + " " + candidateDistance.Unit switch
       {
         RaasDistance.RaasDistanceUnit.km => "kilometers",
         RaasDistance.RaasDistanceUnit.m => "meters",

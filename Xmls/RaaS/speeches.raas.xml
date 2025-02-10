@@ -14,7 +14,7 @@
     <taxiToShortRunway distance="100m" speech="Approaching short runway %rwy" />
     <onRunway speech="On runway %rwy"/>
     <onShortRunway speech="On runway %rwy, short runway"/>
-    <landingRunway distance="3nm" speech="Approaching runway %rwy" />
+    <landingRunway distance="1nm" speech="Approaching runway %rwy" />
     <distanceRemaining distances="1000ft;500ft;250ft" speech="Distance remaining %dist" />
   </speeches>
   <variables>
