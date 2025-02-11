@@ -71,6 +71,7 @@ namespace OurAirportsToXmlConverter
     public string CountryCode { get; set; } = "";
     public string City { get; set; } = "";
     public GPS Coordinate { get; set; }
+    public double Declination { get; set; }
     public List<Runway> Runways { get; set; } = [];
 
     public Airport() { }

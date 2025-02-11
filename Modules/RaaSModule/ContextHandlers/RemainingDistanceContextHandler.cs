@@ -60,7 +60,8 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
         .Select(q => new
         {
           Threshold = q,
-          DeltaBearing = Math.Abs((double)(simData.Heading - (double)((Heading)q.Heading! + 180))) //TODO rewrite to be valid w.r.t headings
+          //TODO rewrite DeltaBearing to be valid w.r.t headings
+          DeltaBearing = Math.Abs((double)(simData.Heading - ((double)((Heading)q.Heading! + 180 + airport.Declination)))) 
         })
         .ToList();
       tmps = tmps

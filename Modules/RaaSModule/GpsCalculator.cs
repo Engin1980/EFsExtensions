@@ -59,6 +59,20 @@ namespace Eng.Chlaot.Modules.RaaSModule
       return (ToDegrees(Math.Atan2(y, x)) + 360) % 360;
     }
 
+    static double GetApproximateDeclination(double lat, double lon)
+    {
+      // Přibližné hodnoty deklinace pro různé zeměpisné oblasti (hrubý model)
+      double baseDeclination = -6.0; // Přibližná deklinace pro střední šířky
+
+      // Jednoduchá interpolace podle zeměpisné délky
+      double declination = baseDeclination + (lon / 30.0); // Hrubá aproximace
+
+      // Malá korekce podle zeměpisné šířky
+      declination += (lat - 50) * 0.1; // Empirická úprava pro severní polokouli
+
+      return declination;
+    }
+
     #endregion Public Methods
 
     #region Private Methods

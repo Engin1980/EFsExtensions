@@ -33,7 +33,8 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
 
       if (simData.Height > MAX_HEIGHT_TO_BE_EXPECTED_ON_THE_GROUND_IN_FT)
       {
-        data.GroundHoldingPointStatus = $"Plane probably airborne - height {simData.Height} over limit {MAX_HEIGHT_TO_BE_EXPECTED_ON_THE_GROUND_IN_FT}";
+        data.GroundHoldingPointStatus = $"Plane probably airborne - height {simData.Height} over limit " +
+          $"{MAX_HEIGHT_TO_BE_EXPECTED_ON_THE_GROUND_IN_FT}";
         lastHoldingPointRunway = null;
         return;
       }
@@ -50,13 +51,15 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
       if (grtd.ShiftDistance > HOLDING_POINT_EXIT_SHIFT_DISTANCE)
       {
         lastHoldingPointRunway = null;
-        data.GroundHoldingPointStatus = $"Best shift-distance threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} too far";
+        data.GroundHoldingPointStatus = $"Best shift-distance threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} " +
+          $"too far";
       }
-      else if (grtd.ShiftDistance < HOLDING_POINT_ALREADY_ON_RUNWAY_DISTANCE)
+      else if (grtd.ShiftDistance < HOLDING_POINT_LINED_UP_DISTANCE)
       {
         // entered runway, calls are ignored
         lastHoldingPointRunway = grtd.Runway;
-        data.GroundHoldingPointStatus = $"Best shift-distance threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} too close (probably on the runway?)";
+        data.GroundHoldingPointStatus = $"Best shift-distance threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} " +
+          $"too close (probably on the runway?)";
       }
       else if (grtd.ShiftDistance < HOLDING_POINT_ALREADY_ON_RUNWAY_DISTANCE)
       {
@@ -71,12 +74,14 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
         }
         else
         {
-          data.GroundHoldingPointStatus = $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} already announced";
+          data.GroundHoldingPointStatus = $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} " +
+            $"already announced";
         }
       }
       else
       {
-        data.GroundHoldingPointStatus = $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} shift-distance {grtd.ShiftDistance} not close enought for announcement.";
+        data.GroundHoldingPointStatus = $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} " +
+          $"shift-distance {grtd.ShiftDistance} not close enought for announcement.";
       }
     }
   }

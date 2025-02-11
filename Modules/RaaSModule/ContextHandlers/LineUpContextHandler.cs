@@ -27,6 +27,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
     public override void Handle()
     {
       Debug.Assert(data.NearestAirport != null);
+      var airport = data.NearestAirport.Airport;
       var simData = simDataProvider();
 
       if (simData.Height > MAX_HEIGHT_TO_BE_EXPECTED_ON_THE_GROUND_IN_FT)
@@ -40,7 +41,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
       var rwyWithMinDistance = this.data.NearestRunways.First();
       if (rwyWithMinDistance.ShiftDistance > MAX_SHIFT_DISTANCE_TO_BE_ON_RUNWAY_IN_M)
       {
-        data.GroundLineUpStatus = $"Threshold {data.NearestAirport.Airport.ICAO}/{rwyWithMinDistance.Runway.Designator}" +
+        data.GroundLineUpStatus = $"Threshold {airport.ICAO}/{rwyWithMinDistance.Runway.Designator}" +
           $" shift-distance {rwyWithMinDistance.ShiftDistance} over threshold" +
           $" {MAX_SHIFT_DISTANCE_TO_BE_ON_RUNWAY_IN_M}";
         lastThreshold = null;
@@ -63,7 +64,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
             q.Threshold,
             (Heading)q.Bearing,
             q.Distance,
-            Math.Abs((double)q.Threshold.Heading! - (double)simData.Heading)))
+            Math.Abs((double)q.Threshold.Heading! - ((double)simData.Heading) + airport.Declination)))
           .OrderBy(q => q.DeltaHeading)
           .ToList();
 
