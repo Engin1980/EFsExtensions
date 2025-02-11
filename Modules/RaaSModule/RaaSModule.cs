@@ -14,7 +14,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
   public class RaaSModule : NotifyPropertyChanged, IModule
   {
     private readonly Context context;
-    private readonly Logger logger = ELogging.Logger.Create(typeof(RaaSModule));
+    private readonly Logger logger = ELogging.Logger.Create(nameof(RaaSModule));
     private CtrInit? ctrInit;
     private CtrRun? ctrRun;
 
@@ -35,13 +35,22 @@ namespace Eng.Chlaot.Modules.RaaSModule
     public void Init()
     {
       this.ctrInit = new(this.context);
-      if (this.context.Settings.AutoLoadedAirportsFile != null)
+      try
       {
-        this.context.LoadAirportsFile(this.context.Settings.AutoLoadedAirportsFile);
+        if (this.context.Settings.AutoLoadedAirportsFile != null)
+        {
+          this.context.LoadAirportsFile(this.context.Settings.AutoLoadedAirportsFile);
+          logger.Invoke(LogLevel.INFO, "Default Airports loaded."); 
+        }
+        if (this.context.Settings.AutoLoadedRaasFile != null)
+        {
+          this.context.LoadRaasFile(this.context.Settings.AutoLoadedRaasFile);
+          logger.Invoke(LogLevel.INFO, "Default RaaS loaded.");
+        }
       }
-      if (this.context.Settings.AutoLoadedRaasFile != null)
+      catch
       {
-        this.context.LoadRaasFile(this.context.Settings.AutoLoadedRaasFile);
+        logger.Invoke(LogLevel.ERROR, "Unable to load airports or RaaS file.");
       }
     }
 

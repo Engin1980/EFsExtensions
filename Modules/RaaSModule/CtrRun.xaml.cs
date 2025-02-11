@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -26,9 +27,8 @@ namespace Eng.Chlaot.Modules.RaaSModule
       InitializeComponent();
     }
 
-    internal CtrRun(Context context)
+    internal CtrRun(Context context) : this()
     {
-      InitializeComponent();
       this.DataContext = this.context = context;
     }
   }

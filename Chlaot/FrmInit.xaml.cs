@@ -3,6 +3,7 @@ using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
 using ESystem;
 using ESystem.Asserting;
+using Microsoft.VisualBasic.ApplicationServices;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.CodeDom;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,6 +44,7 @@ namespace Chlaot
     public FrmInit()
     {
       InitializeComponent();
+      this.Title = "CHLAOT - Initialization - " + Assembly.GetExecutingAssembly().GetName().Version;
     }
 
     [SuppressMessage("", "IDE1006")]
