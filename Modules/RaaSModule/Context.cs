@@ -24,15 +24,96 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using System.Diagnostics;
 using Microsoft.WindowsAPICodePack.Shell;
+using System.Collections.ObjectModel;
 
 namespace Eng.Chlaot.Modules.RaaSModule
 {
   internal class Context : NotifyPropertyChanged
   {
+
+    #region Public Classes + Structs + Interfaces
+
+    public record NearestAirport(Airport Airport, double Distance, List<RunwayShifts> RunwayShifts);
+    public record NearestRunways(Runway Runway, double ShiftDistance);
+    public record RunwayShifts(Runway Runway, double ShiftDistance);
+    public record LandingRaasData(Airport Airport, Runway Runway, RunwayThreshold Threshold, double ShiftDistance, double ThresholdDistance, Heading Bearing);
+    public record GroundRaasHoldingPointData(Airport Airport, Runway Runway, double ShiftDistance);
+    public record GroundRaasLineUpData(Airport Airport, Runway Runway, RunwayThreshold Threshold, Heading Bearing, double Distance, double DeltaHeading);
+
+    public class RuntimeDataBox : NotifyPropertyChanged
+    {
+      #region Public Properties
+
+      public List<GroundRaasLineUpData> GroundLineUp
+      {
+        get { return base.GetProperty<List<GroundRaasLineUpData>>(nameof(GroundLineUp))!; }
+        set { base.UpdateProperty(nameof(GroundLineUp), value); }
+      }
+
+      public string GroundLineUpStatus
+      {
+        get { return base.GetProperty<string>(nameof(GroundLineUpStatus))!; }
+        set { base.UpdateProperty(nameof(GroundLineUpStatus), value); }
+      }
+
+      public List<GroundRaasHoldingPointData> GroundHoldingPoint
+      {
+        get { return base.GetProperty<List<GroundRaasHoldingPointData>>(nameof(GroundHoldingPoint))!; }
+        set { base.UpdateProperty(nameof(GroundHoldingPoint), value); }
+      }
+
+      public string GroundHoldingPointStatus
+      {
+        get { return base.GetProperty<string>(nameof(GroundHoldingPointStatus))!; }
+        set { base.UpdateProperty(nameof(GroundHoldingPointStatus), value); }
+      }
+
+      public List<LandingRaasData> Landing
+      {
+        get { return base.GetProperty<List<LandingRaasData>>(nameof(Landing))!; }
+        set { base.UpdateProperty(nameof(Landing), value); }
+      }
+
+      public string LandingStatus
+      {
+        get { return base.GetProperty<string>(nameof(LandingStatus))!; }
+        set { base.UpdateProperty(nameof(LandingStatus), value); }
+      }
+
+      public NearestAirport? NearestAirport
+      {
+        get { return base.GetProperty<NearestAirport?>(nameof(NearestAirport))!; }
+        set { base.UpdateProperty(nameof(NearestAirport), value); }
+      }
+
+      public List<NearestRunways> NearestRunways
+      {
+        get { return base.GetProperty<List<NearestRunways>>(nameof(NearestRunways))!; }
+        set { base.UpdateProperty(nameof(NearestRunways), value); }
+      }
+
+
+      public ObservableCollection<string> DistanceStates
+      {
+        get { return base.GetProperty<ObservableCollection<string>>(nameof(DistanceStates))!; }
+        set { base.UpdateProperty(nameof(DistanceStates), value); }
+      }
+
+      #endregion Public Properties
+
+      public RuntimeDataBox()
+      {
+        this.DistanceStates = new ObservableCollection<string>();
+      }
+    }
+
+    #endregion Public Classes + Structs + Interfaces
+
     #region Private Classes + Structs + Interfaces
 
     private static class GpsCalculator
     {
+
       #region Private Fields
 
       private const double EarthRadiusKm = 6371.0;
@@ -92,6 +173,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
       private static double ToRadians(double degrees) => degrees * (Math.PI / 180);
 
       #endregion Private Methods
+
     }
 
     #endregion Private Classes + Structs + Interfaces
@@ -99,22 +181,22 @@ namespace Eng.Chlaot.Modules.RaaSModule
     #region Private Fields
 
     private const int HOLDING_POINT_SHIFT_DISTANCE = 100;
-    private const int MIN_DISTANCE_TO_DO_EVALUATIONS_IN_M = 8_000;
-    private const int MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_ON_GROUND_IN_M = 50;
-    private const int MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_IN_FLIGHT_IN_M = 350;
     private const int MAX_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY = 15;
+    private const int MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_IN_FLIGHT_IN_M = 350;
+    private const int MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_ON_GROUND_IN_M = 50;
+    private const int MIN_DISTANCE_TO_DO_EVALUATIONS_IN_M = 8_000;
     private readonly object __simDataUnsafeLock = new();
     private readonly Logger logger;
     private readonly ESimConnect.ESimConnect simConnect;
     private readonly System.Timers.Timer timer;
     private readonly Action<bool> updateReadyFlag;
     private bool isBusy = false;
-    private RunwayThreshold? lastLandingThreshold = null;
-    private RunwayThreshold? lastLineUpThreshold = null;
-    private Runway? lastTaxiToRunwayRunway = null;
-    private Synthetizer? synthetizer;
     private RunwayThreshold? lastDistanceThreshold = null;
     private List<RaasDistance>? lastDistanceThresholdRemainingDistances = null;
+    private RunwayThreshold? lastLandingThreshold = null;
+    private RunwayThreshold? lastLineUpThreshold = null;
+    private Runway? lastHoldingPointRunway = null;
+    private Synthetizer? synthetizer;
 
     #endregion Private Fields
 
@@ -138,6 +220,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
       set { base.UpdateProperty(nameof(RaaS), value); }
     }
 
+    public RuntimeDataBox RuntimeData { get; set; } = new();
     public Settings Settings { get; set; } = new Settings();
 
     public SimDataStruct SimData
@@ -304,105 +387,74 @@ namespace Eng.Chlaot.Modules.RaaSModule
         }
       }
     }
-    public record NearestAirport(Airport Airport, double Distance, List<RunwayShifts> RunwayShifts);
-    public record NearestRunways(Runway Runway, double ShiftDistance);
-    public record RunwayShifts(Runway Runway, double ShiftDistance);
-    public record LandingRaasData(Airport Airport, Runway Runway, RunwayThreshold Threshold, double ShiftDistance, double ThresholdDistance, Heading Bearing);
-    public record GroundRaasTaxiData(Airport Airport, Runway Runway, double ShiftDistance);
-    public record GroundRaasLineUpData(Airport Airport, Runway Runway, RunwayThreshold Threshold, Heading Bearing, double Distance, double DeltaHeading);
 
-    public class RuntimeDataBox : NotifyPropertyChanged
-    {
-      public NearestAirport? NearestAirport
-      {
-        get { return base.GetProperty<NearestAirport?>(nameof(NearestAirport))!; }
-        set { base.UpdateProperty(nameof(NearestAirport), value); }
-      }
-
-      public List<NearestRunways> NearestRunways
-      {
-        get { return base.GetProperty<List<NearestRunways>>(nameof(NearestRunways))!; }
-        set { base.UpdateProperty(nameof(NearestRunways), value); }
-      }
-
-      public List<GroundRaasTaxiData> GroundTaxi
-      {
-        get { return base.GetProperty<List<GroundRaasTaxiData>>(nameof(GroundTaxi))!; }
-        set { base.UpdateProperty(nameof(GroundTaxi), value); }
-      }
-      public string GroundTaxiStatus
-      {
-        get { return base.GetProperty<string>(nameof(GroundTaxiStatus))!; }
-        set { base.UpdateProperty(nameof(GroundTaxiStatus), value); }
-      }
-
-
-      public List<GroundRaasLineUpData> GroundLineUp
-      {
-        get { return base.GetProperty<List<GroundRaasLineUpData>>(nameof(GroundLineUp))!; }
-        set { base.UpdateProperty(nameof(GroundLineUp), value); }
-      }
-      public string GroundLineUpStatus
-      {
-        get { return base.GetProperty<string>(nameof(GroundLineUpStatus))!; }
-        set { base.UpdateProperty(nameof(GroundLineUpStatus), value); }
-      }
-
-      public List<LandingRaasData> Landing
-      {
-        get { return base.GetProperty<List<LandingRaasData>>(nameof(Landing))!; }
-        set { base.UpdateProperty(nameof(Landing), value); }
-      }
-      public string LandingStatus
-      {
-        get { return base.GetProperty<string>(nameof(LandingStatus))!; }
-        set { base.UpdateProperty(nameof(LandingStatus), value); }
-      }
-
-
-      public string DistanceStatus
-      {
-        get { return base.GetProperty<string>(nameof(DistanceStatus))!; }
-        set { base.UpdateProperty(nameof(DistanceStatus), value); }
-      }
-
-    }
-    public RuntimeDataBox RuntimeData { get; set; } = new();
-
-
-    private void EvaluateGroundTaxiRaas()
+    private void EvaluateDistanceRaas()
     {
       Debug.Assert(RuntimeData.NearestAirport != null);
+      var ds = RuntimeData.DistanceStates;
+      ds.Clear();
 
-      RuntimeData.GroundTaxi = RuntimeData.NearestRunways
-        .Select(q => new GroundRaasTaxiData(
-          RuntimeData.NearestAirport.Airport,
-          q.Runway,
-          q.ShiftDistance))
-        .OrderBy(q => q.ShiftDistance)
+      var airport = RuntimeData.NearestAirport.Airport;
+      ds.Add("Current airport: " + airport.ICAO);
+
+      var candidateRwy = RuntimeData.NearestRunways.First();
+      ds.Add($"Closest runway: {airport.ICAO}/{candidateRwy.Runway.Designator}");
+      if (candidateRwy.ShiftDistance > MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_ON_GROUND_IN_M)
+      {
+        ds.Add(
+          $"{airport.ICAO}/{candidateRwy.Runway.Designator} shift-distance {candidateRwy.ShiftDistance} " +
+          $"over threshold {MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_ON_GROUND_IN_M}m");
+        return;
+      }
+
+      var tmps = candidateRwy.Runway.Thresholds
+        .Select(q => new
+        {
+          Threshold = q,
+          DeltaBearing = Math.Abs((double)(SimData.Heading - (double)((Heading)q.Heading! + 180))) //TODO rewrite to be valid w.r.t headings
+        })
+        .ToList();
+      tmps = tmps
+        .Where(q => q.DeltaBearing < MAX_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY)
+        .OrderBy(q => q.DeltaBearing)
         .ToList();
 
-      var grtd = RuntimeData.GroundTaxi.First();
-      if (grtd.ShiftDistance < RaaS.Speeches.TaxiToRunway.Distance.GetInMeters())
+      if (tmps.Count == 0)
       {
-        if (lastTaxiToRunwayRunway != grtd.Runway)
-        {
-          lastTaxiToRunwayRunway = grtd.Runway;
-          var closestThreshold = grtd.Runway.Thresholds
-            .MinBy(q => GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, SimData.latitude, SimData.longitude))
-            ?? throw new UnexpectedNullException();
-          Say(RaaS.Speeches.TaxiToRunway, closestThreshold);
-        }
-        else
-        {
-          RuntimeData.GroundTaxiStatus = $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} already announced";
-        }
+        ds.Add(
+          $"{airport.ICAO}/{candidateRwy.Runway.Designator} no threshold within " +
+          $"{MAX_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY} degrees bearing-delta");
+        return;
       }
-      else
+
+      var candidate = tmps.First();
+      ds.Add(
+        $"{airport.ICAO}/{candidateRwy.Runway.Designator} threshold {candidate.Threshold.Designator} " +
+        $"bearing-delta {candidate.DeltaBearing} degrees");
+      var dist = GpsCalculator.GetDistance(candidate.Threshold.Coordinate.Latitude, candidate.Threshold.Coordinate.Longitude, SimData.latitude, SimData.longitude);
+      ds.Add($"Distance to threshold: {dist}m");
+
+      if (candidate.Threshold != lastDistanceThreshold)
       {
-        RuntimeData.GroundTaxiStatus = $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} shift-distance {grtd.ShiftDistance} over threshold {RaaS.Speeches.TaxiToRunway.Distance.GetInMeters()}";
+        lastDistanceThreshold = candidate.Threshold;
+        lastDistanceThresholdRemainingDistances = RaaS.Speeches.DistanceRemaining.Distances.OrderBy(q => q.GetInMeters()).ToList();
       }
+
+      var candidateDistances = lastDistanceThresholdRemainingDistances!
+        .Where(q => q.GetInMeters() > dist)
+        .OrderBy(q => q.GetInMeters());
+      if (!candidateDistances.Any())
+      {
+        ds.Add("No distances to announce of remaining " + string.Join(", ", lastDistanceThresholdRemainingDistances!));
+        return;
+      }
+      var candidateDistance = candidateDistances.First();
+      lastDistanceThresholdRemainingDistances!.RemoveAll(q => q.GetInMeters() >= candidateDistance.GetInMeters());
+
+      ds.Add("Announcing distance: " + candidateDistance);
+      Say(RaaS.Speeches.DistanceRemaining, candidateDistance);
     }
+
     private void EvaluateGroundLineUpRaas()
     {
       Debug.Assert(RuntimeData.NearestAirport != null);
@@ -440,6 +492,9 @@ namespace Eng.Chlaot.Modules.RaaSModule
             Say(RaaS.Speeches.OnRunway, thresholdCandidate.Threshold);
             RuntimeData.GroundLineUpStatus =
               $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} announced";
+
+            lastHoldingPointRunway = null;
+            lastLandingThreshold = null;
           }
           else
           {
@@ -449,93 +504,42 @@ namespace Eng.Chlaot.Modules.RaaSModule
         }
       }
     }
-    private void EvaluateDistanceRaas()
+
+    private void EvaluateGroundHoldingPointRaas()
     {
       Debug.Assert(RuntimeData.NearestAirport != null);
 
-      var airport = RuntimeData.NearestAirport.Airport;
-
-      var candidateRwy = RuntimeData.NearestRunways.First();
-      if (candidateRwy.ShiftDistance > MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_ON_GROUND_IN_M)
-      {
-        RuntimeData.DistanceStatus = $"{airport.ICAO}/{candidateRwy.Runway.Designator} shift-distance {candidateRwy.ShiftDistance} over threshold {MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_ON_GROUND_IN_M}m";
-        return;
-      }
-
-      var tmps = candidateRwy.Runway.Thresholds
-        .Select(q => new
-        {
-          Threshold = q,
-          DeltaBearing = Math.Abs((double)(SimData.Heading - (double)((Heading)q.Heading! + 180))) //TODO rewrite to be valid w.r.t headings
-        })
-        .ToList();
-      tmps = tmps
-        .Where(q => q.DeltaBearing < MAX_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY)
-        .OrderBy(q => q.DeltaBearing)
+      RuntimeData.GroundHoldingPoint = RuntimeData.NearestRunways
+        .Select(q => new GroundRaasHoldingPointData(
+          RuntimeData.NearestAirport.Airport,
+          q.Runway,
+          q.ShiftDistance))
+        .OrderBy(q => q.ShiftDistance)
         .ToList();
 
-      if (tmps.Count == 0)
+      var grtd = RuntimeData.GroundHoldingPoint.First();
+      if (grtd.ShiftDistance < RaaS.Speeches.TaxiToRunway.Distance.GetInMeters())
       {
-        RuntimeData.DistanceStatus =
-          $"{airport.ICAO}/{candidateRwy.Runway.Designator} no threshold within {MAX_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY} degrees bearing-delta";
-        return;
-      }
-
-      var candidate = tmps.First();
-      var dist = GpsCalculator.GetDistance(candidate.Threshold.Coordinate.Latitude, candidate.Threshold.Coordinate.Longitude, SimData.latitude, SimData.longitude);
-
-      if (candidate.Threshold != lastDistanceThreshold)
-      {
-        lastDistanceThreshold = candidate.Threshold;
-        lastDistanceThresholdRemainingDistances = RaaS.Speeches.DistanceRemaining.Distances.OrderBy(q => q.GetInMeters()).ToList();
-      }
-
-      var candidateDistances = lastDistanceThresholdRemainingDistances!
-        .Where(q => q.GetInMeters() > dist)
-        .OrderBy(q => q.GetInMeters());
-      if (!candidateDistances.Any()) return;
-      var candidateDistance = candidateDistances.First();
-      lastDistanceThresholdRemainingDistances!.RemoveAll(q => q.GetInMeters() >= candidateDistance.GetInMeters());
-
-      Say(RaaS.Speeches.DistanceRemaining, candidateDistance);
-    }
-
-
-
-    private void EvaluateRaas()
-    {
-      if (SimData.height > 3000) return; // too high, do nothing
-
-      EvaluateNearestAirport();
-      if (RuntimeData.NearestAirport != null && RuntimeData.NearestAirport.Distance < MIN_DISTANCE_TO_DO_EVALUATIONS_IN_M)
-      {
-        EvaluateNearestRunways();
-        if (SimData.height < 10)
+        if (lastHoldingPointRunway != grtd.Runway)
         {
-          EvaluateGroundTaxiRaas();
-          EvaluateGroundLineUpRaas();
-          EvaluateDistanceRaas();
+          lastHoldingPointRunway = grtd.Runway;
+          var closestThreshold = grtd.Runway.Thresholds
+            .MinBy(q => GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, SimData.latitude, SimData.longitude))
+            ?? throw new UnexpectedNullException();
+          Say(RaaS.Speeches.TaxiToRunway, closestThreshold);
+
+          lastLineUpThreshold = null;
+          lastLandingThreshold = null;
         }
         else
         {
-          EvaluateAirborneRaas();
+          RuntimeData.GroundHoldingPointStatus = $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} already announced";
         }
       }
-    }
-
-    private void EvaluateNearestRunways()
-    {
-      RuntimeData.NearestRunways = RuntimeData.NearestAirport!.Airport.Runways
-        .Select(q => new NearestRunways(
-          q,
-          GpsCalculator.GetDistanceFromLine(
-            q.Thresholds[0].Coordinate.Latitude,
-            q.Thresholds[0].Coordinate.Longitude,
-            q.Thresholds[1].Coordinate.Latitude,
-            q.Thresholds[1].Coordinate.Longitude,
-            SimData.latitude, SimData.longitude)))
-        .OrderBy(q => q.ShiftDistance)
-        .ToList();
+      else
+      {
+        RuntimeData.GroundHoldingPointStatus = $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} shift-distance {grtd.ShiftDistance} over threshold {RaaS.Speeches.TaxiToRunway.Distance.GetInMeters()}";
+      }
     }
 
     private void EvaluateNearestAirport()
@@ -592,6 +596,41 @@ namespace Eng.Chlaot.Modules.RaaSModule
       }
     }
 
+    private void EvaluateNearestRunways()
+    {
+      RuntimeData.NearestRunways = RuntimeData.NearestAirport!.Airport.Runways
+        .Select(q => new NearestRunways(
+          q,
+          GpsCalculator.GetDistanceFromLine(
+            q.Thresholds[0].Coordinate.Latitude,
+            q.Thresholds[0].Coordinate.Longitude,
+            q.Thresholds[1].Coordinate.Latitude,
+            q.Thresholds[1].Coordinate.Longitude,
+            SimData.latitude, SimData.longitude)))
+        .OrderBy(q => q.ShiftDistance)
+        .ToList();
+    }
+
+    private void EvaluateRaas()
+    {
+      if (SimData.height > 3000) return; // too high, do nothing
+
+      EvaluateNearestAirport();
+      if (RuntimeData.NearestAirport != null && RuntimeData.NearestAirport.Distance < MIN_DISTANCE_TO_DO_EVALUATIONS_IN_M)
+      {
+        EvaluateNearestRunways();
+        if (SimData.IndicatedSpeed < 40)
+        {
+          EvaluateGroundHoldingPointRaas();
+          EvaluateGroundLineUpRaas();
+        }
+        else if (SimData.IndicatedSpeed > 40)
+        {
+          EvaluateAirborneRaas();
+          EvaluateDistanceRaas();
+        }
+      }
+    }
     private void CheckReadyStatus()
     {
       this.updateReadyFlag(this.RaaS != null && this.Airports.Count > 0);
@@ -695,5 +734,6 @@ namespace Eng.Chlaot.Modules.RaaSModule
     }
 
     #endregion Private Methods
+
   }
 }

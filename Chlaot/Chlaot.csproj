@@ -8,8 +8,8 @@
     <PlatformTarget>x64</PlatformTarget>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
-    <AssemblyVersion>1.1.0.67</AssemblyVersion>
-    <FileVersion>1.1.0.67</FileVersion>
+    <AssemblyVersion>1.1.0.68</AssemblyVersion>
+    <FileVersion>1.1.0.68</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
