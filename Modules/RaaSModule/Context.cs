@@ -94,9 +94,9 @@ namespace Eng.Chlaot.Modules.RaaSModule
       }
 
 
-      public ObservableCollection<string> DistanceStates
+      public List<string> DistanceStates
       {
-        get { return base.GetProperty<ObservableCollection<string>>(nameof(DistanceStates))!; }
+        get { return base.GetProperty<List<string>>(nameof(DistanceStates))!; }
         set { base.UpdateProperty(nameof(DistanceStates), value); }
       }
 
@@ -104,7 +104,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
       public RuntimeDataBox()
       {
-        this.DistanceStates = new ObservableCollection<string>();
+        this.DistanceStates = new List<string>();
       }
     }
 
@@ -286,10 +286,31 @@ namespace Eng.Chlaot.Modules.RaaSModule
       if (tmpA == null)
       {
         var closeAirports = Airports
-        .Where(q => q.Coordinate.Latitude > SimData.latitude - 1)
-        .Where(q => q.Coordinate.Latitude < SimData.latitude + 1)
-        .Where(q => q.Coordinate.Longitude > SimData.longitude - 1)
-        .Where(q => q.Coordinate.Longitude < SimData.longitude + 1);
+          .Where(q => q.Coordinate.Latitude > SimData.latitude - 1)
+          .Where(q => q.Coordinate.Latitude < SimData.latitude + 1)
+          .Where(q => q.Coordinate.Longitude > SimData.longitude - 1)
+          .Where(q => q.Coordinate.Longitude < SimData.longitude + 1);
+
+        if (!closeAirports.Any())
+        {
+          closeAirports = Airports.Where(q => q.Coordinate.Latitude > SimData.latitude - 5)
+            .Where(q => q.Coordinate.Latitude < SimData.latitude + 5)
+            .Where(q => q.Coordinate.Longitude > SimData.longitude - 5)
+            .Where(q => q.Coordinate.Longitude < SimData.longitude + 5);
+
+          if (!closeAirports.Any())
+          {
+             closeAirports = Airports.Where(q => q.Coordinate.Latitude > SimData.latitude - 20)
+              .Where(q => q.Coordinate.Latitude < SimData.latitude + 20)
+              .Where(q => q.Coordinate.Longitude > SimData.longitude - 20)
+              .Where(q => q.Coordinate.Longitude < SimData.longitude + 20);
+
+            if (!closeAirports.Any())
+            {
+              closeAirports = Airports;
+            }
+          }
+        }
 
         var tmpAD = closeAirports
           .Select(q => new
@@ -417,6 +438,18 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
       logger.Log(LogLevel.DEBUG, "Registering simConnect repeated-requests");
       simConnect.Structs.RequestRepeatedly<SimDataStruct>(SimConnectPeriod.SECOND, sendOnlyOnChange: true);
+    }
+
+    internal void DoTmp()
+    {
+      this.SimData = new SimDataStruct()
+      {
+        heading = 0,
+        indicatedSpeed = 0,
+         latitude = 52.977935435,
+         longitude = -118.0568015
+      };
+      EvaluateNearestAirport();
     }
 
     #endregion Private Methods

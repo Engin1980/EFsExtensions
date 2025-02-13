@@ -65,11 +65,13 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
 
       if (thrsCandidate.ThresholdDistance > raas.Speeches.LandingRunway.Distance.GetInMeters())
       {
-        data.LandingStatus = $"{thrsCandidate.Airport.ICAO}/{thrsCandidate.Threshold.Designator} threshold-distance {thrsCandidate.ThresholdDistance} over limit {raas.Speeches.LandingRunway.Distance.GetInMeters()}";
+        data.LandingStatus = $"{thrsCandidate.Airport.ICAO}/{thrsCandidate.Threshold.Designator} " +
+          $"threshold-distance {thrsCandidate.ThresholdDistance} over limit {raas.Speeches.LandingRunway.Distance.GetInMeters()}";
       }
       else if (thrsCandidate.ShiftDistance > MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_IN_M)
       {
-        data.LandingStatus = $"{thrsCandidate.Airport.ICAO}/{thrsCandidate.Threshold.Designator} shift-distance {thrsCandidate.ShiftDistance} over limit {MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_IN_M}";
+        data.LandingStatus = $"{thrsCandidate.Airport.ICAO}/{thrsCandidate.Threshold.Designator} " +
+          $"shift-distance {thrsCandidate.ShiftDistance} over limit {MAX_SHIFT_DISTANCE_OFF_THE_RUNWAY_IN_M}";
       }
       else
       {
@@ -81,7 +83,8 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
         }
         else
         {
-          data.LandingStatus = $"{thrsCandidate.Airport.ICAO}/{thrsCandidate.Threshold.Designator} already announced";
+          data.LandingStatus = $"{thrsCandidate.Airport.ICAO}/{thrsCandidate.Threshold.Designator} " +
+            $"already announced";
         }
       }
     }

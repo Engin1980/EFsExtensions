@@ -13,10 +13,10 @@
   <properties title="custom">
   </properties>
   <speechDefinition title="Speed alive">
-    <speech type="speech" value="Speech alive"/>
+    <speech type="speech" value="Speed indicator alive"/>
     <trigger>
       <g:wait seconds="5">
-        <g:property name="ias" direction="above" expression="0" isTrendBased="true" />
+        <g:property name="ias" direction="above" expression="40" isTrendBased="true" />
       </g:wait>
     </trigger>
     <reactivationTrigger>
