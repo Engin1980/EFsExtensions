@@ -120,10 +120,10 @@ namespace Eng.Chlaot.Modules.RaaSModule
     private readonly System.Timers.Timer timer;
     private readonly Action<bool> updateReadyFlag;
     private bool isBusy = false;
-    private readonly HoldingPointContextHandler holdingPointContextHandler;
-    private readonly LineUpContextHandler lineUpContextHandler;
-    private readonly LandingContextHandler landingContextHandler;
-    private readonly RemainingDistanceContextHandler remainingDistanceContextHandler;
+    private HoldingPointContextHandler holdingPointContextHandler;
+    private LineUpContextHandler lineUpContextHandler;
+    private LandingContextHandler landingContextHandler;
+    private RemainingDistanceContextHandler remainingDistanceContextHandler;
 
     #endregion Private Fields
 
@@ -175,12 +175,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
     #region Public Constructors
 
     public Context(Logger logger, Action<bool> updateReadyFlag)
-    {
-      this.landingContextHandler = new LandingContextHandler(logger, RuntimeData, RaaS, () => SimData);
-      this.holdingPointContextHandler = new HoldingPointContextHandler(logger, RuntimeData, RaaS, () => SimData);
-      this.lineUpContextHandler = new LineUpContextHandler(logger, RuntimeData, RaaS, () => SimData);
-      this.remainingDistanceContextHandler = new RemainingDistanceContextHandler(logger, RuntimeData, RaaS, () => SimData);
-
+    {     
       this.logger = logger;
       this.updateReadyFlag = updateReadyFlag;
       this.timer = new(1000)
@@ -203,6 +198,11 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     public void Start()
     {
+      this.landingContextHandler = new LandingContextHandler(logger, RuntimeData, RaaS, () => SimData);
+      this.holdingPointContextHandler = new HoldingPointContextHandler(logger, RuntimeData, RaaS, () => SimData);
+      this.lineUpContextHandler = new LineUpContextHandler(logger, RuntimeData, RaaS, () => SimData);
+      this.remainingDistanceContextHandler = new RemainingDistanceContextHandler(logger, RuntimeData, RaaS, () => SimData);
+
       this.timer.Enabled = true;
     }
 

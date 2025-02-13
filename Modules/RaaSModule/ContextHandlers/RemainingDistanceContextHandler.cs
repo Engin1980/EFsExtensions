@@ -61,7 +61,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
             {
               Threshold = q,
               //TODO rewrite DeltaBearing to be valid w.r.t headings
-              DeltaBearing = Math.Abs((double)(simData.Heading - ((double)((Heading)q.Heading! + 180 + airport.Declination))))
+              DeltaBearing = Math.Abs((double)(simData.Heading - ((double)((Heading)q.Heading! - airport.Declination + 180))))
             })
             .ToList();
           tmps = tmps

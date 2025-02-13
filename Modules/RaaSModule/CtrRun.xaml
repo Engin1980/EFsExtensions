@@ -93,7 +93,7 @@
         <DockPanel>
           <DataGrid ItemsSource="{Binding RuntimeData.DistanceStates}" AutoGenerateColumns="False">
             <DataGrid.Columns>
-              <DataGridTextColumn Header="Message" Binding="{Binding State}" />
+              <DataGridTextColumn Header="Message" Binding="{Binding}" />
             </DataGrid.Columns>
           </DataGrid>
         </DockPanel>
