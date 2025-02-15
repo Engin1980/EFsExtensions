@@ -35,10 +35,10 @@ namespace Eng.Chlaot.Modules.RaaSModule
     #region Public Classes + Structs + Interfaces
 
     public record NearestAirport(Airport Airport, double Distance, List<RunwayShifts> RunwayShifts);
-    public record NearestRunways(Runway Runway, double ShiftDistance);
+    public record NearestRunways(Runway Runway, double OrthoDistance);
     public record RunwayShifts(Runway Runway, double ShiftDistance);
     public record LandingRaasData(Airport Airport, Runway Runway, RunwayThreshold Threshold, double ShiftDistance, double ThresholdDistance, Heading Bearing);
-    public record GroundRaasHoldingPointData(Airport Airport, Runway Runway, double ShiftDistance);
+    public record GroundRaasHoldingPointData(Airport Airport, Runway Runway, double OrthoDistance);
     public record GroundRaasLineUpData(Airport Airport, Runway Runway, RunwayThreshold Threshold, Heading Bearing, double Distance, double DeltaHeading);
 
     public class RuntimeDataBox : NotifyPropertyChanged
@@ -198,10 +198,11 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     public void Start()
     {
-      this.landingContextHandler = new LandingContextHandler(logger, RuntimeData, RaaS, () => SimData);
-      this.holdingPointContextHandler = new HoldingPointContextHandler(logger, RuntimeData, RaaS, () => SimData);
-      this.lineUpContextHandler = new LineUpContextHandler(logger, RuntimeData, RaaS, () => SimData);
-      this.remainingDistanceContextHandler = new RemainingDistanceContextHandler(logger, RuntimeData, RaaS, () => SimData);
+      var args = new ContextHandlerArgs(this.logger, this.RuntimeData, this.RaaS, () => SimData, this.Settings);
+      this.landingContextHandler = new LandingContextHandler(args);
+      this.holdingPointContextHandler = new HoldingPointContextHandler(args);
+      this.lineUpContextHandler = new LineUpContextHandler(args);
+      this.remainingDistanceContextHandler = new RemainingDistanceContextHandler(args);
 
       this.timer.Enabled = true;
     }
@@ -348,7 +349,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
             q.Thresholds[1].Coordinate.Latitude,
             q.Thresholds[1].Coordinate.Longitude,
             SimData.latitude, SimData.longitude)))
-        .OrderBy(q => q.ShiftDistance)
+        .OrderBy(q => q.OrthoDistance)
         .ToList();
     }
 

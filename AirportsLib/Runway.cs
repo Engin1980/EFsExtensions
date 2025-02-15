@@ -12,5 +12,6 @@ namespace Eng.Chlaot.Libs.AirportsLib
     [XmlAttribute]
     public string Designator { get; set; } = "";
     public List<RunwayThreshold> Thresholds { get; set; } = new List<RunwayThreshold>();
+    public int LengthInM { get; set; } = int.MinValue;
   }
 }

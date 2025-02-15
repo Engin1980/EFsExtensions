@@ -15,35 +15,31 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
 {
   internal class LineUpContextHandler : ContextHandler
   {
-    private const int MAX_HEIGHT_TO_BE_EXPECTED_ON_THE_GROUND_IN_FT = 50;
-    private const int MAX_SHIFT_DISTANCE_TO_BE_ON_RUNWAY_IN_M = 60;
-    private const double MAX_DELTA_HEADING_TO_BE_LINED_UP_ON_RUNWAY_IN_DEG = 15;
     private RunwayThreshold? lastThreshold;
 
-    public LineUpContextHandler(Logger logger, Context.RuntimeDataBox data, Raas raas, Func<SimDataStruct> simDataProvider) : base(logger, data, raas, simDataProvider)
-    {
-    }
+    public LineUpContextHandler(ContextHandlerArgs args) : base(args) { }
 
     public override void Handle()
     {
       Debug.Assert(data.NearestAirport != null);
       var airport = data.NearestAirport.Airport;
       var simData = simDataProvider();
+      var sett = this.settings.LineUpThresholds;
 
-      if (simData.Height > MAX_HEIGHT_TO_BE_EXPECTED_ON_THE_GROUND_IN_FT)
+      if (simData.Height > sett.MaxHeight)
       {
         data.GroundLineUpStatus = $"Plane probably airborne - height {simData.Height} " +
-          $"over limit {MAX_HEIGHT_TO_BE_EXPECTED_ON_THE_GROUND_IN_FT}";
+          $"over limit {sett.MaxHeight}";
         lastThreshold = null;
         return;
       }
 
       var rwyWithMinDistance = this.data.NearestRunways.First();
-      if (rwyWithMinDistance.ShiftDistance > MAX_SHIFT_DISTANCE_TO_BE_ON_RUNWAY_IN_M)
+      if (rwyWithMinDistance.OrthoDistance > sett.MaxOrthoDistance)
       {
         data.GroundLineUpStatus = $"Threshold {airport.ICAO}/{rwyWithMinDistance.Runway.Designator}" +
-          $" shift-distance {rwyWithMinDistance.ShiftDistance} over threshold" +
-          $" {MAX_SHIFT_DISTANCE_TO_BE_ON_RUNWAY_IN_M}";
+          $" ortho-distance {rwyWithMinDistance.OrthoDistance} over threshold" +
+          $" {sett.MaxOrthoDistance}";
         lastThreshold = null;
       }
       else
@@ -53,9 +49,9 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
           .Select(q => new
           {
             Threshold = q,
-            Bearing = GpsCalculator.InitialBearing(q.Coordinate.Latitude, q.Coordinate.Longitude, 
+            Bearing = GpsCalculator.InitialBearing(q.Coordinate.Latitude, q.Coordinate.Longitude,
             simData.latitude, simData.longitude),
-            Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, 
+            Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude,
             simData.latitude, simData.longitude)
           })
           .Select(q => new GroundRaasLineUpData(
@@ -68,17 +64,26 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
           .OrderBy(q => q.DeltaHeading)
           .ToList();
 
-        var thresholdCandidate = this.data.GroundLineUp.MinBy(q => q.DeltaHeading) 
+        var thresholdCandidate = this.data.GroundLineUp.MinBy(q => q.DeltaHeading)
           ?? throw new UnexpectedNullException();
-        if (thresholdCandidate.DeltaHeading < MAX_DELTA_HEADING_TO_BE_LINED_UP_ON_RUNWAY_IN_DEG)
+        if (thresholdCandidate.DeltaHeading < sett.MaxHeadingDiff)
         {
           if (lastThreshold != thresholdCandidate.Threshold)
           {
             lastThreshold = thresholdCandidate.Threshold;
-            Say(raas.Speeches.OnRunway, thresholdCandidate.Threshold);
-            data.GroundLineUpStatus =
-              $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} " +
-              $"announced";
+            if (simData.IndicatedSpeed > sett.MaxSpeed)
+            {
+              data.GroundLineUpStatus =
+                $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} " +
+                $"announcement skipped due to high speed {simData.IndicatedSpeed} (max {sett.MaxSpeed}).";
+            }
+            else
+            {
+              Say(raas.Speeches.OnRunway, thresholdCandidate.Threshold);
+              data.GroundLineUpStatus =
+                $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} " +
+                $"announced";
+            }
           }
           else
           {
@@ -86,11 +91,12 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
               $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} " +
               $"already announced";
           }
-        } else
+        }
+        else
         {
           data.GroundLineUpStatus =
               $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} " +
-              $"is close, but heading diff {thresholdCandidate.DeltaHeading} is too big (over {MAX_DELTA_HEADING_TO_BE_LINED_UP_ON_RUNWAY_IN_DEG}).";
+              $"is close, but heading diff {thresholdCandidate.DeltaHeading} is too big (over {sett.MaxHeadingDiff}).";
         }
       }
     }

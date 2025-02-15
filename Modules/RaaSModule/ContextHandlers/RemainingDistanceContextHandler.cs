@@ -13,30 +13,24 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
 {
   internal class RemainingDistanceContextHandler : ContextHandler
   {
-    private const int MAX_HEIGHT_TO_BE_ON_THE_GROUND_IN_M = 30;
-    private const int MAX_SHIFT_DISTANCE_TO_BE_ON_RUNWAY_IN_M = 60;
-    private const double MAX_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY = 15;
-
     private RunwayThreshold? lastDistanceThreshold;
     private List<RaasDistance>? lastDistanceThresholdRemainingDistances;
 
-    public RemainingDistanceContextHandler(Logger logger, Context.RuntimeDataBox data, Raas raas,
-      Func<SimDataStruct> simDataProvider) : base(logger, data, raas, simDataProvider)
-    {
-    }
+    public RemainingDistanceContextHandler(ContextHandlerArgs args) : base(args) { }
 
     public override void Handle()
     {
       Debug.Assert(data.NearestAirport != null);
       var simData = this.simDataProvider();
+      var sett = this.settings.RemainingDistanceThresholds;
 
       var ds = new List<string>();
 
-      if (simData.Height > MAX_HEIGHT_TO_BE_ON_THE_GROUND_IN_M)
+      if (simData.Height > sett.MaxHeight)
       {
 
         ds.Add($"Plane probably airborne - height {simData.Height} " +
-          $"over limit {MAX_HEIGHT_TO_BE_ON_THE_GROUND_IN_M}");
+          $"over limit {sett.MaxHeight}");
         lastDistanceThreshold = null;
         lastDistanceThresholdRemainingDistances = null;
       }
@@ -48,11 +42,11 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
 
         var candidateRwy = data.NearestRunways.First();
         ds.Add($"Closest runway: {airport.ICAO}/{candidateRwy.Runway.Designator}");
-        if (candidateRwy.ShiftDistance > MAX_SHIFT_DISTANCE_TO_BE_ON_RUNWAY_IN_M)
+        if (candidateRwy.OrthoDistance > sett.MaxOrthoDistance)
         {
           ds.Add(
-            $"{airport.ICAO}/{candidateRwy.Runway.Designator} shift-distance {candidateRwy.ShiftDistance} " +
-            $"over threshold {MAX_SHIFT_DISTANCE_TO_BE_ON_RUNWAY_IN_M}m");
+            $"{airport.ICAO}/{candidateRwy.Runway.Designator} ortho-distance {candidateRwy.OrthoDistance} " +
+            $"over threshold {sett.MaxOrthoDistance}m");
         }
         else
         {
@@ -64,21 +58,22 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
               DeltaBearing = Math.Abs((double)(simData.Heading - ((double)((Heading)q.Heading! - airport.Declination + 180))))
             })
             .ToList();
-          tmps = tmps
-            .Where(q => q.DeltaBearing < MAX_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY)
+          var passedTmps = tmps
+            .Where(q => q.DeltaBearing < sett.MaxHeadingDiff)
                 .OrderBy(q => q.DeltaBearing)
                 .ToList();
 
-          if (tmps.Count == 0)
+          if (passedTmps.Count == 0)
           {
             ds.Add(
               $"{airport.ICAO}/{candidateRwy.Runway.Designator} no threshold within " +
-              $"{MAX_HEADING_DELTA_TO_BE_ALIGNED_ON_RUNWAY} degrees bearing-delta");
+              $"{sett.MaxHeadingDiff} degrees bearing-delta: " +
+              $"{string.Join(",", tmps.Select(q => $"{q.Threshold}={q.DeltaBearing}"))}.");
           }
           else
           {
 
-            var candidate = tmps.First();
+            var candidate = passedTmps.First();
             ds.Add(
               $"{airport.ICAO}/{candidateRwy.Runway.Designator} threshold {candidate.Threshold.Designator} " +
               $"bearing-delta {candidate.DeltaBearing} degrees");
@@ -98,12 +93,15 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
               .OrderBy(q => q.GetInMeters());
             if (!candidateDistances.Any())
             {
-              ds.Add("No distances to announce of remaining " + string.Join(", ", lastDistanceThresholdRemainingDistances!));
+              ds.Add(
+                "No distances to announce of remaining " +
+                string.Join(", ", lastDistanceThresholdRemainingDistances!));
             }
             else
             {
               var candidateDistance = candidateDistances.First();
-              lastDistanceThresholdRemainingDistances!.RemoveAll(q => q.GetInMeters() >= candidateDistance.GetInMeters());
+              lastDistanceThresholdRemainingDistances!
+                .RemoveAll(q => q.GetInMeters() >= candidateDistance.GetInMeters());
 
               ds.Add("Announcing distance: " + candidateDistance);
               Say(raas.Speeches.DistanceRemaining, candidateDistance);

@@ -19,14 +19,16 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
     protected readonly Context.RuntimeDataBox data;
     protected readonly Raas raas;
     protected Func<SimDataStruct> simDataProvider;
+    protected readonly Settings settings;
     private readonly static Synthetizer? synthetizer = Synthetizer.CreateDefault();
 
-    protected ContextHandler(Logger logger, Context.RuntimeDataBox data, Raas raas, Func<SimDataStruct> simDataProvider)
+    protected ContextHandler(ContextHandlerArgs args)
     {
-      this.logger = logger;
-      this.data = data;
-      this.raas = raas;
-      this.simDataProvider = simDataProvider;
+      this.logger = args.logger;
+      this.data = args.data;
+      this.raas = args.raas;
+      this.simDataProvider = args.simDataProvider;
+      this.settings = args.settings;
     }
 
     public abstract void Handle();

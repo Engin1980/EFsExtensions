@@ -33,7 +33,8 @@ namespace Eng.Chlaot.Modules.RaaSModule.Model
     public double longitude;
     public readonly double Longitude => longitude;
 
-    //[DataDefinition(SimVars.Aircraft.Miscelaneous.VERTICAL_SPEED, SimUnits.Length.FOOT)]
-    //public int verticalSpeed;
+    [DataDefinition(SimVars.Aircraft.Miscelaneous.VERTICAL_SPEED, SimUnits.Length.FOOT)]
+    public int verticalSpeed;
+    public readonly int VerticalSpeed => verticalSpeed;
   }
 }

@@ -9,7 +9,7 @@
         SizeToContent="WidthAndHeight"
         Closed="Window_Closed">
   <StackPanel Margin="0,0,0,2">
-    <GroupBox Header="Synthetizer" DataContext="{Binding Synthetizer}" Margin="8">
+    <GroupBox Header="Synthetizer" DataContext="{Binding Synthetizer}" Margin="8" Padding="8">
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition />
@@ -35,7 +35,7 @@
         <TextBox Text="{Binding EndTrimMiliseconds}" Grid.Row="3" Grid.Column="1" Margin="2"/>
       </Grid>
     </GroupBox>
-    <GroupBox Header="Files" Margin="8">
+    <GroupBox Header="Files" Margin="8" Padding="8">
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto" />
@@ -46,7 +46,7 @@
           <RowDefinition />
           <RowDefinition />
         </Grid.RowDefinitions>
-        
+
         <Label Content="Auto loaded Airports File" Grid.Row="0" Grid.Column="0" />
         <TextBox Text="{Binding AutoLoadedAirportsFile}" Grid.Row="0" Grid.Column="1"  Margin="0 8 0 0" />
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="2">
@@ -61,6 +61,227 @@
           <Button x:Name="btnRaasFileDelete" Click="btnRaasFileDelete_Click">(Remove)</Button>
         </StackPanel>
       </Grid>
+    </GroupBox>
+    <GroupBox Header="Thresholds" Margin="8" Padding="8">
+      <TabControl>
+        <TabItem Header="Holding-point Announcements">
+          <StackPanel DataContext="{Binding HoldingPointThresholds}">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+              </Grid.RowDefinitions>
+
+              <Label Grid.Row="0" Grid.Column="0" FontWeight="Bold" Background="LightGray">Property</Label>
+              <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" Background="LightGray">Value</Label>
+              <Label Grid.Row="0" Grid.Column="2" FontWeight="Bold" Background="LightGray">Explanation</Label>
+
+              <Label Grid.Row="1" Grid.Column="0">Max height (ft)</Label>
+              <TextBox Grid.Row="1" Grid.Column="1" TextAlignment="Right" Text="{Binding MaxHeight}" />
+              <Label Grid.Row="1" Grid.Column="2">
+                Max height of plane to evaluate announcements. Default: 50.
+              </Label>
+
+              <Label Grid.Row="2" Grid.Column="0" Background="Linen">Min Ortho-Distance (m)</Label>
+              <TextBox Grid.Row="2" Grid.Column="1" TextAlignment="Right" Text="{Binding TooCloseOrthoDistance}"/>
+              <Label Grid.Row="2" Grid.Column="2" Background="Linen">
+                Min ortho-distance from rwy center to evaluate announcements. Default: 40.
+              </Label>
+
+              <Label Grid.Row="5" Grid.Column="0">Max ortho-distance (m)</Label>
+              <TextBox Grid.Row="5" Grid.Column="1" TextAlignment="Right" Text="{Binding TooFarOrthoDistance}" />
+              <Label Grid.Row="5" Grid.Column="2">
+                Max ortho-distance from rwy center to evaluate announcements. Also resets previous announcement. Default: 250.
+              </Label>
+
+              <Label Grid.Row="2" Grid.Column="0" Background="Linen">Short/Long rwy threshold (m)</Label>
+              <TextBox Grid.Row="2" Grid.Column="1" TextAlignment="Right" Text="{Binding ShortLongRunwayLengthThreshold}"/>
+              <Label Grid.Row="2" Grid.Column="2" Background="Linen">
+                Delimiter between short and long runway, in meters. Default: 1200.
+              </Label>
+
+              <Label Grid.Row="3" Grid.Column="0">Announce long rwy rtho-distance (m)</Label>
+              <TextBox Grid.Row="3" Grid.Column="1" TextAlignment="Right" Text="{Binding AnnounceOrthoDistanceShortRwy}" />
+              <Label Grid.Row="3" Grid.Column="2">
+                Expected ortho-distance from short rwy to invoke announcement. Default: 60.
+              </Label>
+
+              <Label Grid.Row="4" Grid.Column="0" Background="Linen">Announce short rwy ortho-Distance (m)</Label>
+              <TextBox Grid.Row="4" Grid.Column="1" TextAlignment="Right" Text="{Binding AnnounceOrthoDistanceLongRwy}" />
+              <Label Grid.Row="4" Grid.Column="2" Background="Linen">
+                Expected ortho-distance from long rwy to invoke announcement. Default: 90.
+              </Label>
+
+              <Label Grid.Row="5" Grid.Column="0">Max ortho-distance (m)</Label>
+              <TextBox Grid.Row="5" Grid.Column="1" TextAlignment="Right" Text="{Binding TooFarOrthoDistance}" />
+              <Label Grid.Row="5" Grid.Column="2">
+                Max ortho-distance from rwy center to evaluate announcements. Also resets previous announcement. Default: 250.
+              </Label>
+
+            </Grid>
+            <GroupBox Header="Custom ICAO-based holding-point ortho-distance" Margin="0 16 0 0 ">
+              <DataGrid Grid.Row="5" Grid.Column="1" ItemsSource="{Binding IcaoRules}" AutoGenerateColumns="False">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="ICAO" Binding="{Binding Icao}" />
+                  <DataGridTextColumn Header="Ortho-distance (m)" Binding="{Binding OrthoDistanceInMeters, StringFormat=N0}" />
+                </DataGrid.Columns>
+              </DataGrid>
+            </GroupBox>
+          </StackPanel>
+        </TabItem>
+        <TabItem Header="Line-Up Announcements">
+          <StackPanel DataContext="{Binding LineUpThresholds}">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+              </Grid.RowDefinitions>
+
+              <Label Grid.Row="0" Grid.Column="0" FontWeight="Bold" Background="LightGray">Property</Label>
+              <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" Background="LightGray">Value</Label>
+              <Label Grid.Row="0" Grid.Column="2" FontWeight="Bold" Background="LightGray">Explanation</Label>
+
+              <Label Grid.Row="1" Grid.Column="0">Max height (ft)</Label>
+              <TextBox Grid.Row="1" Grid.Column="1" TextAlignment="Right" Text="{Binding MaxHeight}" />
+              <Label Grid.Row="1" Grid.Column="2">
+                Max height of plane to process announcements. Default: 50.
+              </Label>
+
+              <Label Grid.Row="2" Grid.Column="0" Background="Linen">Max rwy ortho-distance(m)</Label>
+              <TextBox Grid.Row="2" Grid.Column="1" TextAlignment="Right" Text="{Binding MaxOrthoDistance}" />
+              <Label Grid.Row="2" Grid.Column="2" Background="Linen">
+                Max ortho-distance from rwy to process announcements. Default: 40.
+              </Label>
+
+              <Label Grid.Row="3" Grid.Column="0">Max speed (IAS/kts)</Label>
+              <TextBox Grid.Row="3" Grid.Column="1" TextAlignment="Right" Text="{Binding MaxSpeed}" />
+              <Label Grid.Row="3" Grid.Column="2">
+                Max speed to evaluate announcements. Default: 20.
+              </Label>
+
+              <Label Grid.Row="4" Grid.Column="0" Background="Linen">Max bearing-heading diff (deg)</Label>
+              <TextBox Grid.Row="4" Grid.Column="1" TextAlignment="Right" Text="{Binding MaxHeadingDiff}" />
+              <Label Grid.Row="4" Grid.Column="2" Background="Linen">
+                Max diff between rwy bearing and plane heading to evaluate announcements.  Default: 15.
+              </Label>
+
+            </Grid>
+          </StackPanel>
+        </TabItem>
+        <TabItem Header="Landing Announcements">
+          <StackPanel DataContext="{Binding LandingThresholds}">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+              </Grid.RowDefinitions>
+
+              <Label Grid.Row="0" Grid.Column="0" FontWeight="Bold" Background="LightGray">Property</Label>
+              <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" Background="LightGray">Value</Label>
+              <Label Grid.Row="0" Grid.Column="2" FontWeight="Bold" Background="LightGray">Explanation</Label>
+
+              <Label Grid.Row="1" Grid.Column="0">Min height (ft)</Label>
+              <TextBox Grid.Row="1" Grid.Column="1" TextAlignment="Right" Text="{Binding MinHeight}" />
+              <Label Grid.Row="1" Grid.Column="2">
+                Min plane height to evaluate for announcements. Default: 50.
+              </Label>
+
+              <Label Grid.Row="2" Grid.Column="0" Background="Linen">Max height (ft)</Label>
+              <TextBox Grid.Row="2" Grid.Column="1" TextAlignment="Right" Text="{Binding MaxHeight}" />
+              <Label Grid.Row="2" Grid.Column="2" Background="Linen">
+                Max plane height to evaluate for announcements. Default: 800.
+              </Label>
+
+              <Label Grid.Row="3" Grid.Column="0">Max distance (m)</Label>
+              <TextBox Grid.Row="3" Grid.Column="1" TextAlignment="Right" Text="{Binding MaxDistance}" />
+              <Label Grid.Row="3" Grid.Column="2">
+                Max plane distance to threshold to evaluate for announcements. Default: 4NM in meters.
+              </Label>
+
+              <Label Grid.Row="4" Grid.Column="0" Background="Linen">Max rwy ortho-distance (m)</Label>
+              <TextBox Grid.Row="4" Grid.Column="1" TextAlignment="Right" Text="{Binding MaxOrthoDistance}" />
+              <Label Grid.Row="4" Grid.Column="2" Background="Linen">
+                Max ortho distnace from rwy line to process announcements. Default: 300.
+              </Label>
+
+              <Label Grid.Row="5" Grid.Column="0">Max vertical speed (ft/min)</Label>
+              <TextBox Grid.Row="5" Grid.Column="1" TextAlignment="Right" Text="{Binding MaxVerticalSpeed}" />
+              <Label Grid.Row="5" Grid.Column="2">
+                Max plane vertical speed to evaluate for announcements. Default: 0 (expected to be negative in descend).
+              </Label>
+              
+            </Grid>
+          </StackPanel>
+        </TabItem>
+        <TabItem Header="Remaning Distance Announcements">
+          <StackPanel DataContext="{Binding RemainingDistanceThresholds}">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+                <RowDefinition />
+              </Grid.RowDefinitions>
+
+              <Label Grid.Row="0" Grid.Column="0" FontWeight="Bold" Background="LightGray">Property</Label>
+              <Label Grid.Row="0" Grid.Column="1" FontWeight="Bold" Background="LightGray">Value</Label>
+              <Label Grid.Row="0" Grid.Column="2" FontWeight="Bold" Background="LightGray">Explanation</Label>
+
+              <Label Grid.Row="1" Grid.Column="0">Max height (ft)</Label>
+              <TextBox Grid.Row="1" Grid.Column="1" TextAlignment="Right" Text="{Binding MaxHeight}" />
+              <Label Grid.Row="1" Grid.Column="2">
+                Max plane height to evaluate for announcements. Default: 50.
+              </Label>
+
+              <Label Grid.Row="2" Grid.Column="0" Background="Linen">Max rwy ortho-distance (m)</Label>
+              <TextBox Grid.Row="2" Grid.Column="1" TextAlignment="Right" Text="{Binding MaxOrthoDistance}" />
+              <Label Grid.Row="2" Grid.Column="2" Background="Linen">
+                Max ortho distnace from rwy line to process announcements. Default: 40.
+              </Label>
+
+              <Label Grid.Row="3" Grid.Column="0" >Max bearing-heading diff (deg)</Label>
+              <TextBox Grid.Row="3" Grid.Column="1" TextAlignment="Right" Text="{Binding MaxHeadingDiff}" />
+              <Label Grid.Row="3" Grid.Column="2">
+                Max diff between rwy bearing and plane heading. Detects correct plane alignment. Default: 15.
+              </Label>
+            </Grid>
+          </StackPanel>
+        </TabItem>
+      </TabControl>
     </GroupBox>
   </StackPanel>
 </Window>
