@@ -37,7 +37,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
     public record NearestAirport(Airport Airport, double Distance, List<RunwayShifts> RunwayShifts);
     public record NearestRunways(Runway Runway, double OrthoDistance);
     public record RunwayShifts(Runway Runway, double ShiftDistance);
-    public record LandingRaasData(Airport Airport, Runway Runway, RunwayThreshold Threshold, double ShiftDistance, double ThresholdDistance, Heading Bearing);
+    public record LandingRaasData(Airport Airport, Runway Runway, RunwayThreshold Threshold, double OrthoDistance, double ThresholdDistance, Heading Bearing);
     public record GroundRaasHoldingPointData(Airport Airport, Runway Runway, double OrthoDistance);
     public record GroundRaasLineUpData(Airport Airport, Runway Runway, RunwayThreshold Threshold, Heading Bearing, double Distance, double DeltaHeading);
 

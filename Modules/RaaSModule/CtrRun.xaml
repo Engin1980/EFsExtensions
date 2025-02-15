@@ -15,6 +15,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
           </Grid.RowDefinitions>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
@@ -38,6 +39,9 @@
 
           <Label Grid.Row="3" Grid.Column="0" Content="IAS" />
           <Label Grid.Row="3" Grid.Column="1" Content="{Binding SimData.IndicatedSpeed}" />
+          
+          <Label Grid.Row="4" Grid.Column="0" Content="VS" />
+          <Label Grid.Row="4" Grid.Column="1" Content="{Binding SimData.VerticalSpeed}" />
         </Grid>
       </TabItem>
       <TabItem Header="RaaS State - Ground - Taxi">
@@ -47,7 +51,7 @@
             <DataGrid.Columns>
               <DataGridTextColumn Header="ICAO" Binding="{Binding Airport.ICAO}" />
               <DataGridTextColumn Header="Runway" Binding="{Binding Runway.Designator}" />
-              <DataGridTextColumn Header="Shift-Distance (m)" Binding="{Binding ShiftDistance, StringFormat=N3}" >
+              <DataGridTextColumn Header="Ortho-Distance (m)" Binding="{Binding OrthoDistance, StringFormat=N3}" >
                 <DataGridTextColumn.ElementStyle>
                   <Style TargetType="{x:Type TextBlock}">
                     <Setter Property="HorizontalAlignment" Value="Right" />
@@ -83,7 +87,7 @@
               <DataGridTextColumn Header="Runway" Binding="{Binding Runway.Designator}" />
               <DataGridTextColumn Header="Threshold" Binding="{Binding Threshold.Designator}" />
               <DataGridTextColumn Header="Distance (m)" Binding="{Binding ThresholdDistance, StringFormat=N0}" />
-              <DataGridTextColumn Header="Shift-Distance (m)" Binding="{Binding ShiftDistance, StringFormat=N0}" />
+              <DataGridTextColumn Header="Ortho-Distance (m)" Binding="{Binding OrthoDistance, StringFormat=N0}" />
               <DataGridTextColumn Header="Bearing" Binding="{Binding Bearing}" />
             </DataGrid.Columns>
           </DataGrid>

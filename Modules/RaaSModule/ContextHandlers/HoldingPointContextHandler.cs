@@ -46,7 +46,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
       {
         lastHoldingPointRunway = null;
         data.GroundHoldingPointStatus = $"Best ortho-distance threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} " +
-          $"too far (over {sett.TooFarOrthoDistance}.";
+          $"too far (over {sett.TooFarOrthoDistance}).";
       }
       else if (grtd.OrthoDistance < sett.TooCloseOrthoDistance)
       {

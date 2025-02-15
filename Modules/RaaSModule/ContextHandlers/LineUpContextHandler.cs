@@ -60,7 +60,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
             q.Threshold,
             (Heading)q.Bearing,
             q.Distance,
-            Math.Abs((double)q.Threshold.Heading! - ((double)simData.Heading) + airport.Declination)))
+            Math.Abs((double)q.Threshold.Heading! - ((double)simData.Heading + airport.Declination))))
           .OrderBy(q => q.DeltaHeading)
           .ToList();
 

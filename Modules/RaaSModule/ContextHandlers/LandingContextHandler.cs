@@ -59,7 +59,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
       });
       data.Landing = tmpT
         .Select(q => new LandingRaasData(airport, q.Runway, q.Threshold, q.OrthoDistance, q.ThresholdDistance, (Heading)q.Bearing))
-        .OrderBy(q => q.ShiftDistance).ThenBy(q => q.ThresholdDistance)
+        .OrderBy(q => q.OrthoDistance).ThenBy(q => q.ThresholdDistance)
         .ToList();
 
       var thrsCandidate = data.Landing.First() ?? throw new UnexpectedNullException();
@@ -69,10 +69,10 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
         data.LandingStatus = $"{thrsCandidate.Airport.ICAO}/{thrsCandidate.Threshold.Designator} " +
           $"threshold-distance {thrsCandidate.ThresholdDistance} over limit {sett.MaxDistance}.";
       }
-      else if (thrsCandidate.ShiftDistance > sett.MaxOrthoDistance)
+      else if (thrsCandidate.OrthoDistance > sett.MaxOrthoDistance)
       {
         data.LandingStatus = $"{thrsCandidate.Airport.ICAO}/{thrsCandidate.Threshold.Designator} " +
-          $"ortho-distance {thrsCandidate.ShiftDistance} over limit {sett.MaxOrthoDistance}.";
+          $"ortho-distance {thrsCandidate.OrthoDistance} over limit {sett.MaxOrthoDistance}.";
       }
       else
       {
