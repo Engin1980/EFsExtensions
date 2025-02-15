@@ -33,12 +33,12 @@ namespace Eng.Chlaot.Modules.RaaSModule.Model
       XElement elm = root.LElement("speeches") ?? throw new UnexpectedNullException();
       RaasSpeeches ret = new()
       {
-        TaxiToRunway = LoadRaasDistanceSpeech(elm.LElement("taxiToRunway") ?? throw new UnexpectedNullException()),
-        TaxiToShortRunway = LoadRaasDistanceSpeech(elm.LElement("taxiToShortRunway") ?? throw new UnexpectedNullException()),
+        TaxiToRunway = LoadRaasSpeech(elm.LElement("taxiToRunway") ?? throw new UnexpectedNullException()),
+        TaxiToShortRunway = LoadRaasSpeech(elm.LElement("taxiToShortRunway") ?? throw new UnexpectedNullException()),
         OnRunway = LoadRaasSpeech(elm.LElement("onRunway") ?? throw new UnexpectedNullException()),
         OnShortRunway = LoadRaasSpeech(elm.LElement("onShortRunway") ?? throw new UnexpectedNullException()),
-        LandingRunway = LoadRaasDistanceSpeech(elm.LElement("landingRunway") ?? throw new UnexpectedNullException()),
-        DistanceRemaining = LoadRaasDistancesSpeech(elm.LElement("distanceRemaining") ?? throw new UnexpectedNullException())
+        LandingRunway = LoadRaasSpeech(elm.LElement("landingRunway") ?? throw new UnexpectedNullException()),
+        DistanceRemaining = LoadRaasSpeech(elm.LElement("distanceRemaining") ?? throw new UnexpectedNullException())
       };
       return ret;
     }
@@ -52,35 +52,32 @@ namespace Eng.Chlaot.Modules.RaaSModule.Model
       return ret;
     }
 
-    private static RaasDistancesSpeech LoadRaasDistancesSpeech(XElement elm)
-    {
-      var tmp = elm.Attribute("distances")?.Value ?? throw new UnexpectedNullException();
-      var dists = tmp.Split(";").Select(q => RaasDistance.Parse(q)).ToList();
-      RaasDistancesSpeech ret = new()
-      {
-        Speech = elm.Attribute("speech")?.Value ?? throw new UnexpectedNullException(),
-        Distances = dists
-      };
-      return ret;
-    }
-
-    private static RaasDistanceSpeech LoadRaasDistanceSpeech(XElement elm)
-    {
-      RaasDistanceSpeech ret = new RaasDistanceSpeech()
-      {
-        Speech = elm.Attribute("speech")?.Value ?? throw new UnexpectedNullException(),
-        Distance = LoadRaasDistance(elm.Attribute("distance") ?? throw new UnexpectedNullException())
-      };
-      return ret;
-    }
-
     private static RaasVariables LoadRaasVariables(XElement root)
     {
       XElement elm = root.LElement("variables") ?? throw new UnexpectedNullException();
       RaasVariables ret = new()
       {
-        MinimalLandingDistance = LoadRaasDistanceVariable(nameof(RaasVariables.MinimalLandingDistance), elm.LElement("minimalLandingDistance") ?? throw new UnexpectedNullException()),
-        MinimalTakeOffDistance = LoadRaasDistanceVariable(nameof(RaasVariables.MinimalTakeOffDistance), elm.LElement("minimalTakeOffDistance") ?? throw new UnexpectedNullException()),
+        MinimalLandingDistance = LoadRaasDistanceVariable(
+          nameof(RaasVariables.MinimalLandingDistance), elm.LElement("minimalLandingDistance")
+          ?? throw new UnexpectedNullException()),
+        MinimalTakeOffDistance = LoadRaasDistanceVariable(
+          nameof(RaasVariables.MinimalTakeOffDistance), elm.LElement("minimalTakeOffDistance")
+          ?? throw new UnexpectedNullException()),
+        AnnouncedRemainingDistances = LoadRaasDistancesVariable(
+          nameof(RaasVariables.AnnouncedRemainingDistances), elm.LElement("announcedRemainingDistances")
+           ?? throw new UnexpectedNullException())
+      };
+      return ret;
+    }
+
+    private static RaasDistancesVariable LoadRaasDistancesVariable(string name, XElement elm)
+    {
+      var tmp = elm.Attribute("default")?.Value ?? throw new UnexpectedNullException();
+      var dists = tmp.Split(";").Select(q => RaasDistance.Parse(q)).ToList();
+      RaasDistancesVariable ret = new()
+      {
+        Name = name,
+        Default = dists
       };
       return ret;
     }

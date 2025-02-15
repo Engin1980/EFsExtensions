@@ -47,7 +47,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
       player.Play();
     }
 
-    protected void Say(RaasDistancesSpeech speech, RaasDistance candidateDistance)
+    protected void Say(RaasSpeech speech, RaasDistance candidateDistance)
     {
       string s = speech.Speech;
       s = s.Replace("%dist", candidateDistance.Value + " " + candidateDistance.Unit switch

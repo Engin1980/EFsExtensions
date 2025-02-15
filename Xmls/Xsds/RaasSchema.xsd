@@ -19,24 +19,29 @@
 
   <xsd:complexType name="raasSpeeches">
     <xsd:sequence>
-      <xsd:element name="taxiToRunway" type="raasDistanceSpeech" />
-      <xsd:element name="taxiToShortRunway" type="raasDistanceSpeech" />
+      <xsd:element name="taxiToRunway" type="raasSpeech" />
+      <xsd:element name="taxiToShortRunway" type="raasSpeech" />
       <xsd:element name="onRunway" type="raasSpeech" />
       <xsd:element name="onShortRunway" type="raasSpeech" />
-      <xsd:element name="landingRunway" type="raasDistanceSpeech" />
-      <xsd:element name="distanceRemaining" type="raasDistancesSpeech" />
+      <xsd:element name="landingRunway" type="raasSpeech" />
+      <xsd:element name="distanceRemaining" type="raasSpeech" />
     </xsd:sequence>
   </xsd:complexType>
 
   <xsd:complexType name="raasVariables">
     <xsd:sequence>
-      <xsd:element name="minimalTakeOffDistance" type="raasVariable" />
-      <xsd:element name="minimalLandingDistance" type="raasVariable" />
+      <xsd:element name="minimalTakeOffDistance" type="raasDistanceVariable" />
+      <xsd:element name="minimalLandingDistance" type="raasDistanceVariable" />
+      <xsd:element name="announcedRemainingDistances" type="raasDistancesVariable" />
     </xsd:sequence>
   </xsd:complexType>
 
-  <xsd:complexType name="raasVariable">
+  <xsd:complexType name="raasDistanceVariable">
     <xsd:attribute name="default" type="raasDistance" use="required" />
+  </xsd:complexType>
+
+  <xsd:complexType name="raasDistancesVariable">
+    <xsd:attribute name="default" type="raasDistances" use="required" />
   </xsd:complexType>
 
   <xsd:simpleType name="raasDistance">
@@ -44,7 +49,7 @@
       <xsd:pattern value="\d+ ?(ft|m|nm|km)" />
     </xsd:restriction>
   </xsd:simpleType>
-  
+
   <xsd:simpleType name="raasDistances">
     <xsd:restriction base="xsd:string">
       <xsd:pattern value="\d+ ?(ft|m|nm|km)(; ?\d+ ?(ft|m|nm|km))*" />
@@ -53,15 +58,5 @@
 
   <xsd:complexType name="raasSpeech">
     <xsd:attribute name="speech" type="xsd:string" use="required" />
-  </xsd:complexType>
-
-  <xsd:complexType name="raasDistanceSpeech">
-    <xsd:attribute name="speech" type="xsd:string" use="required" />
-    <xsd:attribute name="distance" type="raasDistance" use="required" />
-  </xsd:complexType>
-
-  <xsd:complexType name="raasDistancesSpeech">
-    <xsd:attribute name="speech" type="xsd:string" use="required" />
-    <xsd:attribute name="distances" type="raasDistances" use="required" />
   </xsd:complexType>
 </xsd:schema>

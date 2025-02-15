@@ -2,11 +2,11 @@
 {
   public class RaasSpeeches
   {
-    public RaasDistanceSpeech TaxiToRunway { get; set; }
-    public RaasDistanceSpeech TaxiToShortRunway { get; set; }
-    public RaasSpeech OnRunway { get; set; }
-    public RaasSpeech OnShortRunway { get; set; }
-    public RaasDistanceSpeech LandingRunway { get; set; }
-    public RaasDistancesSpeech DistanceRemaining { get; set; }
+    public RaasSpeech TaxiToRunway { get; set; } = null!;
+    public RaasSpeech TaxiToShortRunway { get; set; } = null!;
+    public RaasSpeech OnRunway { get; set; } = null!;
+    public RaasSpeech OnShortRunway { get; set; } = null!;
+    public RaasSpeech LandingRunway { get; set; } = null!;
+    public RaasSpeech DistanceRemaining { get; set; } = null!;
   }
 }

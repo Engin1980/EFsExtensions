@@ -83,7 +83,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
             if (candidate.Threshold != lastDistanceThreshold)
             {
               lastDistanceThreshold = candidate.Threshold;
-              lastDistanceThresholdRemainingDistances = raas.Speeches.DistanceRemaining.Distances
+              lastDistanceThresholdRemainingDistances = raas.Variables.AnnouncedRemainingDistances.Value
                 .OrderBy(q => q.GetInMeters())
                 .ToList();
             }

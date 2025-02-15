@@ -83,8 +83,6 @@
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />
             <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="*" />
           </Grid.ColumnDefinitions>
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -98,15 +96,12 @@
 
           <Label Grid.Column="0" Grid.Row="0" Content="Type" FontWeight="Bold" />
           <Label Grid.Column="1" Grid.Row="0" Content="Speech" FontWeight="Bold" />
-          <Label Grid.Column="2" Grid.Row="0" Content="Distance" FontWeight="Bold" />
 
           <Label Grid.Column="0" Grid.Row="1" Content="Taxi to Runway" />
           <Label Grid.Column="1" Grid.Row="1" Content="{Binding RaaS.Speeches.TaxiToRunway.Speech}" />
-          <Label Grid.Column="2" Grid.Row="1" Content="{Binding RaaS.Speeches.TaxiToRunway.Distance}" />
 
           <Label Grid.Column="0" Grid.Row="2" Content="Taxi to Short Runway" />
           <Label Grid.Column="1" Grid.Row="2" Content="{Binding RaaS.Speeches.TaxiToShortRunway.Speech}" />
-          <Label Grid.Column="2" Grid.Row="2" Content="{Binding RaaS.Speeches.TaxiToShortRunway.Distance}" />
 
           <Label Grid.Column="0" Grid.Row="3" Content="On Runway" />
           <Label Grid.Column="1" Grid.Row="3" Content="{Binding RaaS.Speeches.OnRunway.Speech}" />
@@ -116,19 +111,9 @@
 
           <Label Grid.Column="0" Grid.Row="5" Content="Landing Runway" />
           <Label Grid.Column="1" Grid.Row="5" Content="{Binding RaaS.Speeches.LandingRunway.Speech}" />
-          <Label Grid.Column="2" Grid.Row="5" Content="{Binding RaaS.Speeches.LandingRunway.Distance}" />
 
           <Label Grid.Column="0" Grid.Row="6" Content="Distance Remaining" />
-          <Label Grid.Column="1" Grid.Row="6" Content="{Binding RaaS.Speeches.DistanceRemaining.Speech}" />
-          <Label Grid.Column="2" Grid.Row="6" >
-            <ItemsControl ItemsSource="{Binding RaaS.Speeches.DistanceRemaining.Distances}">
-              <ItemsControl.ItemTemplate>
-                <DataTemplate>
-                  <TextBlock Text="{Binding}" />
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </Label>
+          <Label Grid.Column="1" Grid.Row="6" Content="{Binding RaaS.Speeches.DistanceRemaining.Speech}" /> 
         </Grid>
       </TabItem>
       <TabItem Header="RaaS Variables">
@@ -139,6 +124,7 @@
             <ColumnDefinition Width="*" />
           </Grid.ColumnDefinitions>
           <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -163,6 +149,18 @@
                      Background="{Binding Text, UpdateSourceTrigger=PropertyChanged, RelativeSource={RelativeSource Self}, Converter={StaticResource RaasDistanceIsValidSolidBrushConverter}, ConverterParameter=#AFA;#FAA}"/>
           </Label>
           <Label Grid.Column="2" Grid.Row="2" Content="{Binding RaaS.Variables.MinimalLandingDistance.Default}" />
+
+          <Label Grid.Column="0" Grid.Row="3" Content="Announced Remaining Distances" />
+          <Label Grid.Column="1" Grid.Row="3">(N/A)</Label>
+          <Label Grid.Column="2" Grid.Row="3">
+            <ItemsControl ItemsSource="{Binding RaaS.Variables.AnnouncedRemainingDistances.Value}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </Label>
         </Grid>
 
       </TabItem>
