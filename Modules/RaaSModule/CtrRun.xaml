@@ -46,8 +46,8 @@
       </TabItem>
       <TabItem Header="RaaS State - Ground - Taxi">
         <DockPanel>
-          <Label Content="{Binding RuntimeData.GroundHoldingPointStatus}" DockPanel.Dock="Bottom" />
-          <DataGrid ItemsSource="{Binding RuntimeData.GroundHoldingPoint}" AutoGenerateColumns="False">
+          <Label Content="{Binding RuntimeData.HoldingPointStatus}" DockPanel.Dock="Bottom" />
+          <DataGrid ItemsSource="{Binding RuntimeData.HoldingPoint}" AutoGenerateColumns="False">
             <DataGrid.Columns>
               <DataGridTextColumn Header="ICAO" Binding="{Binding Airport.ICAO}" />
               <DataGridTextColumn Header="Runway" Binding="{Binding Runway.Designator}" />
@@ -60,13 +60,12 @@
               </DataGridTextColumn>
             </DataGrid.Columns>
           </DataGrid>
-
         </DockPanel>
       </TabItem>
       <TabItem Header="RaaS State - Ground - LineUp">
         <DockPanel>
-          <Label Content="{Binding RuntimeData.GroundLineUpStatus}" DockPanel.Dock="Bottom" />
-          <DataGrid ItemsSource="{Binding RuntimeData.GroundLineUp}" AutoGenerateColumns="False">
+          <Label Content="{Binding RuntimeData.LineUpStatus}" DockPanel.Dock="Bottom" />
+          <DataGrid ItemsSource="{Binding RuntimeData.LineUp}" AutoGenerateColumns="False">
             <DataGrid.Columns>
               <DataGridTextColumn Header="ICAO" Binding="{Binding Airport.ICAO}" />
               <DataGridTextColumn Header="Runway" Binding="{Binding Runway.Designator}" />

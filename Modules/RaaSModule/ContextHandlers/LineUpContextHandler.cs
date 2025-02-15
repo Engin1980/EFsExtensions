@@ -28,7 +28,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
 
       if (simData.Height > sett.MaxHeight)
       {
-        data.GroundLineUpStatus = $"Plane probably airborne - height {simData.Height} " +
+        data.LineUpStatus = $"Plane probably airborne - height {simData.Height} " +
           $"over limit {sett.MaxHeight}";
         lastThreshold = null;
         return;
@@ -37,7 +37,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
       var rwyWithMinDistance = this.data.NearestRunways.First();
       if (rwyWithMinDistance.OrthoDistance > sett.MaxOrthoDistance)
       {
-        data.GroundLineUpStatus = $"Threshold {airport.ICAO}/{rwyWithMinDistance.Runway.Designator}" +
+        data.LineUpStatus = $"Threshold {airport.ICAO}/{rwyWithMinDistance.Runway.Designator}" +
           $" ortho-distance {rwyWithMinDistance.OrthoDistance} over threshold" +
           $" {sett.MaxOrthoDistance}";
         lastThreshold = null;
@@ -45,7 +45,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
       else
       {
         //TODO here probably the calculation should me done only for the lowest shift distance
-        this.data.GroundLineUp = rwyWithMinDistance.Runway.Thresholds
+        this.data.LineUp = rwyWithMinDistance.Runway.Thresholds
           .Select(q => new
           {
             Threshold = q,
@@ -54,7 +54,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
             Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude,
             simData.latitude, simData.longitude)
           })
-          .Select(q => new GroundRaasLineUpData(
+          .Select(q => new LineUpData(
             data.NearestAirport.Airport,
             rwyWithMinDistance.Runway,
             q.Threshold,
@@ -64,7 +64,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
           .OrderBy(q => q.DeltaHeading)
           .ToList();
 
-        var thresholdCandidate = this.data.GroundLineUp.MinBy(q => q.DeltaHeading)
+        var thresholdCandidate = this.data.LineUp.MinBy(q => q.DeltaHeading)
           ?? throw new UnexpectedNullException();
         if (thresholdCandidate.DeltaHeading < sett.MaxHeadingDiff)
         {
@@ -73,28 +73,28 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
             lastThreshold = thresholdCandidate.Threshold;
             if (simData.IndicatedSpeed > sett.MaxSpeed)
             {
-              data.GroundLineUpStatus =
+              data.LineUpStatus =
                 $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} " +
                 $"announcement skipped due to high speed {simData.IndicatedSpeed} (max {sett.MaxSpeed}).";
             }
             else
             {
               Say(raas.Speeches.OnRunway, thresholdCandidate.Threshold);
-              data.GroundLineUpStatus =
+              data.LineUpStatus =
                 $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} " +
                 $"announced";
             }
           }
           else
           {
-            data.GroundLineUpStatus =
+            data.LineUpStatus =
               $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} " +
               $"already announced";
           }
         }
         else
         {
-          data.GroundLineUpStatus =
+          data.LineUpStatus =
               $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} " +
               $"is close, but heading diff {thresholdCandidate.DeltaHeading} is too big (over {sett.MaxHeadingDiff}).";
         }

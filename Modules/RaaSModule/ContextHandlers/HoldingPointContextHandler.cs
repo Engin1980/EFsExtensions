@@ -27,32 +27,32 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
 
       if (simData.Height > sett.MaxHeight)
       {
-        data.GroundHoldingPointStatus = $"Plane probably airborne - height {simData.Height} over limit " +
+        data.HoldingPointStatus = $"Plane probably airborne - height {simData.Height} over limit " +
           $"{sett.MaxHeight}";
         lastHoldingPointRunway = null;
         return;
       }
 
-      data.GroundHoldingPoint = data.NearestRunways
-        .Select(q => new GroundRaasHoldingPointData(
+      data.HoldingPoint = data.NearestRunways
+        .Select(q => new HoldingPointData(
         data.NearestAirport.Airport,
         q.Runway,
           q.OrthoDistance))
         .OrderBy(q => q.OrthoDistance)
         .ToList();
 
-      var grtd = data.GroundHoldingPoint.First();
+      var grtd = data.HoldingPoint.First();
       if (grtd.OrthoDistance > sett.TooFarOrthoDistance)
       {
         lastHoldingPointRunway = null;
-        data.GroundHoldingPointStatus = $"Best ortho-distance threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} " +
+        data.HoldingPointStatus = $"Best ortho-distance threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} " +
           $"too far (over {sett.TooFarOrthoDistance}).";
       }
       else if (grtd.OrthoDistance < sett.TooCloseOrthoDistance)
       {
         // entered runway, calls are ignored
         lastHoldingPointRunway = grtd.Runway;
-        data.GroundHoldingPointStatus = $"Best ortho-distance threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} " +
+        data.HoldingPointStatus = $"Best ortho-distance threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} " +
           $"too close (probably on the runway?) (under {sett.TooCloseOrthoDistance}).";
       }
       else
@@ -68,18 +68,18 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
               .MinBy(q => GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, simData.latitude, simData.longitude))
               ?? throw new UnexpectedNullException();
             Say(raas.Speeches.TaxiToRunway, closestThreshold);
-            data.GroundHoldingPointStatus = 
+            data.HoldingPointStatus = 
               $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} announced";
           }
           else
           {
-            data.GroundHoldingPointStatus = 
+            data.HoldingPointStatus = 
               $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} already announced";
           }
         }
         else
         {
-          data.GroundHoldingPointStatus = $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} " +
+          data.HoldingPointStatus = $"Threshold {grtd.Airport.ICAO}/{grtd.Runway.Designator} " +
             $"ortho-distance {grtd.OrthoDistance} not close enought for announcement ({orthoDistance}).";
         }
       }

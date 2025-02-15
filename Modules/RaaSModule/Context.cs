@@ -34,39 +34,39 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     #region Public Classes + Structs + Interfaces
 
-    public record NearestAirport(Airport Airport, double Distance, List<RunwayShifts> RunwayShifts);
+    public record NearestAirport(Airport Airport, double Distance, List<RunwayWithOrthoDistance> RunwayOrthos);
     public record NearestRunways(Runway Runway, double OrthoDistance);
-    public record RunwayShifts(Runway Runway, double ShiftDistance);
+    public record RunwayWithOrthoDistance(Runway Runway, double OrthoDistance);
     public record LandingRaasData(Airport Airport, Runway Runway, RunwayThreshold Threshold, double OrthoDistance, double ThresholdDistance, Heading Bearing);
-    public record GroundRaasHoldingPointData(Airport Airport, Runway Runway, double OrthoDistance);
-    public record GroundRaasLineUpData(Airport Airport, Runway Runway, RunwayThreshold Threshold, Heading Bearing, double Distance, double DeltaHeading);
+    public record HoldingPointData(Airport Airport, Runway Runway, double OrthoDistance);
+    public record LineUpData(Airport Airport, Runway Runway, RunwayThreshold Threshold, Heading Bearing, double Distance, double DeltaHeading);
 
     public class RuntimeDataBox : NotifyPropertyChanged
     {
       #region Public Properties
 
-      public List<GroundRaasLineUpData> GroundLineUp
+      public List<LineUpData> LineUp
       {
-        get { return base.GetProperty<List<GroundRaasLineUpData>>(nameof(GroundLineUp))!; }
-        set { base.UpdateProperty(nameof(GroundLineUp), value); }
+        get { return base.GetProperty<List<LineUpData>>(nameof(LineUp))!; }
+        set { base.UpdateProperty(nameof(LineUp), value); }
       }
 
-      public string GroundLineUpStatus
+      public string LineUpStatus
       {
-        get { return base.GetProperty<string>(nameof(GroundLineUpStatus))!; }
-        set { base.UpdateProperty(nameof(GroundLineUpStatus), value); }
+        get { return base.GetProperty<string>(nameof(LineUpStatus))!; }
+        set { base.UpdateProperty(nameof(LineUpStatus), value); }
       }
 
-      public List<GroundRaasHoldingPointData> GroundHoldingPoint
+      public List<HoldingPointData> HoldingPoint
       {
-        get { return base.GetProperty<List<GroundRaasHoldingPointData>>(nameof(GroundHoldingPoint))!; }
-        set { base.UpdateProperty(nameof(GroundHoldingPoint), value); }
+        get { return base.GetProperty<List<HoldingPointData>>(nameof(HoldingPoint))!; }
+        set { base.UpdateProperty(nameof(HoldingPoint), value); }
       }
 
-      public string GroundHoldingPointStatus
+      public string HoldingPointStatus
       {
-        get { return base.GetProperty<string>(nameof(GroundHoldingPointStatus))!; }
-        set { base.UpdateProperty(nameof(GroundHoldingPointStatus), value); }
+        get { return base.GetProperty<string>(nameof(HoldingPointStatus))!; }
+        set { base.UpdateProperty(nameof(HoldingPointStatus), value); }
       }
 
       public List<LandingRaasData> Landing
@@ -327,13 +327,13 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
       Debug.Assert(tmpA != null && tmpD != null);
       var rwys = tmpA.Runways
-        .Select(q => new RunwayShifts(q, GpsCalculator.GetDistanceFromLine(
+        .Select(q => new RunwayWithOrthoDistance(q, GpsCalculator.GetDistanceFromLine(
             q.Thresholds[0].Coordinate.Latitude,
             q.Thresholds[0].Coordinate.Longitude,
             q.Thresholds[1].Coordinate.Latitude,
             q.Thresholds[1].Coordinate.Longitude,
             SimData.latitude, SimData.longitude)))
-        .OrderBy(q => q.ShiftDistance)
+        .OrderBy(q => q.OrthoDistance)
         .ToList();
       RuntimeData.NearestAirport = new NearestAirport(tmpA, tmpD.Value, rwys);
     }
