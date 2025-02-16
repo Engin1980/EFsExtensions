@@ -35,7 +35,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule.Controls
       {
         d = double.Parse(txtValue.Text.Replace(",","."), CultureInfo.GetCultureInfo("en-US"));
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         return;
       }

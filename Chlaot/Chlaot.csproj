@@ -8,8 +8,8 @@
     <PlatformTarget>x64</PlatformTarget>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
-    <AssemblyVersion>1.0.1.60</AssemblyVersion>
-    <FileVersion>1.0.1.60</FileVersion>
+    <AssemblyVersion>1.1.2.0</AssemblyVersion>
+    <FileVersion>1.1.2.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -30,6 +30,7 @@
     <ProjectReference Include="..\Modules\CopilotModule\CopilotModule.csproj" />
     <ProjectReference Include="..\Modules\FailuresModule\FailuresModule.csproj" />
     <ProjectReference Include="..\Modules\FlightLog\FlightLogModule.csproj" />
+    <ProjectReference Include="..\Modules\RaaSModule\RaaSModule.csproj" />
     <ProjectReference Include="..\Modules\SimVarTest\SimVarTestModule.csproj" />
   </ItemGroup>
 

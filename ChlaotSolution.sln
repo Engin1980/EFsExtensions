@@ -31,6 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xsds", "Xsds", "{404576BE-5
 		Xmls\Xsds\FailureDefinitionSchema.xsd = Xmls\Xsds\FailureDefinitionSchema.xsd
 		Xmls\Xsds\FailureSchema.xsd = Xmls\Xsds\FailureSchema.xsd
 		Xmls\Xsds\Global.xsd = Xmls\Xsds\Global.xsd
+		Xmls\Xsds\RaasSchema.xsd = Xmls\Xsds\RaasSchema.xsd
 		Xmls\Xsds\SimPropertiesSchema.xsd = Xmls\Xsds\SimPropertiesSchema.xsd
 	EndProjectSection
 EndProject
@@ -103,6 +104,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{56A5F353-1
 		Data\runways.csv = Data\runways.csv
 	EndProjectSection
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OurAirportsToXmlConverter", "Tools\OurAirportsToXmlConverter\OurAirportsToXmlConverter.csproj", "{D7031880-F2D7-4A95-A45D-A580B554EB76}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RaaSModule", "Modules\RaaSModule\RaaSModule.csproj", "{6BBFB239-7B33-4EB0-9BF2-AE731DD6BB52}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "RaaS", "RaaS", "{3247B39A-7EA2-4D34-BA9A-27736AF6859E}"
+	ProjectSection(SolutionItems) = preProject
+		Xmls\RaaS\airports.airports.xml = Xmls\RaaS\airports.airports.xml
+		Xmls\RaaS\speeches.raas.xml = Xmls\RaaS\speeches.raas.xml
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AirportsLib", "AirportsLib\AirportsLib.csproj", "{FDA05C00-8EDB-49D4-BAD0-F5A7A1132DDC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -145,6 +158,18 @@ Global
 		{5A18F180-8145-4482-A63A-132ACE763BA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A18F180-8145-4482-A63A-132ACE763BA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A18F180-8145-4482-A63A-132ACE763BA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D7031880-F2D7-4A95-A45D-A580B554EB76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D7031880-F2D7-4A95-A45D-A580B554EB76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D7031880-F2D7-4A95-A45D-A580B554EB76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D7031880-F2D7-4A95-A45D-A580B554EB76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6BBFB239-7B33-4EB0-9BF2-AE731DD6BB52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6BBFB239-7B33-4EB0-9BF2-AE731DD6BB52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6BBFB239-7B33-4EB0-9BF2-AE731DD6BB52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6BBFB239-7B33-4EB0-9BF2-AE731DD6BB52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDA05C00-8EDB-49D4-BAD0-F5A7A1132DDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDA05C00-8EDB-49D4-BAD0-F5A7A1132DDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDA05C00-8EDB-49D4-BAD0-F5A7A1132DDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDA05C00-8EDB-49D4-BAD0-F5A7A1132DDC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -163,6 +188,10 @@ Global
 		{EE75BBC5-848C-4E39-AB49-F4922FC1626F} = {50476E83-616C-4626-99B3-011038C60496}
 		{8D41DB2D-C963-4C4F-8904-A38AC779E0CD} = {56EA1EB7-0FB0-42D6-B301-9BFE7061088D}
 		{5A18F180-8145-4482-A63A-132ACE763BA6} = {50476E83-616C-4626-99B3-011038C60496}
+		{D7031880-F2D7-4A95-A45D-A580B554EB76} = {AE4A982F-17A3-41F0-9152-9002908F1822}
+		{6BBFB239-7B33-4EB0-9BF2-AE731DD6BB52} = {50476E83-616C-4626-99B3-011038C60496}
+		{3247B39A-7EA2-4D34-BA9A-27736AF6859E} = {56EA1EB7-0FB0-42D6-B301-9BFE7061088D}
+		{FDA05C00-8EDB-49D4-BAD0-F5A7A1132DDC} = {BDA214A5-916B-47DD-AAC4-51A85D016FAE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {635265FD-4132-4AE6-BFE3-2E4C9A812E0B}

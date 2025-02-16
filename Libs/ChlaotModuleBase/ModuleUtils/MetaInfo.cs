@@ -29,6 +29,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils
 
     private void NormalizeDescription()
     {
+      if (this.Description == null) return;
       var tmp = this.Description
         .Trim()
         .Replace("\n", " ")
