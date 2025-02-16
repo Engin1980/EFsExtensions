@@ -35,7 +35,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
           Content = "Not initialized"
         }
       });
-
     }
 
     public static readonly DependencyProperty SpeechTestVisibilityProperty = DependencyProperty.Register(
@@ -74,10 +73,20 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
       }
     }
 
+    public void TrySpeech(string speechText)
+    {
+      todo implement here player from ElevenLabs
+    }
+
     private void TabTtss_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
       if (tabTtss.SelectedItem is TabItem ti)
         this.SelectedModule = (ITtsModule)ti.Tag;
+    }
+
+    private void btnTrySpeech_Click(object sender, RoutedEventArgs e)
+    {
+      TrySpeech(txtTrySpeech.Text);
     }
   }
 }
