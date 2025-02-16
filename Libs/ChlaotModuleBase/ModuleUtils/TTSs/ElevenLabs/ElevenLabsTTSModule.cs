@@ -7,18 +7,21 @@ using System.Windows.Controls;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 {
-  public class ElevenLabsTtsModule :  ITtsModule
+  public class ElevenLabsTtsModule : TtsModule<ElevenLabsTtsProvider, ElevenLabsTtsSettings>
   {
-    private readonly CtrSettings ctr;
-    public ITts Tts => this.ctr.Tts;
-    public string Name => "ElevenLabs TTS";
-    public bool IsReady => Tts.IsReady;
+    //private readonly CtrSettings ctr;
+    //public ITtsProvider Tts => this.ctr.Tts;
+    //public string Name => 
+    //public bool IsReady => Tts.IsReady;
 
     public ElevenLabsTtsModule()
     {
-      this.ctr = new CtrSettings();
     }
 
-    public UserControl SettingsControl => ctr;
+    public override string Name => "ElevenLabs TTS";
+
+    protected override ElevenLabsTtsProvider GetTypedProvider(ElevenLabsTtsSettings settings) => new ElevenLabsTtsProvider(settings);
+
+    protected override UserControl GetTypedSettingsControl(ElevenLabsTtsSettings settings) => new CtrSettings(settings);
   }
 }

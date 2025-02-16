@@ -1,5 +1,6 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.Modules.ChecklistModule.Types;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace ChecklistTTS
 {
-  internal class TtsVM : NotifyPropertyChangedBase
+  internal class TtsVM : NotifyPropertyChanged
   {
-    public class CheckItemVM : NotifyPropertyChangedBase
+    public class CheckItemVM : NotifyPropertyChanged
     {
       public CheckItem CheckItem
       {
@@ -18,7 +19,7 @@ namespace ChecklistTTS
         set => base.UpdateProperty(nameof(CheckItem), value);
       }
     }
-    public class CheckListVM : NotifyPropertyChangedBase
+    public class CheckListVM : NotifyPropertyChanged
     {
 
       public CheckList CheckList

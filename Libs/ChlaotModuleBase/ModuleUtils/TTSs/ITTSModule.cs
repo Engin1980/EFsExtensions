@@ -8,9 +8,9 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
 {
   public interface ITtsModule
   {
-    public ITts Tts { get; }
     public string Name { get; }
-    public System.Windows.Controls.UserControl SettingsControl { get; }
-    public bool IsReady { get; }
+    public ITtsProvider GetProvider(ITtsSettings settings);
+    public System.Windows.Controls.UserControl GetSettingsControl(ITtsSettings settings);
+    public ITtsSettings GetDefaultSettings();
   }
 }

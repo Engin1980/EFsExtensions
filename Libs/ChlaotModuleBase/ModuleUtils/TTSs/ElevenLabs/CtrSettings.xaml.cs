@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using ESystem.Miscelaneous;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -25,44 +26,37 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
   /// </summary>
   public partial class CtrSettings : UserControl
   {
-    private ELogging.Logger logger;
+    private readonly ELogging.Logger logger = ELogging.Logger.Create(nameof(ElevenLabsTtsModule) + "+Settings");
+    private readonly ViewModel VM;
+
+    internal class ViewModel : NotifyPropertyChanged
+    {
+      public ElevenLabsTtsSettings Settings
+      {
+        get { return base.GetProperty<ElevenLabsTtsSettings>(nameof(Settings))!; }
+        set { base.UpdateProperty(nameof(Settings), value); }
+      }
+
+      public List<ElevenLabsVoice> Voices
+      {
+        get { return base.GetProperty<List<ElevenLabsVoice>>(nameof(Voices))!; }
+        set { base.UpdateProperty(nameof(Voices), value); }
+      }
+    }
+
+    public CtrSettings(ElevenLabsTtsSettings settings)
+    {
+      InitializeComponent();
+      this.DataContext = VM = new()
+      {
+        Settings = settings
+      };
+    }
 
     public CtrSettings()
     {
       InitializeComponent();
-      logger = ELogging.Logger.Create(this);
-      this.DataContext = VM = new SettingsVM();
-      VM.PropertyChanged += VM_PropertyChanged;
-      ResetTts();
-    }
-
-    public ElevenLabsTts Tts { get; private set; } = null!;
-
-    public SettingsVM VM
-    {
-      get { return (SettingsVM)GetValue(VMProperty); }
-      set { SetValue(VMProperty, value); }
-    }
-
-    public static readonly DependencyProperty VMProperty =
-        DependencyProperty.Register(nameof(VM), typeof(SettingsVM), typeof(CtrSettings), new(new SettingsVM()));
-
-    private void ResetTts()
-    {
-      logger.Log(ELogging.LogLevel.INFO, "Rebuilding TTS model");
-      logger.Log(ELogging.LogLevel.WARNING, "This may fail when no voice is selected");
-      ElevenLabsTtsSettings ttsSettings = new()
-      {
-        API = VM.ApiKey,
-        VoiceId = VM.Voice?.VoiceId ?? ""
-      };
-      this.Tts = new ElevenLabsTts(ttsSettings);
-    }
-
-    private void VM_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
-    {
-      if (e.PropertyName == nameof(SettingsVM.ApiKey) || e.PropertyName == nameof(SettingsVM.Voice))
-        ResetTts();
+      this.DataContext = VM = null!;
     }
 
     private async void btnReloadVoices_Click(object sender, RoutedEventArgs e)
@@ -72,7 +66,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       this.Cursor = Cursors.Wait;
       try
       {
-        this.VM.Voices = (await this.Tts.GetVoicesAsync()).OrderBy(q => q.Name).ToList();
+        this.VM.Voices = (await ElevenLabsTtsProvider.GetVoicesAsync(this.VM.Settings.ApiKey)).OrderBy(q => q.Name).ToList();
         this.logger.Log(ELogging.LogLevel.INFO, $"Successfully loaded {this.VM.Voices.Count} voices.");
       }
       catch (Exception ex)
@@ -83,24 +77,24 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       btnReloadVoices.IsEnabled = true;
     }
 
-    private async void btnTestSpeech_Click(object sender, RoutedEventArgs e)
-    {
-      string s = txtTestSpeech.Text.Trim();
-      if (s.Length == 0) return;
+    //private async void btnTestSpeech_Click(object sender, RoutedEventArgs e)
+    //{
+    //  string s = txtTestSpeech.Text.Trim();
+    //  if (s.Length == 0) return;
 
-      btnTestSpeech.IsEnabled = false;
-      try
-      {
-        byte[] mp3 = await this.Tts.ConvertAsync(s);
-        Play(mp3);
-      }
-      catch (Exception ex)
-      {
-        this.logger.Log(ELogging.LogLevel.ERROR, "Failed to generate or play test speech. Reason: " + ex.Message);
-      }
+    //  btnTestSpeech.IsEnabled = false;
+    //  try
+    //  {
+    //    byte[] mp3 = await this.Tts.ConvertAsync(s);
+    //    Play(mp3);
+    //  }
+    //  catch (Exception ex)
+    //  {
+    //    this.logger.Log(ELogging.LogLevel.ERROR, "Failed to generate or play test speech. Reason: " + ex.Message);
+    //  }
 
-      btnTestSpeech.IsEnabled = true;
-    }
+    //  btnTestSpeech.IsEnabled = true;
+    //}
 
     private class SimplePlayer
     {

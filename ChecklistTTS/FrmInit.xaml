@@ -29,7 +29,7 @@
       </DockPanel>
     </GroupBox>
     <GroupBox Header="Select TTS module:">
-      <tts:CtrTtss x:Name="ctrTtss" />
+      <tts:CtrTtsModuleSelector x:Name="ctrTtss" />
     </GroupBox>
   </DockPanel>
 </Window>

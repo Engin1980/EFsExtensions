@@ -29,17 +29,17 @@ namespace ChecklistTTSNew
     private TtsVM vm = null!;
     internal void Init(InitVM vm)
     {
-      this.vm = new TtsVM();
-      this.vm.OutputPath = vm.OutputPath;
+      //this.vm = new TtsVM();
+      //this.vm.OutputPath = vm.OutputPath;
 
-      this.vm.CheckListVMs = vm.Checklists!
-        .Select(q => new CheckListVM()
-        {
-          CheckList = q,
-          CheckItemVMs = q.Items.Select(p => new CheckItemVM() { CheckItem = p }).ToList()
-        }).ToList();
+      //this.vm.CheckListVMs = vm.Checklists!
+      //  .Select(q => new CheckListVM()
+      //  {
+      //    CheckList = q,
+      //    CheckItemVMs = q.Items.Select(p => new CheckItemVM() { CheckItem = p }).ToList()
+      //  }).ToList();
 
-      this.DataContext = this.vm;
+      //this.DataContext = this.vm;
     }
   }
 }

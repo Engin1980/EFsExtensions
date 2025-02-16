@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
 {
-  internal class CheckListVM : NotifyPropertyChangedBase
+  internal class CheckListVM : NotifyPropertyChanged
   {
     public class RunTimeVM : NotifyPropertyChanged
     {

@@ -1,5 +1,6 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase;
 using Eng.Chlaot.Modules.ChecklistModule.Types;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,7 @@ using System.Xml.Serialization;
 namespace ChecklistTTSNew
 {
   [Serializable]
-  public class InitVM : NotifyPropertyChangedBase
+  public class InitVM : NotifyPropertyChanged
   {
 
     public string OutputPath
@@ -24,7 +25,7 @@ namespace ChecklistTTSNew
       get => base.GetProperty<string>(nameof(ChecklistFileName))!;
       set => base.UpdateProperty(nameof(ChecklistFileName), value);
     }
-    tady nevím jak to udelat at se to uklada jak chcu
+    //TODO tady nevím jak to udelat at se to uklada jak chcu
 
     public InitVM()
     {

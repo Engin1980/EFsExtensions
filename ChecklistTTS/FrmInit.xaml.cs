@@ -1,10 +1,8 @@
-﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs;
-using EXmlLib;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.Text;
 using System.Windows;
@@ -22,6 +20,7 @@ using System.Windows.Forms;
 using System.Xml.Serialization;
 using System.IO;
 using System.Windows.Media.TextFormatting;
+using ESystem.Exceptions;
 
 namespace ChecklistTTSNew
 {
@@ -30,6 +29,9 @@ namespace ChecklistTTSNew
   /// </summary>
   public partial class FrmInit : Window
   {
+    private static readonly List<ITtsModule> ttsModules = new(){
+      new ElevenLabsTtsModule()
+      };
     private string recentXmlFile = string.Empty;
     private InitVM vm;
 
@@ -38,24 +40,16 @@ namespace ChecklistTTSNew
       InitializeComponent();
       try
       {
-        LoadVM();
+        this.DataContext = this.vm = LoadVM();
+        LoadChecklists();
       }
       catch (Exception ex)
       {
+        //TODO add logging
         this.DataContext = this.vm = new InitVM();
       }
 
-      var ttsModules = GetTtsModules();
       this.ctrTtss.Init(ttsModules);
-    }
-
-    private IEnumerable<ITtsModule> GetTtsModules()
-    {
-      List<ITtsModule> ret = new()
-      {
-        new ElevenLabsTtsModule()
-      };
-      return ret;
     }
 
     private void btnSelectChecklistFile_Click(object sender, RoutedEventArgs e)
@@ -87,9 +81,9 @@ namespace ChecklistTTSNew
 
     private void LoadChecklists()
     {
-      var tmp = LoadChecklistFromFile(recentXmlFile);
-      lblLoadingResult.Content = $"Loaded file with {tmp.Count} checklists.";
-      this.vm.Checklists = tmp;
+      //var tmp = LoadChecklistFromFile(recentXmlFile);
+      //lblLoadingResult.Content = $"Loaded file with {tmp.Count} checklists.";
+      //this.vm.Checklists = tmp;
     }
 
     private void ShowError(string msg)
@@ -131,31 +125,31 @@ namespace ChecklistTTSNew
 
     private void btnContinue_Click(object sender, RoutedEventArgs e)
     {
-      if (vm.Checklists == null || vm.Checklists.Count == 0)
-      {
-        ShowError("Empty or not loaded checklist list.");
-        return;
-      }
+      //if (vm.Checklists == null || vm.Checklists.Count == 0)
+      //{
+      //  ShowError("Empty or not loaded checklist list.");
+      //  return;
+      //}
 
-      if (ctrTtss.SelectedModule == null || ctrTtss.SelectedModule.IsReady == false)
-      {
-        ShowError("Empty TTS module or module is not ready.");
-        return;
-      }
+      //if (ctrTtss.SelectedModule == null || ctrTtss.SelectedModule.IsReady == false)
+      //{
+      //  ShowError("Empty TTS module or module is not ready.");
+      //  return;
+      //}
 
-      if (this.vm.OutputPath == null)
-      {
-        ShowError("Empty outputh path.");
-        return;
-      }
+      //if (this.vm.OutputPath == null)
+      //{
+      //  ShowError("Empty outputh path.");
+      //  return;
+      //}
 
-      SaveVM();
+      //SaveVM();
 
-      FrmTTS frm = new FrmTTS();
-      frm.Init(this.vm);
-      frm.WindowStartupLocation = this.WindowStartupLocation;
-      frm.Show();
-      this.Hide();
+      //FrmTTS frm = new FrmTTS();
+      //frm.Init(this.vm);
+      //frm.WindowStartupLocation = this.WindowStartupLocation;
+      //frm.Show();
+      //this.Hide();
     }
 
     private static string VMFileName => "vm.xml";
@@ -175,26 +169,25 @@ namespace ChecklistTTSNew
       }
     }
 
-    public void LoadVM()
+    public InitVM LoadVM()
     {
+      InitVM ret;
       try
       {
         if (System.IO.File.Exists(VMFileName))
         {
           XmlSerializer ser = new XmlSerializer(typeof(InitVM));
-          using FileStream fs = new System.IO.FileStream(VMFileName, FileMode.OpenOrCreate);
-          var tmp = (InitVM?)ser.Deserialize(fs);
-          if (tmp != null) this.DataContext = this.vm = tmp;
-          LoadChecklists();
+          using FileStream fs = new System.IO.FileStream(VMFileName, FileMode.Open);
+          ret = (InitVM)(ser.Deserialize(fs) ?? throw new UnexpectedNullException());
         }
         else
-          this.DataContext = this.vm = new();
+          ret = new();
       }
       catch (Exception ex)
       {
-        // TODO
-        throw ex;
+        throw new ApplicationException("Unable to load VM set-up.", ex);
       }
+      return ret;
     }
   }
 }

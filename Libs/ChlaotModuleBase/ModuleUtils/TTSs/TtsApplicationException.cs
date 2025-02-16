@@ -8,8 +8,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
 {
   public class TtsApplicationException : ApplicationException
   {
-    public TtsApplicationException(string? message, Exception? innerException) : base(message, innerException)
-    {
-    }
+    public TtsApplicationException(string message, Exception innerException) : base(message, innerException) { }
+    public TtsApplicationException(string message) : base(message) { }
   }
 }

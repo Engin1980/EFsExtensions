@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
 {
-  public interface ITts
+  public interface ITtsProvider
   {
-    bool IsReady { get; }
-
     Task<byte[]> ConvertAsync(string text);
   }
 }

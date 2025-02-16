@@ -18,10 +18,12 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
   /// <summary>
   /// Interaction logic for CtrTtss.xaml
   /// </summary>
-  public partial class CtrTtss : UserControl
+  public partial class CtrTtsModuleSelector : UserControl
   {
-    public CtrTtss()
+    public CtrTtsModuleSelector()
     {
+      this.SpeechTestVisibility = Visibility.Visible;
+
       InitializeComponent();
 
       tabTtss.SelectionChanged += TabTtss_SelectionChanged;
@@ -36,22 +38,31 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
 
     }
 
+    public static readonly DependencyProperty SpeechTestVisibilityProperty = DependencyProperty.Register(
+      nameof(SpeechTestVisibility), typeof(Visibility), typeof(CtrTtsModuleSelector));
+    public Visibility SpeechTestVisibility
+    {
+      get => (Visibility)GetValue(SpeechTestVisibilityProperty);
+      set => SetValue(SpeechTestVisibilityProperty, value);
+    }
+
+    public static readonly DependencyProperty SelectedModuleProperty =
+        DependencyProperty.Register(nameof(SelectedModule), typeof(ITtsModule), typeof(CtrTtsModuleSelector));
     public ITtsModule SelectedModule
     {
       get { return (ITtsModule)GetValue(SelectedModuleProperty); }
       set { SetValue(SelectedModuleProperty, value); }
     }
 
-    public static readonly DependencyProperty SelectedModuleProperty =
-        DependencyProperty.Register(nameof(SelectedModule), typeof(ITtsModule), typeof(CtrTtss));
-
     public void Init(IEnumerable<ITtsModule> modules)
     {
       tabTtss.Items.Clear();
       foreach (var module in modules)
       {
-        DockPanel dck = new DockPanel();
-        dck.Children.Add(module.SettingsControl);
+        DockPanel dck = new();
+        var sett = module.GetDefaultSettings();
+        var ctr = module.GetSettingsControl(sett);
+        dck.Children.Add(ctr);
 
         TabItem tabItem = new()
         {
@@ -60,7 +71,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
           Tag = module
         };
         tabTtss.Items.Add(tabItem);
-
       }
     }
 

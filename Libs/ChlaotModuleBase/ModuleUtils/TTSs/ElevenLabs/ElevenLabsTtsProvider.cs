@@ -8,10 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using static ESystem.Functions.TryCatch;
+using System.Windows.Markup;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 {
-  public class ElevenLabsTts : ITts
+  public class ElevenLabsTtsProvider : ITtsProvider
   {
 
     #region Fields
@@ -19,24 +21,20 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
     private const string URL = "https://api.elevenlabs.io/v1";
     private const string URL_SPEECH_SUBROUTE = "text-to-speech";
     private const string URL_VOICES_SUBROUTE = "voices";
-    private HttpClient? http = null;
+    private readonly HttpClient http;
+    private readonly ElevenLabsTtsSettings settings;
     private List<ElevenLabsVoice>? voices = null;
     private readonly Dictionary<string, byte[]> speeches = new();
 
     #endregion Fields
 
-    #region Properties
-
-    public ElevenLabsTtsSettings Settings { get; set; }
-    public bool IsReady => this.Settings != null && !string.IsNullOrWhiteSpace(this.Settings.API) && !string.IsNullOrWhiteSpace(this.Settings.VoiceId);
-
-    #endregion Properties
 
     #region Constructors
 
-    public ElevenLabsTts(ElevenLabsTtsSettings settings)
+    public ElevenLabsTtsProvider(ElevenLabsTtsSettings settings)
     {
-      this.Settings = settings ?? throw new ArgumentNullException(nameof(settings));
+      this.settings = settings;
+      this.http = GetHttpClient(settings.ApiKey);
     }
 
     #endregion Constructors
@@ -45,50 +43,49 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 
     public async Task<byte[]> ConvertAsync(string text)
     {
+      EnsureHttpClient();
       if (speeches.ContainsKey(text) == false)
       {
-        string url = $"{URL}/{URL_SPEECH_SUBROUTE}/{Settings.VoiceId}";
+        string url = $"{URL}/{URL_SPEECH_SUBROUTE}/{settings.VoiceId}";
         string body = BuildHttpGetModelJson(text);
-        var tmp = await DownloadSpeechAsync(url, body);
+        var tmp = await DownloadSpeechAsync(this.http, url, body);
         speeches[text] = tmp;
       }
       byte[] ret = speeches[text];
       return ret;
     }
 
-    public async Task<List<ElevenLabsVoice>> GetVoicesAsync()
+    private void EnsureHttpClient()
     {
-      if (this.voices == null)
-      {
-        string url = $"{URL}/{URL_VOICES_SUBROUTE}";
-        VoicesResponse tmp = await DownloadVoicesAsync(url);
-        this.voices = tmp.Voices.ToList();
-      }
-      List<ElevenLabsVoice> ret = voices;
+      throw new NotImplementedException();
+    }
+
+    public static async Task<List<ElevenLabsVoice>> GetVoicesAsync(string apiKey)
+    {
+      var httpClient = ElevenLabsTtsProvider.GetHttpClient(apiKey);
+      string url = $"{URL}/{URL_VOICES_SUBROUTE}";
+      VoicesResponse tmp = await DownloadVoicesAsync(httpClient, url);
+      List<ElevenLabsVoice> ret = tmp.Voices.ToList();
       return ret;
     }
 
-    private void InitHttpIfRequired()
+    public static HttpClient GetHttpClient(string api)
     {
-      if (http == null)
-      {
-        http = new HttpClient();
-        http.DefaultRequestHeaders.Add("xi-api-key", Settings.API);
-        http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("audio/mpeg"));
-      }
+      var ret = new HttpClient();
+      ret.DefaultRequestHeaders.Add("xi-api-key", api);
+      ret.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("audio/mpeg"));
+      return ret;
     }
 
-    private async Task<VoicesResponse> DownloadVoicesAsync(string url)
+    private static async Task<VoicesResponse> DownloadVoicesAsync(HttpClient httpClient, string url)
     {
-      InitHttpIfRequired();
-
-      var response = await http!.GetAsync(url);
+      var response = await httpClient.GetAsync(url);
 
       if (response.StatusCode != System.Net.HttpStatusCode.OK)
         throw new TtsApplicationException("Failed to download voices.",
           new ApplicationException($"GET request returned {response.StatusCode}:{response.Content}."));
 
-      var tmp = await Functions.Try(
+      var tmp = await Try(
         async () => await response.Content.ReadAsStringAsync(),
         ex => new TtsApplicationException("Failed to read POST response stream.", ex));
 
@@ -99,7 +96,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       return ret;
     }
 
-    private string NormalizeSnakeCaseToUpperCase(string txt)
+    private static string NormalizeSnakeCaseToUpperCase(string txt)
     {
       string p = @"""([^""]+?)"" *:";
       var matches = System.Text.RegularExpressions.Regex.Matches(txt, p);
@@ -139,18 +136,16 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       return ret;
     }
 
-    private async Task<byte[]> DownloadSpeechAsync(string url, string body)
+    private static async Task<byte[]> DownloadSpeechAsync(HttpClient httpClient, string url, string body)
     {
-      InitHttpIfRequired();
-
       var requestContent = new StringContent(body, System.Text.Encoding.Default, "application/json");
-      var response = await http!.PostAsync(url, requestContent);
+      var response = await httpClient.PostAsync(url, requestContent);
 
       if (response.StatusCode != System.Net.HttpStatusCode.OK)
         throw new TtsApplicationException("Failed to download speech.",
           new ApplicationException($"POST request returned {response.StatusCode}:{response.Content}."));
 
-      var ret = await Functions.Try(
+      var ret = await Try(
         async () => await response.Content.ReadAsByteArrayAsync(),
         ex => new TtsApplicationException("Failed to read POST response stream.", ex));
 
@@ -165,7 +160,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 
     private string BuildHttpGetModelJson(string text)
     {
-      string ret = Functions.Try(
+      string ret = Try(
         () => ConvertObjectToJson(BuildHttpGetModel(text)),
         e => new TtsApplicationException($"Failed to create a model for text '{text}'.", e));
       return ret;

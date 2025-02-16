@@ -30,7 +30,7 @@ using ESystem.Miscelaneous;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
-  internal partial class RunContext : NotifyPropertyChangedBase
+  internal partial class RunContext : NotifyPropertyChanged
   {
 
     #region Private Fields
