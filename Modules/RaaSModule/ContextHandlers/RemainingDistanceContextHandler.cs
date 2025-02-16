@@ -15,6 +15,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
   {
     private RunwayThreshold? lastDistanceThreshold;
     private List<RaasDistance>? lastDistanceThresholdRemainingDistances;
+    private int previousIas;
 
     public RemainingDistanceContextHandler(ContextHandlerArgs args) : base(args) { }
 
@@ -23,6 +24,9 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
       Debug.Assert(data.NearestAirport != null);
       var simData = this.simDataProvider();
       var sett = this.settings.RemainingDistanceThresholds;
+
+      int iasDelta = simData.IndicatedSpeed - previousIas;
+      previousIas = simData.IndicatedSpeed;
 
       var ds = new List<string>();
 
@@ -34,9 +38,12 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
         lastDistanceThreshold = null;
         lastDistanceThresholdRemainingDistances = null;
       }
+      if (iasDelta > 10) //TODO if working, move to thresholds; detects, if plane is deccelerating or moreless stable speed
+      {
+        ds.Add($"Plane is not deccelerating (ias-diff={iasDelta}");
+      }
       else
       {
-
         var airport = data.NearestAirport.Airport;
         ds.Add("Current airport: " + airport.ICAO);
 
