@@ -52,6 +52,7 @@ namespace OurAirportsToXmlConverter
     [XmlAttribute]
     public string Designator { get; set; } = "";
     public List<RunwayThreshold> Thresholds { get; set; } = [];
+    [XmlAttribute]
     public int LengthInM { get; set; }
 
     public Runway(string designator, List<RunwayThreshold> thresholds)
