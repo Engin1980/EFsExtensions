@@ -24,12 +24,6 @@ namespace Eng.Chlaot.Modules.CopilotModule
       set => base.UpdateProperty(nameof(LogSimConnectToFile), value);
     }
 
-    public bool ReadConfirmations
-    {
-      get => base.GetProperty<bool>(nameof(ReadConfirmations))!;
-      set => base.UpdateProperty(nameof(ReadConfirmations), value);
-    }
-
     public SynthetizerSettings Synthetizer { get; set; } = new();
 
     public static Settings Load()

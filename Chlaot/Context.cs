@@ -37,6 +37,10 @@ namespace Chlaot
       module = new Eng.Chlaot.Modules.FailuresModule.FailuresModule();
       TryAddModule(module);
 
+      logger.Invoke(LogLevel.INFO, "Loading RaaS module...");
+      module = new Eng.Chlaot.Modules.RaaSModule.RaaSModule();
+      TryAddModule(module);
+
       logger.Invoke(LogLevel.INFO, "Loading sim-var-test module...");
       module = new Eng.Chlaot.Modules.SimVarTestModule.SimVarTestModule();
       TryAddModule(module);

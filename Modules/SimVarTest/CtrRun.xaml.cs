@@ -25,6 +25,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
 
     public CtrRun()
     {
+      this.context = null!;
       InitializeComponent();
     }
 

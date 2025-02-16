@@ -44,7 +44,7 @@ namespace ChecklistModule
 
     private void btnSetAsCurrentChecklist_Click(object sender, RoutedEventArgs e)
     {
-      CheckListVM vm = ((MenuItem)sender).Tag as CheckListVM;
+      CheckListVM vm = (((MenuItem)sender).Tag as CheckListVM)!;
       this.context.SetCurrentChecklist(vm);
     }
   }

@@ -3,6 +3,7 @@ using Eng.Chlaot.ChlaotModuleBase;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +29,7 @@ namespace Chlaot
     public FrmRun()
     {
       InitializeComponent();
+      this.Title = "CHLAOT - Run - " + Assembly.GetExecutingAssembly().GetName().Version;
       this.context = null!;
       this.appSettings = null!;
     }

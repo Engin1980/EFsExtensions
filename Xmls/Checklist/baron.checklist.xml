@@ -150,10 +150,10 @@
       </item>
     </items>
     <trigger>
-      <g:and>
+      <g:or>
         <g:property name="height" direction="above" expression="1500"/>
-        <g:property name="ias" direction="above" expression="180"/>
-      </g:and>
+        <g:property name="ias" direction="above" expression="130"/>
+      </g:or>
     </trigger>
   </checklist>
   <checklist id="descend" callSpeech="Descend">

@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <RootNamespace>Eng.Chlaot.Modules.RaaSModule</RootNamespace>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\AirportsLib\AirportsLib.csproj" />
+    <ProjectReference Include="..\..\Libs\ChlaotModuleBase\ChlaotModuleBase.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ELogging">
+      <HintPath>..\..\DLLs\ELogging.dll</HintPath>
+    </Reference>
+    <Reference Include="ESimConnect">
+      <HintPath>..\..\DLLs\ESimConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="ESystem">
+      <HintPath>..\..\DLLs\ESystem.dll</HintPath>
+    </Reference>
+    <Reference Include="EXmlLib">
+      <HintPath>..\..\DLLs\EXmlLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

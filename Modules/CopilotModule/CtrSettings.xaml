@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CopilotModule"
         mc:Ignorable="d"
-        Title="CtrSettings" Height="276" Width="800" 
+        Title="CtrSettings" Height="206" Width="800" 
         SizeToContent="WidthAndHeight"
         Closed="Window_Closed">
   <StackPanel>
@@ -33,19 +33,6 @@
         <TextBox Text="{Binding StartTrimMiliseconds}" Grid.Row="2" Grid.Column="1" Margin="2"/>
         <Label Content="Trim end (miliseconds)" Grid.Row="3" Grid.Column="0" />
         <TextBox Text="{Binding EndTrimMiliseconds}" Grid.Row="3" Grid.Column="1" Margin="2"/>
-      </Grid>
-    </GroupBox>
-    <GroupBox Header="Other" Margin="8">
-      <Grid>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition />
-          <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition />
-        </Grid.RowDefinitions>
-        <Label Content="Debug evaluation enabled" Grid.Row="0" Grid.Column="0" />
-        <CheckBox IsChecked="{Binding EvalDebugEnabled}" IsEnabled="False" Grid.Row="0" Grid.Column="1"  Margin="0 8 0 0" />
       </Grid>
     </GroupBox>
   </StackPanel>

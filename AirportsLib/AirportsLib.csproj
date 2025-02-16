@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <RootNamespace>Eng.Chlaot.Libs.AirportsLib</RootNamespace>
+    <AssemblyVersion>1.0.2.0</AssemblyVersion>
+    <FileVersion>1.0.2.0</FileVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="ESystem">
+      <HintPath>..\DLLs\ESystem.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
