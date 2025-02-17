@@ -6,8 +6,8 @@
     <UseWPF>true</UseWPF>
     <PlatformTarget>x64</PlatformTarget>
     <RootNamespace>Eng.Chlaot.ChlaotModuleBase</RootNamespace>
-    <AssemblyVersion>1.1.2.22</AssemblyVersion>
-    <FileVersion>1.1.2.22</FileVersion>
+    <AssemblyVersion>1.1.2.31</AssemblyVersion>
+    <FileVersion>1.1.2.31</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -25,7 +25,13 @@ namespace ChecklistTTSNew
       get => base.GetProperty<string>(nameof(ChecklistFileName))!;
       set => base.UpdateProperty(nameof(ChecklistFileName), value);
     }
-    //TODO tady nevím jak to udelat at se to uklada jak chcu
+
+
+    public List<CheckList> Checklists
+    {
+      get { return base.GetProperty<List<CheckList>>(nameof(Checklists))!; }
+      set { base.UpdateProperty(nameof(Checklists), value); }
+    }
 
     public InitVM()
     {

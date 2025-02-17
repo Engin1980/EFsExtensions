@@ -23,8 +23,9 @@
       <Button x:Name="btnReloadVoices" Content="Reload voices" DockPanel.Dock="Right" Padding="4 0 4 0" Width="200" Click="btnReloadVoices_Click" />
       <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding Settings.ApiKey}" />
     </DockPanel>
-    <TextBlock Grid.Row="1" Grid.Column="1" 
-                 Text="To get API key, you must register and get one at 'www.elevenlabs.io'. Note there is a restriction for synthetized 10.000 characters/month."
+    <TextBlock Grid.Row="1" Grid.Column="1" Margin="8"
+               FontSize="14"
+                 Text="To get API key, you must register and get one at 'www.elevenlabs.io'. Note there is a restriction for synthetized 10.000 characters/month in free subscription."
                  TextWrapping="Wrap"/>
     <Label Grid.Row="2" Grid.Column="0">Voice:</Label>
     <ComboBox Grid.Row="2" Grid.Column="1" ItemsSource="{Binding Voices}" SelectedItem="{Binding SelectedVoice}">

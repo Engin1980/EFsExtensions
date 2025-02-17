@@ -1,4 +1,5 @@
-﻿using NAudio.Wave;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.Players;
+using NAudio.Wave;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -95,8 +96,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
 
       speechBytes = provider.ConvertAsync(speechText).GetAwaiter().GetResult();
 
-      var player = new SimpleMp3Player();
-      player.PlayAsync(speechBytes);
+      PlayHandler.Play(speechBytes);
     }
 
     private void TabTtss_SelectionChanged(object sender, SelectionChangedEventArgs e)

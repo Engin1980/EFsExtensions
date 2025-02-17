@@ -12,9 +12,9 @@
                Visibility="{Binding ElementName=ctrTtsModuleSelector, Path=SpeechTestVisibility }">
       <Label DockPanel.Dock="Left">Test Speech:</Label>
       <Button DockPanel.Dock="Right" x:Name="btnTrySpeech" Click="btnTrySpeech_Click" Padding="16 0 16 0">Try</Button>
-      <TextBox x:Name="txtTrySpeech" />
+      <TextBox x:Name="txtTrySpeech" Text="Gear up - three green" />
     </DockPanel>
-    <TabControl x:Name="tabTtss" >
+    <TabControl x:Name="tabTtss" Padding="8" >
     </TabControl>
   </DockPanel>
 </UserControl>

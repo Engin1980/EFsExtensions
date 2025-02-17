@@ -21,6 +21,7 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Windows.Media.TextFormatting;
 using ESystem.Exceptions;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.MSAPI;
 
 namespace ChecklistTTSNew
 {
@@ -30,10 +31,11 @@ namespace ChecklistTTSNew
   public partial class FrmInit : Window
   {
     private static readonly List<ITtsModule> ttsModules = new(){
+      new MSapiModule(),
       new ElevenLabsTtsModule()
       };
     private string recentXmlFile = string.Empty;
-    private InitVM vm;
+    private readonly InitVM vm;
 
     public FrmInit()
     {
@@ -81,9 +83,9 @@ namespace ChecklistTTSNew
 
     private void LoadChecklists()
     {
-      //var tmp = LoadChecklistFromFile(recentXmlFile);
-      //lblLoadingResult.Content = $"Loaded file with {tmp.Count} checklists.";
-      //this.vm.Checklists = tmp;
+      var tmp = LoadChecklistFromFile(recentXmlFile);
+      lblLoadingResult.Content = $"Loaded file with {tmp.Count} checklists.";
+      this.vm.Checklists = tmp;
     }
 
     private void ShowError(string msg)

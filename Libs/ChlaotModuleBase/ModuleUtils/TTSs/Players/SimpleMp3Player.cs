@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.Players
 {
   public class SimpleMp3Player
   {
