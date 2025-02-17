@@ -1,5 +1,8 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,6 +56,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
       set { SetValue(SelectedModuleProperty, value); }
     }
 
+    private readonly Dictionary<ITtsModule, ITtsSettings> moduleSettings = new();
+
     public void Init(IEnumerable<ITtsModule> modules)
     {
       tabTtss.Items.Clear();
@@ -62,6 +67,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
         var sett = module.GetDefaultSettings();
         var ctr = module.GetSettingsControl(sett);
         dck.Children.Add(ctr);
+
+        moduleSettings[module] = sett;
 
         TabItem tabItem = new()
         {
@@ -75,7 +82,21 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
 
     public void TrySpeech(string speechText)
     {
-      todo implement here player from ElevenLabs
+      byte[] speechBytes;
+
+      var ttsModule = ctrTtsModuleSelector.SelectedModule;
+      var settings = moduleSettings[ttsModule];
+      if (settings.IsValid == false)
+      {
+        MessageBox.Show("Current module settings are not complete or valid.");
+        return;
+      }
+      ITtsProvider provider = ttsModule.GetProvider(settings);
+
+      speechBytes = provider.ConvertAsync(speechText).GetAwaiter().GetResult();
+
+      var player = new SimpleMp3Player();
+      player.PlayAsync(speechBytes);
     }
 
     private void TabTtss_SelectionChanged(object sender, SelectionChangedEventArgs e)

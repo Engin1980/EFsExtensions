@@ -24,7 +24,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
     private readonly HttpClient http;
     private readonly ElevenLabsTtsSettings settings;
     private List<ElevenLabsVoice>? voices = null;
-    private readonly Dictionary<string, byte[]> speeches = new();
+    private readonly Dictionary<string, byte[]> previousSpeeches = new();
 
     #endregion Fields
 
@@ -43,21 +43,15 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 
     public async Task<byte[]> ConvertAsync(string text)
     {
-      EnsureHttpClient();
-      if (speeches.ContainsKey(text) == false)
+      if (previousSpeeches.ContainsKey(text) == false)
       {
         string url = $"{URL}/{URL_SPEECH_SUBROUTE}/{settings.VoiceId}";
         string body = BuildHttpGetModelJson(text);
         var tmp = await DownloadSpeechAsync(this.http, url, body);
-        speeches[text] = tmp;
+        previousSpeeches[text] = tmp;
       }
-      byte[] ret = speeches[text];
+      byte[] ret = previousSpeeches[text];
       return ret;
-    }
-
-    private void EnsureHttpClient()
-    {
-      throw new NotImplementedException();
     }
 
     public static async Task<List<ElevenLabsVoice>> GetVoicesAsync(string apiKey)
@@ -73,7 +67,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
     {
       var ret = new HttpClient();
       ret.DefaultRequestHeaders.Add("xi-api-key", api);
-      ret.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("audio/mpeg"));
       return ret;
     }
 
@@ -138,10 +131,18 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 
     private static async Task<byte[]> DownloadSpeechAsync(HttpClient httpClient, string url, string body)
     {
-      var requestContent = new StringContent(body, System.Text.Encoding.Default, "application/json");
-      var response = await httpClient.PostAsync(url, requestContent);
+      using HttpClient client = new HttpClient();
+      client.DefaultRequestHeaders.Add("xi-api-key", "sk_186d99a899fa4d6c54e31e7f211bf6fc02da7af8ba10721e");
 
-      if (response.StatusCode != System.Net.HttpStatusCode.OK)
+      var jsonContent = "{\"text\": \"Hello, world!\"}"; // Replace with actual JSON data
+      var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+      HttpResponseMessage response = await client.PostAsync(url, content);
+
+
+      //var requestContent = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
+      //var response = await httpClient.PostAsync(url, requestContent);
+
+      if (!response.IsSuccessStatusCode)
         throw new TtsApplicationException("Failed to download speech.",
           new ApplicationException($"POST request returned {response.StatusCode}:{response.Content}."));
 

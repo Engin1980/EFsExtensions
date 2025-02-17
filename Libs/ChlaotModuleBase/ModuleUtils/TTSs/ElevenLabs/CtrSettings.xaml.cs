@@ -1,4 +1,5 @@
 ﻿using ESystem.Miscelaneous;
+using Microsoft.WindowsAPICodePack.Shell;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,14 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 
     internal class ViewModel : NotifyPropertyChanged
     {
+      public ViewModel()
+      {
+        this.PropertyChanged += (s, e) =>
+        {
+          if (e.PropertyName == nameof(SelectedVoice))
+            this.Settings.VoiceId = SelectedVoice.VoiceId;
+        };
+      }
       public ElevenLabsTtsSettings Settings
       {
         get { return base.GetProperty<ElevenLabsTtsSettings>(nameof(Settings))!; }
@@ -41,6 +50,13 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       {
         get { return base.GetProperty<List<ElevenLabsVoice>>(nameof(Voices))!; }
         set { base.UpdateProperty(nameof(Voices), value); }
+      }
+
+
+      public ElevenLabsVoice SelectedVoice
+      {
+        get { return base.GetProperty<ElevenLabsVoice>(nameof(SelectedVoice))!; }
+        set { base.UpdateProperty(nameof(SelectedVoice), value); }
       }
     }
 
@@ -77,60 +93,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       btnReloadVoices.IsEnabled = true;
     }
 
-    //private async void btnTestSpeech_Click(object sender, RoutedEventArgs e)
-    //{
-    //  string s = txtTestSpeech.Text.Trim();
-    //  if (s.Length == 0) return;
-
-    //  btnTestSpeech.IsEnabled = false;
-    //  try
-    //  {
-    //    byte[] mp3 = await this.Tts.ConvertAsync(s);
-    //    Play(mp3);
-    //  }
-    //  catch (Exception ex)
-    //  {
-    //    this.logger.Log(ELogging.LogLevel.ERROR, "Failed to generate or play test speech. Reason: " + ex.Message);
-    //  }
-
-    //  btnTestSpeech.IsEnabled = true;
-    //}
-
-    private class SimplePlayer
-    {
-      private MemoryStream? ms;
-      private WaveStream? mp3stream;
-      private WaveOutEvent? player;
-      private bool isUsed = false;
-
-      public void PlayAsync(byte[] mp3)
-      {
-        Debug.Assert(isUsed == false, "The same simple player cannot be used twice.");
-        isUsed = true;
-
-        ms = new MemoryStream(mp3);
-        mp3stream = new Mp3FileReader(ms);
-        player = new WaveOutEvent();
-        player.PlaybackStopped += Player_PlaybackStopped;
-        player.Init(mp3stream);
-        player.Play();
-      }
-
-      private void Player_PlaybackStopped(object? sender, EventArgs e)
-      {
-        player!.Stop();
-        mp3stream!.Dispose();
-        ms!.Dispose();
-        player!.Dispose();
-      }
-    }
-
-    private void Play(byte[] mp3)
-    {
-      SimplePlayer sp = new SimplePlayer();
-      sp.PlayAsync(mp3);
-    }
-
     private async void btnPlayDemo_Click(object sender, RoutedEventArgs e)
     {
       Button btn = (Button)sender;
@@ -140,7 +102,9 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       this.Cursor = Cursors.Wait;
       string url = (string)btn.Tag;
       byte[] bytes = await DownloadPreviewMp3Async(url);
-      Play(bytes);
+
+      SimpleMp3Player player = new SimpleMp3Player();
+      player.PlayAsync(bytes);
 
       this.Cursor = c;
       btn.IsEnabled = true;
