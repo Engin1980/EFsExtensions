@@ -16,6 +16,7 @@
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
     <Label Content="Voice" Grid.Row="0" Grid.Column="0" />
     <ComboBox Grid.Row="0" Grid.Column="1"  Margin="2"
@@ -26,5 +27,15 @@
     <TextBox Text="{Binding StartTrimMiliseconds}" Grid.Row="2" Grid.Column="1" Margin="2"/>
     <Label Content="Trim end (miliseconds)" Grid.Row="3" Grid.Column="0" />
     <TextBox Text="{Binding EndTrimMiliseconds}" Grid.Row="3" Grid.Column="1" Margin="2"/>
+    <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="8" >
+      <TextBlock>To install more voices in Windows and further info see:</TextBlock>
+      <TextBlock>
+      <Hyperlink 
+        NavigateUri="https://support.microsoft.com/en-us/windows/appendix-a-supported-languages-and-voices-4486e345-7730-53da-fcfe-55cc64300f01"
+        RequestNavigate="Hyperlink_RequestNavigate">
+        Windows 10/11 - Appendix A: Supported languages and voices
+      </Hyperlink>
+      </TextBlock>
+    </StackPanel>
   </Grid>
 </UserControl>
