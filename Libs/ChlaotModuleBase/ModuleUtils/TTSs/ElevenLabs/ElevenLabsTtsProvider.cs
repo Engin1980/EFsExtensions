@@ -131,16 +131,15 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 
     private static async Task<byte[]> DownloadSpeechAsync(HttpClient httpClient, string url, string body)
     {
-      using HttpClient client = new HttpClient();
-      client.DefaultRequestHeaders.Add("xi-api-key", "sk_186d99a899fa4d6c54e31e7f211bf6fc02da7af8ba10721e");
+      //using HttpClient client = new HttpClient();
+      //client.DefaultRequestHeaders.Add("xi-api-key", settings);
 
-      var jsonContent = "{\"text\": \"Hello, world!\"}"; // Replace with actual JSON data
-      var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-      HttpResponseMessage response = await client.PostAsync(url, content);
+      //var jsonContent = "{\"text\": \"Hello, world!\"}"; // Replace with actual JSON data
+      //var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+      //HttpResponseMessage response = client.PostAsync(url, content).GetAwaiter().GetResult();
 
-
-      //var requestContent = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
-      //var response = await httpClient.PostAsync(url, requestContent);
+      var requestContent = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
+      var response = httpClient.PostAsync(url, requestContent).GetAwaiter().GetResult();
 
       if (!response.IsSuccessStatusCode)
         throw new TtsApplicationException("Failed to download speech.",
