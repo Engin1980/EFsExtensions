@@ -121,7 +121,17 @@ namespace ChecklistTTSNew
       };
       if (dialog.ShowDialog() == CommonFileDialogResult.Ok && dialog.FileName != null)
       {
-        this.vm.OutputPath = dialog.FileName;
+        var tmp = dialog.FileName;
+        if (System.IO.Directory.GetFiles(dialog.FileName).Count() > 0)
+        {
+          var msgRes = System.Windows.MessageBox.Show(
+            "There are some files in the selected folder ''. They may be overwritten. Are you sure?",
+            "Directory is not empty",
+            MessageBoxButton.YesNo,
+            System.Windows.MessageBoxImage.Warning);
+          if (msgRes == MessageBoxResult.OK)
+            this.vm.OutputPath = dialog.FileName;
+        }
       }
     }
 
