@@ -1,0 +1,56 @@
+﻿<Window x:Class="ChecklistTTS.FrmRun"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ChecklistTTS"
+        xmlns:vm ="clr-namespace:ChecklistTTS"
+        mc:Ignorable="d"
+        Title="FrmRun" Height="450" Width="800">
+  <DockPanel LastChildFill="True">
+    <StackPanel DockPanel.Dock="Bottom" Height="200">
+      <TextBlock></TextBlock>
+    </StackPanel>
+    <DockPanel>
+      <ScrollViewer>
+        <StackPanel>
+          <TreeView ItemsSource="{Binding CheckLists}">
+            <TreeView.Resources>
+              <HierarchicalDataTemplate DataType="{x:Type vm:CheckListVM}" ItemsSource="{Binding CheckItems}">
+                <StackPanel Orientation="Horizontal" Margin="2">
+                  <Label Padding="0 0 8 0 " Content="{Binding State}" />
+                  <Label x:Name="lblChecklist" Margin="0" Padding="0" Tag="{Binding}" >
+                    <Label.Content>
+                      <StackPanel Orientation="Horizontal" >
+                        <TextBlock Text="{Binding CheckList.CallSpeech}" />
+                        <TextBlock Text=" (" Foreground="Gray"/>
+                        <TextBlock Text="{Binding CheckList.Id}"  Foreground="Gray"/>
+                        <TextBlock Text=") " Foreground="Gray"/>
+                        <TextBlock Text="#" Foreground="Gray"/>
+                        <TextBlock Text="{Binding CheckItems.Count}"  Foreground="Gray"/>
+                      </StackPanel>
+                    </Label.Content>
+                  </Label>
+                </StackPanel>
+              </HierarchicalDataTemplate>
+              <HierarchicalDataTemplate DataType="{x:Type vm:CheckItemVM}">
+                <StackPanel Orientation="Horizontal" Margin="2">
+                  <Label Padding="0 0 8 0 " Content="{Binding State}" />
+                  <Label x:Name="lblItem" Margin="0" Padding="0" Tag="{Binding}">
+                    <Label.Content>
+                      <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding CheckItem.Call.Value}" />
+                        <TextBlock Text=" => " />
+                        <TextBlock Text="{Binding CheckItem.Confirmation.Value}" />
+                      </StackPanel>
+                    </Label.Content>
+                  </Label>
+                </StackPanel>
+              </HierarchicalDataTemplate>
+            </TreeView.Resources>
+          </TreeView>
+        </StackPanel>
+      </ScrollViewer>
+    </DockPanel>
+  </DockPanel>
+</Window>

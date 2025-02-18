@@ -22,6 +22,7 @@ using System.IO;
 using System.Windows.Media.TextFormatting;
 using ESystem.Exceptions;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.MSAPI;
+using ChecklistTTS;
 
 namespace ChecklistTTSNew
 {
@@ -43,7 +44,7 @@ namespace ChecklistTTSNew
       try
       {
         this.DataContext = this.vm = LoadVM();
-        LoadChecklists();
+        LoadChecklists(this.recentXmlFile);
       }
       catch (Exception ex)
       {
@@ -68,29 +69,24 @@ namespace ChecklistTTSNew
       dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("XML files", "xml"));
       dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("All files", "*"));
       if (dialog.ShowDialog() != CommonFileDialogResult.Ok) return;
-      recentXmlFile = dialog.FileName!;
 
       try
       {
-        LoadChecklists();
+        LoadChecklists(dialog.FileName!);
+        this.vm.ChecklistFileName = recentXmlFile = dialog.FileName!;
       }
       catch (Exception ex)
       {
-        ShowError("Failed to load file. Reason:" + ex);
+        System.Windows.MessageBox.Show("Failed to load file. Reason:" + ex);
         return;
       }
     }
 
-    private void LoadChecklists()
+    private void LoadChecklists(string xmlFile)
     {
-      var tmp = LoadChecklistFromFile(recentXmlFile);
+      var tmp = LoadChecklistFromFile(xmlFile);
       lblLoadingResult.Content = $"Loaded file with {tmp.Count} checklists.";
       this.vm.Checklists = tmp;
-    }
-
-    private void ShowError(string msg)
-    {
-      System.Windows.MessageBox.Show(msg, "Checklist TTS", MessageBoxButton.OK, MessageBoxImage.Error);
     }
 
     private List<CheckList> LoadChecklistFromFile(string xmlFile)
@@ -121,47 +117,64 @@ namespace ChecklistTTSNew
       };
       if (dialog.ShowDialog() == CommonFileDialogResult.Ok && dialog.FileName != null)
       {
-        var tmp = dialog.FileName;
-        if (System.IO.Directory.GetFiles(dialog.FileName).Count() > 0)
+        if (System.IO.Directory.GetFiles(dialog.FileName).Length > 0)
         {
           var msgRes = System.Windows.MessageBox.Show(
             "There are some files in the selected folder ''. They may be overwritten. Are you sure?",
             "Directory is not empty",
             MessageBoxButton.YesNo,
             System.Windows.MessageBoxImage.Warning);
-          if (msgRes == MessageBoxResult.OK)
+          if (msgRes == MessageBoxResult.Yes)
             this.vm.OutputPath = dialog.FileName;
         }
+        else
+          this.vm.OutputPath = dialog.FileName;
       }
+    }
+    private List<string> GetRunBlockingErrorsIfAny()
+    {
+      List<string> ret = new();
+      if (vm.Checklists == null || vm.Checklists.Count == 0)
+      {
+        ret.Add("Empty or not loaded checklist list.");
+      }
+
+      if (ctrTtss.SelectedModule == null)
+      {
+        ret.Add("No module selected.");
+      }
+      else
+      {
+        var sett = ctrTtss.GetSettingsForModule(ctrTtss.SelectedModule);
+        if (sett == null || sett.IsValid == false)
+          ret.Add("Settings are null or not valid yet.");
+      }
+
+      if (this.vm.OutputPath == null || System.IO.Directory.Exists(this.vm.OutputPath) == false)
+      {
+        ret.Add("Empty outputh path or output path does not exist.");
+      }
+      return ret;
     }
 
     private void btnContinue_Click(object sender, RoutedEventArgs e)
     {
-      //if (vm.Checklists == null || vm.Checklists.Count == 0)
-      //{
-      //  ShowError("Empty or not loaded checklist list.");
-      //  return;
-      //}
+      var errors = GetRunBlockingErrorsIfAny();
+      if (errors.Count > 0)
+      {
+        System.Windows.MessageBox.Show("Unable to start the process. There are issues: \n" +
+          string.Join("\n  ", errors), "Error...", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+        return;
+      }
 
-      //if (ctrTtss.SelectedModule == null || ctrTtss.SelectedModule.IsReady == false)
-      //{
-      //  ShowError("Empty TTS module or module is not ready.");
-      //  return;
-      //}
-
-      //if (this.vm.OutputPath == null)
-      //{
-      //  ShowError("Empty outputh path.");
-      //  return;
-      //}
-
+      //TODO implement somehow
       //SaveVM();
 
-      //FrmTTS frm = new FrmTTS();
-      //frm.Init(this.vm);
-      //frm.WindowStartupLocation = this.WindowStartupLocation;
-      //frm.Show();
-      //this.Hide();
+      FrmRun frm = new FrmRun();
+      frm.WindowStartupLocation = this.WindowStartupLocation;
+      frm.Init(this.vm);
+      frm.Show();
+      this.Hide();
     }
 
     private static string VMFileName => "vm.xml";

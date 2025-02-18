@@ -57,6 +57,20 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
       set { SetValue(SelectedModuleProperty, value); }
     }
 
+    public ITtsSettings GetSettingsForModule(ITtsModule module) => moduleSettings[module];
+    public void SetSettingsForModule(ITtsModule module, ITtsSettings settings)
+    {
+      if (settings == null)
+        throw new TtsApplicationException("Provided settings object is null.");
+      if (module == null)
+        throw new TtsApplicationException("Provided module object is null.");
+      if (moduleSettings[module].GetType() != settings.GetType())
+        throw new TtsApplicationException($"Provided instance type '{settings.GetType()}' " +
+          $"does not match required type '{moduleSettings[module].GetType().Name}'.");
+
+      moduleSettings[module] = settings;
+    }
+
     private readonly Dictionary<ITtsModule, ITtsSettings> moduleSettings = new();
 
     public void Init(IEnumerable<ITtsModule> modules)
