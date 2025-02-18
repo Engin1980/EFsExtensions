@@ -38,7 +38,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
         lastDistanceThreshold = null;
         lastDistanceThresholdRemainingDistances = null;
       }
-      if (iasDelta > 10) //TODO if working, move to thresholds; detects, if plane is deccelerating or moreless stable speed
+      else if (iasDelta > 10) //TODO if working, move to thresholds; detects, if plane is deccelerating or moreless stable speed
       {
         ds.Add($"Plane is not deccelerating (ias-diff={iasDelta}");
       }
