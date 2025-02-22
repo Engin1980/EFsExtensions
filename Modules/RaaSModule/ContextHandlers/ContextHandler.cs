@@ -1,5 +1,6 @@
 ﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using Eng.Chlaot.Libs.AirportsLib;
 using Eng.Chlaot.Modules.RaaSModule.Model;
@@ -43,8 +44,8 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
 
       Debug.Assert(synthetizer != null);
       var bytes = synthetizer!.Generate(s);
-      Player player = new(bytes);
-      player.Play();
+      EPlayer player = new(bytes);
+      player.PlayAsynchronously();
     }
 
     protected void Say(RaasSpeech speech, RaasDistance candidateDistance)
@@ -60,8 +61,8 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
       });
 
       var bytes = synthetizer!.Generate(s);
-      Player player = new(bytes);
-      player.Play();
+      EPlayer player = new(bytes);
+      player.PlayAsynchronously();
     }
   }
 }

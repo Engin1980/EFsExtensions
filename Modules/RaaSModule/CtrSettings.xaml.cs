@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using Microsoft.WindowsAPICodePack.Dialogs;

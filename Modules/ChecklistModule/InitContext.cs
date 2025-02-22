@@ -50,7 +50,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(MetaInfo), value);
     }
 
-    internal List<CheckListVM> CheckListVMs
+    public List<CheckListVM> CheckListVMs
     {
       get => base.GetProperty<List<CheckListVM>>(nameof(CheckListVMs))!;
       set => base.UpdateProperty(nameof(CheckListVMs), value);
@@ -159,6 +159,9 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
         if (tmpSpg != null)
         {
+          //FIXME todo here we extend sim-properties with those defined in checklist
+          // this causes issue when the same checklist is loaded again
+          // causing duplicit property definition
           var spg = new SimPropertyGroup();
           spg.Properties.AddRange(this.SimPropertyGroup.Properties);
           spg.Properties.Add(tmpSpg);

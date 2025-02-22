@@ -1,4 +1,5 @@
 ﻿using ELogging;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
 {
   public class AutoPlaybackManager : IDisposable
   {
@@ -38,7 +39,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing
       TryPlayNext();
     }
 
-    private void Ip_PlaybackFinished(Player sender)
+    private void Ip_PlaybackFinished(EPlayer sender)
     {
       lock (queue)
       {
@@ -61,9 +62,9 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing
         isPlaying = true;
         byte[] bytes = queue.Dequeue();
         this.logger.Log(LogLevel.INFO, $"TryPlayNext - starting play of {bytes.Length}.");
-        Player player = new(bytes);
+        EPlayer player = new(bytes);
         player.PlaybackFinished += Ip_PlaybackFinished;
-        player.PlayAsync();
+        player.PlayAsynchronously();
       }
     }
   }

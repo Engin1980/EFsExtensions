@@ -20,7 +20,7 @@ using System.Timers;
 using System.Reflection.Metadata.Ecma335;
 using System.Speech.Synthesis;
 using ESystem.Exceptions;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using System.Diagnostics;
 using Microsoft.WindowsAPICodePack.Shell;

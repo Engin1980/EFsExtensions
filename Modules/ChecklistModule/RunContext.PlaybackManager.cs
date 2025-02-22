@@ -1,4 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
 using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using ESystem.Asserting;
 using System;
@@ -7,6 +8,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 {
   internal partial class RunContext
   {
+    //TODO this class is somehow dulpicit with ChlaotModuleBase.Audio.AutoPlaybackManager?
     internal class PlaybackManager
     {
       private int currentItemIndex = 0;
@@ -72,14 +74,14 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         lock (this)
         {
           byte[] playData = ResolveAndMarkNexPlayBytes(out isCurrentLastSpeechPlaying);
-          Player player = new(playData);
+          EPlayer player = new(playData);
           player.PlaybackFinished += Player_PlaybackFinished;
-          player.PlayAsync();
+          player.PlayAsynchronously();
         }
         AdjustRunStates();
       }
 
-      private void Player_PlaybackFinished(Player sender)
+      private void Player_PlaybackFinished(EPlayer sender)
       {
         lock (this)
         {

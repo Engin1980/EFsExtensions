@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using Eng.Chlaot.Modules.CopilotModule;
 using System;

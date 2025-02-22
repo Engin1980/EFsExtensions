@@ -11,7 +11,7 @@
     <converters:BoolToRedGreenConverter x:Key="BoolToRedGreenConverter" />
   </Window.Resources>
   <DockPanel>
-    <TextBox x:Name="txtConsole"  DockPanel.Dock="Bottom" FontSize="12"
+    <TextBox x:Name="txtConsole"  DockPanel.Dock="Bottom" FontSize="12" FontFamily="Consolas"
       Height="200" TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" />
     <Button DockPanel.Dock="Bottom" x:Name="btnRun" Content="Run" Padding="8" Click="btnRun_Click" />
     <DockPanel>

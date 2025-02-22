@@ -3,7 +3,8 @@ using ChlaotModuleBase.ModuleUtils.StateChecking;
 using CopilotModule;
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
@@ -101,8 +102,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
       if (activated != null)
       {
-        Player player = new(activated.SpeechDefinition.Speech.Bytes);
-        player.PlayAsync();
+        EPlayer player = new(activated.SpeechDefinition.Speech.Bytes);
+        player.PlayAsynchronously();
 
         activated.RunTime.IsReadyToBeSpoken = false;
         this.logger.Invoke(LogLevel.DEBUG,
