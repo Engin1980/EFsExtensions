@@ -7,6 +7,9 @@
         xmlns:model="clr-namespace:ChecklistTTS.Model"
         mc:Ignorable="d"
         Title="FrmRun" Height="750" Width="1000">
+  <Window.Resources>
+    <local:CvtStateToImage x:Key="CvtStateToImage" />
+  </Window.Resources>
   <DockPanel LastChildFill="True">
     <TextBox DockPanel.Dock="Bottom"  x:Name="txtOut" 
              TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" IsReadOnly="True"
@@ -18,7 +21,8 @@
             <TreeView.Resources>
               <HierarchicalDataTemplate DataType="{x:Type model:CheckListVM}" ItemsSource="{Binding CheckItems}">
                 <StackPanel Orientation="Horizontal" Margin="2">
-                  <Label Padding="0 0 8 0 " Content="{Binding State}" />
+                  <Image Source="{Binding State, Converter={StaticResource CvtStateToImage}}" 
+                         Width="12" Height="12" Margin="0 0 4 2" />
                   <Label x:Name="lblChecklist" Margin="0" Padding="0" Tag="{Binding}" >
                     <Label.Content>
                       <StackPanel Orientation="Horizontal" >
@@ -35,7 +39,8 @@
               </HierarchicalDataTemplate>
               <HierarchicalDataTemplate DataType="{x:Type model:CheckItemVM}">
                 <StackPanel Orientation="Horizontal" Margin="2">
-                  <Label Padding="0 0 8 0 " Content="{Binding State}" />
+                  <Image Source="{Binding State, Converter={StaticResource CvtStateToImage}}" 
+                         Width="12" Height="12" Margin="0 0 4 2" />
                   <Label x:Name="lblItem" Margin="0" Padding="0" Tag="{Binding}">
                     <Label.Content>
                       <StackPanel Orientation="Horizontal">

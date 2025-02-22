@@ -66,6 +66,7 @@ namespace ChecklistTTS
 
     internal async Task RunAsync()
     {
+      Log(0, "Starting conversion...");
       Dictionary<string, string> dct = new();
 
       foreach (var checklist in vm.CheckLists)
@@ -84,6 +85,8 @@ namespace ChecklistTTS
       }
 
       await SaveChecklistFromFileAsync(checklistInputFile, checklistOutputFile, dct);
+
+      Log(0, "Conversion completed.");
     }
 
 
@@ -176,6 +179,7 @@ namespace ChecklistTTS
       {
         string s = string.Concat("\n", string.Concat(Enumerable.Repeat("    ", level)), msg);
         txtOut.Text += s;
+        txtOut.ScrollToEnd();
       }
       else
         System.Windows.Application.Current.Dispatcher.Invoke(() => Log(level, msg));
@@ -223,6 +227,7 @@ namespace ChecklistTTS
       });
 
       await System.IO.File.WriteAllTextAsync(checklistOutputFile, newXml);
+      Log(0, "Final checklist saved to file " + checklistOutputFile);
     }
   }
 }
