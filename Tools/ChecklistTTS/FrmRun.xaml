@@ -4,11 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChecklistTTS"
-        xmlns:vm ="clr-namespace:ChecklistTTS"
+        xmlns:model="clr-namespace:ChecklistTTS.Model"
         mc:Ignorable="d"
-        Title="FrmRun" Height="450" Width="800">
+        Title="FrmRun" Height="550" Width="800">
   <DockPanel LastChildFill="True">
-    <StackPanel DockPanel.Dock="Bottom" Height="200">
+    <StackPanel DockPanel.Dock="Bottom" Height="100">
       <TextBlock></TextBlock>
     </StackPanel>
     <DockPanel>
@@ -16,7 +16,7 @@
         <StackPanel>
           <TreeView ItemsSource="{Binding CheckLists}">
             <TreeView.Resources>
-              <HierarchicalDataTemplate DataType="{x:Type vm:CheckListVM}" ItemsSource="{Binding CheckItems}">
+              <HierarchicalDataTemplate DataType="{x:Type model:CheckListVM}" ItemsSource="{Binding CheckItems}">
                 <StackPanel Orientation="Horizontal" Margin="2">
                   <Label Padding="0 0 8 0 " Content="{Binding State}" />
                   <Label x:Name="lblChecklist" Margin="0" Padding="0" Tag="{Binding}" >
@@ -33,7 +33,7 @@
                   </Label>
                 </StackPanel>
               </HierarchicalDataTemplate>
-              <HierarchicalDataTemplate DataType="{x:Type vm:CheckItemVM}">
+              <HierarchicalDataTemplate DataType="{x:Type model:CheckItemVM}">
                 <StackPanel Orientation="Horizontal" Margin="2">
                   <Label Padding="0 0 8 0 " Content="{Binding State}" />
                   <Label x:Name="lblItem" Margin="0" Padding="0" Tag="{Binding}">

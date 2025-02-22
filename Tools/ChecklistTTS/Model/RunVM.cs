@@ -7,26 +7,26 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChecklistTTS
+namespace ChecklistTTS.Model
 {
   internal partial class RunVM : NotifyPropertyChanged
   {
     public string OutputPath
     {
-      get => base.GetProperty<string>(nameof(OutputPath))!;
-      set => base.UpdateProperty(nameof(OutputPath), value);
+      get => GetProperty<string>(nameof(OutputPath))!;
+      set => UpdateProperty(nameof(OutputPath), value);
     }
 
     public MetaInfo? MetaInfo
     {
-      get { return base.GetProperty<MetaInfo?>(nameof(MetaInfo))!; }
-      set { base.UpdateProperty(nameof(MetaInfo), value); }
+      get { return GetProperty<MetaInfo?>(nameof(MetaInfo))!; }
+      set { UpdateProperty(nameof(MetaInfo), value); }
     }
 
     public List<CheckListVM> CheckLists
     {
-      get => base.GetProperty<List<CheckListVM>>(nameof(CheckLists))!;
-      set => base.UpdateProperty(nameof(CheckLists), value);
+      get => GetProperty<List<CheckListVM>>(nameof(CheckLists))!;
+      set => UpdateProperty(nameof(CheckLists), value);
     }
   }
 }

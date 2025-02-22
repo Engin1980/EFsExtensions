@@ -1,4 +1,4 @@
-﻿namespace ChecklistTTS
+﻿namespace ChecklistTTS.Model
 {
   public enum ProcessState
   {

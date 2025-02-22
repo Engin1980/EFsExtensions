@@ -6,8 +6,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <AssemblyVersion>1.0.0.49</AssemblyVersion>
-    <FileVersion>1.0.0.49</FileVersion>
+    <AssemblyVersion>1.0.0.55</AssemblyVersion>
+    <FileVersion>1.0.0.55</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,13 +15,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Libs\ChlaotModuleBase\ChlaotModuleBase.csproj" />
-    <ProjectReference Include="..\Modules\ChecklistModule\ChecklistModule.csproj" />
+    <ProjectReference Include="..\..\Libs\ChlaotModuleBase\ChlaotModuleBase.csproj" />
+    <ProjectReference Include="..\..\Modules\ChecklistModule\ChecklistModule.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="ESystem">
-      <HintPath>..\DLLs\ESystem.dll</HintPath>
+      <HintPath>..\..\DLLs\ESystem.dll</HintPath>
     </Reference>
   </ItemGroup>
 

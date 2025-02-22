@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace ChecklistTTSNew
+namespace ChecklistTTS.Model
 {
   [Serializable]
   public class InitVM : NotifyPropertyChanged
@@ -16,21 +16,21 @@ namespace ChecklistTTSNew
 
     public string OutputPath
     {
-      get => base.GetProperty<string>(nameof(OutputPath))!;
-      set => base.UpdateProperty(nameof(OutputPath), value);
+      get => GetProperty<string>(nameof(OutputPath))!;
+      set => UpdateProperty(nameof(OutputPath), value);
     }
 
     public string ChecklistFileName
     {
-      get => base.GetProperty<string>(nameof(ChecklistFileName))!;
-      set => base.UpdateProperty(nameof(ChecklistFileName), value);
+      get => GetProperty<string>(nameof(ChecklistFileName))!;
+      set => UpdateProperty(nameof(ChecklistFileName), value);
     }
 
 
     public List<CheckList> Checklists
     {
-      get { return base.GetProperty<List<CheckList>>(nameof(Checklists))!; }
-      set { base.UpdateProperty(nameof(Checklists), value); }
+      get { return GetProperty<List<CheckList>>(nameof(Checklists))!; }
+      set { UpdateProperty(nameof(Checklists), value); }
     }
 
     public InitVM()

@@ -23,6 +23,7 @@ using System.Windows.Media.TextFormatting;
 using ESystem.Exceptions;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.MSAPI;
 using ChecklistTTS;
+using ChecklistTTS.Model;
 
 namespace ChecklistTTSNew
 {
@@ -170,11 +171,16 @@ namespace ChecklistTTSNew
       //TODO implement somehow
       //SaveVM();
 
+      var ttsModule = ctrTtss.SelectedModule;
+      var ttsModuleSettings = ctrTtss.GetSettingsForModule(ttsModule);
+      var ttsProvider = ttsModule.GetProvider(ttsModuleSettings);
+
       FrmRun frm = new FrmRun();
       frm.WindowStartupLocation = this.WindowStartupLocation;
-      frm.Init(this.vm);
+      frm.Init(this.vm, ttsProvider);
       frm.Show();
       this.Hide();
+      frm.Run();
     }
 
     private static string VMFileName => "vm.xml";
