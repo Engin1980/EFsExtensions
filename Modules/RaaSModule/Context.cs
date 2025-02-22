@@ -441,18 +441,6 @@ namespace Eng.Chlaot.Modules.RaaSModule
       simConnect.Structs.RequestRepeatedly<SimDataStruct>(SimConnectPeriod.SECOND, sendOnlyOnChange: true);
     }
 
-    internal void DoTmp()
-    {
-      this.SimData = new SimDataStruct()
-      {
-        heading = 0,
-        indicatedSpeed = 0,
-         latitude = 52.977935435,
-         longitude = -118.0568015
-      };
-      EvaluateNearestAirport();
-    }
-
     #endregion Private Methods
 
   }
