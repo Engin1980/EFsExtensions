@@ -44,6 +44,15 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       this.IsValid = !string.IsNullOrWhiteSpace(this.ApiKey) && !string.IsNullOrWhiteSpace(this.VoiceId);
     }
 
+    public void LoadFromSettingsString(string str)
+    {
+      string[] pts = str.Split(";");
+      ApiKey = pts[0];
+      VoiceId = pts[1];
+    }
+
+    public string CreateSettingsString() => $"{ApiKey};{VoiceId}";
+
     // following things are optional
     //public string ModelId { get; set; } = "eleven_monolingual_v1";
     //public List<PronunciationDirectoryLocator> PronunociationDictionaryLocators { get; private set; } = new();

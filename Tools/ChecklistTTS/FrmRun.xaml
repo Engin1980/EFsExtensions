@@ -6,11 +6,11 @@
         xmlns:local="clr-namespace:ChecklistTTS"
         xmlns:model="clr-namespace:ChecklistTTS.Model"
         mc:Ignorable="d"
-        Title="FrmRun" Height="550" Width="800">
+        Title="FrmRun" Height="750" Width="1000">
   <DockPanel LastChildFill="True">
-    <StackPanel DockPanel.Dock="Bottom" Height="100">
-      <TextBlock></TextBlock>
-    </StackPanel>
+    <TextBox DockPanel.Dock="Bottom"  x:Name="txtOut" 
+             TextWrapping="Wrap" VerticalScrollBarVisibility="Visible" IsReadOnly="True"
+             Height="300" ></TextBox>
     <DockPanel>
       <ScrollViewer>
         <StackPanel>

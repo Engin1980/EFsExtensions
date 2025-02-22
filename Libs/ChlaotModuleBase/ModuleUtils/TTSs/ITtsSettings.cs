@@ -11,5 +11,8 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
   public interface ITtsSettings : INotifyPropertyChanged
   {
     public bool IsValid { get; }
+
+    public void LoadFromSettingsString(string str);
+    public string CreateSettingsString();
   }
 }

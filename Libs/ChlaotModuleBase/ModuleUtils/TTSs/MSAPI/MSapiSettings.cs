@@ -70,5 +70,14 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.MSAPI
       set { base.UpdateProperty(nameof(IsValid), value); }
     }
 
+    public string CreateSettingsString() => $"{Voice};{StartTrimMiliseconds};{EndTrimMiliseconds}";
+
+    public void LoadFromSettingsString(string str)
+    {
+      string[] pts = str.Split(";");
+      Voice = pts[0];
+      StartTrimMiliseconds = int.Parse(pts[1]);
+      EndTrimMiliseconds = int.Parse(pts[2]);
+    }
   }
 }

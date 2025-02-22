@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Speech.Recognition;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -20,6 +21,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace ChecklistTTS
 {
@@ -29,8 +31,12 @@ namespace ChecklistTTS
   public partial class FrmRun : Window
   {
     private readonly RunVM vm;
-    private string outputPath;
-    private ITtsProvider ttsProvider;
+    private string outputPath = null!;
+    private string soundSubPath = null!;
+    private string checklistOutputFile = null!;
+    private string checklistInputFile = null!;
+    private ITtsProvider ttsProvider = null!;
+
     public FrmRun()
     {
       InitializeComponent();
@@ -49,29 +55,38 @@ namespace ChecklistTTS
 
       this.ttsProvider = provider;
       this.outputPath = initVm.OutputPath;
+      this.soundSubPath = System.IO.Path.GetFileNameWithoutExtension(initVm.ChecklistFileName) + "\\";
+      System.IO.Directory.CreateDirectory(
+        System.IO.Path.Combine(outputPath, soundSubPath));
+      this.checklistOutputFile = System.IO.Path.Combine(
+        this.outputPath,
+        System.IO.Path.GetFileName(initVm.ChecklistFileName));
+      this.checklistInputFile = initVm.ChecklistFileName;
     }
 
     internal async Task RunAsync()
     {
-      List<CheckList> newChecklist = new();
+      Dictionary<string, string> dct = new();
 
       foreach (var checklist in vm.CheckLists)
       {
         checklist.State = ProcessState.Active;
         try
         {
-          CheckList ch = await ConvertChecklistAsync(checklist);
-          newChecklist.Add(ch);
-
+          await ConvertChecklistAsync(checklist, dct);
           checklist.State = ProcessState.Processed;
         }
         catch (Exception ex)
         {
-          Log(0, $"Failed to convert checklist '{checklist.CheckList.Id}'.");
+          Log(0, $"Failed to convert checklist '{checklist.CheckList.Id}':{ex.GetFullMessage()}");
           checklist.State = ProcessState.Failed;
         }
       }
+
+      await SaveChecklistFromFileAsync(checklistInputFile, checklistOutputFile, dct);
     }
+
+
 
     internal void Run()
     {
@@ -80,102 +95,71 @@ namespace ChecklistTTS
       t.Start();
     }
 
-    private async Task<CheckList> ConvertChecklistAsync(CheckListVM checklist)
+    private async Task ConvertChecklistAsync(CheckListVM checklist, Dictionary<string, string> dct)
     {
-      CheckList ret = new CheckList()
-      {
-        NextChecklistIds = checklist.CheckList.NextChecklistIds,
-        Trigger = checklist.CheckList.Trigger,
-        Variables = checklist.CheckList.Variables,
-        CallSpeech = checklist.CheckList.CallSpeech,
-        CustomEntrySpeech = checklist.CheckList.CustomEntrySpeech, //TODO convert also this!
-        CustomExitSpeech = checklist.CheckList.CustomExitSpeech,
-        Id = checklist.CheckList.Id,
-        Items = new()
-      };
-
       foreach (var item in checklist.CheckItems)
       {
         item.State = ProcessState.Active;
         try
         {
-          CheckItem ci = await ConvertChecklistItemAsync(item);
-          ret.Items.Add(ci);
+          await ConvertChecklistItemAsync(item, dct);
           item.State = ProcessState.Processed;
         }
         catch (Exception ex)
         {
           Log(0, $"Failed to convert checklist item " +
-            $"{item.CheckItem.Call.Value} - {item.CheckItem.Confirmation.Value}: " +
+            $"'{item.CheckItem.Call.Value} - {item.CheckItem.Confirmation.Value}': " +
             $"{ex.GetFullMessage()}");
           item.State = ProcessState.Failed;
         }
       }
-
-      return ret;
     }
 
-    private async Task<CheckItem> ConvertChecklistItemAsync(CheckItemVM item)
+    private async Task ConvertChecklistItemAsync(CheckItemVM item, Dictionary<string, string> dct)
     {
-      Log(1, $"Converting {item.CheckItem.Call.Value} - {item.CheckItem.Confirmation.Value}");
+      Log(1, $"Converting '{item.CheckItem.Call.Value} - {item.CheckItem.Confirmation.Value}'");
       var call = item.CheckItem.Call;
       var conf = item.CheckItem.Confirmation;
 
-      var newCall = await ConvertSpeechAsync(call);
-      var newConf = await ConvertSpeechAsync(conf);
-
-      CheckItem ret = new()
-      {
-        Call = newCall,
-        Confirmation = newConf
-      };
-      return ret;
+      await ConvertSpeechAsync(call, dct);
+      await ConvertSpeechAsync(conf, dct);
     }
 
-    private async Task<CheckDefinition> ConvertSpeechAsync(CheckDefinition speech)
+    private async Task ConvertSpeechAsync(CheckDefinition speech, Dictionary<string, string> dct)
     {
-      CheckDefinition ret;
       if (speech.Type == CheckDefinition.CheckDefinitionType.File)
       {
         Log(2, $"Speech '{speech.Value}' is of type file, skipping.");
-        ret = new CheckDefinition()
-        {
-          Type = speech.Type,
-          Value = speech.Value
-        };
       }
       else if (speech.Type == CheckDefinition.CheckDefinitionType.Speech)
       {
         var text = speech.Value;
-        string fileName = SanitizeFileName(text) + ".mp3";
-        string fullFileName = SanitizeFileName(text) + ".mp3";
 
-        ret = new CheckDefinition()
-        {
-          Type = CheckDefinition.CheckDefinitionType.File,
-          Value = fileName
-        };
-
-        if (System.IO.File.Exists(fullFileName))
+        if (dct.ContainsKey(text))
         {
           Log(2, $"Speech '{speech.Value}' already converted, skipping.");
         }
         else
         {
+          string fileName = SanitizeFileName(text) + ".mp3";
+          string fullFileName = System.IO.Path.Join(
+            this.outputPath,
+            soundSubPath,
+            fileName);
+
           Log(2, $"Converting speech '{speech.Value}' ");
           byte[] bytes = await ttsProvider.ConvertAsync(text);
           await System.IO.File.WriteAllBytesAsync(fullFileName, bytes);
+          dct[text] = System.IO.Path.Join(soundSubPath, fileName);
         }
       }
       else
       {
         throw new UnexpectedEnumValueException(speech.Type);
       }
-
-      return ret;
     }
 
-    public static string SanitizeFileName(string input)
+    private static string SanitizeFileName(string input)
     {
       if (string.IsNullOrWhiteSpace(input))
         throw new ArgumentException("Input cannot be null or whitespace.", nameof(input));
@@ -186,9 +170,15 @@ namespace ChecklistTTS
       return new string(input.Select(c => invalidChars.Contains(c) ? replacement : c).ToArray());
     }
 
-    private void Log(int v1, string v2)
+    private void Log(int level, string msg)
     {
-      // TODO
+      if (System.Windows.Application.Current.Dispatcher.CheckAccess())
+      {
+        string s = string.Concat("\n", string.Concat(Enumerable.Repeat("    ", level)), msg);
+        txtOut.Text += s;
+      }
+      else
+        System.Windows.Application.Current.Dispatcher.Invoke(() => Log(level, msg));
     }
 
     private (MetaInfo?, List<CheckList>) LoadChecklistFromFile(string xmlFile)
@@ -208,6 +198,31 @@ namespace ChecklistTTS
         throw new ApplicationException("Unable to read/deserialize checklist-set from '{xmlFile}'. Invalid file content?", ex);
       }
       return (metaInfo, ret);
+    }
+
+    private async Task SaveChecklistFromFileAsync(string checklistInputFile, string checklistOutputFile, Dictionary<string, string> dct)
+    {
+      string xml = await System.IO.File.ReadAllTextAsync(checklistInputFile);
+
+      string pattern = @"type=""(speech)"" value=""(.+)""";
+
+      Regex regex = new(pattern, RegexOptions.Multiline);
+      Match match = regex.Match(xml);
+
+      string newXml = Regex.Replace(
+        xml,
+        pattern,
+        match =>
+      {
+        string key = match.Groups[2].Value;
+        string replacement = (dct.ContainsKey(key))
+        ? dct[key]
+        : match.Groups[2].Value;
+
+        return $"type=\"file\" value=\"{replacement}\"";
+      });
+
+      await System.IO.File.WriteAllTextAsync(checklistOutputFile, newXml);
     }
   }
 }

@@ -36,24 +36,76 @@ namespace ChecklistTTSNew
       new MSapiModule(),
       new ElevenLabsTtsModule()
       };
-    private string recentXmlFile = string.Empty;
     private readonly InitVM vm;
 
     public FrmInit()
     {
       InitializeComponent();
-      try
-      {
-        this.DataContext = this.vm = LoadVM();
-        LoadChecklists(this.recentXmlFile);
-      }
-      catch (Exception ex)
-      {
-        //TODO add logging
-        this.DataContext = this.vm = new InitVM();
-      }
+
+      this.DataContext = this.vm = new();
+      ApplyAppSettings();
 
       this.ctrTtss.Init(ttsModules);
+    }
+
+    private void ApplyAppSettings()
+    {
+      var sett = ChecklistTTS.Properties.Settings.Default;
+      this.vm.ChecklistFileName = sett.RecentChecklistFile;
+      this.vm.OutputPath = sett.RecentOutputPath;
+
+      var module = ttsModules.FirstOrDefault(q => q.Name == sett.RecentModuleName);
+      if (module != null)
+      {
+        this.ctrTtss.SelectedModule = module;
+        string? moduleSettingsStr = null;
+        foreach (var item in sett.ModuleSettings)
+        {
+          if (item != null && item.StartsWith(sett.RecentModuleName + ";"))
+          {
+            moduleSettingsStr = item[(sett.RecentModuleName.Length + 1)..];
+            break;
+          }
+          if (moduleSettingsStr != null)
+          {
+            var moduleSettings = ctrTtss.GetSettingsForModule(module);
+            moduleSettings.LoadFromSettingsString(moduleSettingsStr);
+          }
+        }
+      }
+    }
+
+    private void SaveAppSettings()
+    {
+      var sett = ChecklistTTS.Properties.Settings.Default;
+      sett.RecentChecklistFile = this.vm.ChecklistFileName;
+      sett.RecentOutputPath = this.vm.OutputPath;
+      sett.RecentModuleName = this.ctrTtss.SelectedModule.Name;
+      if (sett.RecentModuleName != null)
+      {
+        var moduleSettings = ctrTtss.GetSettingsForModule(ctrTtss.SelectedModule);
+        var moduleSettingsStr = moduleSettings.CreateSettingsString();
+
+        //removes existing
+        if (sett.ModuleSettings != null)
+        {
+          List<string?> toRemItems = new();
+          foreach (var item in sett.ModuleSettings)
+          {
+            if (item == null || item.StartsWith(ctrTtss.SelectedModule.Name + ";"))
+            {
+              toRemItems.Add(item);
+            }
+          }
+          toRemItems.ForEach(q => sett.ModuleSettings.Remove(q));
+        }
+        else
+          sett.ModuleSettings = new();
+
+        sett.ModuleSettings.Add(moduleSettingsStr);
+      }
+
+      sett.Save();
     }
 
     private void btnSelectChecklistFile_Click(object sender, RoutedEventArgs e)
@@ -62,7 +114,7 @@ namespace ChecklistTTSNew
       {
         AddToMostRecentlyUsedList = true,
         EnsureFileExists = true,
-        DefaultFileName = recentXmlFile,
+        DefaultFileName = this.vm.ChecklistFileName,
         Multiselect = false,
         Title = "Select XML file with checklist data..."
       };
@@ -74,7 +126,7 @@ namespace ChecklistTTSNew
       try
       {
         LoadChecklists(dialog.FileName!);
-        this.vm.ChecklistFileName = recentXmlFile = dialog.FileName!;
+        this.vm.ChecklistFileName = dialog.FileName!;
       }
       catch (Exception ex)
       {
@@ -168,57 +220,20 @@ namespace ChecklistTTSNew
         return;
       }
 
-      //TODO implement somehow
-      //SaveVM();
+      SaveAppSettings();
 
       var ttsModule = ctrTtss.SelectedModule;
       var ttsModuleSettings = ctrTtss.GetSettingsForModule(ttsModule);
       var ttsProvider = ttsModule.GetProvider(ttsModuleSettings);
 
-      FrmRun frm = new FrmRun();
-      frm.WindowStartupLocation = this.WindowStartupLocation;
+      FrmRun frm = new()
+      {
+        WindowStartupLocation = this.WindowStartupLocation
+      };
       frm.Init(this.vm, ttsProvider);
       frm.Show();
       this.Hide();
       frm.Run();
-    }
-
-    private static string VMFileName => "vm.xml";
-
-    private void SaveVM()
-    {
-      try
-      {
-        XmlSerializer ser = new XmlSerializer(typeof(InitVM));
-        using FileStream fs = new System.IO.FileStream(VMFileName, FileMode.OpenOrCreate);
-        ser.Serialize(fs, this.vm);
-      }
-      catch (Exception ex)
-      {
-        //TODO
-        throw ex;
-      }
-    }
-
-    public InitVM LoadVM()
-    {
-      InitVM ret;
-      try
-      {
-        if (System.IO.File.Exists(VMFileName))
-        {
-          XmlSerializer ser = new XmlSerializer(typeof(InitVM));
-          using FileStream fs = new System.IO.FileStream(VMFileName, FileMode.Open);
-          ret = (InitVM)(ser.Deserialize(fs) ?? throw new UnexpectedNullException());
-        }
-        else
-          ret = new();
-      }
-      catch (Exception ex)
-      {
-        throw new ApplicationException("Unable to load VM set-up.", ex);
-      }
-      return ret;
     }
   }
 }
