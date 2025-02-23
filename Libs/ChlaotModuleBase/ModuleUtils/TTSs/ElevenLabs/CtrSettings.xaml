@@ -15,6 +15,10 @@
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
       <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
     </Grid.RowDefinitions>
     <Label Grid.Row="0" Grid.Column="0">
       API Key:
@@ -41,5 +45,26 @@
         </DataTemplate>
       </ComboBox.ItemTemplate>
     </ComboBox>
+    <Label Grid.Row="6" Grid.Column="0">Style:</Label>
+    <DockPanel Grid.Row="6" Grid.Column="1">
+      <Label DockPanel.Dock="Left" Width="50" >
+        <TextBlock Text="{Binding Settings.Style, StringFormat=N2}" />
+      </Label>
+      <Slider Margin="0 4 0 0" Value="{Binding Settings.Style}" Minimum="0.0" Maximum="0.5" />
+    </DockPanel>
+    <Label Grid.Row="4" Grid.Column="0">Stability:</Label>
+    <DockPanel Grid.Row="4" Grid.Column="1">
+      <Label DockPanel.Dock="Left" Width="50" >
+        <TextBlock Text="{Binding Settings.Stability, StringFormat=N2}" />
+      </Label>
+      <Slider Margin="0 4 0 0" Value="{Binding Settings.Stability}" Minimum="0.3" Maximum="1" />
+    </DockPanel>
+    <Label Grid.Row="5" Grid.Column="0">Similarity:</Label>
+    <DockPanel Grid.Row="5" Grid.Column="1">
+      <Label DockPanel.Dock="Left" Width="50" >
+        <TextBlock Text="{Binding Settings.Similarity, StringFormat=N2}" />
+      </Label>
+      <Slider Margin="0 4 0 0" Value="{Binding Settings.Similarity}" Minimum="0" Maximum="1" />
+    </DockPanel>
   </Grid>
 </UserControl>

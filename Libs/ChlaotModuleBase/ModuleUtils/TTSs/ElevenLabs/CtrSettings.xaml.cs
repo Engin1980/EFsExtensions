@@ -59,6 +59,22 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
         get { return base.GetProperty<ElevenLabsVoice>(nameof(SelectedVoice))!; }
         set { base.UpdateProperty(nameof(SelectedVoice), value); }
       }
+
+
+      public List<string> Models
+      {
+        get { return base.GetProperty<List<string>>(nameof(Models))!; }
+        set { base.UpdateProperty(nameof(Models), value); }
+      }
+
+
+      public string SelectedModel
+      {
+        get { return base.GetProperty<string>(nameof(SelectedModel))!; }
+        set { base.UpdateProperty(nameof(SelectedModel), value); }
+      }
+
+
     }
 
     public CtrSettings(ElevenLabsTtsSettings settings)
@@ -90,6 +106,18 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       {
         this.logger.Log(ELogging.LogLevel.ERROR, $"Failed to download voices. API key issue? Reason: " + ex.Message);
       }
+
+      try
+      {
+        this.VM.Models = (await ElevenLabsTtsProvider.GetModelsAsync(this.VM.Settings.ApiKey)).OrderBy(q => q).ToList();
+        this.logger.Log(ELogging.LogLevel.INFO, $"Successfully loaded {this.VM.Models.Count} models.");
+      }
+      catch (Exception ex)
+      {
+        this.logger.Log(ELogging.LogLevel.ERROR, $"Failed to download models. API key issue? Reason: " + ex.Message);
+      }
+
+
       this.Cursor = c;
       btnReloadVoices.IsEnabled = true;
     }

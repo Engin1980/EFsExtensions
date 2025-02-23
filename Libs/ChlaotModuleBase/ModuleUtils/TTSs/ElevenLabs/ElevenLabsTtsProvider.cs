@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using static ESystem.Functions.TryCatch;
 using System.Windows.Markup;
+using System.Security.Policy;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 {
@@ -21,6 +22,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
     private const string URL = "https://api.elevenlabs.io/v1";
     private const string URL_SPEECH_SUBROUTE = "text-to-speech";
     private const string URL_VOICES_SUBROUTE = "voices";
+    private const string URL_MODELS_SUBROUTE = "models";
     private readonly HttpClient http;
     private readonly ElevenLabsTtsSettings settings;
     private List<ElevenLabsVoice>? voices = null;
@@ -46,7 +48,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       if (previousSpeeches.ContainsKey(text) == false)
       {
         string url = $"{URL}/{URL_SPEECH_SUBROUTE}/{settings.VoiceId}";
-        string body = BuildHttpGetModelJson(text);
+        string body = BuildHttpGetModelJson(text, settings.Stability, settings.Similarity, settings.Style);
         var tmp = await DownloadSpeechAsync(this.http, url, body);
         previousSpeeches[text] = tmp;
       }
@@ -60,6 +62,15 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       string url = $"{URL}/{URL_VOICES_SUBROUTE}";
       VoicesResponse tmp = await DownloadVoicesAsync(httpClient, url);
       List<ElevenLabsVoice> ret = tmp.Voices.ToList();
+      return ret;
+    }
+
+    public static async Task<List<string>> GetModelsAsync(string apiKey)
+    {
+      var httpClient = ElevenLabsTtsProvider.GetHttpClient(apiKey);
+      string url = $"{URL}/{URL_MODELS_SUBROUTE}";
+      List<string> tmp = await DownloadModelsAsync(httpClient, url);
+      List<string> ret = tmp;
       return ret;
     }
 
@@ -131,13 +142,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 
     private static async Task<byte[]> DownloadSpeechAsync(HttpClient httpClient, string url, string body)
     {
-      //using HttpClient client = new HttpClient();
-      //client.DefaultRequestHeaders.Add("xi-api-key", settings);
-
-      //var jsonContent = "{\"text\": \"Hello, world!\"}"; // Replace with actual JSON data
-      //var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-      //HttpResponseMessage response = client.PostAsync(url, content).GetAwaiter().GetResult();
-
       var requestContent = new StringContent(body, System.Text.Encoding.UTF8, "application/json");
       var response = httpClient.PostAsync(url, requestContent).GetAwaiter().GetResult();
 
@@ -152,16 +156,10 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       return ret;
     }
 
-    private HttpGetModel BuildHttpGetModel(string text)
-    {
-      HttpGetModel ret = new HttpGetModel(text);
-      return ret;
-    }
-
-    private string BuildHttpGetModelJson(string text)
+    private string BuildHttpGetModelJson(string text, double stability, double similarity_boost, double style)
     {
       string ret = Try(
-        () => ConvertObjectToJson(BuildHttpGetModel(text)),
+        () => ConvertObjectToJson(new HttpGetModel(text, VoiceSettings: new VoiceSettings(similarity_boost, stability, style))),
         e => new TtsApplicationException($"Failed to create a model for text '{text}'.", e));
       return ret;
     }
@@ -185,6 +183,25 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       {
         throw new TtsApplicationException($"Failed to convert {model.GetType().Name} to JSON.", ex);
       }
+      return ret;
+    }
+
+    private static async Task<List<string>> DownloadModelsAsync(HttpClient httpClient, string url)
+    {
+      var response = await httpClient.GetAsync(url);
+
+      if (response.StatusCode != System.Net.HttpStatusCode.OK)
+        throw new TtsApplicationException("Failed to download models.",
+          new ApplicationException($"GET request returned {response.StatusCode}:{response.Content}."));
+
+      var tmp = await Try(
+        async () => await response.Content.ReadAsStringAsync(),
+        ex => new TtsApplicationException("Failed to read POST response stream.", ex));
+
+      tmp = NormalizeSnakeCaseToUpperCase(tmp);
+
+      List<string> ret = JsonConvert.DeserializeObject<List<string>>(tmp)!;
+
       return ret;
     }
 

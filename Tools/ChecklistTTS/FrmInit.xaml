@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ChecklistTTSNew"
         xmlns:tts="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs;assembly=ChlaotModuleBase"
         mc:Ignorable="d"
-        Title="Checklist TTS - Init" Height="550" Width="800">
+        Title="Checklist TTS - Init" Height="800" Width="800">
   <DockPanel>
     <GroupBox DockPanel.Dock="Top" Header="Select checklist file:" Padding="4" Margin="4">
       <DockPanel>
