@@ -6,8 +6,8 @@
     <UseWPF>true</UseWPF>
     <PlatformTarget>x64</PlatformTarget>
     <RootNamespace>Eng.Chlaot.ChlaotModuleBase</RootNamespace>
-    <AssemblyVersion>1.1.4.18</AssemblyVersion>
-    <FileVersion>1.1.4.18</FileVersion>
+    <AssemblyVersion>1.1.4.19</AssemblyVersion>
+    <FileVersion>1.1.4.19</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="NAudio" Version="2.2.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Speech" Version="7.0.0" />
     <PackageReference Include="WindowsAPICodePack" Version="7.0.4" />
@@ -38,9 +39,6 @@
     </Reference>
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
       <HintPath>..\..\DLLs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
-    </Reference>
-    <Reference Include="NAudioCore">
-      <HintPath>..\..\DLLs\NAudioCore.dll</HintPath>
     </Reference>
   </ItemGroup>
 

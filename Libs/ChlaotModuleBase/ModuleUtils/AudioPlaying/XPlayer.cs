@@ -1,0 +1,126 @@
+﻿using NAudio.Wave;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
+{
+  public class XPlayer
+  {
+    public enum AudioFormat
+    {
+      Unknown,
+      Wav,
+      Mp3
+    }
+
+    public static AudioFormat DetectAudioFormat(byte[] data)
+    {
+      if (data == null || data.Length < 12)
+        return AudioFormat.Unknown;
+
+      // Check for WAV signature (RIFF header and WAVE format)
+      if (data.Length >= 12 &&
+          data[0] == 'R' && data[1] == 'I' && data[2] == 'F' && data[3] == 'F' &&
+          data[8] == 'W' && data[9] == 'A' && data[10] == 'V' && data[11] == 'E')
+      {
+        return AudioFormat.Wav;
+      }
+
+      // Check for MP3 signature (MPEG Audio Frame Sync or ID3 header)
+      if (data.Length >= 3 &&
+          ((data[0] == 0xFF && (data[1] & 0xE0) == 0xE0) || // Frame sync (MPEG Audio)
+           (data[0] == 'I' && data[1] == 'D' && data[2] == '3'))) // ID3 tag
+      {
+        return AudioFormat.Mp3;
+      }
+
+      return AudioFormat.Unknown;
+    }
+
+    private static MemoryStream ConvertMp3ToWav(byte[] mp3Bytes)
+    {
+      MemoryStream mp3Stream = new MemoryStream(mp3Bytes);
+      MemoryStream wavStream = new MemoryStream();
+
+      using (var mp3Reader = new Mp3FileReader(mp3Stream))
+      using (var pcmStream = WaveFormatConversionStream.CreatePcmStream(mp3Reader))
+      {
+        var waveFile = new WaveFileWriter(wavStream, pcmStream.WaveFormat);
+        pcmStream.CopyTo(waveFile);
+        waveFile.Flush();
+      }
+
+      // Reset stream position for reading
+      wavStream.Position = 0;
+
+      return wavStream;
+    }
+
+    private static int nextId = 1;
+    public int Id { get; private set; } = nextId++;
+
+    public delegate void XPlayerHandler(XPlayer sender);
+    public event XPlayerHandler? PlayCompleted;
+    public event XPlayerHandler? PlayRequested;
+    public event XPlayerHandler? PlayStarting;
+    public event XPlayerHandler? PlayStarted;
+
+    public void Play(byte[] audioData)
+    {
+      if (audioData == null) throw new ArgumentNullException(nameof(audioData));
+      var format = DetectAudioFormat(audioData);
+      if (format == AudioFormat.Mp3)
+        PlayMp3(audioData);
+      else if (format == AudioFormat.Wav)
+        PlayWav(audioData);
+      else
+        throw new ApplicationException("Audio format not recognized.");
+    }
+
+    public Task PlayAsync(byte[] audioData)
+    {
+      Task t = new(() => Play(audioData));
+      t.Start();
+      return t;
+    }
+
+    private void PlayWavStream(Stream stream)
+    {
+      using var waveOut = new WaveOutEvent();
+      var provider = new WaveFileReader(stream);
+
+      this.PlayStarting?.Invoke(this);
+      waveOut.Init(provider);
+      waveOut.PlaybackStopped += WaveOut_PlaybackStopped;
+      waveOut.Play();
+      this.PlayStarted?.Invoke(this);
+
+      // this must be here to keep "using" active, otherwise waveOut is disposed
+      while (waveOut.PlaybackState == PlaybackState.Playing)
+        Thread.Sleep(300);
+    }
+
+    private void PlayWav(byte[] audioData)
+    {
+      using var ms = new MemoryStream(audioData);
+      ms.Position = 0;
+      PlayWavStream(ms);
+    }
+
+    private void WaveOut_PlaybackStopped(object? sender, StoppedEventArgs e)
+    {
+      PlayCompleted?.Invoke(this);
+    }
+
+    private void PlayMp3(byte[] audioData)
+    {
+      Stream s = ConvertMp3ToWav(audioData);
+      PlayWavStream(s);
+    }
+  }
+}
