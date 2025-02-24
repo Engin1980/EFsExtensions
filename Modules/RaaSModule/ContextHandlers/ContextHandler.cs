@@ -44,7 +44,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
 
       Debug.Assert(synthetizer != null);
       var bytes = synthetizer!.Generate(s);
-      XPlayer player = new(bytes);
+      AudioPlayer player = new(bytes);
       player.PlayAsync();
     }
 
@@ -61,7 +61,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
       });
 
       var bytes = synthetizer!.Generate(s);
-      XPlayer player = new(bytes);
+      AudioPlayer player = new(bytes);
       player.PlayAsync();
     }
   }

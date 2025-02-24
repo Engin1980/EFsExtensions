@@ -102,7 +102,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
       if (activated != null)
       {
-        XPlayer player = new(activated.SpeechDefinition.Speech.Bytes);
+        AudioPlayer player = new(activated.SpeechDefinition.Speech.Bytes);
         player.PlayAsync();
 
         activated.RunTime.IsReadyToBeSpoken = false;

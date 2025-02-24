@@ -74,14 +74,14 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         lock (this)
         {
           byte[] playData = ResolveAndMarkNexPlayBytes(out isCurrentLastSpeechPlaying);
-          XPlayer player = new (playData);
+          AudioPlayer player = new (playData);
           player.PlayCompleted += Player_PlayCompleted;
           player.Play();
         }
         AdjustRunStates();
       }
 
-      private void Player_PlayCompleted(XPlayer sender)
+      private void Player_PlayCompleted(AudioPlayer sender)
       {
         lock (this)
         {

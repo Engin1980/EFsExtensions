@@ -39,7 +39,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
       TryPlayNext();
     }
 
-    private void Player_PlayCompleted(XPlayer sender)
+    private void Player_PlayCompleted(AudioPlayer sender)
     {
       lock (queue)
       {
@@ -62,7 +62,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
         isPlaying = true;
         byte[] bytes = queue.Dequeue();
         this.logger.Log(LogLevel.INFO, $"TryPlayNext - starting play of {bytes.Length}.");
-        XPlayer player = new(bytes);
+        AudioPlayer player = new(bytes);
         player.PlayCompleted += Player_PlayCompleted;
         player.PlayAsync();
       }
