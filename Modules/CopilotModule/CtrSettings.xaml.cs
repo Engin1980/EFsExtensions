@@ -23,6 +23,7 @@ namespace CopilotModule
   /// </summary>
   public partial class CtrSettings : Window
   {
+    private const string AUDIO_CHANNEL_NAME = AutoPlaybackManager.CHANNEL_COPILOT;
     private readonly Settings settings;
     private readonly AutoPlaybackManager autoPlaybackManager = new AutoPlaybackManager();
 
@@ -47,7 +48,7 @@ namespace CopilotModule
         Synthetizer s = new(settings.Synthetizer);
         var a = s.Generate("Transition level");
 
-        autoPlaybackManager.Enqueue(a);
+        autoPlaybackManager.Enqueue(a, AUDIO_CHANNEL_NAME);
       }
       catch (Exception ex)
       {

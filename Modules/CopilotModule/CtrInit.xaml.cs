@@ -27,6 +27,7 @@ namespace CopilotModule
   /// </summary>
   public partial class CtrInit : UserControl
   {
+    private const string AUDIO_CHANNEL_NAME = AutoPlaybackManager.CHANNEL_COPILOT;
     private readonly InitContext context;
     private string recentXmlFile = "";
     private readonly AutoPlaybackManager autoPlaybackManager = new();
@@ -70,7 +71,7 @@ namespace CopilotModule
     {
       StackPanel panel = (StackPanel)sender;
       SpeechDefinition sd = (SpeechDefinition)panel.Tag;
-      autoPlaybackManager.Enqueue(sd.Speech.Bytes);
+      autoPlaybackManager.Enqueue(sd.Speech.Bytes, AUDIO_CHANNEL_NAME);
     }
   }
 }

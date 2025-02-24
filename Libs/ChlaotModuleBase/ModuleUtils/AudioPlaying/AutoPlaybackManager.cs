@@ -11,19 +11,23 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
 {
   public class AutoPlaybackManager : IDisposable
   {
-    private readonly Queue<byte[]> queue = new();
-    private bool isPlaying = false;
+    public const string CHANNEL_COPILOT = "COPILOT";
+    public const string CHANNEL_AIRPLANE = "AIRPLANE";
+    private static int nextChannelId = 0;
     private readonly Logger logger;
+    private readonly ChannelAudioPlayer cap = new ChannelAudioPlayer();
 
     public AutoPlaybackManager()
     {
       this.logger = Logger.Create(this);
     }
 
-    public void ClearQueue()
+    public void ClearQueue(string channel)
     {
-      this.logger.Log(LogLevel.INFO, "ClearQueue() requested.");
-      this.queue.Clear();
+      if (channel == null) throw new ArgumentNullException(nameof(channel));
+      this.logger.Log(LogLevel.INFO, $"ClearQueue() over channel '{channel}' requested.");
+      this.cap.Clear(channel);
+      this.logger.Log(LogLevel.INFO, $"ClearQueue() over channel '{channel}' completed.");
     }
 
     public void Dispose()
@@ -32,40 +36,11 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
       GC.SuppressFinalize(this);
     }
 
-    public void Enqueue(byte[] bytes)
+    public void Enqueue(byte[] bytes, string? channel)
     {
-      this.queue.Enqueue(bytes ?? throw new ArgumentNullException(nameof(bytes)));
-      this.logger.Log(LogLevel.INFO, $"Enqueueing {bytes.Length} bytes.");
-      TryPlayNext();
-    }
-
-    private void Player_PlayCompleted(AudioPlayer sender)
-    {
-      lock (queue)
-      {
-        isPlaying = false;
-        TryPlayNext();
-      }
-    }
-
-    private void TryPlayNext()
-    {
-      this.logger.Log(LogLevel.INFO, $"TryPlayNext invoked.");
-      lock (queue)
-      {
-        if (isPlaying || queue.Count == 0)
-        {
-          this.logger.Log(LogLevel.INFO, $"TryPlayNext - nothing to play, return.");
-          return;
-        }
-
-        isPlaying = true;
-        byte[] bytes = queue.Dequeue();
-        this.logger.Log(LogLevel.INFO, $"TryPlayNext - starting play of {bytes.Length}.");
-        AudioPlayer player = new(bytes);
-        player.PlayCompleted += Player_PlayCompleted;
-        player.PlayAsync();
-      }
+      channel ??= $"Generated_{nextChannelId++}";
+      this.logger.Log(LogLevel.INFO, $"Enqueueing {bytes.Length} bytes in channel '{channel}'.");
+      this.cap.PlayAsync(bytes, channel);
     }
   }
 }

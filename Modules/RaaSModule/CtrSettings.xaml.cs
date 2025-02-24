@@ -5,7 +5,9 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing.Text;
 using System.Linq;
+using System.Printing;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -24,6 +26,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.CopilotModule
   /// </summary>
   public partial class CtrSettings : Window
   {
+    private const string AUDIO_CHANNEL_NAME = AutoPlaybackManager.CHANNEL_AIRPLANE;
     private readonly Settings settings;
     private readonly AutoPlaybackManager autoPlaybackManager = new AutoPlaybackManager();
 
@@ -48,7 +51,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.CopilotModule
         Synthetizer s = new(settings.Synthetizer);
         var a = s.Generate("Transition level");
 
-        autoPlaybackManager.Enqueue(a);
+        autoPlaybackManager.Enqueue(a, AUDIO_CHANNEL_NAME);
       }
       catch (Exception ex)
       {

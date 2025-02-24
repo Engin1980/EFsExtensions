@@ -29,6 +29,7 @@ namespace ChecklistModule
   /// </summary>
   public partial class CtrInit : UserControl
   {
+    private const string AUDIO_CHANNEL_NAME = AutoPlaybackManager.CHANNEL_COPILOT;
     private readonly InitContext context;
     private readonly AutoPlaybackManager autoPlaybackManager;
     private string recentXmlFile = "";
@@ -75,18 +76,18 @@ namespace ChecklistModule
     {
       Label lbl = (Label)sender;
       CheckListVM vm = (CheckListVM)lbl.Tag;
-      this.autoPlaybackManager.ClearQueue();
-      this.autoPlaybackManager.Enqueue(vm.CheckList.EntrySpeechBytes);
-      this.autoPlaybackManager.Enqueue(vm.CheckList.ExitSpeechBytes);
+      this.autoPlaybackManager.ClearQueue(AUDIO_CHANNEL_NAME);
+      this.autoPlaybackManager.Enqueue(vm.CheckList.EntrySpeechBytes, AUDIO_CHANNEL_NAME);
+      this.autoPlaybackManager.Enqueue(vm.CheckList.ExitSpeechBytes, AUDIO_CHANNEL_NAME);
     }
 
     private void lblItem_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
     {
       Label lbl = (Label)sender;
       CheckItemVM vm = (CheckItemVM)lbl.Tag;
-      this.autoPlaybackManager.ClearQueue();
-      this.autoPlaybackManager.Enqueue(vm.CheckItem.Call.Bytes);
-      this.autoPlaybackManager.Enqueue(vm.CheckItem.Confirmation.Bytes);
+      this.autoPlaybackManager.ClearQueue(AUDIO_CHANNEL_NAME);
+      this.autoPlaybackManager.Enqueue(vm.CheckItem.Call.Bytes, AUDIO_CHANNEL_NAME);
+      this.autoPlaybackManager.Enqueue(vm.CheckItem.Confirmation.Bytes, AUDIO_CHANNEL_NAME);
     }
   }
 }
