@@ -2,34 +2,28 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
 {
-  public class ChannelledXPlayer
+  public class ChannelXPlayer
   {
-    private class ChannelInfo
+    private class ChannelPlayerInfo : IDisposable
     {
       private const int INT_TRUE = 1;
       private const int INT_FALSE = 0;
       private readonly string channel;
-      private readonly ChannelledXPlayer parent;
+      private readonly ChannelXPlayer parent;
       private readonly ConcurrentQueue<byte[]> audioDatas = new();
-      private readonly XPlayer player;
-      private readonly object lck = new();
       private int isPlayingFlag = INT_FALSE;
 
-      public ChannelInfo(ChannelledXPlayer parent, string channel)
+      internal ChannelPlayerInfo(ChannelXPlayer parent, string channel)
       {
         this.channel = channel;
-        this.parent = parent;
-        this.player = new();
-        player.PlayStarting += Player_PlayStarting;
-        player.PlayStarted += Player_PlayStarted;
-        player.PlayCompleted += Player_PlayCompleted;
-        player.PlayRequested += Player_PlayRequested;
+        this.parent = parent;        
       }
 
       internal void Add(byte[] audioData)
@@ -41,6 +35,11 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
       {
         this.Add(audioData);
         this.Play();
+      }
+
+      internal void Clear()
+      {
+        this.audioDatas.Clear();
       }
 
       internal void Play()
@@ -55,12 +54,17 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
 
         if (audioDatas.TryDequeue(out byte[]? next))
         {
-          player.PlayAsync(next);
+          XPlayer player = new(next);
+          player.PlayStarting += Player_PlayStarting;
+          player.PlayStarted += Player_PlayStarted;
+          player.PlayCompleted += Player_PlayCompleted;
+          player.PlayRequested += Player_PlayRequested;
+          player.PlayAsync();
         }
         else
         {
           Interlocked.Exchange(ref this.isPlayingFlag, INT_FALSE);
-          this.parent.PlayAllCompleted?.Invoke(this.parent, this.channel);
+          this.parent.PlayChannelCompleted?.Invoke(this.parent, this.channel);
         }
       }
 
@@ -85,20 +89,26 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
       {
         this.parent.PlayInitializing?.Invoke(this.parent, this.channel);
       }
+
+      public void Dispose()
+      {
+        throw new NotImplementedException();
+      }
     }
 
-    private readonly ConcurrentDictionary<string, ChannelInfo> channels = new();
+    private readonly ConcurrentDictionary<string, ChannelPlayerInfo> channels = new();
 
-    public delegate void ChannelHandler(ChannelledXPlayer player, string channel);
+    public delegate void ChannelHandler(ChannelXPlayer player, string channel);
     public event ChannelHandler? PlayRequested;
     public event ChannelHandler? PlayInitializing;
     public event ChannelHandler? PlayStarted;
     public event ChannelHandler? PlayCompleted;
-    public event ChannelHandler? PlayAllCompleted;
+    public event ChannelHandler? PlayChannelCompleted;
+    public event ChannelHandler? ClearChannelCompleted;
 
     public void Play(byte[] audioData, string channelName)
     {
-      ChannelInfo ci = channels.GetOrAdd(channelName, _ => new ChannelInfo(this, channelName));
+      ChannelPlayerInfo ci = channels.GetOrAdd(channelName, _ => new ChannelPlayerInfo(this, channelName));
       ci.AddAndPlay(audioData);
     }
 
@@ -107,6 +117,13 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
       Task t = new(() => Play(audioData, channelName));
       t.Start();
       return t;
+    }
+
+    public void Clear(string channelName)
+    {
+      ChannelPlayerInfo ci = channels.GetOrAdd(channelName, _ => new ChannelPlayerInfo(this, channelName));
+      ci.Clear();
+      this.ClearChannelCompleted?.Invoke(this, channelName);
     }
   }
 }

@@ -44,8 +44,8 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
 
       Debug.Assert(synthetizer != null);
       var bytes = synthetizer!.Generate(s);
-      EPlayer player = new(bytes);
-      player.PlayAsynchronously();
+      XPlayer player = new(bytes);
+      player.PlayAsync();
     }
 
     protected void Say(RaasSpeech speech, RaasDistance candidateDistance)
@@ -61,8 +61,8 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
       });
 
       var bytes = synthetizer!.Generate(s);
-      EPlayer player = new(bytes);
-      player.PlayAsynchronously();
+      XPlayer player = new(bytes);
+      player.PlayAsync();
     }
   }
 }

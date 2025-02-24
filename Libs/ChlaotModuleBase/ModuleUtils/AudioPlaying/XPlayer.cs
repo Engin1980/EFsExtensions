@@ -61,8 +61,10 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
       return wavStream;
     }
 
+    private const int SLEEP_INTERVAL_IN_PLAY_TEST_WHILE = 300;
     private static int nextId = 1;
     public int Id { get; private set; } = nextId++;
+    private readonly byte[] audioData;
 
     public delegate void XPlayerHandler(XPlayer sender);
     public event XPlayerHandler? PlayCompleted;
@@ -70,7 +72,12 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
     public event XPlayerHandler? PlayStarting;
     public event XPlayerHandler? PlayStarted;
 
-    public void Play(byte[] audioData)
+    public XPlayer(byte[] audioData)
+    {
+      this.audioData = audioData;
+    }
+
+    public void Play()
     {
       if (audioData == null) throw new ArgumentNullException(nameof(audioData));
       var format = DetectAudioFormat(audioData);
@@ -82,9 +89,9 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
         throw new ApplicationException("Audio format not recognized.");
     }
 
-    public Task PlayAsync(byte[] audioData)
+    public Task PlayAsync()
     {
-      Task t = new(() => Play(audioData));
+      Task t = new(() => Play());
       t.Start();
       return t;
     }
@@ -92,7 +99,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
     private void PlayWavStream(Stream stream)
     {
       using var waveOut = new WaveOutEvent();
-      var provider = new WaveFileReader(stream);
+      using var provider = new WaveFileReader(stream);
 
       this.PlayStarting?.Invoke(this);
       waveOut.Init(provider);
@@ -102,7 +109,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
 
       // this must be here to keep "using" active, otherwise waveOut is disposed
       while (waveOut.PlaybackState == PlaybackState.Playing)
-        Thread.Sleep(300);
+        Thread.Sleep(SLEEP_INTERVAL_IN_PLAY_TEST_WHILE);
     }
 
     private void PlayWav(byte[] audioData)

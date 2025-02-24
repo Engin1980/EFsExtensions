@@ -102,8 +102,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
       if (activated != null)
       {
-        EPlayer player = new(activated.SpeechDefinition.Speech.Bytes);
-        player.PlayAsynchronously();
+        XPlayer player = new(activated.SpeechDefinition.Speech.Bytes);
+        player.PlayAsync();
 
         activated.RunTime.IsReadyToBeSpoken = false;
         this.logger.Invoke(LogLevel.DEBUG,
