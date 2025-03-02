@@ -89,9 +89,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     internal void Stop()
     {
-      throw new NotImplementedException();
-      //this.simConManager.SimSecondElapsed -= SimConManager_SimSecondElapsed;
-      //Log(LogLevel.INFO, "Stopped");
+      // intentionally blank; Run does "StartAsync()", once started, repeated start does nothing
+      Log(LogLevel.INFO, "Stopped");
     }
 
     private void EvaluateActives(IEnumerable<SpeechDefinitionVM> readys)

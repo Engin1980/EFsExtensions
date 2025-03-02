@@ -50,7 +50,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders
       }
       catch (Exception ex)
       {
-        var tmp =new ApplicationException("Unexpected exception when starting simcon on background.", ex);
+        var tmp = new ApplicationException("Unexpected exception when starting simcon on background.", ex);
         OpeningFailed?.Invoke(tmp);
         connectionTimer.Interval = REPEATED_CONNECTION_DELAY; // also resets timer countdown
         connectionTimer.Start();
@@ -62,6 +62,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders
 
     public void OpenAsync()
     {
+      if (this.IsOpened) return;
       lock (this)
       {
         if (this.IsOpening) return;
