@@ -3,6 +3,7 @@ using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
 using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using ESystem.Asserting;
 using System;
+using System.Timers;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
@@ -17,6 +18,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       private bool isMainLoopAbortRequested = false;
       private bool isMainLoopActive = false;
       private bool isCurrentLastSpeechPlaying = false;
+      private Timer? pendingChecklistTimer = null;
       private readonly bool readConfirmations;
       public event Action? ChecklistPlayingCompleted;
       public bool IsWaitingForNextChecklist { get => currentItemIndex == 0 && isEntryPlayed == false; }
@@ -74,7 +76,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         lock (this)
         {
           byte[] playData = ResolveAndMarkNexPlayBytes(out isCurrentLastSpeechPlaying);
-          AudioPlayer player = new (playData);
+          AudioPlayer player = new(playData);
           player.PlayCompleted += Player_PlayCompleted;
           player.Play();
         }
@@ -91,6 +93,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
             {
               isMainLoopActive = false;
               isMainLoopAbortRequested = false;
+              this.EnablePendingChecklistTimer();
             }
             else if (isCurrentLastSpeechPlaying)
             {
@@ -105,12 +108,42 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         }
       }
 
+      private void PendingChecklistTimer_Elapsed(object? sender, ElapsedEventArgs e)
+      {
+        byte[] playData = System.IO.File.ReadAllBytes("R:\\ding.mp3");
+        AudioPlayer player = new(playData);
+        player.PlayAsync();
+      }
+
       public void Reset()
       {
         this.currentItemIndex = 0;
         this.isCallPlayed = false;
         this.isEntryPlayed = false;
         this.Current.Items.ForEach(q => q.RunTime.State = RunState.NotYet);
+        this.DisablePendingChecklistTimer();
+      }
+
+      private void DisablePendingChecklistTimer()
+      {
+        if (this.pendingChecklistTimer != null)
+        {
+          // TODO can here be multithread issue?
+          this.pendingChecklistTimer.Stop();
+          this.pendingChecklistTimer = null;
+        }
+      }
+
+      private void EnablePendingChecklistTimer()
+      {
+        if (this.pendingChecklistTimer != null) return;
+        // TODO can here be multithread issue?
+        this.pendingChecklistTimer = new Timer(5000)
+        {
+          AutoReset = true
+        };
+        this.pendingChecklistTimer.Elapsed += PendingChecklistTimer_Elapsed;
+        this.pendingChecklistTimer.Start();
       }
 
       public void Play()
@@ -119,6 +152,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         {
           if (!isMainLoopActive)
           {
+            this.DisablePendingChecklistTimer();
             this.Current.RunTime.CanBeAutoplayed = false;
             this.isMainLoopActive = true;
             PlayNext();
