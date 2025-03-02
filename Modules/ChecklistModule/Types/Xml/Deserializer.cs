@@ -41,6 +41,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.Xml
         .WithCustomTargetType(typeof(CheckList))
         .WithIgnoredProperty(nameof(CheckList.EntrySpeechBytes))
         .WithIgnoredProperty(nameof(CheckList.ExitSpeechBytes))
+        .WithIgnoredProperty(nameof(CheckList.PausedAlertSpeechBytes))
         .WithCustomPropertyDeserialization(
           nameof(CheckList.Items),
           EXmlHelper.List.CreateForNested<CheckItem>("items", "item"))

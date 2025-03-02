@@ -32,6 +32,7 @@
       <xsd:element name="trigger" minOccurs="0" maxOccurs="1" type="g:stateCheckConditionTop"/>      
       <xsd:element name="customEntrySpeech" minOccurs="0" maxOccurs="1" type="g:speech"/>
       <xsd:element name="customExitSpeech" minOccurs="0" maxOccurs="1" type="g:speech"/>
+      <xsd:element name="customPausedAlertSpeech" minOccurs="0" maxOccurs="1" type="g:speech"/>
     </xsd:choice>
     <xsd:attribute name="id" type="g:nonemptyString" use="required"/>
     <xsd:attribute name="callSpeech" type="g:nonemptyString" use="optional"/>

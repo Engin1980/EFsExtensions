@@ -23,10 +23,12 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types
     public List<CheckList> NextChecklists { get; set; } = null!;
     public byte[] EntrySpeechBytes { get; set; } = null!; //xml-ignored
     public byte[] ExitSpeechBytes { get; set; } = null!; // xml-ignored
+    public byte[] PausedAlertSpeechBytes { get; set; } = null!; //xml-ignored
     public List<Variable> Variables { get; set; } = new();
     public IStateCheckItem? Trigger { get; set; } = null;
     public CheckDefinition CustomEntrySpeech { get; set; } = null!;
     public CheckDefinition CustomExitSpeech { get; set; } = null!;
+    public CheckDefinition CustomPausedAlertSpeech { get; set; } = null!;
 
     public void PostDeserialize()
     {

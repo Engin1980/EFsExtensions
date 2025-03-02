@@ -93,6 +93,21 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(ReadConfirmations), value);
     }
 
+
+    public bool AlertOnPausedChecklist
+    {
+      get { return base.GetProperty<bool>(nameof(AlertOnPausedChecklist))!; }
+      set { base.UpdateProperty(nameof(AlertOnPausedChecklist), value); }
+    }
+
+
+    public int PausedChecklistAlertInterval
+    {
+      get { return base.GetProperty<int>(nameof(PausedChecklistAlertInterval))!; }
+      set { base.UpdateProperty(nameof(PausedChecklistAlertInterval), Math.Max(0, value)); }
+    }
+
+
     public KeyShortcuts Shortcuts { get; set; } = new()
     {
       PlayPause = new KeyShortcut(true, false, false, Key.X),
@@ -105,6 +120,11 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     {
       get => base.GetProperty<bool>(nameof(UseAutoplay))!;
       set => base.UpdateProperty(nameof(UseAutoplay), value);
+    }
+
+    public Settings()
+    {
+      this.PausedChecklistAlertInterval = 30;
     }
 
     public static Settings Load()

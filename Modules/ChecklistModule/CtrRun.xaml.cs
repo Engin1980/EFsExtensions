@@ -25,18 +25,16 @@ namespace ChecklistModule
   /// </summary>
   public partial class CtrRun : UserControl
   {
-    private readonly RunContext context;
+    private readonly RunContext context = null!;
 
     public CtrRun()
     {
       InitializeComponent();
-      this.context = null!;
     }
 
     internal CtrRun(RunContext context) : this()
     {
-      this.context = context;
-      this.DataContext = context;
+      this.DataContext = this.context = context;
 
       var keyHookWrapper = new KeyHookWrapper();
       this.context.Run(keyHookWrapper);

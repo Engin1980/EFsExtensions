@@ -78,6 +78,7 @@ namespace ChecklistModule
       CheckListVM vm = (CheckListVM)lbl.Tag;
       this.autoPlaybackManager.ClearQueue(AUDIO_CHANNEL_NAME);
       this.autoPlaybackManager.Enqueue(vm.CheckList.EntrySpeechBytes, AUDIO_CHANNEL_NAME);
+      this.autoPlaybackManager.Enqueue(vm.CheckList.PausedAlertSpeechBytes, AUDIO_CHANNEL_NAME);
       this.autoPlaybackManager.Enqueue(vm.CheckList.ExitSpeechBytes, AUDIO_CHANNEL_NAME);
     }
 

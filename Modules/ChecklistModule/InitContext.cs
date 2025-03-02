@@ -322,6 +322,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         checklist.CustomExitSpeech != null
         ? checklist.CustomExitSpeech.Bytes
         : synthetizer.Generate($"{checklist.CallSpeech} checklist completed");
+      checklist.PausedAlertSpeechBytes =
+        checklist.CustomPausedAlertSpeech != null
+        ? checklist.CustomPausedAlertSpeech.Bytes
+        : synthetizer.Generate($"{checklist.CallSpeech} pending");
     }
 
     private void InitializeSoundStreamsForItems(

@@ -20,14 +20,16 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       private bool isCurrentLastSpeechPlaying = false;
       private Timer? pendingChecklistTimer = null;
       private readonly bool readConfirmations;
+      private readonly int? pausedAlertIntervalIfUsed;
       public event Action? ChecklistPlayingCompleted;
       public bool IsWaitingForNextChecklist { get => currentItemIndex == 0 && isEntryPlayed == false; }
       public bool IsPartlyPlayed => currentItemIndex > 0;
 
-      internal PlaybackManager(CheckListVM initialChecklist, bool readConfirmations)
+      internal PlaybackManager(CheckListVM initialChecklist, bool readConfirmations, int? pausedAlertIntervalIfUsed)
       {
         EAssert.Argument.IsNotNull(initialChecklist, nameof(initialChecklist));
         this.readConfirmations = readConfirmations;
+        this.pausedAlertIntervalIfUsed = pausedAlertIntervalIfUsed;
         this.Current = initialChecklist;
         this.SetCurrent(this.Current); // ensures correct initialization
       }
@@ -110,7 +112,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
       private void PendingChecklistTimer_Elapsed(object? sender, ElapsedEventArgs e)
       {
-        byte[] playData = System.IO.File.ReadAllBytes("R:\\ding.mp3");
+        byte[] playData = this.Current.CheckList.PausedAlertSpeechBytes;
         AudioPlayer player = new(playData);
         player.PlayAsync();
       }
@@ -136,9 +138,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
       private void EnablePendingChecklistTimer()
       {
+        if (this.pausedAlertIntervalIfUsed == null) return;
         if (this.pendingChecklistTimer != null) return;
         // TODO can here be multithread issue?
-        this.pendingChecklistTimer = new Timer(5000)
+        this.pendingChecklistTimer = new Timer(this.pausedAlertIntervalIfUsed.Value)
         {
           AutoReset = true
         };

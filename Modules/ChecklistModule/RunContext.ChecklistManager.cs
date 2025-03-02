@@ -26,7 +26,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       private readonly PropertyVMS propertyVMs;
 
       internal ChecklistManager(PropertyVMS propertyVMs, List<CheckListVM> checkListViews, SimObject simObject,
-        bool useAutoplay, bool readConfirmations)
+        bool useAutoplay, bool readConfirmations, int? pausedAlertIntervalIfUsed)
       {
         EAssert.Argument.IsNotNull(propertyVMs, nameof(propertyVMs));
         EAssert.Argument.IsNotNull(checkListViews, nameof(checkListViews));
@@ -43,7 +43,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         this.isAutoplayingEnabled = useAutoplay;
         this.simObject = simObject;
 
-        this.playbackManager = new(this.current, readConfirmations);
+        this.playbackManager = new(this.current, readConfirmations, pausedAlertIntervalIfUsed);
         this.playbackManager.ChecklistPlayingCompleted += PlaybackManager_ChecklistPlayingCompleted;
       }
 
