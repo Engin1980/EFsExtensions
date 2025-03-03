@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Eng.Chlaot.Modules.RaaSModule.CopilotModule"
         mc:Ignorable="d"
-        Title="CtrSettings" Height="296" Width="800" 
+        Title="RaaS Settings" Height="296" Width="800" 
         SizeToContent="WidthAndHeight"
         Closed="Window_Closed">
   <StackPanel Margin="0,0,0,2">
@@ -47,14 +47,14 @@
           <RowDefinition />
         </Grid.RowDefinitions>
 
-        <Label Content="Auto loaded Airports File" Grid.Row="0" Grid.Column="0" />
+        <Label Content="Default Airports File" Grid.Row="0" Grid.Column="0" />
         <TextBox Text="{Binding AutoLoadedAirportsFile}" Grid.Row="0" Grid.Column="1"  Margin="0 8 0 0" />
         <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="2">
           <Button x:Name="btnAirportsFile" Click="btnAirportsFile_Click">(Browse)</Button>
           <Button x:Name="btnAirportsFileDelete" Click="btnAirportsFileDelete_Click">(Remove)</Button>
         </StackPanel>
 
-        <Label Content="Auto loaded RaaS File" Grid.Row="1" Grid.Column="0" />
+        <Label Content="Default RaaS File" Grid.Row="1" Grid.Column="0" />
         <TextBox Text="{Binding AutoLoadedRaasFile}" Grid.Row="1" Grid.Column="1"  Margin="0 8 0 0" />
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2">
           <Button x:Name="btnRaasFile" Click="btnRaasFile_Click">(Browse)</Button>
@@ -79,6 +79,7 @@
                 <RowDefinition />
                 <RowDefinition />
                 <RowDefinition />
+                <RowDefinition />
               </Grid.RowDefinitions>
 
               <Label Grid.Row="0" Grid.Column="0" FontWeight="Bold" Background="LightGray">Property</Label>
@@ -97,33 +98,27 @@
                 Min ortho-distance from rwy center to evaluate announcements. Default: 40.
               </Label>
 
-              <Label Grid.Row="5" Grid.Column="0">Max ortho-distance (m)</Label>
-              <TextBox Grid.Row="5" Grid.Column="1" TextAlignment="Right" Text="{Binding TooFarOrthoDistance}" />
-              <Label Grid.Row="5" Grid.Column="2">
-                Max ortho-distance from rwy center to evaluate announcements. Also resets previous announcement. Default: 250.
-              </Label>
-
-              <Label Grid.Row="2" Grid.Column="0" Background="Linen">Short/Long rwy threshold (m)</Label>
-              <TextBox Grid.Row="2" Grid.Column="1" TextAlignment="Right" Text="{Binding ShortLongRunwayLengthThreshold}"/>
-              <Label Grid.Row="2" Grid.Column="2" Background="Linen">
+              <Label Grid.Row="3" Grid.Column="0" Background="Linen">Short/Long rwy threshold (m)</Label>
+              <TextBox Grid.Row="3" Grid.Column="1" TextAlignment="Right" Text="{Binding ShortLongRunwayLengthThreshold}"/>
+              <Label Grid.Row="3" Grid.Column="2" Background="Linen">
                 Delimiter between short and long runway, in meters. Default: 1200.
               </Label>
 
-              <Label Grid.Row="3" Grid.Column="0">Announce long rwy rtho-distance (m)</Label>
-              <TextBox Grid.Row="3" Grid.Column="1" TextAlignment="Right" Text="{Binding AnnounceOrthoDistanceShortRwy}" />
-              <Label Grid.Row="3" Grid.Column="2">
+              <Label Grid.Row="4" Grid.Column="0">Announce long rwy otho-distance (m)</Label>
+              <TextBox Grid.Row="4" Grid.Column="1" TextAlignment="Right" Text="{Binding AnnounceOrthoDistanceShortRwy}" />
+              <Label Grid.Row="4" Grid.Column="2">
                 Expected ortho-distance from short rwy to invoke announcement. Default: 60.
               </Label>
 
-              <Label Grid.Row="4" Grid.Column="0" Background="Linen">Announce short rwy ortho-Distance (m)</Label>
-              <TextBox Grid.Row="4" Grid.Column="1" TextAlignment="Right" Text="{Binding AnnounceOrthoDistanceLongRwy}" />
-              <Label Grid.Row="4" Grid.Column="2" Background="Linen">
+              <Label Grid.Row="5" Grid.Column="0" Background="Linen">Announce short rwy ortho-distance (m)</Label>
+              <TextBox Grid.Row="5" Grid.Column="1" TextAlignment="Right" Text="{Binding AnnounceOrthoDistanceLongRwy}" />
+              <Label Grid.Row="5" Grid.Column="2" Background="Linen">
                 Expected ortho-distance from long rwy to invoke announcement. Default: 90.
               </Label>
 
-              <Label Grid.Row="5" Grid.Column="0">Max ortho-distance (m)</Label>
-              <TextBox Grid.Row="5" Grid.Column="1" TextAlignment="Right" Text="{Binding TooFarOrthoDistance}" />
-              <Label Grid.Row="5" Grid.Column="2">
+              <Label Grid.Row="6" Grid.Column="0" >Max ortho-distance (m)</Label>
+              <TextBox Grid.Row="6" Grid.Column="1" TextAlignment="Right" Text="{Binding TooFarOrthoDistance}" />
+              <Label Grid.Row="6" Grid.Column="2">
                 Max ortho-distance from rwy center to evaluate announcements. Also resets previous announcement. Default: 250.
               </Label>
 

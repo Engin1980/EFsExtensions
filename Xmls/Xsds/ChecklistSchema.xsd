@@ -36,8 +36,6 @@
     </xsd:choice>
     <xsd:attribute name="id" type="g:nonemptyString" use="required"/>
     <xsd:attribute name="callSpeech" type="g:nonemptyString" use="optional"/>
-    <xsd:attribute name="beginCallFile" type="g:nonemptyString" use="optional"/>
-    <xsd:attribute name="endCallFile" type="g:nonemptyString" use="optional"/>
     <xsd:attribute name="nextChecklistIds" type="checklistIds" use="optional"/>
   </xsd:complexType>
 
