@@ -28,6 +28,25 @@
         <TextBox Text="{Binding OutputPath}" IsReadOnly="True" Padding="0 4 0 0" />
       </DockPanel>
     </GroupBox>
+    <GroupBox Header="Speeches:" DockPanel.Dock="Bottom">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Label Content="Checklist Startup Speech" Grid.Row="0" Grid.Column="0" />
+        <TextBox Text="??" Grid.Row="0" Grid.Column="1" />
+        <Label Content="Checklist Completed Speech" Grid.Row="1" Grid.Column="0" />
+        <TextBox Text="??" Grid.Row="1" Grid.Column="1" />
+        <Label Content="Checklist Paused Alert Speech" Grid.Row="2" Grid.Column="0" />
+        <TextBox Text="??" Grid.Row="2" Grid.Column="1" />
+      </Grid>
+    </GroupBox>
     <GroupBox Header="Select TTS module:">
       <tts:CtrTtsModuleSelector x:Name="ctrTtss" />
     </GroupBox>

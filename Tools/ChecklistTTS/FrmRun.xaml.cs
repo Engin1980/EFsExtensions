@@ -36,6 +36,9 @@ namespace ChecklistTTS
     private string checklistOutputFile = null!;
     private string checklistInputFile = null!;
     private ITtsProvider ttsProvider = null!;
+    private string checklistStartupSpeech;
+    private string checklistCompletedSpeech;
+    private string checklistPausedAlertSpeech;
 
     public FrmRun()
     {
@@ -62,6 +65,9 @@ namespace ChecklistTTS
         this.outputPath,
         System.IO.Path.GetFileName(initVm.ChecklistFileName));
       this.checklistInputFile = initVm.ChecklistFileName;
+      this.checklistCompletedSpeech = initVm.ChecklistCompletedSpeech;
+      this.checklistStartupSpeech = initVm.ChecklistStartupSpeech;
+      this.checklistPausedAlertSpeech = initVm.ChecklistPausedAlertSpeech;
     }
 
     internal async Task RunAsync()
@@ -116,6 +122,32 @@ namespace ChecklistTTS
           item.State = ProcessState.Failed;
         }
       }
+
+      var ch = checklist.CheckList;
+
+      Log(1, $"Converting entry/startup speech");
+      ch.CustomEntrySpeech ??= new CheckDefinition()
+      {
+        Type = CheckDefinition.CheckDefinitionType.Speech,
+        Value = this.checklistStartupSpeech.Replace("%id", ch.Id)
+      };
+      await ConvertSpeechAsync(ch.CustomEntrySpeech, dct);
+
+      Log(1, $"Converting complete speech");
+      ch.CustomExitSpeech ??= new CheckDefinition()
+      {
+        Type = CheckDefinition.CheckDefinitionType.Speech,
+        Value = this.checklistCompletedSpeech.Replace("%id", ch.Id)
+      };
+      await ConvertSpeechAsync(ch.CustomExitSpeech, dct);
+
+      Log(1, $"Converting pause-alert speech");
+      ch.CustomPausedAlertSpeech ??= new CheckDefinition()
+      {
+        Type = CheckDefinition.CheckDefinitionType.Speech,
+        Value = this.checklistPausedAlertSpeech.Replace("%id", ch.Id)
+      };
+      await ConvertSpeechAsync(ch.CustomPausedAlertSpeech, dct);
     }
 
     private async Task ConvertChecklistItemAsync(CheckItemVM item, Dictionary<string, string> dct)

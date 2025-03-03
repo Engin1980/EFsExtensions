@@ -11,6 +11,7 @@ using Newtonsoft.Json.Serialization;
 using static ESystem.Functions.TryCatch;
 using System.Windows.Markup;
 using System.Security.Policy;
+using System.Linq.Expressions;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
 {
@@ -25,7 +26,6 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
     private const string URL_MODELS_SUBROUTE = "models";
     private readonly HttpClient http;
     private readonly ElevenLabsTtsSettings settings;
-    private List<ElevenLabsVoice>? voices = null;
     private readonly Dictionary<string, byte[]> previousSpeeches = new();
 
     #endregion Fields
@@ -146,8 +146,28 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
       var response = httpClient.PostAsync(url, requestContent).GetAwaiter().GetResult();
 
       if (!response.IsSuccessStatusCode)
-        throw new TtsApplicationException("Failed to download speech.",
-          new ApplicationException($"POST request returned {response.StatusCode}:{response.Content}."));
+      {
+        string errMsg;
+        try
+        {
+          var jsonResponse = await response.Content.ReadAsStringAsync();
+          var json = ESystem.Json.EJObject.Parse(jsonResponse);
+          var detail = json["detail"].AsDict();
+          var status = detail["status"].AsString();
+          var msg = detail["message"].AsString();
+          errMsg = $"Status: {status} // Message: {msg}";
+        }
+        catch (Exception e)
+        {
+          errMsg = $"Failed to obtain more details. : " + e.Message;
+        }
+        var ex = new TtsApplicationException(errMsg);
+        var exex = new TtsApplicationException(
+          $"POST request returned {response.StatusCode}:{response.Content}.", ex);
+        var exexex = new TtsApplicationException(
+          "Failed to download speech.", exex);
+        throw exexex;
+      }
 
       var ret = await Try(
         async () => await response.Content.ReadAsByteArrayAsync(),

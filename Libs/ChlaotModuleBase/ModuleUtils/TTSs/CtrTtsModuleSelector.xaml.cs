@@ -1,4 +1,5 @@
 ﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.Players;
+using ESystem;
 using NAudio.Wave;
 using System;
 using System.Collections.Generic;
@@ -108,7 +109,18 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
       }
       ITtsProvider provider = ttsModule.GetProvider(settings);
 
-      speechBytes = provider.ConvertAsync(speechText).GetAwaiter().GetResult();
+      try
+      {
+        speechBytes = provider.ConvertAsync(speechText).GetAwaiter().GetResult();
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show("Failed to create/download speech. \n\n" + ex.GetFullMessage("\n\n"),
+          "Failed to generate speech...",
+           MessageBoxButton.OK,
+           MessageBoxImage.Error);
+        return;
+      }
 
       PlayHandler.Play(speechBytes);
     }

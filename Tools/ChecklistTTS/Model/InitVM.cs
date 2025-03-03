@@ -36,6 +36,30 @@ namespace ChecklistTTS.Model
     public InitVM()
     {
       OutputPath = ".";
+      ChecklistStartupSpeech = "%id checklist";
+      ChecklistCompletedSpeech = "%id checklist completed";
+      ChecklistPausedAlertSpeech = "%id checklist pending";
+    }
+
+
+    public string ChecklistStartupSpeech
+    {
+      get { return base.GetProperty<string>(nameof(ChecklistStartupSpeech))!; }
+      set { base.UpdateProperty(nameof(ChecklistStartupSpeech), value); }
+    }
+
+
+    public string ChecklistCompletedSpeech
+    {
+      get { return base.GetProperty<string>(nameof(ChecklistCompletedSpeech))!; }
+      set { base.UpdateProperty(nameof(ChecklistCompletedSpeech), value); }
+    }
+
+
+    public string ChecklistPausedAlertSpeech
+    {
+      get { return base.GetProperty<string>(nameof(ChecklistPausedAlertSpeech))!; }
+      set { base.UpdateProperty(nameof(ChecklistPausedAlertSpeech), value); }
     }
   }
 }
