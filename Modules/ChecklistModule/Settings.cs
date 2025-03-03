@@ -125,6 +125,9 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     public Settings()
     {
       this.PausedChecklistAlertInterval = 30;
+      this.UseAutoplay = true;
+      this.ReadConfirmations = true;
+      this.AlertOnPausedChecklist = true;
     }
 
     public static Settings Load()

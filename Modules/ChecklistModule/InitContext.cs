@@ -325,7 +325,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       checklist.PausedAlertSpeechBytes =
         checklist.CustomPausedAlertSpeech != null
         ? checklist.CustomPausedAlertSpeech.Bytes
-        : synthetizer.Generate($"{checklist.CallSpeech} pending");
+        : synthetizer.Generate($"{checklist.CallSpeech} checklist pending");
     }
 
     private void InitializeSoundStreamsForItems(

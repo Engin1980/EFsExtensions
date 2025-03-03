@@ -48,13 +48,13 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
     #region Public Properties
 
-    internal CheckListVM EvaluatorRecentResultChecklistVM
+    public CheckListVM EvaluatorRecentResultChecklistVM
     {
       get => base.GetProperty<CheckListVM>(nameof(EvaluatorRecentResultChecklistVM))!;
       set => base.UpdateProperty(nameof(EvaluatorRecentResultChecklistVM), value);
     }
 
-    internal List<CheckListVM> CheckListVMs
+    public List<CheckListVM> CheckListVMs
     {
       get => base.GetProperty<List<CheckListVM>>(nameof(CheckListVMs))!;
       set => base.UpdateProperty(nameof(CheckListVMs), value);
