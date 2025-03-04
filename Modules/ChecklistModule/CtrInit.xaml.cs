@@ -29,9 +29,9 @@ namespace ChecklistModule
   /// </summary>
   public partial class CtrInit : UserControl
   {
-    private const string AUDIO_CHANNEL_NAME = AutoPlaybackManager.CHANNEL_COPILOT;
+    private const string AUDIO_CHANNEL_NAME = AudioPlayManager.CHANNEL_COPILOT;
     private readonly InitContext context;
-    private readonly AutoPlaybackManager autoPlaybackManager;
+    private readonly AudioPlayManager autoPlaybackManager;
     private string recentXmlFile = "";
 
     public CtrInit()

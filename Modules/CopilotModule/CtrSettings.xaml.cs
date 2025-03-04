@@ -23,9 +23,9 @@ namespace CopilotModule
   /// </summary>
   public partial class CtrSettings : Window
   {
-    private const string AUDIO_CHANNEL_NAME = AutoPlaybackManager.CHANNEL_COPILOT;
+    private const string AUDIO_CHANNEL_NAME = AudioPlayManager.CHANNEL_COPILOT;
     private readonly Settings settings;
-    private readonly AutoPlaybackManager autoPlaybackManager = new AutoPlaybackManager();
+    private readonly AudioPlayManager autoPlaybackManager = new AudioPlayManager();
 
     public CtrSettings()
     {

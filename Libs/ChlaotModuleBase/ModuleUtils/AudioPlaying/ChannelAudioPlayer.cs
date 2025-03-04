@@ -3,38 +3,54 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using static Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying.ChannelAudioPlayer;
 
 namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
 {
   public class ChannelAudioPlayer
   {
+    private record PlayRecord(PlayId Id, byte[] data);
+
     private class ChannelPlayerInfo : IDisposable
     {
+      private static int nextPlayId = 1;
       private const int INT_TRUE = 1;
       private const int INT_FALSE = 0;
       private readonly string channel;
       private readonly ChannelAudioPlayer parent;
-      private readonly ConcurrentQueue<byte[]> audioDatas = new();
+      private readonly ConcurrentQueue<PlayRecord> audioDatas = new();
       private int isPlayingFlag = INT_FALSE;
+
+      private static PlayId GetNextPlayId()
+      {
+        int id = Interlocked.Increment(ref ChannelPlayerInfo.nextPlayId);
+        PlayId ret = new(id);
+        return ret;
+      }
 
       internal ChannelPlayerInfo(ChannelAudioPlayer parent, string channel)
       {
         this.channel = channel;
-        this.parent = parent;        
+        this.parent = parent;
       }
 
-      internal void Add(byte[] audioData)
+      internal PlayId Add(byte[] audioData)
       {
-        audioDatas.Enqueue(audioData);
+        PlayId playId = GetNextPlayId();
+        PlayRecord playRecord = new(playId, audioData);
+        audioDatas.Enqueue(playRecord);
+        return playId;
       }
 
-      internal void AddAndPlay(byte[] audioData)
+      internal PlayId AddAndPlay(byte[] audioData)
       {
-        this.Add(audioData);
+        var ret = this.Add(audioData);
         this.Play();
+        return ret;
       }
 
       internal void Clear()
@@ -52,13 +68,13 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
         int isPlayingNow = Interlocked.Exchange(ref this.isPlayingFlag, INT_TRUE);
         if (isPlayingNow == INT_TRUE) return;
 
-        if (audioDatas.TryDequeue(out byte[]? next))
+        if (audioDatas.TryDequeue(out PlayRecord? next))
         {
-          AudioPlayer player = new(next);
-          player.PlayStarting += Player_PlayStarting;
-          player.PlayStarted += Player_PlayStarted;
-          player.PlayCompleted += Player_PlayCompleted;
-          player.PlayRequested += Player_PlayRequested;
+          AudioPlayer player = new(next.data);
+          player.PlayStarting += s => Player_PlayStarting(s, next.Id);
+          player.PlayStarted += s => Player_PlayStarted(s, next.Id);
+          player.PlayCompleted += s => Player_PlayCompleted(s, next.Id);
+          player.PlayRequested += s => Player_PlayRequested(s, next.Id);
           player.PlayAsync();
         }
         else
@@ -68,26 +84,26 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
         }
       }
 
-      private void Player_PlayRequested(AudioPlayer sender)
+      private void Player_PlayRequested(AudioPlayer sender, PlayId playId)
       {
-        this.parent.PlayRequested?.Invoke(this.parent, this.channel);
+        this.parent.PlayRequested?.Invoke(this.parent, this.channel, playId);
       }
 
-      private void Player_PlayCompleted(AudioPlayer sender)
+      private void Player_PlayCompleted(AudioPlayer sender, PlayId playId)
       {
         Interlocked.Exchange(ref this.isPlayingFlag, INT_FALSE);
-        this.parent.PlayCompleted?.Invoke(this.parent, this.channel);
+        this.parent.PlayCompleted?.Invoke(this.parent, this.channel, playId);
         StartNextPlay();
       }
 
-      private void Player_PlayStarted(AudioPlayer sender)
+      private void Player_PlayStarted(AudioPlayer sender, PlayId playId)
       {
-        this.parent.PlayStarted?.Invoke(this.parent, this.channel);
+        this.parent.PlayStarted?.Invoke(this.parent, this.channel, playId);
       }
 
-      private void Player_PlayStarting(AudioPlayer sender)
+      private void Player_PlayStarting(AudioPlayer sender, PlayId playId)
       {
-        this.parent.PlayInitializing?.Invoke(this.parent, this.channel);
+        this.parent.PlayInitializing?.Invoke(this.parent, this.channel, playId);
       }
 
       public void Dispose()
@@ -98,23 +114,25 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
 
     private readonly ConcurrentDictionary<string, ChannelPlayerInfo> channels = new();
 
+    public delegate void ChannelPlayIdHandler(ChannelAudioPlayer player, string channel, PlayId playId);
     public delegate void ChannelHandler(ChannelAudioPlayer player, string channel);
-    public event ChannelHandler? PlayRequested;
-    public event ChannelHandler? PlayInitializing;
-    public event ChannelHandler? PlayStarted;
-    public event ChannelHandler? PlayCompleted;
+    public event ChannelPlayIdHandler? PlayRequested;
+    public event ChannelPlayIdHandler? PlayInitializing;
+    public event ChannelPlayIdHandler? PlayStarted;
+    public event ChannelPlayIdHandler? PlayCompleted;
     public event ChannelHandler? PlayChannelCompleted;
     public event ChannelHandler? ClearChannelCompleted;
 
-    public void Play(byte[] audioData, string channelName)
+    public PlayId Play(byte[] audioData, string channelName)
     {
       ChannelPlayerInfo ci = channels.GetOrAdd(channelName, _ => new ChannelPlayerInfo(this, channelName));
-      ci.AddAndPlay(audioData);
+      var ret = ci.AddAndPlay(audioData);
+      return ret;
     }
 
-    public Task PlayAsync(byte[] audioData, string channelName)
+    public Task<PlayId> PlayAsync(byte[] audioData, string channelName)
     {
-      Task t = new(() => Play(audioData, channelName));
+      Task<PlayId> t = new(() => Play(audioData, channelName));
       t.Start();
       return t;
     }

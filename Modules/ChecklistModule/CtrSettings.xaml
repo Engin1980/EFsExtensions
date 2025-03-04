@@ -80,6 +80,7 @@
           <RowDefinition />
           <RowDefinition />
           <RowDefinition />
+          <RowDefinition />
         </Grid.RowDefinitions>
         <Label Content="Read Confirmations" Grid.Row="0" Grid.Column="0" />
         <CheckBox IsChecked="{Binding ReadConfirmations}" Grid.Row ="0" Grid.Column="1"
@@ -92,11 +93,14 @@
           <TextBox Width="50" Padding="0 4 0 0" TextAlignment="Right" Text="{Binding PausedChecklistAlertInterval}" />
           <Label Content="seconds" />
         </StackPanel>
-        <Label Content="Use Autoplay" Grid.Row="2" Grid.Column="0" />
+        <Label Content="Automatically start checklist play" Grid.Row="2" Grid.Column="0" />
         <CheckBox IsChecked="{Binding UseAutoplay}" Grid.Row ="2" Grid.Column="1"
                   Margin="0 8 0 0 "/>
-        <Label Content="Debug evaluation enabled" Grid.Row="3" Grid.Column="0" />
-        <CheckBox IsChecked="{Binding EvalDebugEnabled}" IsEnabled="False" Grid.Row="3" Grid.Column="1"  Margin="0 8 0 0" />
+        <Label Content="Pause play after every checklist item" Grid.Row="3" Grid.Column="0" />
+        <CheckBox IsChecked="{Binding PlayPerItem}" Grid.Row ="3" Grid.Column="1"
+          Margin="0 8 0 0 "/>
+        <Label Content="Debug evaluation enabled" Grid.Row="4" Grid.Column="0" />
+        <CheckBox IsChecked="{Binding EvalDebugEnabled}" IsEnabled="False" Grid.Row="4" Grid.Column="1"  Margin="0 8 0 0" />
       </Grid>
     </GroupBox>
   </StackPanel>

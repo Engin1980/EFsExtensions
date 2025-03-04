@@ -27,10 +27,10 @@ namespace CopilotModule
   /// </summary>
   public partial class CtrInit : UserControl
   {
-    private const string AUDIO_CHANNEL_NAME = AutoPlaybackManager.CHANNEL_COPILOT;
+    private const string AUDIO_CHANNEL_NAME = AudioPlayManager.CHANNEL_COPILOT;
     private readonly InitContext context;
     private string recentXmlFile = "";
-    private readonly AutoPlaybackManager autoPlaybackManager = new();
+    private readonly AudioPlayManager autoPlaybackManager = new();
 
     public CtrInit()
     {

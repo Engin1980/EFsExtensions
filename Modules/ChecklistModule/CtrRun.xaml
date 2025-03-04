@@ -16,9 +16,6 @@
     <converters:RunStateToTreeNodeExpandedConverter x:Key="RunStateToTreeNodeExpandedConverter" />
   </UserControl.Resources>
   <TabControl >
-    <TabItem Header="Test">
-      <Label Content="{Binding Name}" />
-    </TabItem>
     <TabItem Header="Checklist content">
       <TreeView ItemsSource="{Binding CheckListVMs}" x:Name="tvwTree">
         <TreeView.ItemContainerStyle>

@@ -93,6 +93,12 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(ReadConfirmations), value);
     }
 
+    public bool PlayPerItem
+    {
+      get { return base.GetProperty<bool>(nameof(PlayPerItem))!; }
+      set { base.UpdateProperty(nameof(PlayPerItem), value); }
+    }
+
 
     public bool AlertOnPausedChecklist
     {

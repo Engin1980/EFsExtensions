@@ -26,9 +26,9 @@ namespace Eng.Chlaot.Modules.RaaSModule.CopilotModule
   /// </summary>
   public partial class CtrSettings : Window
   {
-    private const string AUDIO_CHANNEL_NAME = AutoPlaybackManager.CHANNEL_AIRPLANE;
+    private const string AUDIO_CHANNEL_NAME = AudioPlayManager.CHANNEL_AIRPLANE;
     private readonly Settings settings;
-    private readonly AutoPlaybackManager autoPlaybackManager = new AutoPlaybackManager();
+    private readonly AudioPlayManager autoPlaybackManager = new AudioPlayManager();
 
     public CtrSettings()
     {

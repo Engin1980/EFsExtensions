@@ -98,7 +98,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       this.manager = new ChecklistManager(this.PropertyVMs, this.CheckListVMs, this.simObject,
         this.settings.UseAutoplay,
         this.settings.ReadConfirmations,
-        this.settings.AlertOnPausedChecklist ? this.settings.PausedChecklistAlertInterval * 1000 : null
+        this.settings.AlertOnPausedChecklist ? this.settings.PausedChecklistAlertInterval * 1000 : null,
+        this.settings.PlayPerItem
         ); // CheckListViews must be set before calling this
     }
 
