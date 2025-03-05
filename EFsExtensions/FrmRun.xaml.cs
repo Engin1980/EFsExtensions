@@ -29,7 +29,7 @@ namespace Chlaot
     public FrmRun()
     {
       InitializeComponent();
-      this.Title = "CHLAOT - Run - " + Assembly.GetExecutingAssembly().GetName().Version;
+      this.Title = "E-FS-Extensions - Run - " + Assembly.GetExecutingAssembly().GetName().Version;
       this.context = null!;
       this.appSettings = null!;
     }

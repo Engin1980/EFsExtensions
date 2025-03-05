@@ -22,7 +22,7 @@ namespace EFsExtensionsModuleBase
     public DoubleValueOrPercentage(double value, bool isPercentage)
     {
       if (isPercentage)
-        EAssert.Argument.IsTrue(value >= 0, nameof(value));
+        EAssert.Argument.IsTrue(value >= 0, nameof(value), "Value must be non-negative.");
       this.Value = value;
       this.IsPercentage = isPercentage;
     }

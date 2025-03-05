@@ -8,7 +8,7 @@ using System.Speech.Synthesis;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MSAPI
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi
 {
   public static class SpeechApiReflectionHelper
   {

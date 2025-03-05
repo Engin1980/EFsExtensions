@@ -69,7 +69,9 @@ namespace ChecklistModule
 
     private void btnSettings_Click(object sender, RoutedEventArgs e)
     {
-      new CtrSettings(context.Settings).ShowDialog();
+      var diag = new CtrSettings(context.Settings);
+      diag.Closed += (s, e) => context.RebuildSoundStreams();
+      diag.ShowDialog();
     }
 
     private void lblChecklist_MouseRightButtonDown(object sender, MouseButtonEventArgs e)

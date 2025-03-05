@@ -1,8 +1,10 @@
 ﻿using ELogging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using NAudio.Wave;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -12,6 +14,8 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying
 {
   public class AudioPlayManager : IDisposable
   {
+    public record ChannelEventArgs(string ChannelName);
+
     public const string CHANNEL_COPILOT = "COPILOT";
     public const string CHANNEL_AIRPLANE = "AIRPLANE";
     public const string CHANNEL_STEWARD = "STEWARD";
@@ -19,9 +23,13 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying
     private readonly Logger logger;
     private readonly ChannelAudioPlayer channelAudioPlayer = new();
 
+    public delegate void ChannelHandler(AudioPlayManager sender, ChannelEventArgs e);
+    public event ChannelHandler? ChannelPlayCompleted;
+
     public AudioPlayManager()
     {
       this.logger = Logger.Create(this);
+      this.channelAudioPlayer.PlayChannelCompleted += (s, c) => ChannelPlayCompleted?.Invoke(this, new ChannelEventArgs(c));
     }
 
     public void ClearQueue(string channel)
@@ -42,11 +50,14 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying
     {
       channel ??= $"Generated_{nextChannelId++}";
       this.logger.Log(LogLevel.INFO, $"Enqueueing {bytes.Length} bytes in channel '{channel}'.");
+
       Task<PlayId> t = this.channelAudioPlayer.PlayAsync(bytes, channel);
       if (onCompletedCallback != null)
       {
         Task tt = t.ContinueWith(q => onCompletedCallback());
       }
     }
+
+    
   }
 }

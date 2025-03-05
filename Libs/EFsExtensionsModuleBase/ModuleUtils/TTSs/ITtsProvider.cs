@@ -9,5 +9,6 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs
   public interface ITtsProvider
   {
     Task<byte[]> ConvertAsync(string text);
+    byte[] Convert(string text);
   }
 }

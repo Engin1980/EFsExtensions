@@ -49,8 +49,8 @@ namespace EFsExtensionsModuleBase.ModuleUtils.SimConWrapping
 
     public void OpenAsync(Action onSuccess, Action<SimConWrapperOpenException> onError)
     {
-      EAssert.Argument.IsNotNull(onSuccess);
-      EAssert.Argument.IsNotNull(onError);
+      EAssert.Argument.IsNotNull(onSuccess, nameof(onSuccess));
+      EAssert.Argument.IsNotNull(onError, nameof(onError));
       this.onSuccess = onSuccess;
       this.onError = onError;
 

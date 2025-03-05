@@ -44,7 +44,7 @@ namespace Chlaot
     public FrmInit()
     {
       InitializeComponent();
-      this.Title = "CHLAOT - Initialization - " + Assembly.GetExecutingAssembly().GetName().Version;
+      this.Title = "E-FS-Extensions - Initialization - " + Assembly.GetExecutingAssembly().GetName().Version;
     }
 
     [SuppressMessage("", "IDE1006")]

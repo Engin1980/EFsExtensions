@@ -30,7 +30,6 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.ElevenLabs
 
     #endregion Fields
 
-
     #region Constructors
 
     public ElevenLabsTtsProvider(ElevenLabsTtsSettings settings)
@@ -54,6 +53,11 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.ElevenLabs
       }
       byte[] ret = previousSpeeches[text];
       return ret;
+    }
+
+    public byte[] Convert(string text)
+    {
+      return ConvertAsync(text).GetAwaiter().GetResult();
     }
 
     public static async Task<List<ElevenLabsVoice>> GetVoicesAsync(string apiKey)

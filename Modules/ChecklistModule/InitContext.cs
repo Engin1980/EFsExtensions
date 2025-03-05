@@ -35,6 +35,10 @@ using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
 using static Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
 using ESystem.Miscelaneous;
 using System.Windows.Markup;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using ESystem.Exceptions;
 
 namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
@@ -78,6 +82,15 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
       this.logger = Logger.Create(this, "Checklist.InitContext");
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
       this.SimPropertyGroup = LoadDefaultSimProperties();
+    }
+
+    public void RebuildSoundStreams()
+    {
+      if (LastLoadedFile == null) return;
+      var tmp = this.CheckListVMs.Select(q => q.CheckList).ToList();
+      InitializeSoundStreams(
+        tmp,
+        System.IO.Path.GetDirectoryName(LastLoadedFile) ?? throw new UnexpectedNullException());
     }
 
     private SimPropertyGroup LoadDefaultSimProperties()
@@ -154,7 +167,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
 
         // initialize sound streams
         logger.Invoke(LogLevel.INFO, $"Loading/generating sounds");
-        Try(() => InitializeSoundStreams(tmp, System.IO.Path.GetDirectoryName(xmlFile)!),
+        Try(() => InitializeSoundStreams(tmp.Checklists, System.IO.Path.GetDirectoryName(xmlFile)!),
           ex => new ApplicationException("Error creating sound streams for checklist.", ex));
 
         if (tmpSpg != null)
@@ -286,19 +299,24 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
         throw new ApplicationException($"Required variables not found in defined variables: {string.Join(", ", missingVariables.Distinct())}.");
     }
 
-    private void InitializeSoundStreams(CheckSet checkSet, string relativePath)
+    private void InitializeSoundStreams(List<CheckList> checklists, string relativePath)
     {
-      Synthetizer synthetizer = new(Settings.Synthetizer);
+      MsSapiModule module = new MsSapiModule();
+      ITtsProvider synthetizer = module.GetProvider(Settings.Synthetizer);
       Dictionary<string, byte[]> generatedSounds = new();
-      foreach (var checklist in checkSet.Checklists)
+      foreach (var checklist in checklists)
       {
         // TODO correct load meta data and checklist entry/exit speeches
         InitializeSoundStreamsForChecklist(checklist, generatedSounds, synthetizer, relativePath);
 
         foreach (var item in checklist.Items)
         {
-          InitializeSoundStreamsForItems(item.Call, generatedSounds, synthetizer, relativePath);
-          InitializeSoundStreamsForItems(item.Confirmation, generatedSounds, synthetizer, relativePath);
+          InitializeSoundStreamsForItems(item.Call,
+            generatedSounds, synthetizer, relativePath,
+            this.Settings.DelayAfterCall);
+          InitializeSoundStreamsForItems(item.Confirmation,
+            generatedSounds, synthetizer, relativePath,
+            this.Settings.DelayAfterConfirmation);
         }
       }
     }
@@ -306,33 +324,48 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
     private void InitializeSoundStreamsForChecklist(
       CheckList checklist,
       Dictionary<string, byte[]> generatedSounds,
-      Synthetizer synthetizer,
+      ITtsProvider synthetizer,
       string relativePath)
     {
       if (checklist.CustomEntrySpeech != null)
-        InitializeSoundStreamsForItems(checklist.CustomEntrySpeech, generatedSounds, synthetizer, relativePath);
+        InitializeSoundStreamsForItems(checklist.CustomEntrySpeech,
+          generatedSounds, synthetizer, relativePath,
+          this.Settings.DelayAfterNotification);
       if (checklist.CustomExitSpeech != null)
-        InitializeSoundStreamsForItems(checklist.CustomExitSpeech, generatedSounds, synthetizer, relativePath);
+        InitializeSoundStreamsForItems(checklist.CustomExitSpeech,
+          generatedSounds, synthetizer, relativePath,
+          this.Settings.DelayAfterNotification);
+      if (checklist.CustomPausedAlertSpeech != null)
+        InitializeSoundStreamsForItems(checklist.CustomPausedAlertSpeech,
+          generatedSounds, synthetizer, relativePath,
+          this.Settings.DelayAfterNotification);
 
       checklist.EntrySpeechBytes =
         checklist.CustomEntrySpeech != null
         ? checklist.CustomEntrySpeech.Bytes
-        : synthetizer.Generate($"{checklist.CallSpeech} checklist");
+        : AudioUtils.AppendSilence(
+          synthetizer.Convert($"{checklist.CallSpeech} checklist"),
+          this.Settings.DelayAfterNotification);
       checklist.ExitSpeechBytes =
         checklist.CustomExitSpeech != null
         ? checklist.CustomExitSpeech.Bytes
-        : synthetizer.Generate($"{checklist.CallSpeech} checklist completed");
+        : AudioUtils.AppendSilence(
+          synthetizer.Convert($"{checklist.CallSpeech} checklist completed"),
+          this.Settings.DelayAfterNotification);
       checklist.PausedAlertSpeechBytes =
         checklist.CustomPausedAlertSpeech != null
         ? checklist.CustomPausedAlertSpeech.Bytes
-        : synthetizer.Generate($"{checklist.CallSpeech} checklist pending");
+        : AudioUtils.AppendSilence(
+          synthetizer.Convert($"{checklist.CallSpeech} checklist pending"),
+          this.Settings.DelayAfterNotification);
     }
 
     private void InitializeSoundStreamsForItems(
       CheckDefinition checkDefinition,
       Dictionary<string, byte[]> generatedSounds,
-      Synthetizer synthetizer,
-      string relativePath)
+      ITtsProvider synthetizer,
+      string relativePath,
+      int delay)
     {
       if (checkDefinition.Type == CheckDefinition.CheckDefinitionType.File)
         try
@@ -347,12 +380,14 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
       else if (checkDefinition.Type == CheckDefinition.CheckDefinitionType.Speech)
         try
         {
-          if (generatedSounds.ContainsKey(checkDefinition.Value))
-            checkDefinition.Bytes = generatedSounds[checkDefinition.Value];
+          if (generatedSounds.ContainsKey($"{checkDefinition.Value};{delay}"))
+            checkDefinition.Bytes = generatedSounds[$"{checkDefinition.Value};{delay}"];
           else
           {
-            checkDefinition.Bytes = synthetizer.Generate(checkDefinition.Value);
-            generatedSounds[checkDefinition.Value] = checkDefinition.Bytes;
+            var tmp = synthetizer.Convert(checkDefinition.Value);
+            tmp = AudioUtils.AppendSilence(tmp, delay);
+            checkDefinition.Bytes = tmp;
+            generatedSounds[$"{checkDefinition.Value};{delay}"] = checkDefinition.Bytes;
           }
         }
         catch (Exception ex)

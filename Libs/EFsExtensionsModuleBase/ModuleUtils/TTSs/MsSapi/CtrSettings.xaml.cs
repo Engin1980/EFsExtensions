@@ -14,21 +14,21 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MSAPI
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi
 {
   /// <summary>
   /// Interaction logic for CtrSettings.xaml
   /// </summary>
   public partial class CtrSettings : UserControl
   {
-    private readonly MSapiSettings settings;
+    private readonly MsSapiSettings settings;
     public CtrSettings()
     {
       InitializeComponent();
       this.DataContext = this.settings = null!;
     }
 
-    public CtrSettings(MSapiSettings settings)
+    public CtrSettings(MsSapiSettings settings)
     {
       InitializeComponent();
       this.DataContext = this.settings = settings;

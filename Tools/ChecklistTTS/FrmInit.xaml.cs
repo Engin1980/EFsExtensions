@@ -21,7 +21,7 @@ using System.Xml.Serialization;
 using System.IO;
 using System.Windows.Media.TextFormatting;
 using ESystem.Exceptions;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MSAPI;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using ChecklistTTS;
 using ChecklistTTS.Model;
 
@@ -33,7 +33,7 @@ namespace ChecklistTTSNew
   public partial class FrmInit : Window
   {
     private static readonly List<ITtsModule> ttsModules = new(){
-      new MSapiModule(),
+      new MsSapiModule(),
       new ElevenLabsTtsModule()
       };
     private readonly InitVM vm;
