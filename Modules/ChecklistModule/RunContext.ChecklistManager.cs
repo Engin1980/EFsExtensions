@@ -12,7 +12,7 @@ using System.Linq;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
-  public partial class RunContext
+  internal partial class RunContext
   {
     public class ChecklistManager
     {
@@ -25,8 +25,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       private readonly SimObject simObject;
       private readonly PropertyVMS propertyVMs;
 
-      public ChecklistManager(PropertyVMS propertyVMs, List<CheckListVM> checkListViews, SimObject simObject,
-        bool useAutoplay, bool readConfirmations)
+      internal ChecklistManager(PropertyVMS propertyVMs, List<CheckListVM> checkListViews, SimObject simObject,
+        bool useAutoplay, bool readConfirmations, int? pausedAlertIntervalIfUsed, bool isPlayPerItemEnabled)
       {
         EAssert.Argument.IsNotNull(propertyVMs, nameof(propertyVMs));
         EAssert.Argument.IsNotNull(checkListViews, nameof(checkListViews));
@@ -43,7 +43,13 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         this.isAutoplayingEnabled = useAutoplay;
         this.simObject = simObject;
 
-        this.playbackManager = new(this.current, readConfirmations);
+        this.playbackManager = new(this.current,
+          new PlaybackManagerSettings()
+          {
+            readConfirmations = readConfirmations,
+            pausedAlertIntervalIfUsed = pausedAlertIntervalIfUsed,
+            isPlayPerItemEnabled = isPlayPerItemEnabled
+          });
         this.playbackManager.ChecklistPlayingCompleted += PlaybackManager_ChecklistPlayingCompleted;
       }
 
@@ -141,7 +147,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         this.active.Add(vm);
         this.all.ForEach(q => q.RunTime.IsActive = active.Contains(q));
 
-        if (this.previous != null) { 
+        if (this.previous != null)
+        {
           this.previous.RunTime.ResetEvaluator();
           this.previous = this.all.FirstOrDefault(q => q.CheckList.NextChecklists.First() == this.previous.CheckList); // tries to get previous of previous;
         }

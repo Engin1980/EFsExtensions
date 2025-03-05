@@ -20,7 +20,7 @@ using System.Timers;
 using System.Reflection.Metadata.Ecma335;
 using System.Speech.Synthesis;
 using ESystem.Exceptions;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using System.Diagnostics;
 using Microsoft.WindowsAPICodePack.Shell;
@@ -439,18 +439,6 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
       logger.Log(LogLevel.DEBUG, "Registering simConnect repeated-requests");
       simConnect.Structs.RequestRepeatedly<SimDataStruct>(SimConnectPeriod.SECOND, sendOnlyOnChange: true);
-    }
-
-    internal void DoTmp()
-    {
-      this.SimData = new SimDataStruct()
-      {
-        heading = 0,
-        indicatedSpeed = 0,
-         latitude = 52.977935435,
-         longitude = -118.0568015
-      };
-      EvaluateNearestAirport();
     }
 
     #endregion Private Methods

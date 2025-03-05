@@ -1,14 +1,17 @@
 ﻿using ELogging;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Media;
+using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing
+namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.Players
 {
-  public class Player : IDisposable
+  public class SimpleWavPlayer : IDisposable
   {
-    public delegate void PlayerDelegate(Player sender);
+    public delegate void PlayerDelegate(SimpleWavPlayer sender);
 
     public event PlayerDelegate? PlaybackFinished;
 
@@ -17,7 +20,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing
 
     public readonly int length;
     private readonly SoundPlayer soundPlayer;
-    public Player(byte[] bytes)
+    public SimpleWavPlayer(byte[] bytes)
     {
       this.logHandler = Logger.Create(this);
       MemoryStream stream = new(bytes);

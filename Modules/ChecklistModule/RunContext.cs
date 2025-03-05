@@ -30,7 +30,7 @@ using ESystem.Miscelaneous;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
-  public partial class RunContext : NotifyPropertyChanged
+  internal partial class RunContext : NotifyPropertyChanged
   {
 
     #region Private Fields
@@ -60,11 +60,13 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       set => base.UpdateProperty(nameof(CheckListVMs), value);
     }
 
-    public Type Name
-    {
-      get => base.GetProperty<Type>(nameof(Name))!;
-      set => base.UpdateProperty(nameof(Name), value);
-    }
+    //public Type Name
+    //{
+    //  get => base.GetProperty<Type>(nameof(Name))!;
+    //  set => base.UpdateProperty(nameof(Name), value);
+    //}
+
+    public string Name => "CXX " + this.CheckListVMs.Count;
 
     public PropertyVMS PropertyVMs
     {
@@ -81,6 +83,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       this.logger = Logger.Create(this, "CheckList.RunContext");
       this.settings = initContext.Settings;
 
+      //this.Name = typeof(RunContext);
       this.CheckListVMs = initContext.CheckListVMs;
       this.PropertyVMs = PropertyVMS.Create(
         initContext.SimPropertyGroup.GetAllSimPropertiesRecursively()
@@ -93,7 +96,11 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       this.simObject.SimPropertyChanged += SimObject_SimPropertyChanged;
 
       this.manager = new ChecklistManager(this.PropertyVMs, this.CheckListVMs, this.simObject,
-        this.settings.UseAutoplay, this.settings.ReadConfirmations); // CheckListViews must be set before calling this
+        this.settings.UseAutoplay,
+        this.settings.ReadConfirmations,
+        this.settings.AlertOnPausedChecklist ? this.settings.PausedChecklistAlertInterval * 1000 : null,
+        this.settings.PlayPerItem
+        ); // CheckListViews must be set before calling this
     }
 
     #endregion Public Constructors

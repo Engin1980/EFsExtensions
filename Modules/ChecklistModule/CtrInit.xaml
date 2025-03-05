@@ -7,7 +7,7 @@
              xmlns:types="clr-namespace:Eng.Chlaot.Modules.ChecklistModule.Types"
              xmlns:gctr="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
              xmlns:smo="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;assembly=ChlaotModuleBase"
-             xmlns:vm="clr-namespace:Eng.Chlaot.Modules.ChecklistModule.Types.VM"
+             xmlns:vm="clr-namespace:Eng.Chlaot.Modules.ChecklistModule.Types.VM"             
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <DockPanel>

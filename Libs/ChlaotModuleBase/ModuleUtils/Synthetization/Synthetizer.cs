@@ -12,7 +12,7 @@ namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization
 {
   public class Synthetizer
   {
-    private static class WavFileTrimmer
+    private static class WavFileTrimmer 
     {
       public static void Trim(Stream inStream, Stream outStream, TimeSpan trimStart, TimeSpan trimEnd)
       {

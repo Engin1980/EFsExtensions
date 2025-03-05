@@ -62,7 +62,6 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     public void Run()
     {
-      this.context.DoTmp();
       this.ctrRun = new(this.context);
       this.context.Start();
     }

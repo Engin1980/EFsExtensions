@@ -1,35 +1,51 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
 using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
 using ESystem.Asserting;
 using System;
+using System.Timers;
 
 namespace Eng.Chlaot.Modules.ChecklistModule
 {
-  public partial class RunContext
+  internal partial class RunContext
   {
-    public class PlaybackManager
+    internal class PlaybackManagerSettings
     {
-      private int currentItemIndex = 0;
-      private bool isCallPlayed = false;
-      private bool isEntryPlayed = false;
-      private bool isMainLoopAbortRequested = false;
-      private bool isMainLoopActive = false;
-      private bool isCurrentLastSpeechPlaying = false;
-      private readonly bool readConfirmations;
-      public event Action? ChecklistPlayingCompleted;
-      public bool IsWaitingForNextChecklist { get => currentItemIndex == 0 && isEntryPlayed == false; }
-      public bool IsPartlyPlayed => currentItemIndex > 0;
+      public bool readConfirmations;
+      public int? pausedAlertIntervalIfUsed;
+      public bool isPlayPerItemEnabled;
+    }
+    private class PlaybackManagerState
+    {
+      public bool isCallPlayed;
+      public bool isEntryPlayed;
+      public bool isMainLoopActive = false;
+      public int currentItemIndex = 0;
+      public bool isMainLoopAbortRequested = false;
+      public bool isCurrentLastSpeechPlaying = false;
+    }
 
-      public PlaybackManager(CheckListVM initialChecklist, bool readConfirmations)
+    internal class PlaybackManager
+    {
+      private readonly PlaybackManagerSettings sett;
+      private readonly PlaybackManagerState state = new();
+      private readonly ChlaotModuleBase.ModuleUtils.AudioPlaying.AudioPlayManager apm = new();
+      private Timer? pendingChecklistTimer = null;
+
+      public event Action? ChecklistPlayingCompleted;
+      public bool IsWaitingForNextChecklist { get => state.currentItemIndex == 0 && state.isEntryPlayed == false; }
+      public bool IsPartlyPlayed => state.currentItemIndex > 0;
+
+      internal PlaybackManager(CheckListVM initialChecklist, PlaybackManagerSettings settings)
       {
         EAssert.Argument.IsNotNull(initialChecklist, nameof(initialChecklist));
-        this.readConfirmations = readConfirmations;
+
+        this.sett = settings;
         this.Current = initialChecklist;
         this.SetCurrent(this.Current); // ensures correct initialization
       }
 
       public CheckListVM Current { get; private set; }
-      public bool IsPlaying { get => this.isMainLoopActive; }
+      public bool IsPlaying { get => this.state.isMainLoopActive; }
 
       public void SetCurrent(CheckListVM value)
       {
@@ -42,20 +58,20 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         Current = value;
         Current.RunTime.State = RunState.Current;
         Current.Items.ForEach(q => q.RunTime.State = RunState.NotYet);
-        currentItemIndex = 0;
-        isEntryPlayed = false;
-        isCallPlayed = false;
+        state.currentItemIndex = 0;
+        state.isEntryPlayed = false;
+        state.isCallPlayed = false;
       }
 
       public void PauseAsync()
       {
         lock (this)
         {
-          if (this.isCurrentLastSpeechPlaying == false)
+          if (this.state.isCurrentLastSpeechPlaying == false)
           {
-            this.isCallPlayed = false;
-            this.isEntryPlayed = false;
-            this.isMainLoopAbortRequested = true;
+            this.state.isCallPlayed = false;
+            this.state.isEntryPlayed = false;
+            this.state.isMainLoopAbortRequested = true;
           }
           else
           {
@@ -67,34 +83,36 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
       private void PlayNext()
       {
-        EAssert.IsTrue(isMainLoopActive);
-        EAssert.IsFalse(isMainLoopAbortRequested);
+        EAssert.IsTrue(state.isMainLoopActive);
+        EAssert.IsFalse(state.isMainLoopAbortRequested);
         lock (this)
         {
-          byte[] playData = ResolveAndMarkNexPlayBytes(out isCurrentLastSpeechPlaying);
-          Player player = new(playData);
-          player.PlaybackFinished += Player_PlaybackFinished;
-          player.PlayAsync();
+          byte[] playData = ResolveAndMarkNexPlayBytes(out state.isCurrentLastSpeechPlaying, out bool isOneChecklistItemCompleted);
+          if (!state.isCurrentLastSpeechPlaying && this.sett.isPlayPerItemEnabled && isOneChecklistItemCompleted)
+            state.isMainLoopAbortRequested = true;
+
+          apm.Enqueue(playData, ChlaotModuleBase.ModuleUtils.AudioPlaying.AudioPlayManager.CHANNEL_COPILOT, OnPlayCompleted);
         }
         AdjustRunStates();
       }
 
-      private void Player_PlaybackFinished(Player sender)
+      private void OnPlayCompleted()
       {
         lock (this)
         {
-          if (isMainLoopActive)
+          if (state.isMainLoopActive)
           {
-            if (isMainLoopAbortRequested)
+            if (state.isMainLoopAbortRequested)
             {
-              isMainLoopActive = false;
-              isMainLoopAbortRequested = false;
+              state.isMainLoopActive = false;
+              state.isMainLoopAbortRequested = false;
+              this.EnablePendingChecklistTimer();
             }
-            else if (isCurrentLastSpeechPlaying)
+            else if (state.isCurrentLastSpeechPlaying)
             {
-              isMainLoopActive = false;
-              isMainLoopAbortRequested = false;
-              isCurrentLastSpeechPlaying = false;
+              state.isMainLoopActive = false;
+              state.isMainLoopAbortRequested = false;
+              state.isCurrentLastSpeechPlaying = false;
               this.ChecklistPlayingCompleted?.Invoke();
             }
             else
@@ -103,22 +121,53 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         }
       }
 
+      private void PendingChecklistTimer_Elapsed(object? sender, ElapsedEventArgs e)
+      {
+        byte[] playData = this.Current.CheckList.PausedAlertSpeechBytes;
+        apm.Enqueue(playData, ChlaotModuleBase.ModuleUtils.AudioPlaying.AudioPlayManager.CHANNEL_COPILOT);
+      }
+
       public void Reset()
       {
-        this.currentItemIndex = 0;
-        this.isCallPlayed = false;
-        this.isEntryPlayed = false;
+        this.state.currentItemIndex = 0;
+        this.state.isCallPlayed = false;
+        this.state.isEntryPlayed = false;
         this.Current.Items.ForEach(q => q.RunTime.State = RunState.NotYet);
+        this.DisablePendingChecklistTimer();
+      }
+
+      private void DisablePendingChecklistTimer()
+      {
+        if (this.pendingChecklistTimer != null)
+        {
+          // TODO can here be multithread issue?
+          this.pendingChecklistTimer.Stop();
+          this.pendingChecklistTimer = null;
+        }
+      }
+
+      private void EnablePendingChecklistTimer()
+      {
+        if (this.sett.pausedAlertIntervalIfUsed == null) return;
+        if (this.pendingChecklistTimer != null) return;
+        // TODO can here be multithread issue?
+        this.pendingChecklistTimer = new Timer(this.sett.pausedAlertIntervalIfUsed.Value)
+        {
+          AutoReset = true
+        };
+        this.pendingChecklistTimer.Elapsed += PendingChecklistTimer_Elapsed;
+        this.pendingChecklistTimer.Start();
       }
 
       public void Play()
       {
         lock (this)
         {
-          if (!isMainLoopActive)
+          if (!state.isMainLoopActive)
           {
+            this.DisablePendingChecklistTimer();
             this.Current.RunTime.CanBeAutoplayed = false;
-            this.isMainLoopActive = true;
+            this.state.isMainLoopActive = true;
             PlayNext();
           }
         }
@@ -128,7 +177,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       {
         lock (this)
         {
-          if (isMainLoopActive)
+          if (state.isMainLoopActive)
             PauseAsync();
           else
             Play();
@@ -139,44 +188,48 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       {
         for (int i = 0; i < Current.Items.Count; i++)
         {
-          if (i < currentItemIndex)
+          if (i < state.currentItemIndex)
             Current.Items[i].RunTime.State = RunState.Runned;
-          else if (i > currentItemIndex)
+          else if (i > state.currentItemIndex)
             Current.Items[i].RunTime.State = RunState.NotYet;
           else
             Current.Items[i].RunTime.State = RunState.Current;
         }
       }
 
-      private byte[] ResolveAndMarkNexPlayBytes(out bool isThisLastChecklistSpeech)
+      private byte[] ResolveAndMarkNexPlayBytes(out bool isThisLastChecklistSpeech, out bool isOneChecklistItemCompleted)
       {
         byte[] ret;
-        if (currentItemIndex == 0 && !this.isEntryPlayed)
+        if (state.currentItemIndex == 0 && !this.state.isEntryPlayed)
         {
           // playing checklist entry speech
           ret = Current.CheckList.EntrySpeechBytes;
-          this.isEntryPlayed = true;
+          this.state.isEntryPlayed = true;
           isThisLastChecklistSpeech = false;
+          isOneChecklistItemCompleted = false;
         }
-        else if (currentItemIndex < Current.Items.Count)
+        else if (state.currentItemIndex < Current.Items.Count)
         {
           // play checklist item and increase index
-          if (isCallPlayed == false)
+          if (this.state.isCallPlayed == false)
           {
-            ret = Current.Items[currentItemIndex].CheckItem.Call.Bytes;
-            isCallPlayed = true;
+            ret = Current.Items[state.currentItemIndex].CheckItem.Call.Bytes;
+            this.state.isCallPlayed = true;
 
-            if (!this.readConfirmations)
+            if (!this.sett.readConfirmations)
             {
-              currentItemIndex++;
-              isCallPlayed = false;
+              state.currentItemIndex++;
+              this.state.isCallPlayed = false;
+              isOneChecklistItemCompleted = state.currentItemIndex != Current.Items.Count;
             }
+            isOneChecklistItemCompleted = false;
           }
           else
           {
-            ret = Current.Items[currentItemIndex].CheckItem.Confirmation.Bytes;
-            currentItemIndex++;
-            isCallPlayed = false;
+            ret = Current.Items[state.currentItemIndex].CheckItem.Confirmation.Bytes;
+            state.currentItemIndex++;
+            this.state.isCallPlayed = false;
+            isOneChecklistItemCompleted = state.currentItemIndex != Current.Items.Count;
           }
           isThisLastChecklistSpeech = false;
         }
@@ -185,6 +238,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           // playing at the end
           ret = Current.CheckList.ExitSpeechBytes;
           isThisLastChecklistSpeech = true;
+          isOneChecklistItemCompleted = true;
         }
         return ret;
       }

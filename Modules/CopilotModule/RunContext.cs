@@ -3,7 +3,8 @@ using ChlaotModuleBase.ModuleUtils.StateChecking;
 using CopilotModule;
 using ELogging;
 using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
+using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
@@ -88,9 +89,8 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
     internal void Stop()
     {
-      throw new NotImplementedException();
-      //this.simConManager.SimSecondElapsed -= SimConManager_SimSecondElapsed;
-      //Log(LogLevel.INFO, "Stopped");
+      // intentionally blank; Run does "StartAsync()", once started, repeated start does nothing
+      Log(LogLevel.INFO, "Stopped");
     }
 
     private void EvaluateActives(IEnumerable<SpeechDefinitionVM> readys)
@@ -101,7 +101,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
 
       if (activated != null)
       {
-        Player player = new(activated.SpeechDefinition.Speech.Bytes);
+        AudioPlayer player = new(activated.SpeechDefinition.Speech.Bytes);
         player.PlayAsync();
 
         activated.RunTime.IsReadyToBeSpoken = false;

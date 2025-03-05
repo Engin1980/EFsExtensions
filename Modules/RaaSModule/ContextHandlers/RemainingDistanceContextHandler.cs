@@ -16,6 +16,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
     private RunwayThreshold? lastDistanceThreshold;
     private List<RaasDistance>? lastDistanceThresholdRemainingDistances;
     private int previousIas;
+    private int previousHeight;
 
     public RemainingDistanceContextHandler(ContextHandlerArgs args) : base(args) { }
 
@@ -27,6 +28,8 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
 
       int iasDelta = simData.IndicatedSpeed - previousIas;
       previousIas = simData.IndicatedSpeed;
+      int heightDelta = simData.Height - previousHeight;
+      previousHeight = simData.Height;
 
       var ds = new List<string>();
 
@@ -38,9 +41,13 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
         lastDistanceThreshold = null;
         lastDistanceThresholdRemainingDistances = null;
       }
-      if (iasDelta > 10) //TODO if working, move to thresholds; detects, if plane is deccelerating or moreless stable speed
+      else if (iasDelta > 10) //TODO if working, move to thresholds; detects, if plane is deccelerating or moreless stable speed
       {
         ds.Add($"Plane is not deccelerating (ias-diff={iasDelta}");
+      }
+      else if (heightDelta > 10) //TODO if working, move to thresholds;
+      {
+        ds.Add($"Plane is not descending (height-díff={heightDelta}");
       }
       else
       {

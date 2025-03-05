@@ -11,9 +11,9 @@ using System.Xml.Linq;
 
 namespace Eng.Chlaot.Modules.ChecklistModule.Types.Xml
 {
-  internal static class Deserializer
+  public static class Deserializer
   {
-    internal static CheckSet Deserialize(XDocument doc)
+    public static CheckSet Deserialize(XDocument doc)
     {
       EXml<CheckSet> exml = CreateDeserializer();
       CheckSet ret = exml.Deserialize(doc);
@@ -41,6 +41,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.Xml
         .WithCustomTargetType(typeof(CheckList))
         .WithIgnoredProperty(nameof(CheckList.EntrySpeechBytes))
         .WithIgnoredProperty(nameof(CheckList.ExitSpeechBytes))
+        .WithIgnoredProperty(nameof(CheckList.PausedAlertSpeechBytes))
         .WithCustomPropertyDeserialization(
           nameof(CheckList.Items),
           EXmlHelper.List.CreateForNested<CheckItem>("items", "item"))
@@ -52,13 +53,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule.Types.Xml
             new EXmlHelper.List.DT("randomVariable", typeof(RandomVariable))
           },
           () => new List<Variable>()));
-        //.WithCustomPropertyDeserialization(
-        //  nameof(CheckList.NextChecklistIds),
-        //  (e, t, p, c) =>
-        //  {
-        //    string? val = e.LElementOrNull("nextChecklistId")?.Attribute("id")?.Value;
-        //    EXmlHelper.SetPropertyValue(p, t, val);
-        //  });
       ret.Context.ElementDeserializers.Insert(index++, oed);
 
       ret.Context.ElementDeserializers.Insert(index++, new StateCheckDeserializer());

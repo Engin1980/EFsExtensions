@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Playing;
+﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
 using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
 using Eng.Chlaot.Modules.ChecklistModule;
 using System;
@@ -24,8 +24,9 @@ namespace ChecklistModule
   /// </summary>
   public partial class CtrSettings : Window
   {
+    private const string AUDIO_CHANNEL_NAME = AudioPlayManager.CHANNEL_COPILOT;
     private readonly Settings settings;
-    private readonly AutoPlaybackManager autoPlaybackManager = new AutoPlaybackManager();
+    private readonly AudioPlayManager autoPlaybackManager = new AudioPlayManager();
     public CtrSettings()
     {
       InitializeComponent();
@@ -48,8 +49,8 @@ namespace ChecklistModule
         var a = s.Generate("Landing lights");
         var b = s.Generate("On");
 
-        autoPlaybackManager.Enqueue(a);
-        autoPlaybackManager.Enqueue(b);
+        autoPlaybackManager.Enqueue(a, AUDIO_CHANNEL_NAME);
+        autoPlaybackManager.Enqueue(b, AUDIO_CHANNEL_NAME);
       }
       catch (Exception ex)
       {

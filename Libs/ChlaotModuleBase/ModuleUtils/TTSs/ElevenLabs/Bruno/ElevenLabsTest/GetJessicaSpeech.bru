@@ -1,0 +1,28 @@
+meta {
+  name: GetJessicaSpeech
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://api.elevenlabs.io/v1/text-to-speech/cgSgspJ2msm6clMCkdW9
+  body: json
+  auth: none
+}
+
+headers {
+  xi-api-key: sk_186d99a899fa4d6c54e31e7f211bf6fc02da7af8ba10721e
+}
+
+body:json {
+  {
+    "text": "Gear up - three green",
+    "model_id": "eleven_multilingual_v2",
+    "voice_settings": {
+      "similarity_boost": 0.5,
+      "stability": 0.5,
+      "style": 0.5,
+      "use_speaker_boost": true
+    }
+  }
+}

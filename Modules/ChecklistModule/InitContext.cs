@@ -159,6 +159,9 @@ namespace Eng.Chlaot.Modules.ChecklistModule
 
         if (tmpSpg != null)
         {
+          //FIXME todo here we extend sim-properties with those defined in checklist
+          // this causes issue when the same checklist is loaded again
+          // causing duplicit property definition
           var spg = new SimPropertyGroup();
           spg.Properties.AddRange(this.SimPropertyGroup.Properties);
           spg.Properties.Add(tmpSpg);
@@ -319,6 +322,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         checklist.CustomExitSpeech != null
         ? checklist.CustomExitSpeech.Bytes
         : synthetizer.Generate($"{checklist.CallSpeech} checklist completed");
+      checklist.PausedAlertSpeechBytes =
+        checklist.CustomPausedAlertSpeech != null
+        ? checklist.CustomPausedAlertSpeech.Bytes
+        : synthetizer.Generate($"{checklist.CallSpeech} checklist pending");
     }
 
     private void InitializeSoundStreamsForItems(
