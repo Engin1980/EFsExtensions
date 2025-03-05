@@ -1,5 +1,7 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs;
 using Eng.EFsExtensions.Modules.CopilotModule;
 using System;
 using System.Collections.Generic;
@@ -16,7 +18,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace CopilotModule
+namespace Eng.EFsExtensions.Modules.CopilotModule
 {
   /// <summary>
   /// Interaction logic for CtrSettings.xaml
@@ -24,8 +26,8 @@ namespace CopilotModule
   public partial class CtrSettings : Window
   {
     private const string AUDIO_CHANNEL_NAME = AudioPlayManager.CHANNEL_COPILOT;
+    private readonly MsSapiModule msSapiModule = new();
     private readonly Settings settings;
-    private readonly AudioPlayManager autoPlaybackManager = new AudioPlayManager();
 
     public CtrSettings()
     {
@@ -40,24 +42,27 @@ namespace CopilotModule
     }
 
     [SuppressMessage("", "IDE1006")]
-    private void btnTestSynthetizer_Click(object sender, RoutedEventArgs e)
+    private async void btnTestSynthetizer_Click(object sender, RoutedEventArgs e)
     {
       btnTestSynthetizer.IsEnabled = false;
-      try
+      Task t = new(() =>
       {
-        Synthetizer s = new(settings.Synthetizer);
-        var a = s.Generate("Transition level");
+        ChannelAudioPlayer cap = new();
+        try
+        {
+          ITtsProvider provider = msSapiModule.GetProvider(settings.Synthetizer);
+          var a = provider.Convert("Transition level");
 
-        autoPlaybackManager.Enqueue(a, AUDIO_CHANNEL_NAME);
-      }
-      catch (Exception ex)
-      {
-        throw new ApplicationException("Failed to generate or play.", ex);
-      }
-      finally
-      {
-        btnTestSynthetizer.IsEnabled = true;
-      }
+          cap.PlayAndWait(a, AUDIO_CHANNEL_NAME);
+        }
+        catch (Exception ex)
+        {
+          throw new ApplicationException("Failed to generate or play.", ex);
+        }
+      });
+      t.Start();
+      await t;
+      btnTestSynthetizer.IsEnabled = true;
     }
 
     private void Window_Closed(object sender, EventArgs e)

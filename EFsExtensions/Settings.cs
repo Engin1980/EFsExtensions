@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Chlaot
+namespace Eng.EFsExtensions.App
 {
   [Serializable]
   public class Settings

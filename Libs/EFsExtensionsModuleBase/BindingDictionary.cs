@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFsExtensionsModuleBase
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase
 {
   //TODO probably unused, delete
   public class BindingDictionary<K, V> : BindingList<BindingKeyValue<K, V?>> where K : notnull

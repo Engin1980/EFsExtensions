@@ -1,4 +1,4 @@
-﻿using AffinityModule;
+﻿using Eng.EFsExtensions.Modules.AffinityModule;
 using ELogging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils;

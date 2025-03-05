@@ -1,4 +1,4 @@
-﻿using EFsExtensionsModuleBase;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ESystem;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
-using EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
 using System.Windows.Forms.VisualStyles;
 using System.Runtime.CompilerServices;
 

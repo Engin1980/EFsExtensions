@@ -1,6 +1,5 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
-using Eng.EFsExtensions.Modules.CopilotModule.Types;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using System;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Xml.Linq;
 
-namespace Eng.EFsExtensions.CopilotModule.Types.Xml
+namespace Eng.EFsExtensions.Modules.CopilotModule.Types.Xml
 {
   public static class Deserializer
   {

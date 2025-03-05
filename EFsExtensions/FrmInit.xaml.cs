@@ -30,7 +30,7 @@ using static System.Net.Mime.MediaTypeNames;
 using ModuleRestoreDict = System.Collections.Generic.Dictionary<string, string>;
 using ModulesRestoreData = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>>;
 
-namespace Chlaot
+namespace Eng.EFsExtensions.App
 {
   /// <summary>
   /// Interaction logic for MainWindow.xaml

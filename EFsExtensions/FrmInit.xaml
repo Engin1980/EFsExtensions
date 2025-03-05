@@ -1,10 +1,10 @@
-﻿<Window x:Class="Chlaot.FrmInit"
+﻿<Window x:Class="Eng.EFsExtensions.App.FrmInit"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Chlaot"
-        xmlns:converters="clr-namespace:Chlaot.Converters"
+        xmlns:local="clr-namespace:Eng.EFsExtensions.App"
+        xmlns:converters="clr-namespace:Eng.EFsExtensions.App.Converters"
         mc:Ignorable="d"
         Title="FrmInit" Height="600" Width="1200" Initialized="Window_Initialized">
   <Window.Resources>

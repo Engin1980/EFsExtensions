@@ -1,4 +1,4 @@
-﻿using EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.Exceptions;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.Exceptions;
 using ESimConnect;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFsExtensionsModuleBase.ModuleUtils.SimConWrapping
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping
 {
   public abstract class SimConWrapper
   {

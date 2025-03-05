@@ -1,5 +1,4 @@
-﻿using CopilotModule;
-using ELogging;
+﻿using ELogging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
@@ -17,13 +16,13 @@ using System.Text;
 using static ESystem.Functions.TryCatch;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 using ESystem;
 using static Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
 using Eng.EFsExtensions.Modules.CopilotModule.Types.VMs;
-using EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
 using ESystem.Miscelaneous;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs;
 
 namespace Eng.EFsExtensions.Modules.CopilotModule
 {
@@ -110,7 +109,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
           if (doc.Root!.LElementOrNull("properties") is XElement pelm)
             // workaround due to WPF binding refresh
             tmpSpg = SimPropertyGroup.Deserialize(pelm);
-          tmp = Eng.EFsExtensions.CopilotModule.Types.Xml.Deserializer.Deserialize(doc);
+          tmp = Types.Xml.Deserializer.Deserialize(doc);
         }
         catch (Exception ex)
         {
@@ -172,7 +171,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
     private void BuildSpeech(
       SpeechDefinitionVM speechDefinitionVM,
       Dictionary<string, byte[]> generatedSounds,
-      Synthetizer synthetizer,
+      ITtsProvider synthetizer,
       string relativePath)
     {
       Speech speech = speechDefinitionVM.SpeechDefinition.Speech;
@@ -195,7 +194,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
             speech.Bytes = generatedSounds[txt];
           else
           {
-            speech.Bytes = synthetizer.Generate(txt);
+            speech.Bytes = synthetizer.Convert(txt);
             generatedSounds[txt] = speech.Bytes;
           }
         }
@@ -287,7 +286,8 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
 
     private void InitializeSoundStreams(BindingList<SpeechDefinitionVM> speechDefinitions, string relativePath)
     {
-      Synthetizer synthetizer = new(Settings.Synthetizer);
+      MsSapiModule module = new MsSapiModule();
+      ITtsProvider synthetizer = module.GetProvider(Settings.Synthetizer);
       Dictionary<string, byte[]> generatedSounds = new();
       foreach (var sd in speechDefinitions)
       {
@@ -317,13 +317,15 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
 
     private void Variable_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+      MsSapiModule module = new MsSapiModule();
+      ITtsProvider synthetizer = module.GetProvider(Settings.Synthetizer);
       VariableVM vvm = (VariableVM)sender!;
       UserVariable variable = (UserVariable)vvm.Variable;
       SpeechDefinitionVM sd = this.SpeechDefinitionVMs.First(q => q.Variables.Any(q => q.Variable == variable));
       if (sd.SpeechDefinition.Speech.Type == Speech.SpeechType.Speech
         && sd.SpeechDefinition.Speech.GetUsedVariables().Any(q => q == variable.Name))
       {
-        BuildSpeech(sd, new(), new Synthetizer(this.Settings.Synthetizer), "");
+        BuildSpeech(sd, new(), synthetizer, "");
       }
 
       UpdateReadyFlag();

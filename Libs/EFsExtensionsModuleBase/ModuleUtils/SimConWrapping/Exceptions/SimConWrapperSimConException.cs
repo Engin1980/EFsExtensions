@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.Exceptions
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.Exceptions
 {
   public class SimConWrapperSimConException : Exception
   {

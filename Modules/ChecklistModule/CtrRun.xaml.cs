@@ -18,7 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ChecklistModule
+namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
   /// <summary>
   /// Interaction logic for RunControl.xaml

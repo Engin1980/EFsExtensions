@@ -1,5 +1,5 @@
-﻿using EFsExtensionsModuleBase;
-using EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
 using System;
 using System.Collections.Generic;

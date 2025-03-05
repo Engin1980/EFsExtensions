@@ -12,7 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Chlaot
+namespace Eng.EFsExtensions.App
 {
   /// <summary>
   /// Interaction logic for FrmResetOrQuit.xaml

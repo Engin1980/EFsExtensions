@@ -1,5 +1,6 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
       set => base.UpdateProperty(nameof(LogSimConnectToFile), value);
     }
 
-    public SynthetizerSettings Synthetizer { get; set; } = new();
+    public MsSapiSettings Synthetizer { get; set; } = new();
 
     public static Settings Load()
     {

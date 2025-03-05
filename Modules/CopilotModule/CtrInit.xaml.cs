@@ -20,7 +20,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CopilotModule
+namespace Eng.EFsExtensions.Modules.CopilotModule
 {
   /// <summary>
   /// Interaction logic for CtrInit.xaml

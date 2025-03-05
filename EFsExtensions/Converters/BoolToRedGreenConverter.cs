@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Chlaot.Converters
+namespace Eng.EFsExtensions.App.Converters
 {
   internal class BoolToRedGreenConverter : IValueConverter
   {

@@ -1,5 +1,4 @@
-﻿using EFsExtensionsModuleBase;
-using Eng.EFsExtensions.EFsExtensionsModuleBase;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents;
 using ESystem.Asserting;

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using static ESystem.Functions.TryCatch;
 
-namespace EFsExtensionsModuleBase.ModuleUtils.WPF.VMs
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs
 {
   public abstract class GenericVMS<VM, TItem> : BindingList<VM> where VM : WithValueVM where TItem : notnull
   {

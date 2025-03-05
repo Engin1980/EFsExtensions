@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Chlaot
+namespace Eng.EFsExtensions.App
 {
   internal class LogHelper
   {

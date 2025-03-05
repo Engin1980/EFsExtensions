@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EFsExtensionsModuleBase.ModuleUtils.StateChecking
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking
 {
   [AttributeUsage(AttributeTargets.Property)]
   public class StateCheckNameAttribute : Attribute

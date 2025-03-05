@@ -22,7 +22,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
-namespace ChecklistModule
+namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
   /// <summary>
   /// Interaction logic for UserControl1.xaml

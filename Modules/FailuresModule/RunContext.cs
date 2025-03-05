@@ -1,5 +1,4 @@
-﻿using EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.Exceptions;
-using ELogging;
+﻿using ELogging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
@@ -13,6 +12,7 @@ using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.VMs;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers;
 using ESystem.Miscelaneous;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.Exceptions;
 
 namespace Eng.EFsExtensions.Modules.FailuresModule
 {

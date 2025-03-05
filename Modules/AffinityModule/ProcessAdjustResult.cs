@@ -1,4 +1,4 @@
-﻿using AffinityModule;
+﻿using Eng.EFsExtensions.Modules.AffinityModule;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

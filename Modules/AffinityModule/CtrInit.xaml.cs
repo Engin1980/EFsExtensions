@@ -17,7 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AffinityModule
+namespace Eng.EFsExtensions.Modules.AffinityModule
 {
   /// <summary>
   /// Interaction logic for UserControl1.xaml

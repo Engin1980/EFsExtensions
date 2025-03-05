@@ -1,12 +1,12 @@
 ﻿using ELogging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.Modules.SimVarTestModule.Model;
 using ESimConnect;
 using ESimConnect.Definitions;
 using ESystem;
 using ESystem.Exceptions;
 using ESystem.Miscelaneous;
 using Microsoft.Windows.Themes;
-using SimVarTestModule.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
