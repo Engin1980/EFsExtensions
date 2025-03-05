@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.Chlaot.Modules.RaaSModule
+namespace Eng.EFsExtensions.Modules.RaaSModule
 {
   /// <summary>
   /// Interaction logic for CtrRun.xaml

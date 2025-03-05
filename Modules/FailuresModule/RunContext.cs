@@ -1,20 +1,20 @@
-﻿using ChlaotModuleBase.ModuleUtils.SimConWrapping.Exceptions;
+﻿using EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.Exceptions;
 using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
-using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
-using Eng.Chlaot.Modules.FailuresModule.Model.VMs;
-using Eng.Chlaot.Modules.FailuresModule.Model.Sustainers;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.VMs;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers;
 using ESystem.Miscelaneous;
 
-namespace Eng.Chlaot.Modules.FailuresModule
+namespace Eng.EFsExtensions.Modules.FailuresModule
 {
   public class RunContext : NotifyPropertyChanged
   {

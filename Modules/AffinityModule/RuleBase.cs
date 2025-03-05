@@ -1,7 +1,7 @@
 ﻿using AffinityModule;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
-using Eng.Chlaot.Modules.AffinityModule;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable;
+using Eng.EFsExtensions.Modules.AffinityModule;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +10,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.AffinityModule
+namespace Eng.EFsExtensions.Modules.AffinityModule
 {
   public class RuleBase : StorableObject
   {

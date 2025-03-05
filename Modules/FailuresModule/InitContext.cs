@@ -1,12 +1,12 @@
 ﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using ESystem;
 using static ESystem.Functions.TryCatch;
 using EXmlLib;
 using EXmlLib.Deserializers;
-using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
-using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
-using Eng.Chlaot.Modules.FailuresModule.Types;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.Failures;
+using Eng.EFsExtensions.Modules.FailuresModule.Types;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +15,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 using System.Drawing.Text;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.IO.IsolatedStorage;
 using ESystem.Miscelaneous;
 
-namespace Eng.Chlaot.Modules.FailuresModule
+namespace Eng.EFsExtensions.Modules.FailuresModule
 {
   public class InitContext : NotifyPropertyChanged
   {
@@ -79,7 +79,7 @@ namespace Eng.Chlaot.Modules.FailuresModule
     internal void LoadDefaultFailures()
     {
       this.logger.Log(LogLevel.INFO, "Loading default failures...");
-      var fdg = Eng.Chlaot.Modules.FailuresModule.Model.Failures.Xml.Deserialization.Deserialize(@".\Xmls\FailureDefinitions.xml");
+      var fdg = Eng.EFsExtensions.Modules.FailuresModule.Model.Failures.Xml.Deserialization.Deserialize(@".\Xmls\FailureDefinitions.xml");
       FailureDefinitions = fdg.Items;
       FailureDefinitionsFlat = FailureDefinition.Flatten(fdg.Items);
       this.logger.Log(LogLevel.INFO, "Loading default failures - done...");
@@ -109,14 +109,14 @@ namespace Eng.Chlaot.Modules.FailuresModule
           ex => throw new ApplicationException($"Unable to load xml file '{xmlFile}'.", ex));
 
         MetaInfo tmpMeta = MetaInfo.Deserialize(doc);
-        IncidentGroup tmpData = Try(() => Eng.Chlaot.Modules.FailuresModule.Model.Incidents.Xml.Deserialization.Deserialize(doc.Root!, this.FailureDefinitionsFlat),
+        IncidentGroup tmpData = Try(() => Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents.Xml.Deserialization.Deserialize(doc.Root!, this.FailureDefinitionsFlat),
           ex => throw new ApplicationException("Unable to read/deserialize copilot-set from '{xmlFile}'. Invalid file content?", ex));
 
         logger.Invoke(LogLevel.INFO, $"Aplying file-defined failure definitions");
         if (doc.Root!.LElementOrNull("definitions") is XElement elm) //non-null check
           Try(() =>
           {
-            var failDefs = Eng.Chlaot.Modules.FailuresModule.Model.Failures.Xml.Deserialization.Deserialize(elm);
+            var failDefs = Eng.EFsExtensions.Modules.FailuresModule.Model.Failures.Xml.Deserialization.Deserialize(elm);
             FailureDefinition.MergeFailureDefinitions(this.FailureDefinitions, failDefs);
             FailureDefinitionsFlat = FailureDefinition.Flatten(this.FailureDefinitions);
           },

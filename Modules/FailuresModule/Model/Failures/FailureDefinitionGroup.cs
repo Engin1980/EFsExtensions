@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Failures
 {
   public class FailureDefinitionGroup : FailureDefinitionBase, IXmlObjectPostDeserialize
   {

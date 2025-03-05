@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.Chlaot.Modules.SimVarTestModule.Controls
+namespace Eng.EFsExtensions.Modules.SimVarTestModule.Controls
 {
   /// <summary>
   /// Interaction logic for NewValue.xaml

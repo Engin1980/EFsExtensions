@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.CopilotModule;
+﻿using Eng.EFsExtensions.Modules.CopilotModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;

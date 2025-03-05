@@ -1,6 +1,6 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
-using Eng.Chlaot.Modules.ChecklistModule;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
+using Eng.EFsExtensions.Modules.ChecklistModule;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

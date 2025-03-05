@@ -1,5 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
-using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.Failures;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ using System.Windows.Media.TextFormatting;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.Chlaot.Modules.FailuresModule
+namespace Eng.EFsExtensions.Modules.FailuresModule
 {
     /// <summary>
     /// Interaction logic for CtrInit.xaml

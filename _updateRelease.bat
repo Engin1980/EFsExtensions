@@ -1,11 +1,11 @@
 deltree -Y _Release
 mkdir _Release
-mkdir .\_Release\Chlaot
-copy readme.md .\_Release\Chlaot\_Readme.md
-copy License .\_Release\Chlaot\_License.txt
-xcopy /e /i /Y Chlaot\bin\debug\net6.0-windows\* .\_Release\Chlaot
+mkdir .\_Release\EFsExtensions
+copy readme.md .\_Release\EFsExtensions\_Readme.md
+copy License .\_Release\EFsExtensions\_License.txt
+xcopy /e /i /Y \EFsExtensions\bin\debug\net6.0-windows\* .\_Release\EFsExtensions
 cd .\_Release
-tar.exe -c -f Chlaot.zip Chlaot
+tar.exe -c -f EFsExtensions.zip EFsExtensions
 
 
 

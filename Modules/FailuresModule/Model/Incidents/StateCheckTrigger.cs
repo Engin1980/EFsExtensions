@@ -1,8 +1,8 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 using ESystem.Asserting;
 using EXmlLib.Interfaces;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents
 {
   public class CheckStateTrigger : Trigger, IXmlObjectPostDeserialize
   {

@@ -1,5 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;
-using Eng.Chlaot.Modules.RaaSModule.Model;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;
+using Eng.EFsExtensions.Modules.RaaSModule.Model;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace Eng.Chlaot.Modules.RaaSModule.Converters
+namespace Eng.EFsExtensions.Modules.RaaSModule.Converters
 {
   internal class RaasDistanceIsValidSolidBrushConverter : TypedConverter<string, SolidColorBrush>
   {

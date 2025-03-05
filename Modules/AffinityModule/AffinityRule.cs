@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
-namespace Eng.Chlaot.Modules.AffinityModule
+namespace Eng.EFsExtensions.Modules.AffinityModule
 {
   public class AffinityRule : AbstractRule
   {

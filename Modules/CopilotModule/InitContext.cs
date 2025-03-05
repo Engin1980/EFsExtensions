@@ -1,13 +1,13 @@
 ﻿using CopilotModule;
 using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
-using Eng.Chlaot.Modules.CopilotModule.Types;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.StateModel;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
+using Eng.EFsExtensions.Modules.CopilotModule.Types;
 using EXmlLib;
 using System;
 using System.Collections.Generic;
@@ -17,15 +17,15 @@ using System.Text;
 using static ESystem.Functions.TryCatch;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using ChlaotModuleBase.ModuleUtils.StateChecking;
+using EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 using ESystem;
-using static Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
-using Eng.Chlaot.Modules.CopilotModule.Types.VMs;
-using ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
+using static Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
+using Eng.EFsExtensions.Modules.CopilotModule.Types.VMs;
+using EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
 using ESystem.Miscelaneous;
 
-namespace Eng.Chlaot.Modules.CopilotModule
+namespace Eng.EFsExtensions.Modules.CopilotModule
 {
   public class InitContext : NotifyPropertyChanged
   {
@@ -110,7 +110,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
           if (doc.Root!.LElementOrNull("properties") is XElement pelm)
             // workaround due to WPF binding refresh
             tmpSpg = SimPropertyGroup.Deserialize(pelm);
-          tmp = Eng.Chlaot.CopilotModule.Types.Xml.Deserializer.Deserialize(doc);
+          tmp = Eng.EFsExtensions.CopilotModule.Types.Xml.Deserializer.Deserialize(doc);
         }
         catch (Exception ex)
         {

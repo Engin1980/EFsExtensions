@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsd:schema id="Schema"
-            targetNamespace="http://chlaot.org/checklists.xsd"
+            targetNamespace="http://github.com/EFS-Extensions/xmls/checklists.xsd"
             elementFormDefault="qualified"
-            xmlns="http://chlaot.org/checklists.xsd"
+            xmlns="http://github.com/EFS-Extensions/xmls/checklists.xsd"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns:g ="http://chlaot.org/global.xsd"
+            xmlns:g ="http://github.com/EFS-Extensions/xmls/global.xsd"
 >
-  <xsd:import namespace="http://chlaot.org/global.xsd" schemaLocation="Global.xsd" />
+  <xsd:import namespace="http://github.com/EFS-Extensions/xmls/global.xsd" schemaLocation="Global.xsd" />
 
   <xsd:element name="checklistSet">
     <xsd:complexType>

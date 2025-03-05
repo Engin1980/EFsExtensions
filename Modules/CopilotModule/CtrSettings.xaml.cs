@@ -1,6 +1,6 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
-using Eng.Chlaot.Modules.CopilotModule;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
+using Eng.EFsExtensions.Modules.CopilotModule;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;

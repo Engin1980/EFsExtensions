@@ -14,7 +14,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Eng.Chlaot.Modules.AffinityModule
+namespace Eng.EFsExtensions.Modules.AffinityModule
 {
   internal class ProcessAdjuster : IDisposable
   {

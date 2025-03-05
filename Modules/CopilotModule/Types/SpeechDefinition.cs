@@ -1,8 +1,8 @@
-﻿using ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
+﻿using EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.StateModel;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
 using ESystem.Asserting;
 using EXmlLib.Interfaces;
 using System;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.CopilotModule.Types
+namespace Eng.EFsExtensions.Modules.CopilotModule.Types
 {
   public class SpeechDefinition : IXmlObjectPostDeserialize
   {

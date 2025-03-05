@@ -1,4 +1,4 @@
-﻿//using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
+﻿//using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable;
 //using System;
 //using System.Collections.Generic;
 //using System.ComponentModel;
@@ -6,7 +6,7 @@
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace Eng.Chlaot.Modules.AffinityModule
+//namespace Eng.EFsExtensions.Modules.AffinityModule
 //{
 //  public class Settings : StorableObject
 //  {

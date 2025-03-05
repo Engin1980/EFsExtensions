@@ -1,11 +1,11 @@
-﻿//using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
+﻿//using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils;
 //using System;
 //using System.Collections.Generic;
 //using System.Linq;
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents
+//namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents
 //{
 //    public class IncidentTopGroup : IncidentGroup
 //    {

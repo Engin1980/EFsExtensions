@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.ChecklistModule.Types;
+﻿using Eng.EFsExtensions.Modules.ChecklistModule.Types;
 using ESystem.Miscelaneous;
 
 namespace ChecklistTTS.Model

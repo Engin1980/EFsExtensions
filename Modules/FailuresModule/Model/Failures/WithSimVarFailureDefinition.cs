@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Failures
 {
   public abstract class WithSimVarFailureDefinition : FailureDefinition
   {

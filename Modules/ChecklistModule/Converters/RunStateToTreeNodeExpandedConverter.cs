@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
+﻿using Eng.EFsExtensions.Modules.ChecklistModule.Types.VM;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace Eng.Chlaot.Modules.ChecklistModule.Converters
+namespace Eng.EFsExtensions.Modules.ChecklistModule.Converters
 {
   internal class RunStateToTreeNodeExpandedConverter : IValueConverter
   {

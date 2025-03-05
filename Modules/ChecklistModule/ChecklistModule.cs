@@ -1,6 +1,6 @@
 ﻿using ChecklistModule;
 using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using ESystem;
 using ESystem.Miscelaneous;
 using System;
@@ -10,9 +10,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using static Eng.Chlaot.ChlaotModuleBase.IModule;
+using static Eng.EFsExtensions.EFsExtensionsModuleBase.IModule;
 
-namespace Eng.Chlaot.Modules.ChecklistModule
+namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
   public class ChecklistModule : NotifyPropertyChanged, IModule
   {

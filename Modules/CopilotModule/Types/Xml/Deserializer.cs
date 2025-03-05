@@ -1,6 +1,6 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.Modules.CopilotModule.Types;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.Modules.CopilotModule.Types;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using System;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Xml.Linq;
 
-namespace Eng.Chlaot.CopilotModule.Types.Xml
+namespace Eng.EFsExtensions.CopilotModule.Types.Xml
 {
   public static class Deserializer
   {

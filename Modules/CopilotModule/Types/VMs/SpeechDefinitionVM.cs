@@ -1,9 +1,9 @@
-﻿using ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
-using Eng.Chlaot.Modules.CopilotModule.Types;
+﻿using EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
+using Eng.EFsExtensions.Modules.CopilotModule.Types;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.CopilotModule.Types.VMs
+namespace Eng.EFsExtensions.Modules.CopilotModule.Types.VMs
 {
   public class SpeechDefinitionVM : NotifyPropertyChanged
   {

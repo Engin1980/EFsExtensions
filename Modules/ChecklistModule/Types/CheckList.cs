@@ -1,7 +1,7 @@
-﻿using ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
+﻿using EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
 using ESystem.Asserting;
 using EXmlLib.Attributes;
 using EXmlLib.Interfaces;
@@ -12,7 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.ChecklistModule.Types
+namespace Eng.EFsExtensions.Modules.ChecklistModule.Types
 {
   public class CheckList : IXmlObjectPostDeserialize
   {

@@ -8,7 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 
-namespace Eng.Chlaot.Modules.CopilotModule.Converters
+namespace Eng.EFsExtensions.Modules.CopilotModule.Converters
 {
   public class VariableValueConverter : IValueConverter
   {
