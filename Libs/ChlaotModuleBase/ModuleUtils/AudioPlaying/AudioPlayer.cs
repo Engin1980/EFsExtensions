@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying
 {
   public class AudioPlayer
   {

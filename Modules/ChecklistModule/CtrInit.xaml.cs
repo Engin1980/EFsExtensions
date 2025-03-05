@@ -1,10 +1,10 @@
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs;
-using Eng.Chlaot.Modules.ChecklistModule;
-using Eng.Chlaot.Modules.ChecklistModule.Types;
-using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.ElevenLabs;
+using Eng.EFsExtensions.Modules.ChecklistModule;
+using Eng.EFsExtensions.Modules.ChecklistModule.Types;
+using Eng.EFsExtensions.Modules.ChecklistModule.Types.VM;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;

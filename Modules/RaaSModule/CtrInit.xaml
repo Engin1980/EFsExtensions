@@ -1,12 +1,12 @@
-﻿<UserControl x:Class="Eng.Chlaot.Modules.RaaSModule.CtrInit"
+﻿<UserControl x:Class="Eng.EFsExtensions.Modules.RaaSModule.CtrInit"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Eng.Chlaot.Modules.RaaSModule"
-             xmlns:cvt="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"             
-             xmlns:lcvt ="clr-namespace:Eng.Chlaot.Modules.RaaSModule.Converters"
-             xmlns:nav="clr-namespace:Eng.Chlaot.Libs.AirportsLib;assembly=AirportsLib"
+             xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.RaaSModule"
+             xmlns:cvt="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;assembly=EFsExtensionsModuleBase"             
+             xmlns:lcvt ="clr-namespace:Eng.EFsExtensions.Modules.RaaSModule.Converters"
+             xmlns:nav="clr-namespace:Eng.EFsExtensions.Libs.AirportsLib;assembly=AirportsLib"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>

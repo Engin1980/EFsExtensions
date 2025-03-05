@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows;
-using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents;
 
-namespace Eng.Chlaot.Modules.FailuresModule
+namespace Eng.EFsExtensions.Modules.FailuresModule
 {
   public class TriggerTemplateSelector : DataTemplateSelector
   {

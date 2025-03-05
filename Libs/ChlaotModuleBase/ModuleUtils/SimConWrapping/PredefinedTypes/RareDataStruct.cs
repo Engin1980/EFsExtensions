@@ -2,7 +2,7 @@
 using ESimConnect.Definitions;
 using System.Runtime.InteropServices;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes
 {
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     internal struct RareDataStruct

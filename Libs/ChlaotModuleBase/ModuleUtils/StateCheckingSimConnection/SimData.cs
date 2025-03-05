@@ -1,5 +1,5 @@
-﻿//using Eng.Chlaot.ChlaotModuleBase;
-//using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+﻿//using Eng.EFsExtensions.EFsExtensionsModuleBase;
+//using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 //using System;
 //using System.Collections.Generic;
 //using System.Collections.ObjectModel;
@@ -7,7 +7,7 @@
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
+//namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateCheckingSimConnection
 //{
 //    public class SimData : NotifyPropertyChangedBase
 //    {

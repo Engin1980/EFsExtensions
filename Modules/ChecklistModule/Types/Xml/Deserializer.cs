@@ -1,5 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using System;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Eng.Chlaot.Modules.ChecklistModule.Types.Xml
+namespace Eng.EFsExtensions.Modules.ChecklistModule.Types.Xml
 {
   public static class Deserializer
   {

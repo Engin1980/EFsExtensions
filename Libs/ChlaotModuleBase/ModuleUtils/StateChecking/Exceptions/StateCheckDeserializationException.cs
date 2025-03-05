@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.Exceptions
 {
     public class StateCheckDeserializationException : ApplicationException
     {

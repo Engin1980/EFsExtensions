@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Controls
+namespace Eng.EFsExtensions.Modules.FailuresModule.Controls
 {
   /// <summary>
   /// Interaction logic for NumericUpDown.xaml

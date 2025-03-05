@@ -1,9 +1,9 @@
 ﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
-using Eng.Chlaot.Libs.AirportsLib;
-using Eng.Chlaot.Modules.RaaSModule.Model;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
+using Eng.EFsExtensions.Libs.AirportsLib;
+using Eng.EFsExtensions.Modules.RaaSModule.Model;
 using ESystem.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
+namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
 {
   internal abstract class ContextHandler
   {

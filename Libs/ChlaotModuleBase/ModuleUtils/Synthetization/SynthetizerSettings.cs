@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization
 {
   public class SynthetizerSettings : NotifyPropertyChanged
   {

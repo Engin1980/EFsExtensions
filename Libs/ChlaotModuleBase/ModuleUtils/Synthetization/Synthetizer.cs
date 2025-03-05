@@ -8,7 +8,7 @@ using System.Speech.Synthesis;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization
 {
   public class Synthetizer
   {

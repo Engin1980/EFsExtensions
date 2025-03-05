@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chlaot", "Chlaot\Chlaot.csproj", "{73DED221-41F9-411A-9CFF-2ABEA5964D93}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFsExtensions", "Chlaot\EFsExtensions.csproj", "{73DED221-41F9-411A-9CFF-2ABEA5964D93}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{50476E83-616C-4626-99B3-011038C60496}"
 EndProject
@@ -62,7 +62,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Copilot", "Copilot", "{6F1E
 		Xmls\copilot\test.copilot.xml = Xmls\copilot\test.copilot.xml
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ChlaotModuleBase", "Libs\ChlaotModuleBase\ChlaotModuleBase.csproj", "{F6F98E28-4EE9-433F-A410-5462B1394BF7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EFsExtensionsModuleBase", "Libs\ChlaotModuleBase\EFsExtensionsModuleBase.csproj", "{F6F98E28-4EE9-433F-A410-5462B1394BF7}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AffinityModule", "Modules\AffinityModule\AffinityModule.csproj", "{9FC2774B-0B9F-4D23-8704-1B215161ACED}"
 EndProject

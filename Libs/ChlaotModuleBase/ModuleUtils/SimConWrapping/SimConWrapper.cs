@@ -1,4 +1,4 @@
-﻿using ChlaotModuleBase.ModuleUtils.SimConWrapping.Exceptions;
+﻿using EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.Exceptions;
 using ESimConnect;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ChlaotModuleBase.ModuleUtils.SimConWrapping
+namespace EFsExtensionsModuleBase.ModuleUtils.SimConWrapping
 {
   public abstract class SimConWrapper
   {

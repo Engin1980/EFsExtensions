@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents
 {
     public abstract class Incident
     {

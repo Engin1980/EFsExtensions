@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.MSAPI
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MSAPI
 {
   public class MSapiModule : TtsModule<MSapiProvider, MSapiSettings>
   {

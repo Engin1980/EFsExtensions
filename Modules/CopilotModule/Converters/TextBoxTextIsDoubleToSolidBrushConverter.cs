@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace Eng.Chlaot.Modules.CopilotModule.Converters
+namespace Eng.EFsExtensions.Modules.CopilotModule.Converters
 {
   internal class TextBoxTextIsDoubleToSolidBrushConverter : IValueConverter
   {

@@ -1,6 +1,6 @@
-﻿using ChlaotModuleBase.ModuleUtils.SimConWrapping;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
+﻿using EFsExtensionsModuleBase.ModuleUtils.SimConWrapping;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConExtenders;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping;
 using ESimConnect;
 using ESystem.Asserting;
 using System;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Markup;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
 {
   public class SimObject
   {

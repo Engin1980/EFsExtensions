@@ -1,5 +1,5 @@
 ﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying
 {
   public class AudioPlayManager : IDisposable
   {

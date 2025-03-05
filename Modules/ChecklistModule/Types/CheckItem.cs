@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.ChecklistModule.Types
+namespace Eng.EFsExtensions.Modules.ChecklistModule.Types
 {
   public class CheckItem : IXmlObjectPostDeserialize
   {

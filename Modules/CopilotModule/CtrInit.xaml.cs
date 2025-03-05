@@ -1,8 +1,8 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
-using Eng.Chlaot.Modules.CopilotModule;
-using Eng.Chlaot.Modules.CopilotModule.Types;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable;
+using Eng.EFsExtensions.Modules.CopilotModule;
+using Eng.EFsExtensions.Modules.CopilotModule.Types;
 using ESystem.Exceptions;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;

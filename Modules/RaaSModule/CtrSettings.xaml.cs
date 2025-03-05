@@ -1,6 +1,6 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -19,7 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Eng.Chlaot.Modules.RaaSModule.CopilotModule
+namespace Eng.EFsExtensions.Modules.RaaSModule.CopilotModule
 {
   /// <summary>
   /// Interaction logic for CtrSettings.xaml

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase
 {
   public class ModuleSetUpInfo
   {

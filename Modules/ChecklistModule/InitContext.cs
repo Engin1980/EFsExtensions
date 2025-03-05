@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using System;
@@ -15,28 +15,28 @@ using System.Xml.Serialization;
 using System.Reflection.Metadata.Ecma335;
 using System.Security.Policy;
 using ELogging;
-using Eng.Chlaot.Modules.ChecklistModule.Types;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
-using Eng.Chlaot.Modules.ChecklistModule.Types.Xml;
+using Eng.EFsExtensions.Modules.ChecklistModule.Types;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.StateModel;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils;
+using Eng.EFsExtensions.Modules.ChecklistModule.Types.Xml;
 using static ESystem.Functions.TryCatch;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
-using ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+using EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 
 using static System.Net.WebRequestMethods;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
 using ESystem;
 using System.Runtime.CompilerServices;
-using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
-using ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
-using static Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
+using Eng.EFsExtensions.Modules.ChecklistModule.Types.VM;
+using EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
+using static Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.StateCheckUtils;
 using ESystem.Miscelaneous;
 using System.Windows.Markup;
 
-namespace Eng.Chlaot.Modules.ChecklistModule
+namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
   public class InitContext : NotifyPropertyChanged
   {

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs
 {
   public abstract class TtsModule<TtsProviderType, TtsSettingsType> : ITtsModule
     where TtsSettingsType : ITtsSettings, new()

@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs
 {
   public class VariableVM : WithValueVM
   {

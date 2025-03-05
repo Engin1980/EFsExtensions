@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters
 {
   public class BoolToCustomSolidBrushConverter : TypedConverter<bool, SolidColorBrush>
   {

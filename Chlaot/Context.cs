@@ -1,6 +1,6 @@
 ﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.Modules.ChecklistModule;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.Modules.ChecklistModule;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -26,27 +26,27 @@ namespace Chlaot
       IModule module;
 
       logger.Invoke(LogLevel.INFO, "Loading check-list module...");
-      module = new Eng.Chlaot.Modules.ChecklistModule.ChecklistModule();
+      module = new Eng.EFsExtensions.Modules.ChecklistModule.ChecklistModule();
       TryAddModule(module);
 
       logger.Invoke(LogLevel.INFO, "Loading copilot module...");
-      module = new Eng.Chlaot.Modules.CopilotModule.CopilotModule();
+      module = new Eng.EFsExtensions.Modules.CopilotModule.CopilotModule();
       TryAddModule(module);
 
       logger.Invoke(LogLevel.INFO, "Loading failures module...");
-      module = new Eng.Chlaot.Modules.FailuresModule.FailuresModule();
+      module = new Eng.EFsExtensions.Modules.FailuresModule.FailuresModule();
       TryAddModule(module);
 
       logger.Invoke(LogLevel.INFO, "Loading RaaS module...");
-      module = new Eng.Chlaot.Modules.RaaSModule.RaaSModule();
+      module = new Eng.EFsExtensions.Modules.RaaSModule.RaaSModule();
       TryAddModule(module);
 
       logger.Invoke(LogLevel.INFO, "Loading sim-var-test module...");
-      module = new Eng.Chlaot.Modules.SimVarTestModule.SimVarTestModule();
+      module = new Eng.EFsExtensions.Modules.SimVarTestModule.SimVarTestModule();
       TryAddModule(module);
 
       logger.Invoke(LogLevel.INFO, "Loading affinity module...");
-      module = new Eng.Chlaot.Modules.AffinityModule.AffinityModule();
+      module = new Eng.EFsExtensions.Modules.AffinityModule.AffinityModule();
       TryAddModule(module);
 
       logger.Invoke(LogLevel.INFO, "Setting up modules...");

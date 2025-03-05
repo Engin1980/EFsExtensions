@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Failures
 {
   internal class ToggleOnVarMismatchFailureDefinition : WithSimVarFailureDefinition
   {

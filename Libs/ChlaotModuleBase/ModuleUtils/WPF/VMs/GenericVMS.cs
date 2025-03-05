@@ -1,5 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using static ESystem.Functions.TryCatch;
 
-namespace ChlaotModuleBase.ModuleUtils.WPF.VMs
+namespace EFsExtensionsModuleBase.ModuleUtils.WPF.VMs
 {
   public abstract class GenericVMS<VM, TItem> : BindingList<VM> where VM : WithValueVM where TItem : notnull
   {

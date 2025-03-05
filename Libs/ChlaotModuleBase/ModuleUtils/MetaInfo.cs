@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils
 {
   public class MetaInfo
   {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable
 {
   public static  class StorableUtils
   {

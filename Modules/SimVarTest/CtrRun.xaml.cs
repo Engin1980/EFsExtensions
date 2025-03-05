@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.SimVarTestModule.Controls;
+﻿using Eng.EFsExtensions.Modules.SimVarTestModule.Controls;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.Chlaot.Modules.SimVarTestModule
+namespace Eng.EFsExtensions.Modules.SimVarTestModule
 {
   /// <summary>
   /// Interaction logic for CtrRun.xaml

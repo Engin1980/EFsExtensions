@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.Players
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.Players
 {
   //TODO rewrite once working
   static class PlayHandler

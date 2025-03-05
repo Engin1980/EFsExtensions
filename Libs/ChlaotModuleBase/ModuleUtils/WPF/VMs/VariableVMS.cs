@@ -1,4 +1,4 @@
-﻿using ChlaotModuleBase;
+﻿using EFsExtensionsModuleBase;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,12 +6,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ESystem;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
-using ChlaotModuleBase.ModuleUtils.WPF.VMs;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
+using EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
 using System.Windows.Forms.VisualStyles;
 using System.Runtime.CompilerServices;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs
 {
   public class VariableVMS : GenericVMS<VariableVM, Variable>
   {

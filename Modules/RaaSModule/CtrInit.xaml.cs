@@ -1,6 +1,6 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable;
-using Eng.Chlaot.Libs.AirportsLib;
-using Eng.Chlaot.Modules.RaaSModule.CopilotModule;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable;
+using Eng.EFsExtensions.Libs.AirportsLib;
+using Eng.EFsExtensions.Modules.RaaSModule.CopilotModule;
 using ESystem.Miscelaneous;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
@@ -19,7 +19,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.Chlaot.Modules.RaaSModule
+namespace Eng.EFsExtensions.Modules.RaaSModule
 {
   /// <summary>
   /// Interaction logic for CtrInit.xaml

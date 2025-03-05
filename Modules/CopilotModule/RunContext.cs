@@ -1,18 +1,18 @@
-﻿using ChlaotModuleBase;
-using ChlaotModuleBase.ModuleUtils.StateChecking;
+﻿using EFsExtensionsModuleBase;
+using EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 using CopilotModule;
 using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
-using Eng.Chlaot.Modules.CopilotModule.Types;
-using Eng.Chlaot.Modules.CopilotModule.Types.VMs;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
+using Eng.EFsExtensions.Modules.CopilotModule.Types;
+using Eng.EFsExtensions.Modules.CopilotModule.Types.VMs;
 using ESystem.Asserting;
 using ESystem.Miscelaneous;
 using System;
@@ -27,7 +27,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Eng.Chlaot.Modules.CopilotModule
+namespace Eng.EFsExtensions.Modules.CopilotModule
 {
   internal class RunContext : NotifyPropertyChanged
   {

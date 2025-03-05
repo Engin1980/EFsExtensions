@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Eng.Chlaot.Modules.RaaSModule
+namespace Eng.EFsExtensions.Modules.RaaSModule
 {
   public class Settings : NotifyPropertyChanged
   {

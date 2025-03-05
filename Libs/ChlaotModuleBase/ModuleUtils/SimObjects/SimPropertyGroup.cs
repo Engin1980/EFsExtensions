@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
 using ESystem.Asserting;
 using EXmlLib;
 using EXmlLib.Deserializers;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
 {
   public class SimPropertyGroup : SimPropertyBase, IXmlObjectPostDeserialize
   {

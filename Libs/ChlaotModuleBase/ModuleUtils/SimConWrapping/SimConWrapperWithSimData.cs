@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
 using ESimConnect;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping
 {
   public class SimConWrapperWithSimData : SimConWrapperWithSimSecond
   {

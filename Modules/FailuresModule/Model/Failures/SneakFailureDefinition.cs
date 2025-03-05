@@ -1,4 +1,4 @@
-﻿using ChlaotModuleBase;
+﻿using EFsExtensionsModuleBase;
 using ESystem.Asserting;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Failures
 {
   public class SneakFailureDefinition : WithSimVarFailureDefinition
   {

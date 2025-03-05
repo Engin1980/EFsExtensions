@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.RaaSModule.Model
+namespace Eng.EFsExtensions.Modules.RaaSModule.Model
 {
   [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
   public struct SimDataStruct

@@ -5,7 +5,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.CopilotModule.Types
+namespace Eng.EFsExtensions.Modules.CopilotModule.Types
 {
   public class CopilotSet
   {

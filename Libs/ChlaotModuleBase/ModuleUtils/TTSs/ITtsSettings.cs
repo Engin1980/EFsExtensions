@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs
 {
   public interface ITtsSettings : INotifyPropertyChanged
   {

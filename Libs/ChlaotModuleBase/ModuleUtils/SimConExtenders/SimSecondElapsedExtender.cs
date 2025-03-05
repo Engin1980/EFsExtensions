@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConExtenders
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConExtenders
 {
   public class SimSecondElapsedExtender
   {

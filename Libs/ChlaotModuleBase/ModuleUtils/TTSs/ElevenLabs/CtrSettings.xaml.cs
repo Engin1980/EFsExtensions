@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.Players;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.Players;
 using ESystem.Miscelaneous;
 using Microsoft.WindowsAPICodePack.Shell;
 using NAudio.Wave;
@@ -21,7 +21,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.ElevenLabs
 {
   /// <summary>
   /// Interaction logic for CtrElevenLabsSettings.xaml

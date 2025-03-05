@@ -10,7 +10,7 @@
 //using System.Runtime.CompilerServices;
 //using ELogging;
 
-//namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
+//namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateCheckingSimConnection
 //{
 //    public class SimConManager : LogIdAble, ISimConManager
 //    {

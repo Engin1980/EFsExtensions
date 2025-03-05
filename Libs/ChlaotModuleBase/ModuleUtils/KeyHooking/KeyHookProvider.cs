@@ -13,7 +13,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.KeyHooking
 {
   public class KeyHookWrapper : IDisposable
   {

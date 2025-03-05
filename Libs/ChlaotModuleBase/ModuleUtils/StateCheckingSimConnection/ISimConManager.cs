@@ -7,7 +7,7 @@
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
+//namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateCheckingSimConnection
 //{
 //    public interface ISimConManager
 //    {

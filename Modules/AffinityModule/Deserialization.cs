@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.AffinityModule;
+﻿using Eng.EFsExtensions.Modules.AffinityModule;
 using EXmlLib.Deserializers;
 using EXmlLib;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.AffinityModule
+namespace Eng.EFsExtensions.Modules.AffinityModule
 {
   public static class Deserialization
   {

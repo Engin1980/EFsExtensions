@@ -1,5 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.Failures;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
 {
     public abstract class FailureSustainer : NotifyPropertyChanged
     {

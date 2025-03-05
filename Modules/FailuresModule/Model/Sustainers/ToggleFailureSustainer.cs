@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
+﻿using Eng.EFsExtensions.Modules.FailuresModule.Model.Failures;
 using ESimConnect;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
 {
   internal class ToggleFailureSustainer : FailureSustainer
   {

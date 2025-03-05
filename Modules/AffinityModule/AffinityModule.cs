@@ -1,6 +1,6 @@
 ﻿using AffinityModule;
 using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace Eng.Chlaot.Modules.AffinityModule
+namespace Eng.EFsExtensions.Modules.AffinityModule
 {
   public class AffinityModule : NotifyPropertyChanged, IModule
   {

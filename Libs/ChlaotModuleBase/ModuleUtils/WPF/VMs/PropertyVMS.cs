@@ -1,6 +1,6 @@
-﻿using ChlaotModuleBase;
-using ChlaotModuleBase.ModuleUtils.WPF.VMs;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
+﻿using EFsExtensionsModuleBase;
+using EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 using static ESystem.Functions;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs
 {
   public class PropertyVMS : GenericVMS<PropertyVM, SimProperty>
   {

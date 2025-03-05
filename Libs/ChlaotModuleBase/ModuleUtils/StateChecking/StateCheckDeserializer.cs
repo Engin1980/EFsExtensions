@@ -1,6 +1,6 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.Exceptions;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.StateModel;
 using EXmlLib;
 using EXmlLib.Deserializers;
 using System;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Windows.Navigation;
 using System.Xml.Linq;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking
 {
   public class StateCheckDeserializer : IElementDeserializer
   {

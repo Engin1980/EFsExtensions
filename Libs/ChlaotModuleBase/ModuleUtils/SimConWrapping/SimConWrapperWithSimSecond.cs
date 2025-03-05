@@ -1,4 +1,4 @@
-﻿using ChlaotModuleBase.ModuleUtils.SimConWrapping;
+﻿using EFsExtensionsModuleBase.ModuleUtils.SimConWrapping;
 using ELogging;
 using Microsoft.FlightSimulator.SimConnect;
 using System;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Transactions;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping
 {
   public class SimConWrapperWithSimSecond : SimConWrapperWithOpenAsync
   {

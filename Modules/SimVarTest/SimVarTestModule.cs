@@ -1,9 +1,9 @@
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.Modules.SimVarTestModule;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.Modules.SimVarTestModule;
 using ESystem.Miscelaneous;
 using System.Windows.Controls;
 
-namespace Eng.Chlaot.Modules.SimVarTestModule
+namespace Eng.EFsExtensions.Modules.SimVarTestModule
 {
   public class SimVarTestModule : NotifyPropertyChanged, IModule
   {

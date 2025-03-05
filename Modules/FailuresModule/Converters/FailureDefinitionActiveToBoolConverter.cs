@@ -1,5 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;
-using Eng.Chlaot.Modules.FailuresModule.Model.Sustainers;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Converters
+namespace Eng.EFsExtensions.Modules.FailuresModule.Converters
 {
   internal class FailureDefinitionActiveToBoolConverter : TypedConverter<string, object>
   {

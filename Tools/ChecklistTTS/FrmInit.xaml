@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ChecklistTTSNew"
-        xmlns:tts="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs;assembly=ChlaotModuleBase"
+        xmlns:tts="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs;assembly=EFsExtensionsModuleBase"
         mc:Ignorable="d"
         Title="Checklist TTS - Init" Height="800" Width="800">
   <DockPanel>

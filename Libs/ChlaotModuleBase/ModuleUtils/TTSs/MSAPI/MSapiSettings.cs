@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.MSAPI
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MSAPI
 {
   public class MSapiSettings : NotifyPropertyChanged, ITtsSettings
   {

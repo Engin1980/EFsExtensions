@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.KeyHooking
 {
   public class KeyHookInfo
   {

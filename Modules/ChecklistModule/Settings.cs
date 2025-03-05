@@ -1,5 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Serialization;
 
-namespace Eng.Chlaot.Modules.ChecklistModule
+namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
   public class Settings : NotifyPropertyChanged
   {

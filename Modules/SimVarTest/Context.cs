@@ -1,5 +1,5 @@
 ﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using ESimConnect;
 using ESimConnect.Definitions;
 using ESystem;
@@ -17,14 +17,14 @@ using System.Text;
 using System.Threading.Tasks;
 using static ESystem.Functions;
 
-namespace Eng.Chlaot.Modules.SimVarTestModule
+namespace Eng.EFsExtensions.Modules.SimVarTestModule
 {
   public class Context : NotifyPropertyChanged
   {
 
     private readonly Action onReadySet;
     private ESimConnect.ESimConnect simCon = null!;
-    private Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.SimConWrapperWithSimSecond simConWrapper = null!;
+    private Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.SimConWrapperWithSimSecond simConWrapper = null!;
     private record SimVarId(TypeId TypeId, RequestId RequestId, SimVarCase Case);
     private readonly List<SimVarId> SimVarIds = new();
 

@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF
 {
   /// <summary>
   /// Interaction logic for MetaInfoPanel.xaml

@@ -1,7 +1,7 @@
 ﻿//using ESimConnect;
 //using System.Runtime.InteropServices;
 
-//namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateCheckingSimConnection
+//namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateCheckingSimConnection
 //{
 //    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
 //    internal struct RareDataStruct

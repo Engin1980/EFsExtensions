@@ -13,7 +13,7 @@ using System.Windows.Markup;
 using System.Security.Policy;
 using System.Linq.Expressions;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.ElevenLabs
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.ElevenLabs
 {
   public class ElevenLabsTtsProvider : ITtsProvider
   {

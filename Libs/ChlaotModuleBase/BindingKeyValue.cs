@@ -1,4 +1,4 @@
-﻿//using Eng.Chlaot.ChlaotModuleBase;
+﻿//using Eng.EFsExtensions.EFsExtensionsModuleBase;
 //using ESystem.Miscelaneous;
 //using System;
 //using System.Collections.Generic;
@@ -6,7 +6,7 @@
 //using System.Text;
 //using System.Threading.Tasks;
 
-//namespace ChlaotModuleBase
+//namespace EFsExtensionsModuleBase
 //{
 //  public class BindingKeyValue<K, V> : NotifyPropertyChanged
 //  {

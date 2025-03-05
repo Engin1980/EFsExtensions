@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Storable
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable
 {
   public abstract class StorableObject : NotifyPropertyChanged
   {

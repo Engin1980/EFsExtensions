@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs.Players;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.Players;
 using ESystem;
 using NAudio.Wave;
 using System;
@@ -18,7 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.TTSs
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs
 {
   /// <summary>
   /// Interaction logic for CtrTtss.xaml

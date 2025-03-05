@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
+﻿using Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Controls
+namespace Eng.EFsExtensions.Modules.FailuresModule.Controls
 {
   /// <summary>
   /// Interaction logic for ProbabilityUpDown.xaml

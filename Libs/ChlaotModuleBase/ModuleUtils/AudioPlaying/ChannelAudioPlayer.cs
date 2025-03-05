@@ -7,9 +7,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying.ChannelAudioPlayer;
+using static Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying.ChannelAudioPlayer;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying
 {
   public class ChannelAudioPlayer
   {

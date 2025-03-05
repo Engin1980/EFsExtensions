@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
+﻿using Eng.EFsExtensions.Modules.FailuresModule.Model.Failures;
 using ESimConnect;
 using ESimConnect.Definitions;
 using ESystem.Asserting;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
 {
   public abstract class SimVarBasedFailureSustainer : FailureSustainer
   {

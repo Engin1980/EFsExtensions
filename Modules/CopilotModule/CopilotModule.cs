@@ -1,6 +1,6 @@
 ﻿using CopilotModule;
 using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using ESystem;
 using ESystem.Miscelaneous;
 using System;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace Eng.Chlaot.Modules.CopilotModule
+namespace Eng.EFsExtensions.Modules.CopilotModule
 {
   public class CopilotModule : NotifyPropertyChanged, IModule
   {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters
 {
   public class DoubleFormatter : IValueConverter
   {

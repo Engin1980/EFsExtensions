@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace Eng.Chlaot.ChlaotModuleBase
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase
 {
   public interface IModule : INotifyPropertyChanged
   {

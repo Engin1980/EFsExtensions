@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:Eng.Chlaot.Modules.CopilotModule"
-             xmlns:converters="clr-namespace:Eng.Chlaot.Modules.CopilotModule.Converters"
-             xmlns:gConverters="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.Converters;assembly=ChlaotModuleBase"
-             xmlns:gWpf="clr-namespace:Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF;assembly=ChlaotModuleBase"
+             xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.CopilotModule"
+             xmlns:converters="clr-namespace:Eng.EFsExtensions.Modules.CopilotModule.Converters"
+             xmlns:gConverters="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;assembly=EFsExtensionsModuleBase"
+             xmlns:gWpf="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF;assembly=EFsExtensionsModuleBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>

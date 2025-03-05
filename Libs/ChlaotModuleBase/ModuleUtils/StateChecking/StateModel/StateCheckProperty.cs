@@ -1,5 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.Exceptions;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.Exceptions;
 using ELogging;
 using ESystem.Asserting;
 using ESystem.ValidityChecking;
@@ -12,7 +12,7 @@ using System.Text.RegularExpressions;
 using System.Windows.Media.Animation;
 using EXmlLib.Interfaces;
 
-namespace Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.StateModel
+namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.StateModel
 {
   public class StateCheckProperty : IStateCheckItem, IXmlObjectPostDeserialize
   {
