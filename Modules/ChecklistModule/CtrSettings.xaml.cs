@@ -3,6 +3,7 @@ using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using Eng.EFsExtensions.Modules.ChecklistModule;
+using ESystem;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -29,7 +30,6 @@ namespace ChecklistModule
     private const string AUDIO_CHANNEL_NAME = AudioPlayManager.CHANNEL_COPILOT;
     private readonly MsSapiModule msSapiModule = new();
     private readonly Settings settings;
-    private readonly AudioPlayManager autoPlaybackManager = new();
 
     public CtrSettings()
     {
@@ -49,12 +49,7 @@ namespace ChecklistModule
       btnTestSynthetizer.IsEnabled = false;
       Task t = new(() =>
       {
-        bool isCompleted = false;
-        void callback(AudioPlayManager sender, AudioPlayManager.ChannelEventArgs e)
-        {
-          isCompleted = true;
-        }
-        autoPlaybackManager.ChannelPlayCompleted += callback;
+        ChannelAudioPlayer cap = new();
         try
         {
           ITtsProvider provider = msSapiModule.GetProvider(settings.Synthetizer);
@@ -62,21 +57,14 @@ namespace ChecklistModule
           var b = provider.Convert("Down, three green");
 
           a = AudioUtils.AppendSilence(a, settings.DelayAfterCall);
-          a = AudioUtils.AppendSilence(a, settings.DelayAfterConfirmation);
+          b = AudioUtils.AppendSilence(b, settings.DelayAfterConfirmation);
 
-          autoPlaybackManager.Enqueue(a, AUDIO_CHANNEL_NAME);
-          autoPlaybackManager.Enqueue(b, AUDIO_CHANNEL_NAME);
-
-          while (!isCompleted)
-            System.Threading.Thread.Sleep(100);
+          cap.PlayAndWait(a, AUDIO_CHANNEL_NAME);
+          cap.PlayAndWait(b, AUDIO_CHANNEL_NAME);
         }
         catch (Exception ex)
         {
           throw new ApplicationException("Failed to generate or play.", ex);
-        }
-        finally
-        {
-          autoPlaybackManager.ChannelPlayCompleted -= callback;
         }
       });
       t.Start();

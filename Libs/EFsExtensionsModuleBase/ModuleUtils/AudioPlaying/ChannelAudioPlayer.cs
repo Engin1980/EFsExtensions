@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Printing;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading;
@@ -13,54 +14,33 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying
 {
   public class ChannelAudioPlayer
   {
-    private record PlayRecord(PlayId Id, byte[] data);
+    private record PlayRecord(byte[] AudioData, Action? OnCompleted);
 
     private class ChannelPlayerInfo : IDisposable
     {
-      private static int nextPlayId = 1;
       private const int INT_TRUE = 1;
       private const int INT_FALSE = 0;
       private readonly string channel;
-      private readonly ChannelAudioPlayer parent;
       private readonly ConcurrentQueue<PlayRecord> audioDatas = new();
       private int isPlayingFlag = INT_FALSE;
+      public delegate void ChannelCompletedHandler(string channel);
+      public event ChannelCompletedHandler? ChannelCompleted;
 
-      private static PlayId GetNextPlayId()
-      {
-        int id = Interlocked.Increment(ref ChannelPlayerInfo.nextPlayId);
-        PlayId ret = new(id);
-        return ret;
-      }
-
-      internal ChannelPlayerInfo(ChannelAudioPlayer parent, string channel)
+      internal ChannelPlayerInfo(string channel)
       {
         this.channel = channel;
-        this.parent = parent;
       }
 
-      internal PlayId Add(byte[] audioData)
+      internal void Enqueue(byte[] audioData, Action? onCompleted)
       {
-        PlayId playId = GetNextPlayId();
-        PlayRecord playRecord = new(playId, audioData);
+        PlayRecord playRecord = new(audioData, onCompleted);
         audioDatas.Enqueue(playRecord);
-        return playId;
-      }
-
-      internal PlayId AddAndPlay(byte[] audioData)
-      {
-        var ret = this.Add(audioData);
-        this.Play();
-        return ret;
+        this.StartNextPlay();
       }
 
       internal void Clear()
       {
         this.audioDatas.Clear();
-      }
-
-      internal void Play()
-      {
-        StartNextPlay();
       }
 
       private void StartNextPlay()
@@ -70,40 +50,20 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying
 
         if (audioDatas.TryDequeue(out PlayRecord? next))
         {
-          AudioPlayer player = new(next.data);
-          player.PlayStarting += s => Player_PlayStarting(s, next.Id);
-          player.PlayStarted += s => Player_PlayStarted(s, next.Id);
-          player.PlayCompleted += s => Player_PlayCompleted(s, next.Id);
-          player.PlayRequested += s => Player_PlayRequested(s, next.Id);
+          AudioPlayer player = new(next.AudioData);
+          player.PlayCompleted += e =>
+          {
+            Interlocked.Exchange(ref this.isPlayingFlag, INT_FALSE);
+            next.OnCompleted?.Invoke();
+            StartNextPlay();
+          };
           player.PlayAsync();
         }
         else
         {
           Interlocked.Exchange(ref this.isPlayingFlag, INT_FALSE);
-          this.parent.PlayChannelCompleted?.Invoke(this.parent, this.channel);
+          this.ChannelCompleted?.Invoke(this.channel);
         }
-      }
-
-      private void Player_PlayRequested(AudioPlayer sender, PlayId playId)
-      {
-        this.parent.PlayRequested?.Invoke(this.parent, this.channel, playId);
-      }
-
-      private void Player_PlayCompleted(AudioPlayer sender, PlayId playId)
-      {
-        Interlocked.Exchange(ref this.isPlayingFlag, INT_FALSE);
-        this.parent.PlayCompleted?.Invoke(this.parent, this.channel, playId);
-        StartNextPlay();
-      }
-
-      private void Player_PlayStarted(AudioPlayer sender, PlayId playId)
-      {
-        this.parent.PlayStarted?.Invoke(this.parent, this.channel, playId);
-      }
-
-      private void Player_PlayStarting(AudioPlayer sender, PlayId playId)
-      {
-        this.parent.PlayInitializing?.Invoke(this.parent, this.channel, playId);
       }
 
       public void Dispose()
@@ -114,32 +74,56 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying
 
     private readonly ConcurrentDictionary<string, ChannelPlayerInfo> channels = new();
 
-    public delegate void ChannelPlayIdHandler(ChannelAudioPlayer player, string channel, PlayId playId);
     public delegate void ChannelHandler(ChannelAudioPlayer player, string channel);
-    public event ChannelPlayIdHandler? PlayRequested;
-    public event ChannelPlayIdHandler? PlayInitializing;
-    public event ChannelPlayIdHandler? PlayStarted;
-    public event ChannelPlayIdHandler? PlayCompleted;
     public event ChannelHandler? PlayChannelCompleted;
     public event ChannelHandler? ClearChannelCompleted;
 
-    public PlayId Play(byte[] audioData, string channelName)
+    public void PlayAndWait(byte[] audioData, string channelName)
     {
-      ChannelPlayerInfo ci = channels.GetOrAdd(channelName, _ => new ChannelPlayerInfo(this, channelName));
-      var ret = ci.AddAndPlay(audioData);
-      return ret;
+      PlayAsync(audioData, channelName).GetAwaiter().GetResult();
     }
 
-    public Task<PlayId> PlayAsync(byte[] audioData, string channelName)
+    public void PlayAndForget(byte[] audioData, string channelName, Action? onCompleted = null)
     {
-      Task<PlayId> t = new(() => Play(audioData, channelName));
+      ChannelPlayerInfo ci = GetOrAddChannel(channelName);
+      ci.Enqueue(audioData, onCompleted);
+    }
+
+    public Task PlayAsync(byte[] audioData, string channelName)
+    {
+      Task t = new(() =>
+      {
+        bool isDone = false;
+
+        this.PlayAndForget(audioData, channelName, () => isDone = true);
+
+        while (!isDone)
+        {
+          Thread.Sleep(100);
+        }
+      });
       t.Start();
       return t;
     }
 
+    private ChannelPlayerInfo GetOrAddChannel(string channelName)
+    {
+      lock (channels)
+      {
+        if (channels.ContainsKey(channelName) == false)
+        {
+          var cpi = new ChannelPlayerInfo(channelName);
+          cpi.ChannelCompleted += channelName => this.PlayChannelCompleted?.Invoke(this, channelName);
+          channels[channelName] = cpi;
+        }
+      }
+      ChannelPlayerInfo ret = channels[channelName];
+      return ret;
+    }
+
     public void Clear(string channelName)
     {
-      ChannelPlayerInfo ci = channels.GetOrAdd(channelName, _ => new ChannelPlayerInfo(this, channelName));
+      ChannelPlayerInfo ci = GetOrAddChannel(channelName);
       ci.Clear();
       this.ClearChannelCompleted?.Invoke(this, channelName);
     }

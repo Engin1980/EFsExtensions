@@ -46,18 +46,12 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying
       GC.SuppressFinalize(this);
     }
 
-    public void Enqueue(byte[] bytes, string? channel = null, Action? onCompletedCallback = null)
+    public void Enqueue(byte[] bytes, string? channel = null, Action? onCompleted = null)
     {
       channel ??= $"Generated_{nextChannelId++}";
       this.logger.Log(LogLevel.INFO, $"Enqueueing {bytes.Length} bytes in channel '{channel}'.");
 
-      Task<PlayId> t = this.channelAudioPlayer.PlayAsync(bytes, channel);
-      if (onCompletedCallback != null)
-      {
-        Task tt = t.ContinueWith(q => onCompletedCallback());
-      }
+      this.channelAudioPlayer.PlayAndForget(bytes, channel, onCompleted);
     }
-
-    
   }
 }
