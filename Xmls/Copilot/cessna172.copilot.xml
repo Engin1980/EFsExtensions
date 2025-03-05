@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <copilotSet
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://chlaot.org/copilots.xsd"
-  xmlns:g="http://chlaot.org/global.xsd"
+  xmlns="http://github.com/EFS-Extensions/xmls/copilots.xsd"
+  xmlns:g="http://github.com/EFS-Extensions/xmls/global.xsd"
   xsi:noNamespaceSchemaLocation="file://./Xsds/CopilotSchema.xsd">
   <metaInfo>
     <g:label>Basic C172 copilot callouts</g:label>

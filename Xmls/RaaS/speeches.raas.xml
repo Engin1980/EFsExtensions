@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <raas
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns="http://chlaot.org/raas.xsd"
-  xmlns:g="http://chlaot.org/global.xsd"
+  xmlns="http://github.com/EFS-Extensions/xmls/raas.xsd"
+  xmlns:g="http://github.com/EFS-Extensions/xmls/global.xsd"
   xsi:noNamespaceSchemaLocation="file://./Xsds/ChecklistSchema.xsd">
   <metaInfo>
     <g:author>Marek Vajgl</g:author>
