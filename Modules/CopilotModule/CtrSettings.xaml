@@ -4,36 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.CopilotModule"
+        xmlns:mssapi="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;assembly=EFsExtensionsModuleBase"
         mc:Ignorable="d"
         Title="CtrSettings" Height="206" Width="800" 
         SizeToContent="WidthAndHeight"
         Closed="Window_Closed">
   <StackPanel>
     <GroupBox Header="Synthetizer" DataContext="{Binding Synthetizer}" Margin="8">
-      <Grid>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition />
-          <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition />
-          <RowDefinition />
-          <RowDefinition />
-          <RowDefinition />
-          <RowDefinition />
-        </Grid.RowDefinitions>
-        <Label Content="Voice" Grid.Row="0" Grid.Column="0" />
-        <ComboBox Grid.Row="0" Grid.Column="1"  Margin="2"
-                  SelectedItem="{Binding Voice}" ItemsSource="{Binding AvailableVoices}" />
-        <Label Content="Rate" Grid.Row="1" Grid.Column="0" />
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Rate}" Margin="2" />
-        <Button x:Name="btnTestSynthetizer" Grid.Row="4" Grid.Column="1"  Margin="2"
-                Content="Test synthetizer" Click="btnTestSynthetizer_Click" />
-        <Label Content="Trim beginning (miliseconds)" Grid.Row="2" Grid.Column="0" />
-        <TextBox Text="{Binding StartTrimMiliseconds}" Grid.Row="2" Grid.Column="1" Margin="2"/>
-        <Label Content="Trim end (miliseconds)" Grid.Row="3" Grid.Column="0" />
-        <TextBox Text="{Binding EndTrimMiliseconds}" Grid.Row="3" Grid.Column="1" Margin="2"/>
-      </Grid>
+      <StackPanel>
+        <mssapi:CtrSettings />
+        <Button x:Name="btnTestSynthetizer" Click="btnTestSynthetizer_Click">Test</Button>
+      </StackPanel>
     </GroupBox>
   </StackPanel>
 </Window>
