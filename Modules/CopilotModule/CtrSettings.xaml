@@ -10,9 +10,9 @@
         SizeToContent="WidthAndHeight"
         Closed="Window_Closed">
   <StackPanel>
-    <GroupBox Header="Synthetizer" DataContext="{Binding Synthetizer}" Margin="8">
+    <GroupBox Header="Synthetizer" Margin="8">
       <StackPanel>
-        <mssapi:CtrSettings />
+        <mssapi:CtrSettings DataContext="{Binding Synthetizer}" />
         <Button x:Name="btnTestSynthetizer" Click="btnTestSynthetizer_Click">Test</Button>
       </StackPanel>
     </GroupBox>

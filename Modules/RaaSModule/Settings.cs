@@ -1,4 +1,5 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -210,7 +211,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     private const string FILE_NAME = "raas-module-settings.xml";
 
-    public SynthetizerSettings Synthetizer { get; set; } = new();
+    public MsSapiSettings Synthetizer { get; set; } = new();
 
     public string? AutoLoadedAirportsFile
     {

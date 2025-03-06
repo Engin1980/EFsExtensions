@@ -1,6 +1,8 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System;
 using System.Collections.Generic;
@@ -43,24 +45,27 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.CopilotModule
     }
 
     [SuppressMessage("", "IDE1006")]
-    private void btnTestSynthetizer_Click(object sender, RoutedEventArgs e)
+    private async void btnTestSynthetizer_Click(object sender, RoutedEventArgs e)
     {
       btnTestSynthetizer.IsEnabled = false;
-      try
+      Task t = new(() =>
       {
-        Synthetizer s = new(settings.Synthetizer);
-        var a = s.Generate("Transition level");
+        ChannelAudioPlayer cap = new();
+        try
+        {
+          ITtsProvider s = new MsSapiModule().GetProvider(settings.Synthetizer);
+          var a = s.Convert("Approaching runway 2 6 left");
 
-        autoPlaybackManager.Enqueue(a, AUDIO_CHANNEL_NAME);
-      }
-      catch (Exception ex)
-      {
-        throw new ApplicationException("Failed to generate or play.", ex);
-      }
-      finally
-      {
-        btnTestSynthetizer.IsEnabled = true;
-      }
+          autoPlaybackManager.Enqueue(a, AUDIO_CHANNEL_NAME);
+        }
+        catch (Exception ex)
+        {
+          throw new ApplicationException("Failed to generate or play.", ex);
+        }
+      });
+      t.Start();
+      await t;
+      btnTestSynthetizer.IsEnabled = true;
     }
 
     private void Window_Closed(object sender, EventArgs e)
