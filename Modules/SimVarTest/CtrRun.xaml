@@ -13,6 +13,14 @@
     <globalConverters:DoubleFormatter x:Key="DoubleFormatter" />
   </UserControl.Resources>
   <TabControl x:Name="tab">
+    <TabItem Header="Watches" x:Name="tabRegistered" >
+      <DataGrid ItemsSource="{Binding Watches}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="SimVar" Binding="{Binding SimVarName}" />
+          <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
+        </DataGrid.Columns>
+      </DataGrid>
+    </TabItem>
     <TabItem Header="SimVars" x:Name="tabSimVars" >
       <DockPanel>
         <DockPanel DockPanel.Dock="Top" >

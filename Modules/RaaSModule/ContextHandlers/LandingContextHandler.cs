@@ -22,25 +22,25 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
     public override void Handle()
     {
       Debug.Assert(data.NearestAirport != null);
+      var simDataSnapshot = simDataSnapshotProvider();
       var airport = data.NearestAirport.Airport;
-      var simData = simDataProvider();
       var sett = this.settings.LandingThresholds;
 
-      if (simData.Height > sett.MaxHeight)
+      if (simDataSnapshot.Height > sett.MaxHeight)
       {
-        data.LandingStatus = $"Plane height {simData.Height} over limit {sett.MaxHeight}";
+        data.LandingStatus = $"Plane height {simDataSnapshot.Height} over limit {sett.MaxHeight}";
         lastLandingThreshold = null;
         return;
       }
-      else if (simData.Height < sett.MinHeight)
+      else if (simDataSnapshot.Height < sett.MinHeight)
       {
-        data.LandingStatus = $"Plane height {simData.Height} under limit {sett.MinHeight}";
+        data.LandingStatus = $"Plane height {simDataSnapshot.Height} under limit {sett.MinHeight}";
         lastLandingThreshold = null;
         return;
       }
-      else if (simData.VerticalSpeed > sett.MaxVerticalSpeed)
+      else if (simDataSnapshot.VerticalSpeed > sett.MaxVerticalSpeed)
       {
-        data.LandingStatus = $"Plane vertical speed {simData.VerticalSpeed} over limit {sett.MaxVerticalSpeed}).";
+        data.LandingStatus = $"Plane vertical speed {simDataSnapshot.VerticalSpeed} over limit {sett.MaxVerticalSpeed}).";
         return;
       }
 
@@ -52,9 +52,9 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
         OrthoDistance = r.OrthoDistance,
         ThresholdDistance = GpsCalculator.GetDistance(
           t.Coordinate.Latitude, t.Coordinate.Longitude,
-          simData.latitude, simData.longitude),
+          simDataSnapshot.Latitude, simDataSnapshot.Longitude),
         Bearing = GpsCalculator.InitialBearing(
-          simData.latitude, simData.longitude,
+          simDataSnapshot.Latitude, simDataSnapshot.Longitude,
           t.Coordinate.Latitude, t.Coordinate.Longitude)
       });
       data.Landing = tmpT

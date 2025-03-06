@@ -9,27 +9,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using static ESystem.Functions.TryCatch;
 using System.Xml.Linq;
 using ESimConnect;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping;
 using System.Timers;
-using System.Reflection.Metadata.Ecma335;
-using System.Speech.Synthesis;
 using ESystem.Exceptions;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
 using System.Diagnostics;
-using Microsoft.WindowsAPICodePack.Shell;
-using System.Collections.ObjectModel;
 using Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers;
 
 namespace Eng.EFsExtensions.Modules.RaaSModule
 {
   internal class Context : NotifyPropertyChanged
   {
-
     #region Public Classes + Structs + Interfaces
 
     public record NearestAirport(Airport Airport, double Distance, List<RunwayWithOrthoDistance> RunwayOrthos);
@@ -91,11 +83,16 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
         set { base.UpdateProperty(nameof(NearestRunways), value); }
       }
 
-
       public List<string> DistanceStates
       {
         get { return base.GetProperty<List<string>>(nameof(DistanceStates))!; }
         set { base.UpdateProperty(nameof(DistanceStates), value); }
+      }
+
+      public SimDataSnapshot SimDataSnapshot
+      {
+        get { return base.GetProperty<SimDataSnapshot>(nameof(SimDataSnapshot))!; }
+        set { base.UpdateProperty(nameof(SimDataSnapshot), value); }
       }
 
       #endregion Public Properties
@@ -112,16 +109,15 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     private const int MAX_HEIGHT_TO_DO_EVALUATIONS_IN_FT = 2000;
     private const int MAX_DISTANCE_TO_DO_EVALUATIONS_IN_M = 8_000;
-    private readonly object __simDataUnsafeLock = new();
     private readonly Logger logger;
-    private readonly ESimConnect.ESimConnect simConnect;
+    private readonly NewSimObject eSimObj;
     private readonly System.Timers.Timer timer;
     private readonly Action<bool> updateReadyFlag;
     private bool isBusy = false;
-    private HoldingPointContextHandler holdingPointContextHandler;
-    private LineUpContextHandler lineUpContextHandler;
-    private LandingContextHandler landingContextHandler;
-    private RemainingDistanceContextHandler remainingDistanceContextHandler;
+    private HoldingPointContextHandler holdingPointContextHandler = null!;
+    private LineUpContextHandler lineUpContextHandler = null!;
+    private LandingContextHandler landingContextHandler = null!;
+    private RemainingDistanceContextHandler remainingDistanceContextHandler = null!;
 
     #endregion Private Fields
 
@@ -148,32 +144,12 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     public RuntimeDataBox RuntimeData { get; set; } = new();
     public Settings Settings { get; set; } = new Settings();
 
-    public SimDataStruct SimData
-    {
-      get
-      {
-        SimDataStruct ret;
-        lock (this.__simDataUnsafeLock)
-        {
-          ret = GetProperty<SimDataStruct>(nameof(SimData))!;
-        }
-        return ret;
-      }
-      set
-      {
-        lock (this.__simDataUnsafeLock)
-        {
-          UpdateProperty<SimDataStruct>(nameof(SimData), value);
-        }
-      }
-    }
-
     #endregion Public Properties
 
     #region Public Constructors
 
     public Context(Logger logger, Action<bool> updateReadyFlag)
-    {     
+    {
       this.logger = logger;
       this.updateReadyFlag = updateReadyFlag;
       this.timer = new(1000)
@@ -183,11 +159,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       };
       this.timer.Elapsed += timer_Elapsed;
 
-      this.simConnect = new();
-      simConnect.Connected += simConnect_Connected;
-      simConnect.ThrowsException += simConnect_ThrowsException;
-      simConnect.Disconnected += simConnect_Disconnected;
-      simConnect.DataReceived += simConnect_DataReceived;
+      this.eSimObj = NewSimObject.GetInstance();
     }
 
     #endregion Public Constructors
@@ -196,18 +168,26 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     public void Start()
     {
-      var args = new ContextHandlerArgs(this.logger, this.RuntimeData, this.RaaS, () => SimData, this.Settings);
-      this.landingContextHandler = new LandingContextHandler(args);
-      this.holdingPointContextHandler = new HoldingPointContextHandler(args);
-      this.lineUpContextHandler = new LineUpContextHandler(args);
-      this.remainingDistanceContextHandler = new RemainingDistanceContextHandler(args);
+      logger.Invoke(LogLevel.DEBUG, "Starting simObject connection");
+      this.eSimObj.StartInBackground(() =>
+      {
+        logger.Log(LogLevel.INFO, "Initializing & registering properties");
+        eSimObj.ExtType.Register(typeof(SimDataSnapshot));
 
-      this.timer.Enabled = true;
+        var args = new ContextHandlerArgs(this.logger, this.RuntimeData, this.RaaS,
+        () => this.RuntimeData.SimDataSnapshot, this.Settings);
+        this.landingContextHandler = new LandingContextHandler(args);
+        this.holdingPointContextHandler = new HoldingPointContextHandler(args);
+        this.lineUpContextHandler = new LineUpContextHandler(args);
+        this.remainingDistanceContextHandler = new RemainingDistanceContextHandler(args);
+
+        this.timer.Enabled = true;
+      });
     }
 
     public void Stop()
     {
-
+      this.timer.Enabled = false;
     }
 
     #endregion Public Methods
@@ -216,7 +196,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     internal void LoadAirportsFile(string recentXmlFile)
     {
-      this.Airports = XmlLoader.Load(recentXmlFile);
+      this.Airports = Libs.AirportsLib.XmlLoader.Load(recentXmlFile);
       this.CheckReadyStatus();
     }
 
@@ -272,37 +252,38 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     private void EvaluateNearestAirport()
     {
       Airport? tmpA = null;
+      var simData = this.RuntimeData.SimDataSnapshot;
       double? tmpD = null;
       if (this.RuntimeData.NearestAirport != null)
       {
         tmpD = GpsCalculator.GetDistance(
           this.RuntimeData.NearestAirport.Airport.Coordinate.Latitude,
           this.RuntimeData.NearestAirport.Airport.Coordinate.Longitude,
-          SimData.latitude, SimData.longitude);
+          simData.Latitude, simData.Longitude);
         if (tmpD.Value < this.RuntimeData.NearestAirport.Distance)
           tmpA = this.RuntimeData.NearestAirport.Airport;
       }
       if (tmpA == null)
       {
         var closeAirports = Airports
-          .Where(q => q.Coordinate.Latitude > SimData.latitude - 1)
-          .Where(q => q.Coordinate.Latitude < SimData.latitude + 1)
-          .Where(q => q.Coordinate.Longitude > SimData.longitude - 1)
-          .Where(q => q.Coordinate.Longitude < SimData.longitude + 1);
+          .Where(q => q.Coordinate.Latitude > simData.Latitude - 1)
+          .Where(q => q.Coordinate.Latitude < simData.Latitude + 1)
+          .Where(q => q.Coordinate.Longitude > simData.Longitude - 1)
+          .Where(q => q.Coordinate.Longitude < simData.Longitude + 1);
 
         if (!closeAirports.Any())
         {
-          closeAirports = Airports.Where(q => q.Coordinate.Latitude > SimData.latitude - 5)
-            .Where(q => q.Coordinate.Latitude < SimData.latitude + 5)
-            .Where(q => q.Coordinate.Longitude > SimData.longitude - 5)
-            .Where(q => q.Coordinate.Longitude < SimData.longitude + 5);
+          closeAirports = Airports.Where(q => q.Coordinate.Latitude > simData.Latitude - 5)
+            .Where(q => q.Coordinate.Latitude < simData.Latitude + 5)
+            .Where(q => q.Coordinate.Longitude > simData.Longitude - 5)
+            .Where(q => q.Coordinate.Longitude < simData.Longitude + 5);
 
           if (!closeAirports.Any())
           {
-             closeAirports = Airports.Where(q => q.Coordinate.Latitude > SimData.latitude - 20)
-              .Where(q => q.Coordinate.Latitude < SimData.latitude + 20)
-              .Where(q => q.Coordinate.Longitude > SimData.longitude - 20)
-              .Where(q => q.Coordinate.Longitude < SimData.longitude + 20);
+            closeAirports = Airports.Where(q => q.Coordinate.Latitude > simData.Latitude - 20)
+             .Where(q => q.Coordinate.Latitude < simData.Latitude + 20)
+             .Where(q => q.Coordinate.Longitude > simData.Longitude - 20)
+             .Where(q => q.Coordinate.Longitude < simData.Longitude + 20);
 
             if (!closeAirports.Any())
             {
@@ -315,7 +296,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
           .Select(q => new
           {
             Airport = q,
-            Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, SimData.latitude, SimData.longitude)
+            Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, simData.Latitude, simData.Longitude)
           })
           .MinBy(q => q.Distance)
           ?? throw new UnexpectedNullException();
@@ -330,7 +311,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
             q.Thresholds[0].Coordinate.Longitude,
             q.Thresholds[1].Coordinate.Latitude,
             q.Thresholds[1].Coordinate.Longitude,
-            SimData.latitude, SimData.longitude)))
+            simData.Latitude, simData.Longitude)))
         .OrderBy(q => q.OrthoDistance)
         .ToList();
       RuntimeData.NearestAirport = new NearestAirport(tmpA, tmpD.Value, rwys);
@@ -338,6 +319,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     private void EvaluateNearestRunways()
     {
+      var simData = this.RuntimeData.SimDataSnapshot;
       RuntimeData.NearestRunways = RuntimeData.NearestAirport!.Airport.Runways
         .Select(q => new NearestRunways(
           q,
@@ -346,7 +328,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
             q.Thresholds[0].Coordinate.Longitude,
             q.Thresholds[1].Coordinate.Latitude,
             q.Thresholds[1].Coordinate.Longitude,
-            SimData.latitude, SimData.longitude)))
+            simData.Latitude, simData.Longitude)))
         .OrderBy(q => q.OrthoDistance)
         .ToList();
     }
@@ -354,11 +336,12 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     private void EvaluateRaas()
     {
-      if (SimData.height > MAX_HEIGHT_TO_DO_EVALUATIONS_IN_FT)
+      var simData = this.RuntimeData.SimDataSnapshot;
+      if (simData.Height > MAX_HEIGHT_TO_DO_EVALUATIONS_IN_FT)
         return; // too high, do nothing
 
       EvaluateNearestAirport();
-      if (RuntimeData.NearestAirport == null || 
+      if (RuntimeData.NearestAirport == null ||
         RuntimeData.NearestAirport.Distance > MAX_DISTANCE_TO_DO_EVALUATIONS_IN_M)
         return; // too far, do nothing
 
@@ -373,70 +356,21 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       this.updateReadyFlag(this.RaaS != null && this.Airports.Count > 0);
     }
 
-    private void simConnect_Connected(ESimConnect.ESimConnect eSimCon)
-    {
-      this.logger.Log(LogLevel.INFO, "Connected to SimConnect");
-    }
-
-    private void simConnect_DataReceived(
-      ESimConnect.ESimConnect eSimCon,
-      ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
-    {
-      var data = (SimDataStruct)e.Data;
-      this.SimData = data;
-      this.logger.Log(LogLevel.DEBUG, "Received data from SimConnect");
-    }
-
-    private void simConnect_Disconnected(ESimConnect.ESimConnect eSimCon)
-    {
-      this.logger.Log(LogLevel.INFO, "Disconnected from SimConnect");
-    }
-
-    private void simConnect_ThrowsException(ESimConnect.ESimConnect eSimCon, SimConnectException ex)
-    {
-      this.logger.Log(LogLevel.ERROR, "SimConnect exception: " + ex.ToString());
-    }
-
     private void timer_Elapsed(object? sender, ElapsedEventArgs e)
     {
       if (isBusy) return;
-      isBusy = true;
-      if (!simConnect.IsOpened)
-      {
-        TryConnect();
-      }
-      else
-      {
-        try
-        {
-          EvaluateRaas();
-        }
-        catch (Exception ex)
-        {
-          logger.Log(LogLevel.ERROR, "Error in EvaluateRaas: " + ex.ToString());
-        }
-      }
-      isBusy = false;
-    }
 
-    private void TryConnect()
-    {
+      isBusy = true;
       try
       {
-        logger.Log(LogLevel.DEBUG, "Opening simConnect");
-        simConnect.Open();
+        this.RuntimeData.SimDataSnapshot = eSimObj.ExtType.GetSnapshost<SimDataSnapshot>();
+        EvaluateRaas();
       }
       catch (Exception ex)
       {
-        logger.Log(LogLevel.ERROR, "Failed to open simConnect: " + ex.ToString());
-        return;
+        logger.Log(LogLevel.ERROR, "Error in EvaluateRaas: " + ex.ToString());
       }
-
-      logger.Log(LogLevel.DEBUG, "Registering simConnect type");
-      simConnect.Structs.Register<SimDataStruct>();
-
-      logger.Log(LogLevel.DEBUG, "Registering simConnect repeated-requests");
-      simConnect.Structs.RequestRepeatedly<SimDataStruct>(SimConnectPeriod.SECOND, sendOnlyOnChange: true);
+      isBusy = false;
     }
 
     #endregion Private Methods

@@ -21,10 +21,10 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
       private readonly List<CheckListVM> active = new();
       private readonly List<CheckListVM> all;
       private readonly bool isAutoplayingEnabled;
-      private readonly SimObject simObject;
+      private readonly NewSimObject simObject;
       private readonly PropertyVMS propertyVMs;
 
-      internal ChecklistManager(PropertyVMS propertyVMs, List<CheckListVM> checkListViews, SimObject simObject,
+      internal ChecklistManager(PropertyVMS propertyVMs, List<CheckListVM> checkListViews, NewSimObject simObject,
         bool useAutoplay, bool readConfirmations, int? pausedAlertIntervalIfUsed, bool isPlayPerItemEnabled)
       {
         EAssert.Argument.IsNotNull(propertyVMs, nameof(propertyVMs));

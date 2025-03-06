@@ -68,7 +68,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
       if (data != failure.FailValue && isRunning)
       {
         Logger.Log(this, LogLevel.INFO, "Invoking event");
-        SimCon.ClientEvents.Invoke(failure.SimEvent);
+        ESimObj.ESimCon.ClientEvents.Invoke(failure.SimEvent);
       }
       isDataRequested = false;
     }

@@ -1,6 +1,5 @@
 ﻿using ELogging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using Eng.EFsExtensions.Libs.AirportsLib;
@@ -19,8 +18,8 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
   {
     protected readonly Logger logger;
     protected readonly Context.RuntimeDataBox data;
+    protected readonly Func<SimDataSnapshot> simDataSnapshotProvider;
     protected readonly Raas raas;
-    protected Func<SimDataStruct> simDataProvider;
     protected readonly Settings settings;
     private readonly ITtsProvider? synthetizer;
 
@@ -29,7 +28,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
       this.logger = args.logger;
       this.data = args.data;
       this.raas = args.raas;
-      this.simDataProvider = args.simDataProvider;
+      this.simDataSnapshotProvider = args.simDataSnapshotProvider;
       this.settings = args.settings;
       this.synthetizer = new MsSapiModule().GetProvider(this.settings.Synthetizer);
     }

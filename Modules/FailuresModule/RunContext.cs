@@ -12,7 +12,8 @@ using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.VMs;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers;
 using ESystem.Miscelaneous;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.Exceptions;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+using Eng.Chloat.Modules.FailuresModule.Model;
 
 namespace Eng.EFsExtensions.Modules.FailuresModule
 {
@@ -21,7 +22,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
     #region Fields
 
     private readonly Random random = new();
-    private readonly SimConWrapperWithSimData simConWrapper;
+    private readonly NewSimObject eSimObj;
     private List<IncidentDefinitionVM>? _IncidentDefinitions = null;
     private bool isRunning = false;
     private readonly Dictionary<string, double> propertyValues = new();
@@ -46,6 +47,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
       get => base.GetProperty<int>(nameof(SustainersCount))!;
       set => base.UpdateProperty(nameof(SustainersCount), value);
     }
+
     internal List<IncidentDefinitionVM> IncidentDefinitions
     {
       get
@@ -57,6 +59,15 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
         return _IncidentDefinitions;
       }
     }
+
+
+    public FailSimData SimData
+    {
+      get { return base.GetProperty<FailSimData>(nameof(SimData))!; }
+      set { base.UpdateProperty(nameof(SimData), value); }
+    }
+
+
 
     #endregion Properties
 
@@ -72,17 +83,11 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
       };
       IncidentGroupVM top = IncidentGroupVM.Create(rootIncidentGroup, () => propertyValues);
 
-      //RunContext ret = new(failureDefinitions, top.Incidents);
-      //return ret;
-
-
       // creation
-      ESimConnect.ESimConnect eSimCon = new();
-      simConWrapper = new(eSimCon);
-      simConWrapper.SimSecondElapsed += SimConWrapper_SimSecondElapsed;
-      simConWrapper.SimConErrorRaised += SimConWrapper_SimConErrorRaised;
+      this.eSimObj = NewSimObject.GetInstance();
+      this.eSimObj.SimSecondElapsed += ESimCon_SimSecondElapsed;
 
-      FailureSustainer.SetSimCon(eSimCon);
+      FailureSustainer.SetSimCon(this.eSimObj);
       FailureDefinitions = failureDefinitions;
       IncidentVMs = top.Incidents;
       Sustainers = new();
@@ -97,13 +102,11 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
 
     public void Start()
     {
-      this.simConWrapper.OpenAsync(
-        () =>
-        {
-          this.simConWrapper.Start();
-          this.isRunning = true;
-        },
-        ex => { });
+      this.eSimObj.StartInBackground(() =>
+      {
+        this.eSimObj.ExtType.Register<FailSimData>();
+        this.isRunning = true;
+      });
     }
 
     private static List<IncidentDefinitionVM> FlattenIncidentDefinitions(List<IncidentVM> incidents)
@@ -256,17 +259,12 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
       return ret;
     }
 
-    private void SimConWrapper_SimConErrorRaised(SimConWrapperSimConException ex)
-    {
-      //TODO resolve
-      throw new ApplicationException("Failed sim-con-wrapper-for-failure.", ex);
-    }
-
-    private void SimConWrapper_SimSecondElapsed()
+    private void ESimCon_SimSecondElapsed()
     {
       if (isRunning && !IsSupressed)
       {
-        StateCheckEvaluator.UpdateDictionaryByObject(this.simConWrapper.SimData, propertyValues);
+        this.SimData = eSimObj.ExtType.GetSnapshost<FailSimData>();
+        StateCheckEvaluator.UpdateDictionaryByObject(this.SimData, propertyValues);
         DateTime now = DateTime.Now;
         propertyValues["realTimeSecond"] = now.Second;
         propertyValues["realTimeMinute"] = now.Minute;

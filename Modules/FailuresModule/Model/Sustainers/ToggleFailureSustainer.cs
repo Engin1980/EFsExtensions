@@ -35,7 +35,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
     private void SendEvent()
     {
       string @event = Failure.SimConPoint;
-      SimCon.ClientEvents.Invoke(@event, validate: true);
+      ESimObj.ESimCon.ClientEvents.Invoke(@event, validate: true);
     }
   }
 }

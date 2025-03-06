@@ -11,7 +11,6 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.VMs
 {
   internal class IncidentDefinitionVM : IncidentVM
   {
-
     public VariableVMS Variables
     {
       get => base.GetProperty<VariableVMS>(nameof(Variables))!;

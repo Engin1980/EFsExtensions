@@ -50,8 +50,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
       ResetInternal();
       DataReceived += LeakFailureSustainer_DataReceived;
       RequestDataRepeatedly();
-      SimCon.SystemEventInvoked += SimCon_SystemEventInvoked;
-      //TODO not using custom refresh leak-tick-ms interval
+      ESimObj.ExtSecond.SimSecondElapsed += ESimCon_SimSecondElapsed;
     }
 
     #endregion Constructors
@@ -61,7 +60,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
     protected override void InitInternal()
     {
       base.InitInternal();
-      simSecondElapsedEventId = SimCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System._1sec);
+      simSecondElapsedEventId = ESimObj.ESimCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System._1sec);
     }
 
     protected override void ResetInternal()
@@ -98,9 +97,9 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
       }
     }
 
-    private void SimCon_SystemEventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectSystemEventInvokedEventArgs e)
+    private void ESimCon_SimSecondElapsed()
     {
-      if (e.EventId == simSecondElapsedEventId && CurrentValue != null && IsSimPaused == false)
+      if (CurrentValue != null && ESimObj.ExtSecond.IsSimPaused == false)
         ApplyLeak();
     }
 
