@@ -17,7 +17,6 @@ using System.Security.Policy;
 using ELogging;
 using Eng.EFsExtensions.Modules.ChecklistModule.Types;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.StateModel;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils;
 using Eng.EFsExtensions.Modules.ChecklistModule.Types.Xml;

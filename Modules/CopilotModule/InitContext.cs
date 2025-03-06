@@ -5,7 +5,6 @@ using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.StateModel;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
 using Eng.EFsExtensions.Modules.CopilotModule.Types;
 using EXmlLib;
 using System;

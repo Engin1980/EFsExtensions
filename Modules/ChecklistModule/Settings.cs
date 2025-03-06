@@ -1,5 +1,4 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using ESystem.Miscelaneous;
 using System;

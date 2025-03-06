@@ -1,6 +1,5 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs;
 using Microsoft.WindowsAPICodePack.Dialogs;

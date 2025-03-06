@@ -20,7 +20,6 @@ using System.Reflection.Metadata.Ecma335;
 using System.Speech.Synthesis;
 using ESystem.Exceptions;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Synthetization;
 using System.Diagnostics;
 using Microsoft.WindowsAPICodePack.Shell;
 using System.Collections.ObjectModel;
