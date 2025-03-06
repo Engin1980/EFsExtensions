@@ -10,7 +10,7 @@ using ESimConnect.Extenders;
 
 namespace Eng.EFsExtensions.Modules.RaaSModule.Model
 {
-  class SimDataSnaphotProvider
+  class SimDataSnaphotBuilder
   {
     private ValueCacheExtender cache = null!;
     private readonly Dictionary<string, TypeId> propTypeId = new();

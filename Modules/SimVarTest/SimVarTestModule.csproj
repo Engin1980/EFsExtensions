@@ -6,8 +6,8 @@
     <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
     <PlatformTarget>x64</PlatformTarget>
-    <AssemblyVersion>1.4.0.41</AssemblyVersion>
-    <FileVersion>1.4.0.41</FileVersion>
+    <AssemblyVersion>1.4.0.42</AssemblyVersion>
+    <FileVersion>1.4.0.42</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

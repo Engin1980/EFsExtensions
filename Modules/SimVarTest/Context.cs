@@ -21,10 +21,9 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
 {
   public class Context : NotifyPropertyChanged
   {
-
     private readonly Action onReadySet;
     private ESimConnect.ESimConnect simCon = null!;
-    private Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.SimConWrapperWithSimSecond simConWrapper = null!;
+    private ESimConnect.Extenders.OpenInBackgroundExtender extOpen;
     private record SimVarId(TypeId TypeId, RequestId RequestId, SimVarCase Case);
     private readonly List<SimVarId> SimVarIds = new();
 
@@ -72,7 +71,8 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
           string s = (string)val;
           lst.Add(new StringGroupValue(s));
         }
-      };
+      }
+      ;
 
       analyseClass(baseType, ret);
 
@@ -82,8 +82,11 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
     public void Connect()
     {
       simCon = new ESimConnect.ESimConnect();
-      simConWrapper = new(simCon);
-      simConWrapper.OpenAsync(() => { }, ex => { });
+
+      extOpen = new(simCon);
+      extSecond = new(simCon, true);
+
+      extOpen.OpenInBackground();
 
       simCon.DataReceived += SimCon_DataReceived;
       simCon.ThrowsException += SimCon_ThrowsException;

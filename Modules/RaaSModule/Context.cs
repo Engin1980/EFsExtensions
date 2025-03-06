@@ -111,7 +111,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     private const int MAX_DISTANCE_TO_DO_EVALUATIONS_IN_M = 8_000;
     private readonly Logger logger;
     private readonly NewSimObject eSimObj;
-    private readonly SimDataSnaphotProvider simDataSnapshotProvider;
+    private readonly SimDataSnaphotBuilder simDataSnapshotProvider;
     private readonly System.Timers.Timer timer;
     private readonly Action<bool> updateReadyFlag;
     private bool isBusy = false;
@@ -165,7 +165,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       this.simDataSnapshotProvider = new();
 
       var args = new ContextHandlerArgs(this.logger, this.RuntimeData, this.RaaS,
-        this.simDataSnapshotProvider, this.Settings);
+        () => this.RuntimeData.SimDataSnapshot, this.Settings);
       this.landingContextHandler = new LandingContextHandler(args);
       this.holdingPointContextHandler = new HoldingPointContextHandler(args);
       this.lineUpContextHandler = new LineUpContextHandler(args);
@@ -186,7 +186,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     public void Stop()
     {
-
+      this.timer.Enabled = false;
     }
 
     #endregion Public Methods

@@ -14,19 +14,19 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
     public readonly Logger logger;
     public readonly RuntimeDataBox data;
     public readonly Raas raas;
-    public readonly SimDataSnaphotProvider simData;
+    public readonly Func<SimDataSnapshot> simDataSnapshotProvider;
     public readonly Settings settings;
 
     public ContextHandlerArgs(Logger logger, 
       RuntimeDataBox data, 
-      Raas raas, 
-      SimDataSnaphotProvider simDataSnapshotProvider, 
+      Raas raas,
+      Func<SimDataSnapshot> simDataSnapshotProvider, 
       Settings settings)
     {
       this.logger = logger;
       this.data = data;
       this.raas = raas;
-      this.simData = simDataSnapshotProvider;
+      this.simDataSnapshotProvider = simDataSnapshotProvider;
       this.settings = settings;
     }
   }

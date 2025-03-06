@@ -22,7 +22,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
     public override void Handle()
     {
       Debug.Assert(data.NearestAirport != null);
-      var simDataSnapshot = simDataSnapshotProvider.GetSnapshot();
+      var simDataSnapshot = simDataSnapshotProvider();
       var airport = data.NearestAirport.Airport;
       var sett = this.settings.LandingThresholds;
 
