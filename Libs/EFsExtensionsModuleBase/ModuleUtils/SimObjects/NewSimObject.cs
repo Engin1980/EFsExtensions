@@ -32,6 +32,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
     public ESimConnect.ESimConnect ESimCon => eSimCon;
     public ESimConnect.Extenders.ValueCacheExtender ExtValue => extValue;
     public ESimConnect.Extenders.TypeCacheExtender ExtType => extType;
+    public ESimConnect.Extenders.SimSecondElapsedExtender ExtSecond => extSecond;
 
     public NewSimObject()
     {

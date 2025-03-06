@@ -25,9 +25,9 @@
           <Label Grid.Row="0" Grid.Column="0" Content="GPS" />
           <Label Grid.Row="0" Grid.Column="1">
             <StackPanel Orientation="Horizontal">
-              <TextBlock Text="{Binding Latitude}" />
+              <TextBlock Text="{Binding Latitude, StringFormat=N7}" />
               <TextBlock Text="," />
-              <TextBlock Text="{Binding Longitude}" />
+              <TextBlock Text="{Binding Longitude, StringFormat=N7}" />
             </StackPanel>
           </Label>
 

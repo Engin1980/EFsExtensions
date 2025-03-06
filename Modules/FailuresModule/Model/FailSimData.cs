@@ -1,21 +1,19 @@
-﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
-using Eng.EFsExtensions.EFsExtensionsModuleBase;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using ESimConnect.Extenders;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ESimConnect.Definitions;
 
-namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes
+namespace Eng.Chloat.Modules.FailuresModule.Model
 {
-  public class SimData : NotifyPropertyChanged
+  public class FailSimData : NotifyPropertyChanged
   {
-    private const int SECONDS_PER_MINUTE = 60;
-
-    public SimData()
+    public FailSimData()
     {
       IsSimPaused = true;
       EngineCombustion = new bool[4];
@@ -25,6 +23,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.P
       }
     }
 
+    [SimProperty(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE, SimUnits.Length.FOOT)]
     [StateCheckName("alt")]
     public int Altitude
     {
@@ -32,13 +31,14 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.P
       set => UpdateProperty(nameof(Altitude), value);
     }
 
+    [SimProperty(SimVars.Aircraft.Miscelaneous.PLANE_BANK_DEGREES, SimUnits.Angle.DEGREE)]
     public double BankAngle
     {
       get => GetProperty<double>(nameof(BankAngle))!;
       set => UpdateProperty(nameof(BankAngle), value);
     }
 
-    
+    [SimProperty(SimVars.Aircraft.RadioAndNavigation.ATC_ID)]
     public string Callsign
     {
       get => GetProperty<string>(nameof(Callsign))!;
@@ -52,6 +52,19 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.P
       set => UpdateProperty(nameof(EngineCombustion), value);
     }
 
+    [SimProperty(SimVars.Aircraft.Engine.ENG_COMBUSTION__index + "1")]
+    public int Eng1Combustion { get => EngineCombustion[0] ? 1 : 0; set => EngineCombustion[0] = value != 0; }
+
+    [SimProperty(SimVars.Aircraft.Engine.ENG_COMBUSTION__index + "2")]
+    public int Eng2Combustion { get => EngineCombustion[1] ? 1 : 0; set => EngineCombustion[1] = value != 0; }
+
+    [SimProperty(SimVars.Aircraft.Engine.ENG_COMBUSTION__index + "3")]
+    public int Eng3Combustion { get => EngineCombustion[2] ? 1 : 0; set => EngineCombustion[2] = value != 0; }
+
+    [SimProperty(SimVars.Aircraft.Engine.ENG_COMBUSTION__index + "4")]
+    public int Eng4Combustion { get => EngineCombustion[3] ? 1 : 0; set => EngineCombustion[3] = value != 0; }
+
+    [SimProperty(SimVars.Aircraft.Miscelaneous.GROUND_VELOCITY, SimUnits.Speed.KNOT)]
     [StateCheckName("gs")]
     public int GroundSpeed
     {
@@ -59,6 +72,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.P
       set => UpdateProperty(nameof(GroundSpeed), value);
     }
 
+    [SimProperty(SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND, SimUnits.Length.FOOT)]
     [StateCheckName("height")]
     public int Height
     {
@@ -66,6 +80,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.P
       set => UpdateProperty(nameof(Height), value);
     }
 
+    [SimProperty(SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED, SimUnits.Speed.KNOT)]
     [StateCheckName("ias")]
     public int IndicatedSpeed
     {
@@ -79,6 +94,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.P
       set => UpdateProperty(nameof(IsSimPaused), value);
     }
 
+    [SimProperty(SimVars.Aircraft.BrakesAndLandingGear.BRAKE_PARKING_POSITION)]
     [StateCheckName("parkingBrake")]
     public bool ParkingBrakeSet
     {
@@ -86,6 +102,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.P
       set => UpdateProperty(nameof(ParkingBrakeSet), value);
     }
 
+    [SimProperty(SimVars.Aircraft.Miscelaneous.VERTICAL_SPEED, SimUnits.Speed.FEETBYMINUTE)]
     [StateCheckName("vs")]
     public int VerticalSpeed
     {
@@ -93,39 +110,19 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.P
       set => UpdateProperty(nameof(VerticalSpeed), value);
     }
 
+    [SimProperty(SimVars.Services.PUSHBACK_ATTACHED)]
     public bool PushbackTugConnected
     {
       get => GetProperty<bool>(nameof(PushbackTugConnected))!;
       set => UpdateProperty(nameof(PushbackTugConnected), value);
     }
 
+    [SimProperty(SimVars.Aircraft.Miscelaneous.ACCELERATION_BODY_Z, SimUnits.Acceleration.FEET_PER_SECOND_SQUARED)]
     [StateCheckName("acc")]
     public double Acceleration
     {
       get => GetProperty<double>(nameof(Acceleration))!;
       set => UpdateProperty(nameof(Acceleration), value);
-    }
-
-    internal void Update(CommonDataStruct ss)
-    {
-      Callsign = ss.callsign;
-      Altitude = ss.altitude;
-      BankAngle = ss.bankAngle;
-      Height = ss.height;
-      IndicatedSpeed = ss.indicatedSpeed;
-      GroundSpeed = ss.groundSpeed;
-      VerticalSpeed = ss.verticalSpeed * SECONDS_PER_MINUTE;
-      Acceleration = (int)ss.accelerationBodyZ;
-    }
-
-    internal void Update(RareDataStruct s)
-    {
-      ParkingBrakeSet = s.parkingBrake != 0;
-      EngineCombustion[0] = s.engineOneCombustion != 0;
-      EngineCombustion[1] = s.engineTwoCombustion != 0;
-      EngineCombustion[2] = s.engineThreeCombustion != 0;
-      EngineCombustion[3] = s.engineFourCombustion != 0;
-      PushbackTugConnected = s.pushbackTugConnected != 0;
     }
   }
 }
