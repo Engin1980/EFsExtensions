@@ -23,7 +23,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
     public override void Handle()
     {
       Debug.Assert(data.NearestAirport != null);
-      var simData = this.simDataProvider();
       var sett = this.settings.RemainingDistanceThresholds;
 
       int iasDelta = simData.IndicatedSpeed - previousIas;
@@ -91,7 +90,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
             ds.Add(
               $"{airport.ICAO}/{candidateRwy.Runway.Designator} threshold {candidate.Threshold.Designator} " +
               $"bearing-delta {candidate.DeltaBearing} degrees");
-            var dist = GpsCalculator.GetDistance(candidate.Threshold.Coordinate.Latitude, candidate.Threshold.Coordinate.Longitude, simData.latitude, simData.longitude);
+            var dist = GpsCalculator.GetDistance(candidate.Threshold.Coordinate.Latitude, candidate.Threshold.Coordinate.Longitude, simData.Latitude, simData.Longitude);
             ds.Add($"Distance to threshold: {dist}m");
 
             if (candidate.Threshold != lastDistanceThreshold)

@@ -19,8 +19,8 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
   {
     protected readonly Logger logger;
     protected readonly Context.RuntimeDataBox data;
+    protected readonly SimData simData;
     protected readonly Raas raas;
-    protected Func<SimDataStruct> simDataProvider;
     protected readonly Settings settings;
     private readonly ITtsProvider? synthetizer;
 
@@ -29,7 +29,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
       this.logger = args.logger;
       this.data = args.data;
       this.raas = args.raas;
-      this.simDataProvider = args.simDataProvider;
+      this.simData = args.simData;
       this.settings = args.settings;
       this.synthetizer = new MsSapiModule().GetProvider(this.settings.Synthetizer);
     }

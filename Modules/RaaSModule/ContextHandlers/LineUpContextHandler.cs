@@ -23,7 +23,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
     {
       Debug.Assert(data.NearestAirport != null);
       var airport = data.NearestAirport.Airport;
-      var simData = simDataProvider();
       var sett = this.settings.LineUpThresholds;
 
       if (simData.Height > sett.MaxHeight)
@@ -50,9 +49,9 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
           {
             Threshold = q,
             Bearing = GpsCalculator.InitialBearing(q.Coordinate.Latitude, q.Coordinate.Longitude,
-            simData.latitude, simData.longitude),
+            simData.Latitude, simData.Longitude),
             Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude,
-            simData.latitude, simData.longitude)
+            simData.Latitude, simData.Longitude)
           })
           .Select(q => new LineUpData(
             data.NearestAirport.Airport,

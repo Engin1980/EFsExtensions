@@ -22,7 +22,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
     public override void Handle()
     {
       Debug.Assert(data.NearestAirport != null);
-      var simData = simDataProvider();
       var sett = this.settings.HoldingPointThresholds;
 
       if (simData.Height > sett.MaxHeight)
@@ -65,7 +64,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
           {
             lastHoldingPointRunway = grtd.Runway;
             var closestThreshold = grtd.Runway.Thresholds
-              .MinBy(q => GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, simData.latitude, simData.longitude))
+              .MinBy(q => GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, simData.Latitude, simData.Longitude))
               ?? throw new UnexpectedNullException();
             Say(raas.Speeches.TaxiToRunway, closestThreshold);
             data.HoldingPointStatus = 

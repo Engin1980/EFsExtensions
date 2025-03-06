@@ -32,7 +32,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
     #region Fields
 
     private readonly Logger logger;
-    private readonly SimObject simObject;
+    private readonly NewSimObject eSimObj;
 
     #endregion Fields
 
@@ -66,10 +66,10 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
         .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q)));
       this.SpeechDefinitionVMs.ForEach(q => q.CreateRunTime(PropertyVMs));
 
-      this.simObject = SimObject.GetInstance();
-      this.simObject.SimSecondElapsed += SimObject_SimSecondElapsed;
-      this.simObject.SimPropertyChanged += SimObject_SimPropertyChanged;
-      this.simObject.Started += () => this.simObject.RegisterProperties(this.PropertyVMs.Select(q => q.Property));
+      this.eSimObj = NewSimObject.GetInstance();
+      this.eSimObj.SimSecondElapsed += SimObject_SimSecondElapsed;
+      this.eSimObj.SimPropertyChanged += SimObject_SimPropertyChanged;
+      this.eSimObj.Started += () => this.eSimObj.RegisterProperties(this.PropertyVMs.Select(q => q.Property));
     }
 
     #endregion Constructors
@@ -81,7 +81,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
       Log(LogLevel.INFO, "Run");
 
       logger?.Invoke(LogLevel.DEBUG, "Starting simObject connection");
-      this.simObject.StartAsync();
+      this.eSimObj.StartInBackground();
     }
 
     internal void Stop()
@@ -142,7 +142,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
     }
     private void SimObject_SimSecondElapsed()
     {
-      if (this.simObject.IsSimPaused) return;
+      if (this.eSimObj.IsSimPaused) return;
       this.logger.Invoke(LogLevel.DEBUG, "SimSecondElapsed (non-paused)");
 
       if (Monitor.TryEnter(this) == false)

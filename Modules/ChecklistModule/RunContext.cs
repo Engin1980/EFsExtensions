@@ -30,13 +30,12 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
   internal partial class RunContext : NotifyPropertyChanged
   {
-
     #region Private Fields
 
     private readonly Logger logger;
     private readonly ChecklistManager manager;
     private readonly Settings settings;
-    private readonly SimObject simObject;
+    private readonly NewSimObject simObject;
     private int keyHookPlayPauseId = -1;
     private int keyHookSkipNextId = -1;
     private int keyHookSkipPrevId = -1;
@@ -57,14 +56,6 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
       get => base.GetProperty<List<CheckListVM>>(nameof(CheckListVMs))!;
       set => base.UpdateProperty(nameof(CheckListVMs), value);
     }
-
-    //public Type Name
-    //{
-    //  get => base.GetProperty<Type>(nameof(Name))!;
-    //  set => base.UpdateProperty(nameof(Name), value);
-    //}
-
-    public string Name => "CXX " + this.CheckListVMs.Count;
 
     public PropertyVMS PropertyVMs
     {
@@ -87,7 +78,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
         initContext.SimPropertyGroup.GetAllSimPropertiesRecursively()
         .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q)));
 
-      this.simObject = SimObject.GetInstance();
+      this.simObject = NewSimObject.GetInstance();
       this.simObject.SimSecondElapsed += SimObject_SimSecondElapsed;
       this.simObject.Started += SimObject_Started;
       this.simObject.Started += () => this.simObject.RegisterProperties(this.PropertyVMs.Select(q => q.Property));
@@ -122,7 +113,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
       ConnectKeyHooks();
 
       logger?.Invoke(LogLevel.DEBUG, "Starting simObject connection");
-      this.simObject.StartAsync();
+      this.simObject.StartInBackground();
 
       logger?.Invoke(LogLevel.DEBUG, "Run done");
     }
