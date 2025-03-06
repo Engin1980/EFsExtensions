@@ -6,8 +6,8 @@
     <UseWPF>true</UseWPF>
     <PlatformTarget>x64</PlatformTarget>
     <RootNamespace>Eng.EFsExtensions.EFsExtensionsModuleBase</RootNamespace>
-    <AssemblyVersion>1.4.0.37</AssemblyVersion>
-    <FileVersion>1.4.0.37</FileVersion>
+    <AssemblyVersion>1.4.0.38</AssemblyVersion>
+    <FileVersion>1.4.0.38</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -40,12 +40,6 @@
     <Reference Include="Microsoft.FlightSimulator.SimConnect">
       <HintPath>..\..\DLLs\Microsoft.FlightSimulator.SimConnect.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="ModuleUtils\Xsds\ChlaotModuleSchema.xsd">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
