@@ -84,7 +84,6 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
       simCon = new ESimConnect.ESimConnect();
 
       extOpen = new(simCon);
-      extSecond = new(simCon, true);
 
       extOpen.OpenInBackground();
 
