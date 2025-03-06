@@ -111,11 +111,9 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     private const int MAX_DISTANCE_TO_DO_EVALUATIONS_IN_M = 8_000;
     private readonly Logger logger;
     private readonly NewSimObject eSimObj;
-    private readonly SimDataSnaphotBuilder simDataSnapshotProvider;
     private readonly System.Timers.Timer timer;
     private readonly Action<bool> updateReadyFlag;
     private bool isBusy = false;
-    private bool isInitialized = false;
     private HoldingPointContextHandler holdingPointContextHandler = null!;
     private LineUpContextHandler lineUpContextHandler = null!;
     private LandingContextHandler landingContextHandler = null!;
@@ -162,7 +160,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       this.timer.Elapsed += timer_Elapsed;
 
       this.eSimObj = NewSimObject.GetInstance();
-      this.simDataSnapshotProvider = new();
 
       var args = new ContextHandlerArgs(this.logger, this.RuntimeData, this.RaaS,
         () => this.RuntimeData.SimDataSnapshot, this.Settings);
@@ -170,9 +167,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       this.holdingPointContextHandler = new HoldingPointContextHandler(args);
       this.lineUpContextHandler = new LineUpContextHandler(args);
       this.remainingDistanceContextHandler = new RemainingDistanceContextHandler(args);
-
-      logger?.Invoke(LogLevel.DEBUG, "Starting simObject connection");
-      this.eSimObj.StartInBackground();
     }
 
     #endregion Public Constructors
@@ -181,7 +175,13 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     public void Start()
     {
-      this.timer.Enabled = true;
+      logger?.Invoke(LogLevel.DEBUG, "Starting simObject connection");
+      this.eSimObj.StartInBackground(() =>
+      {
+        logger?.Log(LogLevel.INFO, "Initializing & registering properties");
+        eSimObj.ExtType.Register(typeof(SimDataSnapshot));
+        this.timer.Enabled = true;
+      });
     }
 
     public void Stop()
@@ -251,7 +251,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     private void EvaluateNearestAirport()
     {
       Airport? tmpA = null;
-      var simData = this.simDataSnapshotProvider.GetSnapshot();
+      var simData = this.RuntimeData.SimDataSnapshot;
       double? tmpD = null;
       if (this.RuntimeData.NearestAirport != null)
       {
@@ -318,7 +318,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     private void EvaluateNearestRunways()
     {
-      var simData = simDataSnapshotProvider.GetSnapshot();
+      var simData = this.RuntimeData.SimDataSnapshot;
       RuntimeData.NearestRunways = RuntimeData.NearestAirport!.Airport.Runways
         .Select(q => new NearestRunways(
           q,
@@ -335,7 +335,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     private void EvaluateRaas()
     {
-      var simData = simDataSnapshotProvider.GetSnapshot();
+      var simData = this.RuntimeData.SimDataSnapshot;
       if (simData.Height > MAX_HEIGHT_TO_DO_EVALUATIONS_IN_FT)
         return; // too high, do nothing
 
@@ -358,26 +358,16 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     private void timer_Elapsed(object? sender, ElapsedEventArgs e)
     {
       if (isBusy) return;
-      if (eSimObj.IsOpened == false) return;
 
       isBusy = true;
-      if (!isInitialized)
+      try
       {
-        logger.Log(LogLevel.INFO, "Initializing & registering properties");
-        simDataSnapshotProvider.Connect(this.eSimObj.ExtValue);
-        isInitialized = true;
+        this.RuntimeData.SimDataSnapshot = eSimObj.ExtType.GetSnapshost<SimDataSnapshot>();
+        EvaluateRaas();
       }
-      else
+      catch (Exception ex)
       {
-        try
-        {
-          this.RuntimeData.SimDataSnapshot = simDataSnapshotProvider.GetSnapshot();
-          EvaluateRaas();
-        }
-        catch (Exception ex)
-        {
-          logger.Log(LogLevel.ERROR, "Error in EvaluateRaas: " + ex.ToString());
-        }
+        logger.Log(LogLevel.ERROR, "Error in EvaluateRaas: " + ex.ToString());
       }
       isBusy = false;
     }

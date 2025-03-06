@@ -23,6 +23,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
     private readonly ESimConnect.Extenders.OpenInBackgroundExtender extOpen;
     private readonly ESimConnect.Extenders.SimSecondElapsedExtender extSecond;
     private readonly ESimConnect.Extenders.ValueCacheExtender extValue;
+    private readonly ESimConnect.Extenders.TypeCacheExtender extType;
     private readonly ConcurrentBag<TypeIdSimProperty> registerdSimProperties = new();
 
     public event Action? Started;
@@ -30,6 +31,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
     public event Action<SimProperty, double>? SimPropertyChanged;
     public ESimConnect.ESimConnect ESimCon => eSimCon;
     public ESimConnect.Extenders.ValueCacheExtender ExtValue => extValue;
+    public ESimConnect.Extenders.TypeCacheExtender ExtType => extType;
 
     public NewSimObject()
     {
@@ -37,6 +39,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
       extOpen = new ESimConnect.Extenders.OpenInBackgroundExtender(eSimCon);
       extSecond = new ESimConnect.Extenders.SimSecondElapsedExtender(eSimCon, false);
       extValue = new ESimConnect.Extenders.ValueCacheExtender(eSimCon);
+      extType = new ESimConnect.Extenders.TypeCacheExtender(extValue);
 
       extOpen.Opened += () => this.Started?.Invoke();
       extSecond.SimSecondElapsed += () => this.SimSecondElapsed?.Invoke();
@@ -55,9 +58,9 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
     public bool IsSimPaused => this.extSecond.IsSimPaused;
     public bool IsOpened => this.extOpen.IsOpened;
 
-    public void StartInBackground()
+    public void StartInBackground(Action? onStarted = null)
     {
-      this.extOpen.OpenInBackground();
+      this.extOpen.OpenInBackground(onStarted);
     }
 
     public void RegisterProperties(IEnumerable<SimProperty> simProperties)
@@ -74,7 +77,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
       var typeId = this.extValue.Register(property.Name, property.Unit ?? "Number");
       lock (this.registerdSimProperties)
       {
-        if (this.registerdSimProperties.Any(q=>q.SimProperty == property))
+        if (this.registerdSimProperties.Any(q => q.SimProperty == property))
           this.registerdSimProperties.Add(new(typeId, property));
       }
     }
