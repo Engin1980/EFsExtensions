@@ -22,12 +22,13 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
     public override void Handle()
     {
       Debug.Assert(data.NearestAirport != null);
+      var simDataSnapshot = simDataSnapshotProvider.GetSnapshot();
       var airport = data.NearestAirport.Airport;
       var sett = this.settings.LineUpThresholds;
 
-      if (simData.Height > sett.MaxHeight)
+      if (simDataSnapshot.Height > sett.MaxHeight)
       {
-        data.LineUpStatus = $"Plane probably airborne - height {simData.Height} " +
+        data.LineUpStatus = $"Plane probably airborne - height {simDataSnapshot.Height} " +
           $"over limit {sett.MaxHeight}";
         lastThreshold = null;
         return;
@@ -49,9 +50,9 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
           {
             Threshold = q,
             Bearing = GpsCalculator.InitialBearing(q.Coordinate.Latitude, q.Coordinate.Longitude,
-            simData.Latitude, simData.Longitude),
+            simDataSnapshot.Latitude, simDataSnapshot.Longitude),
             Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude,
-            simData.Latitude, simData.Longitude)
+            simDataSnapshot.Latitude, simDataSnapshot.Longitude)
           })
           .Select(q => new LineUpData(
             data.NearestAirport.Airport,
@@ -59,7 +60,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
             q.Threshold,
             (Heading)q.Bearing,
             q.Distance,
-            Math.Abs((double)q.Threshold.Heading! - ((double)simData.Heading + airport.Declination))))
+            Math.Abs((double)q.Threshold.Heading! - ((double)simDataSnapshot.Heading + airport.Declination))))
           .OrderBy(q => q.DeltaHeading)
           .ToList();
 
@@ -70,11 +71,11 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
           if (lastThreshold != thresholdCandidate.Threshold)
           {
             lastThreshold = thresholdCandidate.Threshold;
-            if (simData.IndicatedSpeed > sett.MaxSpeed)
+            if (simDataSnapshot.IndicatedSpeed > sett.MaxSpeed)
             {
               data.LineUpStatus =
                 $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} " +
-                $"announcement skipped due to high speed {simData.IndicatedSpeed} (max {sett.MaxSpeed}).";
+                $"announcement skipped due to high speed {simDataSnapshot.IndicatedSpeed} (max {sett.MaxSpeed}).";
             }
             else
             {

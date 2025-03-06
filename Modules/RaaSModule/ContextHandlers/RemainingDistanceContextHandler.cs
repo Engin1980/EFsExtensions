@@ -23,19 +23,20 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
     public override void Handle()
     {
       Debug.Assert(data.NearestAirport != null);
+      var simDataSnapshot = simDataSnapshotProvider.GetSnapshot();
       var sett = this.settings.RemainingDistanceThresholds;
 
-      int iasDelta = simData.IndicatedSpeed - previousIas;
-      previousIas = simData.IndicatedSpeed;
-      int heightDelta = simData.Height - previousHeight;
-      previousHeight = simData.Height;
+      int iasDelta = simDataSnapshot.IndicatedSpeed - previousIas;
+      previousIas = simDataSnapshot.IndicatedSpeed;
+      int heightDelta = simDataSnapshot.Height - previousHeight;
+      previousHeight = simDataSnapshot.Height;
 
       var ds = new List<string>();
 
-      if (simData.Height > sett.MaxHeight)
+      if (simDataSnapshot.Height > sett.MaxHeight)
       {
 
-        ds.Add($"Plane probably airborne - height {simData.Height} " +
+        ds.Add($"Plane probably airborne - height {simDataSnapshot.Height} " +
           $"over limit {sett.MaxHeight}");
         lastDistanceThreshold = null;
         lastDistanceThresholdRemainingDistances = null;
@@ -68,7 +69,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
             {
               Threshold = q,
               //TODO rewrite DeltaBearing to be valid w.r.t headings
-              DeltaBearing = Math.Abs((double)(simData.Heading - ((double)((Heading)q.Heading! - airport.Declination + 180))))
+              DeltaBearing = Math.Abs((double)(simDataSnapshot.Heading - ((double)((Heading)q.Heading! - airport.Declination + 180))))
             })
             .ToList();
           var passedTmps = tmps
@@ -90,7 +91,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
             ds.Add(
               $"{airport.ICAO}/{candidateRwy.Runway.Designator} threshold {candidate.Threshold.Designator} " +
               $"bearing-delta {candidate.DeltaBearing} degrees");
-            var dist = GpsCalculator.GetDistance(candidate.Threshold.Coordinate.Latitude, candidate.Threshold.Coordinate.Longitude, simData.Latitude, simData.Longitude);
+            var dist = GpsCalculator.GetDistance(candidate.Threshold.Coordinate.Latitude, candidate.Threshold.Coordinate.Longitude, simDataSnapshot.Latitude, simDataSnapshot.Longitude);
             ds.Add($"Distance to threshold: {dist}m");
 
             if (candidate.Threshold != lastDistanceThreshold)

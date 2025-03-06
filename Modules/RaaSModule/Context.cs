@@ -106,7 +106,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     private const int MAX_DISTANCE_TO_DO_EVALUATIONS_IN_M = 8_000;
     private readonly Logger logger;
     private readonly NewSimObject eSimObj;
-    private readonly SimData simData;
+    private readonly SimDataSnaphotProvider simDataSnapshotProvider;
     private readonly System.Timers.Timer timer;
     private readonly Action<bool> updateReadyFlag;
     private bool isBusy = false;
@@ -157,9 +157,10 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       this.timer.Elapsed += timer_Elapsed;
 
       this.eSimObj = NewSimObject.GetInstance();
-      this.simData = new();
+      this.simDataSnapshotProvider = new();
 
-      var args = new ContextHandlerArgs(this.logger, this.RuntimeData, this.RaaS, this.simData, this.Settings);
+      var args = new ContextHandlerArgs(this.logger, this.RuntimeData, this.RaaS, 
+        this.simDataSnapshotProvider, this.Settings);
       this.landingContextHandler = new LandingContextHandler(args);
       this.holdingPointContextHandler = new HoldingPointContextHandler(args);
       this.lineUpContextHandler = new LineUpContextHandler(args);
@@ -245,6 +246,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     private void EvaluateNearestAirport()
     {
       Airport? tmpA = null;
+      var simData = this.simDataSnapshotProvider.GetSnapshot();
       double? tmpD = null;
       if (this.RuntimeData.NearestAirport != null)
       {
@@ -311,6 +313,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     private void EvaluateNearestRunways()
     {
+      var simData = simDataSnapshotProvider.GetSnapshot();
       RuntimeData.NearestRunways = RuntimeData.NearestAirport!.Airport.Runways
         .Select(q => new NearestRunways(
           q,
@@ -327,6 +330,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     private void EvaluateRaas()
     {
+      var simData = simDataSnapshotProvider.GetSnapshot();
       if (simData.Height > MAX_HEIGHT_TO_DO_EVALUATIONS_IN_FT)
         return; // too high, do nothing
 
@@ -355,7 +359,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       if (!isInitialized)
       {
         logger.Log(LogLevel.INFO, "Initializing & registering properties");
-        simData.Connect(this.eSimObj.ExtValue);
+        simDataSnapshotProvider.Connect(this.eSimObj.ExtValue);
         isInitialized = true;
       }
       else
