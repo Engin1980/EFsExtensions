@@ -9,7 +9,7 @@
   <DockPanel>
     <TabControl>
       <TabItem Header="SimData">
-        <Grid>
+        <Grid DataContext="{Binding RuntimeData.SimDataSnapshot}">
           <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -25,23 +25,23 @@
           <Label Grid.Row="0" Grid.Column="0" Content="GPS" />
           <Label Grid.Row="0" Grid.Column="1">
             <StackPanel Orientation="Horizontal">
-              <TextBlock Text="{Binding SimData.Latitude}" />
+              <TextBlock Text="{Binding Latitude}" />
               <TextBlock Text="," />
-              <TextBlock Text="{Binding SimData.Longitude}" />
+              <TextBlock Text="{Binding Longitude}" />
             </StackPanel>
           </Label>
 
           <Label Grid.Row="1" Grid.Column="0" Content="Heading" />
-          <Label Grid.Row="1" Grid.Column="1" Content="{Binding SimData.Heading}" />
+          <Label Grid.Row="1" Grid.Column="1" Content="{Binding Heading}" />
 
           <Label Grid.Row="2" Grid.Column="0" Content="Height" />
-          <Label Grid.Row="2" Grid.Column="1" Content="{Binding SimData.Height}" />
+          <Label Grid.Row="2" Grid.Column="1" Content="{Binding Height}" />
 
           <Label Grid.Row="3" Grid.Column="0" Content="IAS" />
-          <Label Grid.Row="3" Grid.Column="1" Content="{Binding SimData.IndicatedSpeed}" />
+          <Label Grid.Row="3" Grid.Column="1" Content="{Binding IndicatedSpeed}" />
           
           <Label Grid.Row="4" Grid.Column="0" Content="VS" />
-          <Label Grid.Row="4" Grid.Column="1" Content="{Binding SimData.VerticalSpeed}" />
+          <Label Grid.Row="4" Grid.Column="1" Content="{Binding VerticalSpeed}" />
         </Grid>
       </TabItem>
       <TabItem Header="RaaS State - Ground - Taxi">

@@ -23,10 +23,10 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.Model
       {
         Height = (int)GetPropertyValue(nameof(SimDataSnapshot.Height)),
         IndicatedSpeed = (int)GetPropertyValue(nameof(SimDataSnapshot.IndicatedSpeed)),
-        Heading = (int)GetPropertyValue(nameof(SimDataSnapshot.Heading)),
-        Latitude = (int)GetPropertyValue(nameof(SimDataSnapshot.Latitude)),
-        Longitude = (int)GetPropertyValue(nameof(SimDataSnapshot.Longitude)),
-        VerticalSpeed = (int)GetPropertyValue(nameof(SimDataSnapshot.VerticalSpeed))
+        Heading = GetPropertyValue(nameof(SimDataSnapshot.Heading)),
+        Latitude = GetPropertyValue(nameof(SimDataSnapshot.Latitude)),
+        Longitude = GetPropertyValue(nameof(SimDataSnapshot.Longitude)),
+        VerticalSpeed = GetPropertyValue(nameof(SimDataSnapshot.VerticalSpeed))
       };
       return ret;
     }
