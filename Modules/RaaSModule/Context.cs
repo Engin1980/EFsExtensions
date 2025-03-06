@@ -83,11 +83,16 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
         set { base.UpdateProperty(nameof(NearestRunways), value); }
       }
 
-
       public List<string> DistanceStates
       {
         get { return base.GetProperty<List<string>>(nameof(DistanceStates))!; }
         set { base.UpdateProperty(nameof(DistanceStates), value); }
+      }
+
+      public SimDataSnapshot SimDataSnapshot
+      {
+        get { return base.GetProperty<SimDataSnapshot>(nameof(SimDataSnapshot))!; }
+        set { base.UpdateProperty(nameof(SimDataSnapshot), value); }
       }
 
       #endregion Public Properties
@@ -111,7 +116,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     private readonly Action<bool> updateReadyFlag;
     private bool isBusy = false;
     private bool isInitialized = false;
-    private HoldingPointContextHandler holdingPointContextHandler= null!;
+    private HoldingPointContextHandler holdingPointContextHandler = null!;
     private LineUpContextHandler lineUpContextHandler = null!;
     private LandingContextHandler landingContextHandler = null!;
     private RemainingDistanceContextHandler remainingDistanceContextHandler = null!;
@@ -159,7 +164,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       this.eSimObj = NewSimObject.GetInstance();
       this.simDataSnapshotProvider = new();
 
-      var args = new ContextHandlerArgs(this.logger, this.RuntimeData, this.RaaS, 
+      var args = new ContextHandlerArgs(this.logger, this.RuntimeData, this.RaaS,
         this.simDataSnapshotProvider, this.Settings);
       this.landingContextHandler = new LandingContextHandler(args);
       this.holdingPointContextHandler = new HoldingPointContextHandler(args);
@@ -366,6 +371,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       {
         try
         {
+          this.RuntimeData.SimDataSnapshot = simDataSnapshotProvider.GetSnapshot();
           EvaluateRaas();
         }
         catch (Exception ex)
