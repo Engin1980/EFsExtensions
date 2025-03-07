@@ -160,13 +160,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       this.timer.Elapsed += timer_Elapsed;
 
       this.eSimObj = NewSimObject.GetInstance();
-
-      var args = new ContextHandlerArgs(this.logger, this.RuntimeData, this.RaaS,
-        () => this.RuntimeData.SimDataSnapshot, this.Settings);
-      this.landingContextHandler = new LandingContextHandler(args);
-      this.holdingPointContextHandler = new HoldingPointContextHandler(args);
-      this.lineUpContextHandler = new LineUpContextHandler(args);
-      this.remainingDistanceContextHandler = new RemainingDistanceContextHandler(args);
     }
 
     #endregion Public Constructors
@@ -175,11 +168,19 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     public void Start()
     {
-      logger?.Invoke(LogLevel.DEBUG, "Starting simObject connection");
+      logger.Invoke(LogLevel.DEBUG, "Starting simObject connection");
       this.eSimObj.StartInBackground(() =>
       {
-        logger?.Log(LogLevel.INFO, "Initializing & registering properties");
+        logger.Log(LogLevel.INFO, "Initializing & registering properties");
         eSimObj.ExtType.Register(typeof(SimDataSnapshot));
+
+        var args = new ContextHandlerArgs(this.logger, this.RuntimeData, this.RaaS,
+        () => this.RuntimeData.SimDataSnapshot, this.Settings);
+        this.landingContextHandler = new LandingContextHandler(args);
+        this.holdingPointContextHandler = new HoldingPointContextHandler(args);
+        this.lineUpContextHandler = new LineUpContextHandler(args);
+        this.remainingDistanceContextHandler = new RemainingDistanceContextHandler(args);
+
         this.timer.Enabled = true;
       });
     }
