@@ -1,4 +1,5 @@
 ﻿using ESimConnect;
+using ESystem;
 using ESystem.Asserting;
 using System;
 using System.Collections.Concurrent;
@@ -75,10 +76,10 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
     {
       EAssert.Argument.IsNotNull(property, nameof(property));
       EAssert.IsTrue(this.extOpen.IsOpened, "SimObject must be started first.");
-      var typeId = this.extValue.Register(property.Name, property.Unit ?? "Number");
+      var typeId = this.extValue.Register(property.SimVar, property.Unit ?? "Number");
       lock (this.registerdSimProperties)
       {
-        if (this.registerdSimProperties.Any(q => q.SimProperty == property))
+        if (this.registerdSimProperties.None(q => q.SimProperty == property))
           this.registerdSimProperties.Add(new(typeId, property));
       }
     }
