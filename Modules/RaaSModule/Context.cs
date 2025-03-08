@@ -196,7 +196,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     internal void LoadAirportsFile(string recentXmlFile)
     {
-      this.Airports = XmlLoader.Load(recentXmlFile);
+      this.Airports = Libs.AirportsLib.XmlLoader.Load(recentXmlFile);
       this.CheckReadyStatus();
     }
 

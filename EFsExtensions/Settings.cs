@@ -18,20 +18,14 @@ namespace Eng.EFsExtensions.App
     {
       [XmlAttribute]
       public string Regex { get; set; } = "";
-      [XmlAttribute] public bool Verbose { get; set; }
-      [XmlAttribute] public bool Info { get; set; }
-      [XmlAttribute] public bool Warning { get; set; }
-      [XmlAttribute] public bool Error { get; set; }
+      [XmlAttribute] 
+      public string Level { get; set; }
 
-      internal ELogging.LogRule ToELogRule() //TODO update according new implementation of ELogging
+      internal ELogging.LogRule ToELogRule()
       {
-        LogLevel ll = this.Error ? LogLevel.ERROR
-          : this.Warning ? LogLevel.WARNING
-          : this.Info ? LogLevel.INFO
-          : this.Verbose ? LogLevel.DEBUG
-          : LogLevel.TRACE;
-
-        ELogging.LogRule ret = new(this.Regex, ll);
+        ELogging.LogRule ret = new(
+          this.Regex,
+          LogUtils.ConvertStringToLogLevel(Level));
         return ret;
       }
     }
@@ -54,18 +48,12 @@ namespace Eng.EFsExtensions.App
       ret.WindowLogRules.Add(new LogRule()
       {
         Regex = ".+",
-        Verbose = false,
-        Info = false,
-        Error = true,
-        Warning = true
+        Level = "info"
       });
       ret.LogFileLogRules.Add(new LogRule()
       {
         Regex = ".+",
-        Verbose = true,
-        Info = true,
-        Error = true,
-        Warning = true
+        Level= "verbose"
       });
       return ret;
     }
