@@ -17,6 +17,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows;
 using static ESystem.Functions;
 
 namespace Eng.EFsExtensions.Modules.SimVarTestModule
@@ -46,7 +47,7 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
     public List<IStringGroupItem> PredefinedSimVars { get; private set; }
     public List<IStringGroupItem> PredefinedSimEvents { get; private set; }
     public BindingList<string> AppliedSimEvents { get; } = new();
-    public BindingList<Watch> Watches { get; } = new ThreadSafeBindingList<Watch>();
+    public BindingList<Watch> Watches { get; } = new();
     private readonly System.Timers.Timer watchesUpdater = new()
     {
       Interval = 500,
@@ -115,15 +116,18 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
     private void ReadOutWatches()
     {
       var w = simObject.ExtValue;
-
       var snapShot = w.GetAllValues();
+
       foreach (var item in snapShot)
       {
+        Action a;
         var watch = Watches.FirstOrDefault(q => q.SimVarName == item.TypeDefinition.Name);
         if (watch != null)
-          watch.Value = item.Value;
+          a = () => { watch.Value = item.Value; };
         else
-          Watches.Add(new() { SimVarName = item.TypeDefinition.Name, Value = item.Value });
+          a = () => { Watches.Add(new() { SimVarName = item.TypeDefinition.Name, Value = item.Value }); };
+
+        Application.Current.Dispatcher.Invoke(a);
       }
     }
 
