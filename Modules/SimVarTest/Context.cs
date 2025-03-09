@@ -46,7 +46,7 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
     public List<IStringGroupItem> PredefinedSimVars { get; private set; }
     public List<IStringGroupItem> PredefinedSimEvents { get; private set; }
     public BindingList<string> AppliedSimEvents { get; } = new();
-    public BindingList<Watch> Watches { get; } = new();
+    public BindingList<Watch> Watches { get; } = new ThreadSafeBindingList<Watch>();
     private readonly System.Timers.Timer watchesUpdater = new()
     {
       Interval = 500,
