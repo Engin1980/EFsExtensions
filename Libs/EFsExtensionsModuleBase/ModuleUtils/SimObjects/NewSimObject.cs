@@ -34,6 +34,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
     public ESimConnect.Extenders.ValueCacheExtender ExtValue => extValue;
     public ESimConnect.Extenders.TypeCacheExtender ExtType => extType;
     public ESimConnect.Extenders.SimSecondElapsedExtender ExtSecond => extSecond;
+    public ESimConnect.Extenders.OpenInBackgroundExtender ExtOpen => extOpen;
 
     public NewSimObject()
     {
@@ -60,6 +61,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
     public bool IsSimPaused => this.extSecond.IsSimPaused;
     public bool IsOpened => this.extOpen.IsOpened;
 
+    [Obsolete("Used ..ExtOpen.StartInBackground() instead.")]
     public void StartInBackground(Action? onStarted = null)
     {
       this.extOpen.OpenInBackground(onStarted);

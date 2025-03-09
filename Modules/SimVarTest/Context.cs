@@ -1,5 +1,6 @@
 ﻿using ELogging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
 using Eng.EFsExtensions.Modules.SimVarTestModule.Model;
 using ESimConnect;
 using ESimConnect.Definitions;
@@ -15,23 +16,43 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using static ESystem.Functions;
 
 namespace Eng.EFsExtensions.Modules.SimVarTestModule
 {
   public class Context : NotifyPropertyChanged
   {
+    public class Watch : NotifyPropertyChanged
+    {
+      public string SimVarName
+      {
+        get { return base.GetProperty<string>(nameof(SimVarName))!; }
+        set { base.UpdateProperty(nameof(SimVarName), value); }
+      }
+      public double Value
+      {
+        get { return base.GetProperty<double>(nameof(Value))!; }
+        set { base.UpdateProperty(nameof(Value), value); }
+      }
+    }
+
     private readonly Action onReadySet;
-    private ESimConnect.ESimConnect simCon = null!;
-    private ESimConnect.Extenders.OpenInBackgroundExtender extOpen;
+    private NewSimObject simObject = null!;
     private record SimVarId(TypeId TypeId, RequestId RequestId, SimVarCase Case);
     private readonly List<SimVarId> SimVarIds = new();
 
     public BindingList<SimVarCase> Cases { get; } = new();
     public List<IStringGroupItem> PredefinedSimVars { get; private set; }
     public List<IStringGroupItem> PredefinedSimEvents { get; private set; }
-
     public BindingList<string> AppliedSimEvents { get; } = new();
+    public BindingList<Watch> Watches { get; } = new();
+    private readonly System.Timers.Timer watchesUpdater = new()
+    {
+      Interval = 500,
+      AutoReset = true,
+      Enabled = false
+    };
 
 
     public bool? IsEnabled
@@ -81,14 +102,29 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
 
     public void Connect()
     {
-      simCon = new ESimConnect.ESimConnect();
+      simObject = NewSimObject.GetInstance();
+      simObject.ExtOpen.OpenInBackground();
 
-      extOpen = new(simCon);
+      watchesUpdater.Elapsed += (s, e) => ReadOutWatches();
+      watchesUpdater.Start();
 
-      extOpen.OpenInBackground();
+      simObject.ESimCon.DataReceived += SimCon_DataReceived;
+      simObject.ESimCon.ThrowsException += SimCon_ThrowsException;
+    }
 
-      simCon.DataReceived += SimCon_DataReceived;
-      simCon.ThrowsException += SimCon_ThrowsException;
+    private void ReadOutWatches()
+    {
+      var w = simObject.ExtValue;
+
+      var snapShot = w.GetAllValues();
+      foreach (var item in snapShot)
+      {
+        var watch = Watches.FirstOrDefault(q => q.SimVarName == item.TypeDefinition.Name);
+        if (watch != null)
+          watch.Value = item.Value;
+        else
+          Watches.Add(new() { SimVarName = item.TypeDefinition.Name, Value = item.Value });
+      }
     }
 
     private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, SimConnectException ex)
