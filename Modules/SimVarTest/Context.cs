@@ -147,7 +147,7 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
       TypeId typeId;
       try
       {
-        typeId = simCon.Values.Register<double>(name, validate: validateName);
+        typeId = simObject.ESimCon.Values.Register<double>(name, validate: validateName);
       }
       catch (Exception ex)
       {
@@ -155,7 +155,7 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
         return;
       }
 
-      RequestId requestId = simCon.Values.RequestRepeatedly(typeId, SimConnectPeriod.SECOND, true, 0, 0, 0);
+      RequestId requestId = simObject.ESimCon.Values.RequestRepeatedly(typeId, SimConnectPeriod.SECOND, true, 0, 0, 0);
 
       SimVarCase svc = new()
       {
@@ -171,7 +171,7 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
     internal void SetValue(SimVarCase simVarCase, double newValue)
     {
       SimVarId sid = SimVarIds.First(q => q.Case == simVarCase);
-      simCon.Values.Send(sid.TypeId, newValue);
+      simObject.ESimCon.Values.Send(sid.TypeId, newValue);
     }
 
     internal void DeleteSimVar(SimVarCase svc)
@@ -183,7 +183,7 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
 
     internal void SendEvent(string eventName)
     {
-      this.simCon.ClientEvents.Invoke(eventName);
+      this.simObject.ESimCon.ClientEvents.Invoke(eventName);
     }
   }
 }
