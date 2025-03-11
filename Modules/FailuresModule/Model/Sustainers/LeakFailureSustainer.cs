@@ -50,7 +50,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
       ResetInternal();
       DataReceived += LeakFailureSustainer_DataReceived;
       RequestDataRepeatedly();
-      ESimObj.ExtSecond.SimSecondElapsed += ESimCon_SimSecondElapsed;
+      ESimObj.ExtTime.SimSecondElapsed += ESimCon_SimSecondElapsed;
     }
 
     #endregion Constructors
@@ -99,7 +99,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
 
     private void ESimCon_SimSecondElapsed()
     {
-      if (CurrentValue != null && ESimObj.ExtSecond.IsSimPaused == false)
+      if (CurrentValue != null && ESimObj.ExtTime.IsSimPaused == false)
         ApplyLeak();
     }
 

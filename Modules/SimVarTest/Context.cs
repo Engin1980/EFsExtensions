@@ -121,11 +121,11 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
       foreach (var item in snapShot)
       {
         Action a;
-        var watch = Watches.FirstOrDefault(q => q.SimVarName == item.TypeDefinition.Name);
+        var watch = Watches.FirstOrDefault(q => q.SimVarName == item.SimVarDefinition.Name);
         if (watch != null)
           a = () => { watch.Value = item.Value; };
         else
-          a = () => { Watches.Add(new() { SimVarName = item.TypeDefinition.Name, Value = item.Value }); };
+          a = () => { Watches.Add(new() { SimVarName = item.SimVarDefinition.Name, Value = item.Value }); };
 
         Application.Current.Dispatcher.Invoke(a);
       }

@@ -22,7 +22,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
 
     private readonly ESimConnect.ESimConnect eSimCon;
     private readonly ESimConnect.Extenders.OpenInBackgroundExtender extOpen;
-    private readonly ESimConnect.Extenders.SimSecondElapsedExtender extSecond;
+    private readonly ESimConnect.Extenders.SimTimeExtender extTime;
     private readonly ESimConnect.Extenders.ValueCacheExtender extValue;
     private readonly ESimConnect.Extenders.TypeCacheExtender extType;
     private readonly ConcurrentBag<TypeIdSimProperty> registerdSimProperties = new();
@@ -33,19 +33,19 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
     public ESimConnect.ESimConnect ESimCon => eSimCon;
     public ESimConnect.Extenders.ValueCacheExtender ExtValue => extValue;
     public ESimConnect.Extenders.TypeCacheExtender ExtType => extType;
-    public ESimConnect.Extenders.SimSecondElapsedExtender ExtSecond => extSecond;
+    public ESimConnect.Extenders.SimTimeExtender ExtTime => extTime;
     public ESimConnect.Extenders.OpenInBackgroundExtender ExtOpen => extOpen;
 
     public NewSimObject()
     {
       eSimCon = new ESimConnect.ESimConnect();
       extOpen = new ESimConnect.Extenders.OpenInBackgroundExtender(eSimCon);
-      extSecond = new ESimConnect.Extenders.SimSecondElapsedExtender(eSimCon, false);
+      extTime = new ESimConnect.Extenders.SimTimeExtender(eSimCon, false);
       extValue = new ESimConnect.Extenders.ValueCacheExtender(eSimCon);
       extType = new ESimConnect.Extenders.TypeCacheExtender(extValue);
 
       extOpen.Opened += () => this.Started?.Invoke();
-      extSecond.SimSecondElapsed += () => this.SimSecondElapsed?.Invoke();
+      extTime.SimSecondElapsed += () => this.SimSecondElapsed?.Invoke();
       extValue.ValueChanged += ExtValue_ValueChanged;
     }
 
@@ -58,7 +58,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
         .ForEach(q => this.SimPropertyChanged?.Invoke(q.SimProperty, e.Value));
     }
 
-    public bool IsSimPaused => this.extSecond.IsSimPaused;
+    public bool IsSimPaused => this.extTime.IsSimPaused;
     public bool IsOpened => this.extOpen.IsOpened;
 
     [Obsolete("Used ..ExtOpen.StartInBackground() instead.")]

@@ -18,7 +18,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
     private bool isRegistered = false;
     private TypeId? typeId = null;
     private RequestId? requestId = null;
-    protected bool IsSimPaused { get => ESimObj.ExtSecond.IsSimPaused; }
+    protected bool IsSimPaused { get => ESimObj.ExtTime.IsSimPaused; }
     protected event Action<double>? DataReceived;
 
     protected SimVarBasedFailureSustainer(FailureDefinition failure) : base(failure)

@@ -363,7 +363,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       isBusy = true;
       try
       {
-        this.RuntimeData.SimDataSnapshot = eSimObj.ExtType.GetSnapshost<SimDataSnapshot>();
+        this.RuntimeData.SimDataSnapshot = eSimObj.ExtType.GetSnapshot<SimDataSnapshot>();
         EvaluateRaas();
       }
       catch (Exception ex)

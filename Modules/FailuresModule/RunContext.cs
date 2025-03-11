@@ -263,7 +263,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
     {
       if (isRunning && !IsSupressed)
       {
-        this.SimData = eSimObj.ExtType.GetSnapshost<FailSimData>();
+        this.SimData = eSimObj.ExtType.GetSnapshot<FailSimData>();
         StateCheckEvaluator.UpdateDictionaryByObject(this.SimData, propertyValues);
         DateTime now = DateTime.Now;
         propertyValues["realTimeSecond"] = now.Second;
