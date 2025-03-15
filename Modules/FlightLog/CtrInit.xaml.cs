@@ -15,11 +15,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using Eng.Chlaot.Modules.FlightLogModule;
-using Eng.Chlaot.Modules.FlightLogModule.Navdata;
+using Eng.EfsExtensions.Modules.FlightLogModule;
+using Eng.EfsExtensions.Modules.FlightLogModule.Navdata;
 using ESystem.Miscelaneous;
 
-namespace FlightLogModule
+namespace Eng.EfsExtensions.Modules.FlightLogModule
 {
   /// <summary>
   /// Interaction logic for CtrInit.xaml

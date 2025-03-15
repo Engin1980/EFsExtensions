@@ -4,12 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
-using Eng.Chlaot.Modules.FlightLogModule.Navdata;
-using Eng.Chlaot.Modules.FlightLogModule;
+using Eng.EfsExtensions.Modules.FlightLogModule.Navdata;
 using ESystem;
 using ESystem.Asserting;
 
-namespace Eng.Chlaot.Modules.FlightLogModule.LogModel
+namespace Eng.EfsExtensions.Modules.FlightLogModule.LogModel
 {
   internal static class Convertor
   {
@@ -26,10 +25,11 @@ namespace Eng.Chlaot.Modules.FlightLogModule.LogModel
       Flight ret = new(
         departureAirport?.ICAO,
         destinationAirport?.ICAO,
-        new StartUp(run.StartUpCache.Time),
-        new TakeOff(run.TakeOffCache.Time),
-        new Landing(run.LandingCache.Time),
-        new ShutDown(run.ShutDownCache.Time));
+        new DateTime(), new DateTime(), null, null, null, "",
+        new StartUp(run.StartUpCache.Time, 0),
+        new TakeOff(run.TakeOffCache.Time, 0),
+        new Landing(run.LandingCache.Time, 0, 0, 0, 0, 0),
+        new ShutDown(run.ShutDownCache.Time, 0), null);
 
       return ret;
     }
@@ -58,7 +58,8 @@ namespace Eng.Chlaot.Modules.FlightLogModule.LogModel
       double ToRadians(double angleInDegrees)
       {
         return angleInDegrees * (Math.PI / 180.0);
-      };
+      }
+      ;
 
       const double R = 6371; // Radius of the Earth in kilometers
       double dLat = ToRadians(lat2 - lat1);

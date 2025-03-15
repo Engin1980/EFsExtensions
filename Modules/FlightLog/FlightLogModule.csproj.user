@@ -8,6 +8,9 @@
     <Compile Update="CtrRun.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="CtrSettings.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Page Update="CtrInit.xaml">

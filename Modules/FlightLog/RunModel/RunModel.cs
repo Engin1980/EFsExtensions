@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.FlightLogModule
+namespace Eng.EfsExtensions.Modules.FlightLogModule
 {
   internal class RunModel : NotifyPropertyChanged
   {

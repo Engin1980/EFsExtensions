@@ -1,5 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.Modules.FlightLogModule.Navdata;
+﻿using Eng.EfsExtensions.Modules.FlightLogModule.Navdata;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -7,9 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
-using FlightLogModule;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
 
-namespace Eng.Chlaot.Modules.FlightLogModule
+namespace Eng.EfsExtensions.Modules.FlightLogModule
 {
   public class FlightLogModule : NotifyPropertyChanged, IModule
   {

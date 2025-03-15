@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.FlightLogModule.LogModel
+namespace Eng.EfsExtensions.Modules.FlightLogModule.LogModel
 {
   public enum DivertReason
   {
@@ -14,7 +14,6 @@ namespace Eng.Chlaot.Modules.FlightLogModule.LogModel
     Mechanical,
     Other
   }
-  internal record GPS(double Latitude, double Longitude);
   internal record StartUp(DateTime Time, double FuelAmountKg);
   internal record TakeOff(DateTime Time, double FuelAmountKg);
   internal record Landing(DateTime Time, double FuelAmountKg, double LandingIAS, double LandingG, double LandingPitch, double LandingGPS);
