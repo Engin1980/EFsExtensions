@@ -1,6 +1,8 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
-using Eng.Chlaot.Modules.ChecklistModule;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
+using Eng.EFsExtensions.Modules.ChecklistModule;
+using ESystem;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -17,7 +19,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace ChecklistModule
+namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
   /// <summary>
   /// Interaction logic for CtrSettings.xaml
@@ -25,8 +27,9 @@ namespace ChecklistModule
   public partial class CtrSettings : Window
   {
     private const string AUDIO_CHANNEL_NAME = AudioPlayManager.CHANNEL_COPILOT;
+    private readonly MsSapiModule msSapiModule = new();
     private readonly Settings settings;
-    private readonly AudioPlayManager autoPlaybackManager = new AudioPlayManager();
+
     public CtrSettings()
     {
       InitializeComponent();
@@ -40,26 +43,32 @@ namespace ChecklistModule
     }
 
     [SuppressMessage("", "IDE1006")]
-    private void btnTestSynthetizer_Click(object sender, RoutedEventArgs e)
+    private async void btnTestSynthetizer_Click(object sender, RoutedEventArgs e)
     {
       btnTestSynthetizer.IsEnabled = false;
-      try
+      Task t = new(() =>
       {
-        Synthetizer s = new(settings.Synthetizer);
-        var a = s.Generate("Landing lights");
-        var b = s.Generate("On");
+        ChannelAudioPlayer cap = new();
+        try
+        {
+          ITtsProvider provider = msSapiModule.GetProvider(settings.Synthetizer);
+          var a = provider.Convert("Landing gear");
+          var b = provider.Convert("Down, three green");
 
-        autoPlaybackManager.Enqueue(a, AUDIO_CHANNEL_NAME);
-        autoPlaybackManager.Enqueue(b, AUDIO_CHANNEL_NAME);
-      }
-      catch (Exception ex)
-      {
-        throw new ApplicationException("Failed to generate or play.", ex);
-      }
-      finally
-      {
-        btnTestSynthetizer.IsEnabled = true;
-      }
+          a = AudioUtils.AppendSilence(a, settings.DelayAfterCall);
+          b = AudioUtils.AppendSilence(b, settings.DelayAfterConfirmation);
+
+          cap.PlayAndWait(a, AUDIO_CHANNEL_NAME);
+          cap.PlayAndWait(b, AUDIO_CHANNEL_NAME);
+        }
+        catch (Exception ex)
+        {
+          throw new ApplicationException("Failed to generate or play.", ex);
+        }
+      });
+      t.Start();
+      await t;
+      btnTestSynthetizer.IsEnabled = true;
     }
 
     private void Window_Closed(object sender, EventArgs e)

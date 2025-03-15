@@ -1,6 +1,6 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking;
-using Eng.Chlaot.Modules.ChecklistModule;
-using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.KeyHooking;
+using Eng.EFsExtensions.Modules.ChecklistModule;
+using Eng.EFsExtensions.Modules.ChecklistModule.Types.VM;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -18,7 +18,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ChecklistModule
+namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
   /// <summary>
   /// Interaction logic for RunControl.xaml

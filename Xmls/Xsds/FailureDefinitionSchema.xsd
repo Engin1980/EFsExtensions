@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xsd:schema id="Schema"
             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://chlaot.org/failureDefinitions.xsd"
-            targetNamespace="http://chlaot.org/failureDefinitions.xsd"
+            xmlns="http://github.com/EFS-Extensions/xmls/failureDefinitions.xsd"
+            targetNamespace="http://github.com/EFS-Extensions/xmls/failureDefinitions.xsd"
             elementFormDefault="qualified">
   <xsd:element name="definitions" type="failureDefinitions"/>
 

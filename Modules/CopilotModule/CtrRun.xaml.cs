@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.CopilotModule;
+﻿using Eng.EFsExtensions.Modules.CopilotModule;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace CopilotModule
+namespace Eng.EFsExtensions.Modules.CopilotModule
 {
   /// <summary>
   /// Interaction logic for CtrRun.xaml

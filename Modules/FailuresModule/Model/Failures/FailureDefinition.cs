@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using ESystem;
 using ESystem.Asserting;
 using EXmlLib.Attributes;
@@ -14,7 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Failures
 {
   public abstract class FailureDefinition : FailureDefinitionBase, IXmlObjectPostDeserialize
   {

@@ -1,5 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Serialization;
 
-namespace Eng.Chlaot.Modules.ChecklistModule
+namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
   public class Settings : NotifyPropertyChanged
   {
@@ -81,6 +81,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     }
 
     private const string FILE_NAME = "checklist-module-settings.xml";
+
     public bool LogSimConnectToFile
     {
       get => base.GetProperty<bool>(nameof(LogSimConnectToFile))!;
@@ -114,6 +115,24 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     }
 
 
+    public int DelayAfterCall
+    {
+      get { return base.GetProperty<int>(nameof(DelayAfterCall))!; }
+      set { base.UpdateProperty(nameof(DelayAfterCall), Math.Max(value, 0)); }
+    }
+
+    public int DelayAfterConfirmation
+    {
+      get { return base.GetProperty<int>(nameof(DelayAfterConfirmation))!; }
+      set { base.UpdateProperty(nameof(DelayAfterConfirmation), Math.Max(value, 0)); }
+    }
+
+    public int DelayAfterNotification
+    {
+      get { return base.GetProperty<int>(nameof(DelayAfterNotification))!; }
+      set { base.UpdateProperty(nameof(DelayAfterNotification), Math.Max(value, 0)); }
+    }
+
     public KeyShortcuts Shortcuts { get; set; } = new()
     {
       PlayPause = new KeyShortcut(true, false, false, Key.X),
@@ -121,7 +140,8 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       SkipToPrevious = new KeyShortcut(true, true, true, Key.X)
     };
 
-    public SynthetizerSettings Synthetizer { get; set; } = new();
+    public MsSapiSettings Synthetizer { get; set; } = new();
+
     public bool UseAutoplay
     {
       get => base.GetProperty<bool>(nameof(UseAutoplay))!;

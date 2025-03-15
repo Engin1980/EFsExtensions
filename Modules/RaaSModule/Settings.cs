@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Eng.Chlaot.Modules.RaaSModule
+namespace Eng.EFsExtensions.Modules.RaaSModule
 {
   public class Settings : NotifyPropertyChanged
   {
@@ -210,7 +210,7 @@ namespace Eng.Chlaot.Modules.RaaSModule
 
     private const string FILE_NAME = "raas-module-settings.xml";
 
-    public SynthetizerSettings Synthetizer { get; set; } = new();
+    public MsSapiSettings Synthetizer { get; set; } = new();
 
     public string? AutoLoadedAirportsFile
     {

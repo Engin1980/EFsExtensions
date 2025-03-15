@@ -1,9 +1,9 @@
 ﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
-using Eng.Chlaot.Libs.AirportsLib;
-using Eng.Chlaot.Modules.RaaSModule.Model;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
+using Eng.EFsExtensions.Libs.AirportsLib;
+using Eng.EFsExtensions.Modules.RaaSModule.Model;
 using ESystem.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -12,24 +12,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
+namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
 {
   internal abstract class ContextHandler
   {
     protected readonly Logger logger;
     protected readonly Context.RuntimeDataBox data;
+    protected readonly Func<SimDataSnapshot> simDataSnapshotProvider;
     protected readonly Raas raas;
-    protected Func<SimDataStruct> simDataProvider;
     protected readonly Settings settings;
-    private readonly static Synthetizer? synthetizer = Synthetizer.CreateDefault();
+    private readonly ITtsProvider? synthetizer;
 
     protected ContextHandler(ContextHandlerArgs args)
     {
       this.logger = args.logger;
       this.data = args.data;
       this.raas = args.raas;
-      this.simDataProvider = args.simDataProvider;
+      this.simDataSnapshotProvider = args.simDataSnapshotProvider;
       this.settings = args.settings;
+      this.synthetizer = new MsSapiModule().GetProvider(this.settings.Synthetizer);
     }
 
     public abstract void Handle();
@@ -43,7 +44,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
       logger.Log(LogLevel.INFO, "Saying: " + s);
 
       Debug.Assert(synthetizer != null);
-      var bytes = synthetizer!.Generate(s);
+      var bytes = synthetizer!.Convert(s);
       AudioPlayer player = new(bytes);
       player.PlayAsync();
     }
@@ -60,7 +61,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
         _ => throw new UnexpectedEnumValueException(candidateDistance.Unit)
       });
 
-      var bytes = synthetizer!.Generate(s);
+      var bytes = synthetizer!.Convert(s);
       AudioPlayer player = new(bytes);
       player.PlayAsync();
     }

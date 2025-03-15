@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.RaaSModule
+namespace Eng.EFsExtensions.Modules.RaaSModule
 {
   internal static class GpsCalculator
   {

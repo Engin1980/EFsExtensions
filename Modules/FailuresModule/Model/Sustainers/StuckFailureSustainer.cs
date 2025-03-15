@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
+﻿using Eng.EFsExtensions.Modules.FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
 {
     internal class StuckFailureSustainer : SimVarBasedFailureSustainer
     {

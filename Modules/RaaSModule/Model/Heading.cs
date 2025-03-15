@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.RaaSModule.Model
+namespace Eng.EFsExtensions.Modules.RaaSModule.Model
 {
   public struct Heading
   {

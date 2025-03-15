@@ -1,7 +1,6 @@
-﻿using ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents;
 using ESystem.Asserting;
 using ESystem.Miscelaneous;
 using System;
@@ -11,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.VMs
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.VMs
 {
   public class TriggerVM : NotifyPropertyChanged
   {

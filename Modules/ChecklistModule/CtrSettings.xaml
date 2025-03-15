@@ -1,38 +1,37 @@
-﻿<Window x:Class="ChecklistModule.CtrSettings"
+﻿<Window x:Class="Eng.EFsExtensions.Modules.ChecklistModule.CtrSettings"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:ChecklistModule"
+        xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.ChecklistModule"
+        xmlns:mssapi="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;assembly=EFsExtensionsModuleBase"
         mc:Ignorable="d"
         SizeToContent="WidthAndHeight"
         Title="CtrSettings" Height="500" Width="800" Closed="Window_Closed">
   <StackPanel>
-    <GroupBox Header="Synthetizer" DataContext="{Binding Synthetizer}" Margin="8">
-      <Grid>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition />
-          <ColumnDefinition />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition />
-          <RowDefinition />
-          <RowDefinition />
-          <RowDefinition />
-          <RowDefinition />
-        </Grid.RowDefinitions>
-        <Label Content="Voice" Grid.Row="0" Grid.Column="0" />
-        <ComboBox Grid.Row="0" Grid.Column="1"  Margin="2"
-                  SelectedItem="{Binding Voice}" ItemsSource="{Binding AvailableVoices}" />
-        <Label Content="Rate" Grid.Row="1" Grid.Column="0" />
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Rate}" Margin="2" />
-        <Button x:Name="btnTestSynthetizer" Grid.Row="4" Grid.Column="1"  Margin="2"
-                Content="Test synthetizer" Click="btnTestSynthetizer_Click" />
-        <Label Content="Trim beginning (miliseconds)" Grid.Row="2" Grid.Column="0" />
-        <TextBox Text="{Binding StartTrimMiliseconds}" Grid.Row="2" Grid.Column="1" Margin="2"/>
-        <Label Content="Trim end (miliseconds)" Grid.Row="3" Grid.Column="0" />
-        <TextBox Text="{Binding EndTrimMiliseconds}" Grid.Row="3" Grid.Column="1" Margin="2"/>
-      </Grid>
+    <GroupBox Header="Synthetizer"  Margin="8">
+      <StackPanel>
+        <mssapi:CtrSettings DataContext="{Binding Synthetizer}"/>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+          </Grid.RowDefinitions>
+          <Label Grid.Row="0" Grid.Column="0" Content="Delay after call (ms)" />
+          <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding DelayAfterCall, UpdateSourceTrigger=PropertyChanged}" />
+          <Label Grid.Row="1" Grid.Column="0" Content="Delay after confirmation (ms)" />
+          <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DelayAfterConfirmation, UpdateSourceTrigger=PropertyChanged}" />
+          <Label Grid.Row="2" Grid.Column="0" Content="Delay after notification (ms)" />
+          <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding DelayAfterNotification, UpdateSourceTrigger=PropertyChanged}" />
+          <Button x:Name="btnTestSynthetizer" Grid.Row="3" Grid.Column="1" Click="btnTestSynthetizer_Click">Test</Button>
+        </Grid>
+      </StackPanel>
     </GroupBox>
     <GroupBox Header="Key shortcuts" DataContext="{Binding Shortcuts}" Margin="8">
       <Grid>
@@ -99,8 +98,6 @@
         <Label Content="Pause play after every checklist item" Grid.Row="3" Grid.Column="0" />
         <CheckBox IsChecked="{Binding PlayPerItem}" Grid.Row ="3" Grid.Column="1"
           Margin="0 8 0 0 "/>
-        <Label Content="Debug evaluation enabled" Grid.Row="4" Grid.Column="0" />
-        <CheckBox IsChecked="{Binding EvalDebugEnabled}" IsEnabled="False" Grid.Row="4" Grid.Column="1"  Margin="0 8 0 0" />
       </Grid>
     </GroupBox>
   </StackPanel>

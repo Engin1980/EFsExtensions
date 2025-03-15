@@ -1,7 +1,7 @@
 ﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
-using Eng.Chlaot.Libs.AirportsLib;
-using Eng.Chlaot.Modules.RaaSModule.Model;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
+using Eng.EFsExtensions.Libs.AirportsLib;
+using Eng.EFsExtensions.Modules.RaaSModule.Model;
 using ESystem.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -9,9 +9,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Eng.Chlaot.Modules.RaaSModule.Context;
+using static Eng.EFsExtensions.Modules.RaaSModule.Context;
 
-namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
+namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
 {
   internal class LineUpContextHandler : ContextHandler
   {
@@ -22,13 +22,13 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
     public override void Handle()
     {
       Debug.Assert(data.NearestAirport != null);
+      var simDataSnapshot = simDataSnapshotProvider();
       var airport = data.NearestAirport.Airport;
-      var simData = simDataProvider();
       var sett = this.settings.LineUpThresholds;
 
-      if (simData.Height > sett.MaxHeight)
+      if (simDataSnapshot.Height > sett.MaxHeight)
       {
-        data.LineUpStatus = $"Plane probably airborne - height {simData.Height} " +
+        data.LineUpStatus = $"Plane probably airborne - height {simDataSnapshot.Height} " +
           $"over limit {sett.MaxHeight}";
         lastThreshold = null;
         return;
@@ -50,9 +50,9 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
           {
             Threshold = q,
             Bearing = GpsCalculator.InitialBearing(q.Coordinate.Latitude, q.Coordinate.Longitude,
-            simData.latitude, simData.longitude),
+            simDataSnapshot.Latitude, simDataSnapshot.Longitude),
             Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude,
-            simData.latitude, simData.longitude)
+            simDataSnapshot.Latitude, simDataSnapshot.Longitude)
           })
           .Select(q => new LineUpData(
             data.NearestAirport.Airport,
@@ -60,7 +60,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
             q.Threshold,
             (Heading)q.Bearing,
             q.Distance,
-            Math.Abs((double)q.Threshold.Heading! - ((double)simData.Heading + airport.Declination))))
+            Math.Abs((double)q.Threshold.Heading! - ((double)simDataSnapshot.Heading + airport.Declination))))
           .OrderBy(q => q.DeltaHeading)
           .ToList();
 
@@ -71,11 +71,11 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
           if (lastThreshold != thresholdCandidate.Threshold)
           {
             lastThreshold = thresholdCandidate.Threshold;
-            if (simData.IndicatedSpeed > sett.MaxSpeed)
+            if (simDataSnapshot.IndicatedSpeed > sett.MaxSpeed)
             {
               data.LineUpStatus =
                 $"Threshold {thresholdCandidate.Airport.ICAO}/{thresholdCandidate.Threshold.Designator} " +
-                $"announcement skipped due to high speed {simData.IndicatedSpeed} (max {sett.MaxSpeed}).";
+                $"announcement skipped due to high speed {simDataSnapshot.IndicatedSpeed} (max {sett.MaxSpeed}).";
             }
             else
             {

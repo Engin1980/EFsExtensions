@@ -2,8 +2,8 @@
 
 <properties
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://chlaot.org/simProperties.xsd"
-        xmlns:g="http://chlaot.org/global.xsd"
+        xmlns="http://github.com/EFS-Extensions/xmls/simProperties.xsd"
+        xmlns:g="http://github.com/EFS-Extensions/xmls/global.xsd"
         xsi:noNamespaceSchemaLocation="file://./Xsds/SimPropertiesSchema.xsd"
         title="Global properties">
   <g:properties title="Plane props">

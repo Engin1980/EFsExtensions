@@ -1,5 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.Synthetization;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Xml.Serialization;
 
-namespace Eng.Chlaot.Modules.CopilotModule
+namespace Eng.EFsExtensions.Modules.CopilotModule
 {
   public class Settings : NotifyPropertyChanged
   {
@@ -24,7 +24,7 @@ namespace Eng.Chlaot.Modules.CopilotModule
       set => base.UpdateProperty(nameof(LogSimConnectToFile), value);
     }
 
-    public SynthetizerSettings Synthetizer { get; set; } = new();
+    public MsSapiSettings Synthetizer { get; set; } = new();
 
     public static Settings Load()
     {

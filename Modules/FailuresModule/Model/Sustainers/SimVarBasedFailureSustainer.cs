@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
+﻿using Eng.EFsExtensions.Modules.FailuresModule.Model.Failures;
 using ESimConnect;
 using ESimConnect.Definitions;
 using ESystem.Asserting;
@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
 {
   public abstract class SimVarBasedFailureSustainer : FailureSustainer
   {
@@ -18,36 +18,27 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
     private bool isRegistered = false;
     private TypeId? typeId = null;
     private RequestId? requestId = null;
-    protected bool IsSimPaused { get; private set; } = false;
+    protected bool IsSimPaused { get => ESimObj.ExtTime.IsSimPaused; }
     protected event Action<double>? DataReceived;
 
     protected SimVarBasedFailureSustainer(FailureDefinition failure) : base(failure)
     {
-      SimCon.SystemEventInvoked += SimCon_EventInvoked;
+      // intentionally blank
     }
 
     protected override void InitInternal()
     {
-      SimCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System.Paused);
-      SimCon.SystemEvents.Register(ESimConnect.Definitions.SimEvents.System.Unpaused);
-    }
-
-    private void SimCon_EventInvoked(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectSystemEventInvokedEventArgs e)
-    {
-      if (e.Event == ESimConnect.Definitions.SimEvents.System.Paused)
-        IsSimPaused = true;
-      else if (e.Event == ESimConnect.Definitions.SimEvents.System.Unpaused)
-        IsSimPaused = false;
+      // intentionally blank
     }
 
     private void RegisterIfRequired()
     {
       if (isRegistered) return;
 
-      SimCon.DataReceived += SimCon_DataReceived;
+      ESimObj.ESimCon.DataReceived += SimCon_DataReceived;
 
       string name = Failure.SimConPoint;
-      this.typeId = SimCon.Values.Register<double>(name, DEFAULT_UNIT, DEFAULT_TYPE);
+      this.typeId = ESimObj.ESimCon.Values.Register<double>(name, DEFAULT_UNIT, DEFAULT_TYPE);
       isRegistered = true;
     }
 
@@ -55,7 +46,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
     {
       RegisterIfRequired();
       EAssert.IsNotNull(this.typeId);
-      this.requestId = SimCon.Values.Request(this.typeId.Value);
+      this.requestId = ESimObj.ESimCon.Values.Request(this.typeId.Value);
     }
 
     private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
@@ -71,14 +62,14 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
     {
       RegisterIfRequired();
       EAssert.IsNotNull(this.typeId);
-      SimCon.Values.Send(this.typeId.Value, value);
+      ESimObj.ESimCon.Values.Send(this.typeId.Value, value);
     }
 
     internal void RequestDataRepeatedly()
     {
       RegisterIfRequired();
       EAssert.IsNotNull(this.typeId);
-      this.requestId = SimCon.Values.RequestRepeatedly(typeId.Value, SimConnectPeriod.SECOND);
+      this.requestId = ESimObj.ESimCon.Values.RequestRepeatedly(typeId.Value, SimConnectPeriod.SECOND);
     }
   }
 }

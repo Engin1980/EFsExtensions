@@ -1,5 +1,5 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 using EXmlLib.Deserializers;
 using EXmlLib;
 using System;
@@ -15,7 +15,7 @@ using ESystem.Asserting;
 using static ESystem.Functions.TryCatch;
 using ESystem;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures.Xml
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Failures.Xml
 {
   internal static class Deserialization
   {

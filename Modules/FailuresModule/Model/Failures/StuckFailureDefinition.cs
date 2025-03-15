@@ -1,7 +1,7 @@
 ﻿using ESystem.Asserting;
 using System;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Failures
 {
   public class StuckFailureDefinition : WithSimVarFailureDefinition
   {

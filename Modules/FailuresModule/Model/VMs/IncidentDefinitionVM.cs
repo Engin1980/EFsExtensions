@@ -1,17 +1,16 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
-using Eng.Chlaot.Modules.FailuresModule.Model.Incidents;
-using Eng.Chlaot.Modules.FailuresModule.Model.VMs;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.VMs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.VMs
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.VMs
 {
   internal class IncidentDefinitionVM : IncidentVM
   {
-
     public VariableVMS Variables
     {
       get => base.GetProperty<VariableVMS>(nameof(Variables))!;

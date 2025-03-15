@@ -1,8 +1,8 @@
 ﻿
-using Eng.Chlaot.ChlaotModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using ESystem.Miscelaneous;
 
-namespace Eng.Chlaot.Modules.ChecklistModule.Types.VM
+namespace Eng.EFsExtensions.Modules.ChecklistModule.Types.VM
 {
   public class CheckItemVM : NotifyPropertyChanged
   {

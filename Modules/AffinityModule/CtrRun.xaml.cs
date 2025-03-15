@@ -1,4 +1,4 @@
-﻿using Eng.Chlaot.Modules.AffinityModule;
+﻿using Eng.EFsExtensions.Modules.AffinityModule;
 using Microsoft.WindowsAPICodePack.ShellExtensions;
 using System;
 using System.Collections.Generic;
@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace AffinityModule
+namespace Eng.EFsExtensions.Modules.AffinityModule
 {
   /// <summary>
   /// Interaction logic for CtrRun.xaml

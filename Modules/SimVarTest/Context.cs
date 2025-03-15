@@ -1,12 +1,13 @@
 ﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+using Eng.EFsExtensions.Modules.SimVarTestModule.Model;
 using ESimConnect;
 using ESimConnect.Definitions;
 using ESystem;
 using ESystem.Exceptions;
 using ESystem.Miscelaneous;
 using Microsoft.Windows.Themes;
-using SimVarTestModule.Model;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -15,24 +16,44 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
+using System.Windows;
 using static ESystem.Functions;
 
-namespace Eng.Chlaot.Modules.SimVarTestModule
+namespace Eng.EFsExtensions.Modules.SimVarTestModule
 {
   public class Context : NotifyPropertyChanged
   {
+    public class Watch : NotifyPropertyChanged
+    {
+      public string SimVarName
+      {
+        get { return base.GetProperty<string>(nameof(SimVarName))!; }
+        set { base.UpdateProperty(nameof(SimVarName), value); }
+      }
+      public double Value
+      {
+        get { return base.GetProperty<double>(nameof(Value))!; }
+        set { base.UpdateProperty(nameof(Value), value); }
+      }
+    }
 
     private readonly Action onReadySet;
-    private ESimConnect.ESimConnect simCon = null!;
-    private Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.SimConWrapperWithSimSecond simConWrapper = null!;
+    private NewSimObject simObject = null!;
     private record SimVarId(TypeId TypeId, RequestId RequestId, SimVarCase Case);
     private readonly List<SimVarId> SimVarIds = new();
 
     public BindingList<SimVarCase> Cases { get; } = new();
     public List<IStringGroupItem> PredefinedSimVars { get; private set; }
     public List<IStringGroupItem> PredefinedSimEvents { get; private set; }
-
     public BindingList<string> AppliedSimEvents { get; } = new();
+    public BindingList<Watch> Watches { get; } = new();
+    private readonly System.Timers.Timer watchesUpdater = new()
+    {
+      Interval = 500,
+      AutoReset = true,
+      Enabled = false
+    };
 
 
     public bool? IsEnabled
@@ -72,7 +93,8 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
           string s = (string)val;
           lst.Add(new StringGroupValue(s));
         }
-      };
+      }
+      ;
 
       analyseClass(baseType, ret);
 
@@ -81,12 +103,32 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
 
     public void Connect()
     {
-      simCon = new ESimConnect.ESimConnect();
-      simConWrapper = new(simCon);
-      simConWrapper.OpenAsync(() => { }, ex => { });
+      simObject = NewSimObject.GetInstance();
+      simObject.ExtOpen.OpenInBackground();
 
-      simCon.DataReceived += SimCon_DataReceived;
-      simCon.ThrowsException += SimCon_ThrowsException;
+      watchesUpdater.Elapsed += (s, e) => ReadOutWatches();
+      watchesUpdater.Start();
+
+      simObject.ESimCon.DataReceived += SimCon_DataReceived;
+      simObject.ESimCon.ThrowsException += SimCon_ThrowsException;
+    }
+
+    private void ReadOutWatches()
+    {
+      var w = simObject.ExtValue;
+      var snapShot = w.GetAllValues();
+
+      foreach (var item in snapShot)
+      {
+        Action a;
+        var watch = Watches.FirstOrDefault(q => q.SimVarName == item.SimVarDefinition.Name);
+        if (watch != null)
+          a = () => { watch.Value = item.Value; };
+        else
+          a = () => { Watches.Add(new() { SimVarName = item.SimVarDefinition.Name, Value = item.Value }); };
+
+        Application.Current.Dispatcher.Invoke(a);
+      }
     }
 
     private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, SimConnectException ex)
@@ -109,7 +151,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
       TypeId typeId;
       try
       {
-        typeId = simCon.Values.Register<double>(name, validate: validateName);
+        typeId = simObject.ESimCon.Values.Register<double>(name, validate: validateName);
       }
       catch (Exception ex)
       {
@@ -117,7 +159,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
         return;
       }
 
-      RequestId requestId = simCon.Values.RequestRepeatedly(typeId, SimConnectPeriod.SECOND, true, 0, 0, 0);
+      RequestId requestId = simObject.ESimCon.Values.RequestRepeatedly(typeId, SimConnectPeriod.SECOND, true, 0, 0, 0);
 
       SimVarCase svc = new()
       {
@@ -133,7 +175,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
     internal void SetValue(SimVarCase simVarCase, double newValue)
     {
       SimVarId sid = SimVarIds.First(q => q.Case == simVarCase);
-      simCon.Values.Send(sid.TypeId, newValue);
+      simObject.ESimCon.Values.Send(sid.TypeId, newValue);
     }
 
     internal void DeleteSimVar(SimVarCase svc)
@@ -145,7 +187,7 @@ namespace Eng.Chlaot.Modules.SimVarTestModule
 
     internal void SendEvent(string eventName)
     {
-      this.simCon.ClientEvents.Invoke(eventName);
+      this.simObject.ESimCon.ClientEvents.Invoke(eventName);
     }
   }
 }

@@ -1,16 +1,15 @@
-﻿using ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
-using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
+using Eng.EFsExtensions.Modules.ChecklistModule.Types.VM;
 using ESystem.Asserting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 
-namespace Eng.Chlaot.Modules.ChecklistModule
+namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
   internal partial class RunContext
   {
@@ -22,10 +21,10 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       private readonly List<CheckListVM> active = new();
       private readonly List<CheckListVM> all;
       private readonly bool isAutoplayingEnabled;
-      private readonly SimObject simObject;
+      private readonly NewSimObject simObject;
       private readonly PropertyVMS propertyVMs;
 
-      internal ChecklistManager(PropertyVMS propertyVMs, List<CheckListVM> checkListViews, SimObject simObject,
+      internal ChecklistManager(PropertyVMS propertyVMs, List<CheckListVM> checkListViews, NewSimObject simObject,
         bool useAutoplay, bool readConfirmations, int? pausedAlertIntervalIfUsed, bool isPlayPerItemEnabled)
       {
         EAssert.Argument.IsNotNull(propertyVMs, nameof(propertyVMs));

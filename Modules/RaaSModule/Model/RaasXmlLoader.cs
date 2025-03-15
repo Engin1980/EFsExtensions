@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace Eng.Chlaot.Modules.RaaSModule.Model
+namespace Eng.EFsExtensions.Modules.RaaSModule.Model
 {
   internal class RaasXmlLoader
   {

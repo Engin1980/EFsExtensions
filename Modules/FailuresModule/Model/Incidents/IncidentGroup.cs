@@ -6,7 +6,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents
 {
   public class IncidentGroup : Incident
   {

@@ -1,7 +1,7 @@
 ﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.KeyHooking;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.KeyHooking;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 using Microsoft.VisualBasic.Logging;
 using System;
 using System.Collections.Generic;
@@ -15,30 +15,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Forms;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimObjects;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
 using ESystem;
 using System.ComponentModel;
 using System.Drawing.Imaging;
-using ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.StateChecking.VariableModel;
-using ChlaotModuleBase.ModuleUtils.StateChecking;
-using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.WPF.VMs;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
+using Eng.EFsExtensions.Modules.ChecklistModule.Types.VM;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
 using ESystem.Miscelaneous;
 
-namespace Eng.Chlaot.Modules.ChecklistModule
+namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
   internal partial class RunContext : NotifyPropertyChanged
   {
-
     #region Private Fields
 
     private readonly Logger logger;
     private readonly ChecklistManager manager;
     private readonly Settings settings;
-    private readonly SimObject simObject;
+    private readonly NewSimObject simObject;
     private int keyHookPlayPauseId = -1;
     private int keyHookSkipNextId = -1;
     private int keyHookSkipPrevId = -1;
@@ -59,14 +56,6 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       get => base.GetProperty<List<CheckListVM>>(nameof(CheckListVMs))!;
       set => base.UpdateProperty(nameof(CheckListVMs), value);
     }
-
-    //public Type Name
-    //{
-    //  get => base.GetProperty<Type>(nameof(Name))!;
-    //  set => base.UpdateProperty(nameof(Name), value);
-    //}
-
-    public string Name => "CXX " + this.CheckListVMs.Count;
 
     public PropertyVMS PropertyVMs
     {
@@ -89,7 +78,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
         initContext.SimPropertyGroup.GetAllSimPropertiesRecursively()
         .Where(q => initContext.PropertyUsageCounts.Any(p => p.Property == q)));
 
-      this.simObject = SimObject.GetInstance();
+      this.simObject = NewSimObject.GetInstance();
       this.simObject.SimSecondElapsed += SimObject_SimSecondElapsed;
       this.simObject.Started += SimObject_Started;
       this.simObject.Started += () => this.simObject.RegisterProperties(this.PropertyVMs.Select(q => q.Property));
@@ -124,7 +113,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       ConnectKeyHooks();
 
       logger?.Invoke(LogLevel.DEBUG, "Starting simObject connection");
-      this.simObject.StartAsync();
+      this.simObject.StartInBackground();
 
       logger?.Invoke(LogLevel.DEBUG, "Run done");
     }

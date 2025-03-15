@@ -1,6 +1,6 @@
 ﻿using EXmlLib.Attributes;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Incidents
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents
 {
     public class FailId : Fail
     {

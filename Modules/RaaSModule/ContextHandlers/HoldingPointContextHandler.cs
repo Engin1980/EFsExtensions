@@ -1,7 +1,7 @@
 ﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
-using Eng.Chlaot.Libs.AirportsLib;
-using Eng.Chlaot.Modules.RaaSModule.Model;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
+using Eng.EFsExtensions.Libs.AirportsLib;
+using Eng.EFsExtensions.Modules.RaaSModule.Model;
 using ESystem.Exceptions;
 using System;
 using System.Collections.Generic;
@@ -9,9 +9,9 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static Eng.Chlaot.Modules.RaaSModule.Context;
+using static Eng.EFsExtensions.Modules.RaaSModule.Context;
 
-namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
+namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
 {
   internal class HoldingPointContextHandler : ContextHandler
   {
@@ -22,12 +22,12 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
     public override void Handle()
     {
       Debug.Assert(data.NearestAirport != null);
-      var simData = simDataProvider();
+      var simDataSnapshot = simDataSnapshotProvider();
       var sett = this.settings.HoldingPointThresholds;
 
-      if (simData.Height > sett.MaxHeight)
+      if (simDataSnapshot.Height > sett.MaxHeight)
       {
-        data.HoldingPointStatus = $"Plane probably airborne - height {simData.Height} over limit " +
+        data.HoldingPointStatus = $"Plane probably airborne - height {simDataSnapshot.Height} over limit " +
           $"{sett.MaxHeight}";
         lastHoldingPointRunway = null;
         return;
@@ -65,7 +65,7 @@ namespace Eng.Chlaot.Modules.RaaSModule.ContextHandlers
           {
             lastHoldingPointRunway = grtd.Runway;
             var closestThreshold = grtd.Runway.Thresholds
-              .MinBy(q => GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, simData.latitude, simData.longitude))
+              .MinBy(q => GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, simDataSnapshot.Latitude, simDataSnapshot.Longitude))
               ?? throw new UnexpectedNullException();
             Say(raas.Speeches.TaxiToRunway, closestThreshold);
             data.HoldingPointStatus = 

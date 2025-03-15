@@ -1,8 +1,8 @@
 <failureDefinitions
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xmlns="http://chlaot.org/failures.xsd"
-        xmlns:g ="http://chlaot.org/global.xsd"
-        xmlns:fd ="http://chlaot.org/failureDefinitions.xsd"
+        xmlns="http://github.com/EFS-Extensions/xmls/failures.xsd"
+        xmlns:g ="http://github.com/EFS-Extensions/xmls/global.xsd"
+        xmlns:fd ="http://github.com/EFS-Extensions/xmls/failureDefinitions.xsd"
         xsi:noNamespaceSchemaLocation="file://./Xsds/FailureSchema.xsd">
   <metaInfo>
     <g:label>Default failures for SteamGauge Baron B58</g:label>

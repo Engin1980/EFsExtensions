@@ -1,6 +1,6 @@
 ﻿using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.Modules.FailuresModule;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.Modules.FailuresModule;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace Eng.Chlaot.Modules.FailuresModule
+namespace Eng.EFsExtensions.Modules.FailuresModule
 {
   public class FailuresModule : NotifyPropertyChanged, IModule
   {

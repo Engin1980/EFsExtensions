@@ -1,5 +1,5 @@
 ﻿
-namespace Eng.Chlaot.Modules.RaaSModule.Model
+namespace Eng.EFsExtensions.Modules.RaaSModule.Model
 {
   public class RaasVariables
   {

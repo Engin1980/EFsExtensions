@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SimVarTestModule.Model
+namespace Eng.EFsExtensions.Modules.SimVarTestModule.Model
 {
   public interface IStringGroupItem { }
   public class StringGroupValue    : IStringGroupItem

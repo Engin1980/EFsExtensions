@@ -1,7 +1,7 @@
-﻿using AffinityModule;
+﻿using Eng.EFsExtensions.Modules.AffinityModule;
 using ELogging;
-using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.ChlaotModuleBase.ModuleUtils;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils;
 using ESystem;
 using ESystem.Miscelaneous;
 using EXmlLib;
@@ -18,7 +18,7 @@ using System.Timers;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace Eng.Chlaot.Modules.AffinityModule
+namespace Eng.EFsExtensions.Modules.AffinityModule
 {
   public class Context : NotifyPropertyChanged
   {

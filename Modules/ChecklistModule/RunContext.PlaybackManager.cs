@@ -1,10 +1,10 @@
-﻿using Eng.Chlaot.ChlaotModuleBase.ModuleUtils.AudioPlaying;
-using Eng.Chlaot.Modules.ChecklistModule.Types.VM;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
+using Eng.EFsExtensions.Modules.ChecklistModule.Types.VM;
 using ESystem.Asserting;
 using System;
 using System.Timers;
 
-namespace Eng.Chlaot.Modules.ChecklistModule
+namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
   internal partial class RunContext
   {
@@ -28,7 +28,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
     {
       private readonly PlaybackManagerSettings sett;
       private readonly PlaybackManagerState state = new();
-      private readonly ChlaotModuleBase.ModuleUtils.AudioPlaying.AudioPlayManager apm = new();
+      private readonly EFsExtensionsModuleBase.ModuleUtils.AudioPlaying.AudioPlayManager apm = new();
       private Timer? pendingChecklistTimer = null;
 
       public event Action? ChecklistPlayingCompleted;
@@ -91,7 +91,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
           if (!state.isCurrentLastSpeechPlaying && this.sett.isPlayPerItemEnabled && isOneChecklistItemCompleted)
             state.isMainLoopAbortRequested = true;
 
-          apm.Enqueue(playData, ChlaotModuleBase.ModuleUtils.AudioPlaying.AudioPlayManager.CHANNEL_COPILOT, OnPlayCompleted);
+          apm.Enqueue(playData, EFsExtensionsModuleBase.ModuleUtils.AudioPlaying.AudioPlayManager.CHANNEL_COPILOT, OnPlayCompleted);
         }
         AdjustRunStates();
       }
@@ -124,7 +124,7 @@ namespace Eng.Chlaot.Modules.ChecklistModule
       private void PendingChecklistTimer_Elapsed(object? sender, ElapsedEventArgs e)
       {
         byte[] playData = this.Current.CheckList.PausedAlertSpeechBytes;
-        apm.Enqueue(playData, ChlaotModuleBase.ModuleUtils.AudioPlaying.AudioPlayManager.CHANNEL_COPILOT);
+        apm.Enqueue(playData, EFsExtensionsModuleBase.ModuleUtils.AudioPlaying.AudioPlayManager.CHANNEL_COPILOT);
       }
 
       public void Reset()

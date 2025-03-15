@@ -1,6 +1,6 @@
 ﻿using ESystem.Asserting;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Failures
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Failures
 {
   public class ToggleFailureDefinition : FailureDefinition
   {

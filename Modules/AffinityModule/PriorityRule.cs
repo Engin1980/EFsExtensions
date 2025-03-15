@@ -1,4 +1,4 @@
-﻿using AffinityModule;
+﻿using Eng.EFsExtensions.Modules.AffinityModule;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.AffinityModule
+namespace Eng.EFsExtensions.Modules.AffinityModule
 {
   public class PriorityRule : AbstractRule
   {

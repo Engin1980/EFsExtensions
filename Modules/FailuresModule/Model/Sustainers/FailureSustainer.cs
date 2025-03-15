@@ -1,5 +1,6 @@
-﻿using Eng.Chlaot.ChlaotModuleBase;
-using Eng.Chlaot.Modules.FailuresModule.Model.Failures;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+using Eng.EFsExtensions.Modules.FailuresModule.Model.Failures;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -9,13 +10,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers
 {
     public abstract class FailureSustainer : NotifyPropertyChanged
     {
         #region Fields
 
-        private static ESimConnect.ESimConnect simCon = null!;
+        private static NewSimObject eSimObj = null!;
         private bool initialized = false;
 
         #endregion Fields
@@ -29,7 +30,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
             get => GetProperty<bool>(nameof(IsActive))!;
             private set => UpdateProperty(nameof(IsActive), value);
         }
-        protected ESimConnect.ESimConnect SimCon { get => simCon; }
+        protected NewSimObject ESimObj { get => eSimObj; }
 
         #endregion Properties
 
@@ -46,7 +47,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
 
         public void Reset()
         {
-            if (SimCon == null) throw new ApplicationException("SimCon is null.");
+            if (eSimObj == null) throw new ApplicationException("eSimObj is null.");
             if (IsActive)
             {
                 ResetInternal();
@@ -56,7 +57,7 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
 
         public void Start()
         {
-            if (SimCon == null) throw new ApplicationException("SimCon is null.");
+            if (eSimObj == null) throw new ApplicationException("eSimObj is null.");
             if (!initialized)
                 Init();
 
@@ -75,9 +76,9 @@ namespace Eng.Chlaot.Modules.FailuresModule.Model.Sustainers
                 Reset();
         }
 
-        internal static void SetSimCon(ESimConnect.ESimConnect eSimConnect)
+        internal static void SetSimCon(NewSimObject eSimObj)
         {
-            simCon = eSimConnect;
+            FailureSustainer.eSimObj = eSimObj;
         }
 
         protected abstract void InitInternal();
