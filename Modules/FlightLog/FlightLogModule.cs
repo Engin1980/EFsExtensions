@@ -1,4 +1,4 @@
-﻿using Eng.EfsExtensions.Modules.FlightLogModule.Navdata;
+﻿using Eng.EFsExtensions.Modules.FlightLogModule.Navdata;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
 
-namespace Eng.EfsExtensions.Modules.FlightLogModule
+namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public class FlightLogModule : NotifyPropertyChanged, IModule
   {

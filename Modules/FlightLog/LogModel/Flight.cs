@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.EfsExtensions.Modules.FlightLogModule.LogModel
+namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 {
   public enum DivertReason
   {

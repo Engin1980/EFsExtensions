@@ -1,0 +1,35 @@
+﻿using ESystem.Asserting;
+using ESystem.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net.Http;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+
+namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
+{
+  public static class SimBriefProvider
+  {
+    public static OfpData LoadFromXml(string filePath)
+    {
+      XmlSerializer serializer = new(typeof(OfpData));
+      using FileStream fileStream = new(filePath, FileMode.Open);
+      return (OfpData)(serializer.Deserialize(fileStream) ?? throw new UnexpectedNullException());
+    }
+
+    public static async Task<OfpData> LoadFromUrlAsync(string simBriefId)
+    {
+      EAssert.Argument.IsNonEmptyString(simBriefId, nameof(simBriefId));
+
+      string url = $"https://www.simbrief.com/api/xml.fetcher.php?userid={simBriefId}";
+      using HttpClient client = new();
+      string xmlContent = await client.GetStringAsync(url);
+      using StringReader stringReader = new(xmlContent);
+      XmlSerializer serializer = new(typeof(OfpData));
+      return (OfpData)(serializer.Deserialize(stringReader) ?? throw new UnexpectedNullException());
+    }
+  }
+}

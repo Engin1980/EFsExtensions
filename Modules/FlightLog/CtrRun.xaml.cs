@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.EfsExtensions.Modules.FlightLogModule
+namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   /// <summary>
   /// Interaction logic for CtrRun.xaml

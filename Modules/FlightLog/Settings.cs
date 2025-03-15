@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.EfsExtensions.Modules.FlightLogModule
+namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public class Settings : NotifyPropertyChanged
   {

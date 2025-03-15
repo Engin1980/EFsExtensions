@@ -8,7 +8,7 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.EfsExtensions.Modules.FlightLogModule.Navdata
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Navdata
 {
 
   public record struct GPS(double Latitude, double Longitude);

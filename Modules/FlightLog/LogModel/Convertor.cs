@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
-using Eng.EfsExtensions.Modules.FlightLogModule.Navdata;
+using Eng.EFsExtensions.Modules.FlightLogModule.Navdata;
 using ESystem;
 using ESystem.Asserting;
 
-namespace Eng.EfsExtensions.Modules.FlightLogModule.LogModel
+namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 {
   internal static class Convertor
   {

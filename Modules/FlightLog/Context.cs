@@ -1,4 +1,4 @@
-﻿using Eng.EfsExtensions.Modules.FlightLogModule.Navdata;
+﻿using Eng.EFsExtensions.Modules.FlightLogModule.Navdata;
 using ESystem.Asserting;
 using ESystem.Miscelaneous;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.EfsExtensions.Modules.FlightLogModule
+namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public class Context : NotifyPropertyChanged
   {
