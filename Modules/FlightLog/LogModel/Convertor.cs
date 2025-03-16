@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media.Animation;
-using Eng.EFsExtensions.Modules.FlightLogModule.Navdata;
+using Eng.EFsExtensions.Libs.AirportsLib;
 using ESystem;
 using ESystem.Asserting;
 

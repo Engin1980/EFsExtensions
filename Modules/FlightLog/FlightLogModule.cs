@@ -1,5 +1,4 @@
-﻿using Eng.EFsExtensions.Modules.FlightLogModule.Navdata;
-using ESystem.Miscelaneous;
+﻿using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,11 +6,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.Libs.AirportsLib;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public class FlightLogModule : NotifyPropertyChanged, IModule
   {
+    private readonly Settings settings = new();
 
     public bool IsReady
     {
@@ -19,10 +20,16 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       set { base.UpdateProperty(nameof(IsReady), value); }
     }
 
-    public Context Context
+    public InitContext InitContext
     {
-      get => GetProperty<Context>(nameof(Context))!;
-      set => UpdateProperty(nameof(Context), value);
+      get => GetProperty<InitContext>(nameof(InitContext))!;
+      set => UpdateProperty(nameof(InitContext), value);
+    }
+
+    public RunContext RunContext
+    {
+      get => GetProperty<RunContext>(nameof(RunContext))!;
+      set => UpdateProperty(nameof(RunContext), value);
     }
 
 
@@ -34,24 +41,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public void Init()
     {
-      var airports = LoadNavdata();
-
-      this.Context = new Context(() => this.IsReady = true)
-      {
-        AirportsDict = airports
-      };
-
-      InitControl = new CtrInit(Context);
-    }
-
-    private Dictionary<string, Airport> LoadNavdata()
-    {
-      const string airportFile = @".\Data\airports.csv";
-      const string runwaysFile = @".\Data\runways.csv";
-
-      Dictionary<string, Airport> airports = Loader.LoadAirports(airportFile);
-      Loader.LoadRunways(runwaysFile, airports);
-      return airports;
+      this.InitContext = new InitContext(this.settings, () => this.IsReady = true);
+      InitControl = new CtrInit(InitContext);
     }
 
     public void Restore(Dictionary<string, string> restoreData)
@@ -61,7 +52,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public void Run()
     {
-      this.RunControl = new CtrRun(this.Context);
+      //this.RunControl = new CtrRun(this.InitContext);
     }
 
     public void SetUp(ModuleSetUpInfo setUpInfo)

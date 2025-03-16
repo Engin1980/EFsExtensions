@@ -4,76 +4,98 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:cvt="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;assembly=EFsExtensionsModuleBase" 
-             xmlns:nav="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Navdata"
+             xmlns:nav="clr-namespace:Eng.EFsExtensions.Libs.AirportsLib;assembly=AirportsLib"
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <cvt:DoubleFormatter x:Key="DoubleFormatter" />
   </UserControl.Resources>
-  <TabControl x:Name="tabMain" SelectionChanged="tabMain_SelectionChanged">
-    <TabItem Header="Enabled">
-      <Grid>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="250" />
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Label Grid.Row="0" Grid.Column="0" Content="Profile:" />
-        <ComboBox x:Name="cmbProfile" Grid.Row="0" Grid.Column="1" SelectedIndex="0" SelectionChanged="cmbProfile_SelectionChanged">
-          <ComboBoxItem Content="Disabled" />
-          <ComboBoxItem Content="Default" />
-        </ComboBox>
-      </Grid>
-    </TabItem>
-    <TabItem>
-      <TabItem.Header>
-        <StackPanel Orientation="Horizontal">
-          <TextBlock Text="World navdata"  />
-          <TextBlock x:Name="lblTakeLong" Text=" (loading may take long)" />
-        </StackPanel>
-      </TabItem.Header>
-      <StackPanel x:Name="pnlFilteredAirportList" >
-        <GroupBox Header="Filter">
-          <StackPanel Orientation="Horizontal">
-            <TextBox x:Name="txtICAO" Width="100" Text="{Binding Filter.Text}" />
-            <CheckBox x:Name="chkICAOOnly" Margin="4 4 0 0" Content="ICAO only" IsChecked="{Binding Filter.IcaoOnly}" />
+  <DockPanel>
+    <DockPanel DockPanel.Dock="Top">
+      <DockPanel DockPanel.Dock="Top">
+        <Button x:Name="btnSettings" DockPanel.Dock="Right"
+              Margin="8" Padding="8" Width="100" Click="btnSettings_Click">Settings</Button>
+        <Label />
+      </DockPanel>
+      <TabControl x:Name="tabMain" SelectionChanged="tabMain_SelectionChanged">
+        <TabItem Header="Profiles">
+          <Grid>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Label Grid.Row="0" Grid.Column="0" Content="Selected Profile:" />
+            <ComboBox x:Name="cmbProfiles" Grid.Row="0" Grid.Column="1" SelectedIndex="0" ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}">
+              <ComboBox.ItemTemplate>
+                <DataTemplate>
+                  <Label>
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding Name}" />
+                      <TextBlock Text=" (Files: " />
+                      <TextBlock Text="{Binding XmlFilesCount}" />
+                      <TextBlock Text=")" />
+                    </StackPanel>
+                  </Label>
+                </DataTemplate>
+              </ComboBox.ItemTemplate>
+            </ComboBox>
+            <Button x:Name="ctrNewProfile" Grid.Row="0" Grid.Column="2" Padding="8 0 8 0" Click="ctrNewProfile_Click">Create new profile</Button>
+          </Grid>
+        </TabItem>
+        <TabItem>
+          <TabItem.Header>
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="World navdata"  />
+              <TextBlock x:Name="lblTakeLong" Text=" (loading may take long)" />
+            </StackPanel>
+          </TabItem.Header>
+          <StackPanel x:Name="pnlFilteredAirportList" >
+            <GroupBox Header="Filter">
+              <StackPanel Orientation="Horizontal">
+                <TextBox x:Name="txtICAO" Width="100" Text="{Binding Filter.Text}" />
+                <CheckBox x:Name="chkICAOOnly" Margin="4 4 0 0" Content="ICAO only" IsChecked="{Binding Filter.IcaoOnly}" />
+              </StackPanel>
+            </GroupBox>
+            <TreeView ItemsSource="{Binding AirportList}">
+              <TreeView.Resources>
+                <HierarchicalDataTemplate DataType="{x:Type nav:Airport}" ItemsSource="{Binding Runways}">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock FontWeight="Bold" Text="{Binding ICAO}" />
+                    <TextBlock Text=" - "/>
+                    <TextBlock Text="{Binding Name}" />
+                    <TextBlock Text=", " />
+                    <TextBlock Text="{Binding City}" />
+                    <TextBlock Text=", " />
+                    <TextBlock Text="{Binding CountryCode}" />
+                  </StackPanel>
+                </HierarchicalDataTemplate>
+
+                <HierarchicalDataTemplate DataType="{x:Type nav:Runway}" ItemsSource="{Binding Thresholds}">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Designator}" />
+                  </StackPanel>
+                </HierarchicalDataTemplate>
+
+                <HierarchicalDataTemplate DataType="{x:Type nav:RunwayThreshold}">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Designator}" />
+                    <TextBlock Text=" - Loc: " />
+                    <TextBlock Text="{Binding Coordinate.Latitude, Converter={StaticResource DoubleFormatter}, ConverterParameter=N5}" />
+                    <TextBlock Text=" " />
+                    <TextBlock Text="{Binding Coordinate.Longitude, Converter={StaticResource DoubleFormatter}, ConverterParameter=N5}" />
+                  </StackPanel>
+                </HierarchicalDataTemplate>
+              </TreeView.Resources>
+            </TreeView>
           </StackPanel>
-        </GroupBox>
-        <TreeView ItemsSource="{Binding AirportList}">
-          <TreeView.Resources>
-            <HierarchicalDataTemplate DataType="{x:Type nav:Airport}" ItemsSource="{Binding Runways}">
-              <StackPanel Orientation="Horizontal">
-                <TextBlock FontWeight="Bold" Text="{Binding ICAO}" />
-                <TextBlock Text=" - "/>
-                <TextBlock Text="{Binding Name}" />
-                <TextBlock Text=", " />
-                <TextBlock Text="{Binding City}" />
-                <TextBlock Text=", " />
-                <TextBlock Text="{Binding CountryCode}" />
-              </StackPanel>
-            </HierarchicalDataTemplate>
+        </TabItem>
+      </TabControl>
+    </DockPanel>
+  </DockPanel>
 
-            <HierarchicalDataTemplate DataType="{x:Type nav:Runway}" ItemsSource="{Binding Thresholds}">
-              <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Designator}" />
-              </StackPanel>
-            </HierarchicalDataTemplate>
-
-            <HierarchicalDataTemplate DataType="{x:Type nav:RunwayThreshold}">
-              <StackPanel Orientation="Horizontal">
-                <TextBlock Text="{Binding Designator}" />
-                <TextBlock Text=" - Loc: " />
-                <TextBlock Text="{Binding Coordinate.Latitude, Converter={StaticResource DoubleFormatter}, ConverterParameter=N5}" />
-                <TextBlock Text=" " />
-                <TextBlock Text="{Binding Coordinate.Longitude, Converter={StaticResource DoubleFormatter}, ConverterParameter=N5}" />
-              </StackPanel>
-            </HierarchicalDataTemplate>
-          </TreeView.Resources>
-        </TreeView>
-      </StackPanel>
-    </TabItem>
-  </TabControl>
 </UserControl>

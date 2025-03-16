@@ -15,8 +15,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.Modules.FlightLogModule;
-using Eng.EFsExtensions.Modules.FlightLogModule.Navdata;
+using ESystem.Exceptions;
 using ESystem.Miscelaneous;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
@@ -40,13 +41,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       private void RefreshList()
       {
-        this.AirportList.Clear();
-        var filtered = Filter.Text.Length == 0
-          ? this.allAirports
-          : Filter.IcaoOnly
-            ? this.allAirports.Where(q => q.ICAO.Contains(Filter.Text)).ToList()
-            : this.allAirports.Where(q => q.Name.Contains(Filter.Text) || q.ICAO.Contains(Filter.Text) || q.City.Contains(Filter.Text)).ToList();
-        filtered.ForEach(q => this.AirportList.Add(q));
+        //this.AirportList.Clear();
+        //var filtered = Filter.Text.Length == 0
+        //  ? this.allAirports
+        //  : Filter.IcaoOnly
+        //    ? this.allAirports.Where(q => q.ICAO.Contains(Filter.Text)).ToList()
+        //    : this.allAirports.Where(q => q.Name.Contains(Filter.Text) || q.ICAO.Contains(Filter.Text) || q.City.Contains(Filter.Text)).ToList();
+        //filtered.ForEach(q => this.AirportList.Add(q));
       }
 
       public ObservableCollection<Airport> AirportList
@@ -83,7 +84,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       }
     }
 
-    private readonly Context Context = null!;
+    private readonly InitContext Context = null!;
     private readonly FilteredNavdata Filtered;
     private bool isInitializing = false;
 
@@ -95,11 +96,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       Filtered = null!;
     }
 
-    public CtrInit(Context context) : this()
+    public CtrInit(InitContext context) : this()
     {
       this.Context = context;
       this.DataContext = context;
-      this.pnlFilteredAirportList.DataContext = Filtered = new FilteredNavdata(context.AirportsList);
+      //this.pnlFilteredAirportList.DataContext = Filtered = new FilteredNavdata(context.AirportsList);
     }
 
     private void tabMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -108,10 +109,32 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         lblTakeLong.Visibility = Visibility.Collapsed;
     }
 
-    private void cmbProfile_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void btnSettings_Click(object sender, RoutedEventArgs e)
     {
-      if (isInitializing) return;
-      Context.IsReady = cmbProfile.SelectedIndex != 0;
+      new CtrSettings().ShowDialog();
+    }
+
+    private void ctrNewProfile_Click(object sender, RoutedEventArgs e)
+    {
+      var box = new InputBox("Enter new profile name", "New profile", "Profile",
+        validator: q => IsValidDictionaryName(q) && !Context.Profiles.Any(p => p.Name == q),
+        validationErrorMessage: "Profile name already exists or is not valid.");
+      box.ShowDialog();
+      if (box.DialogResult != true) return;
+
+      try
+      {
+        Context.CreateProfile(box.Input ?? throw new UnexpectedNullException());
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show("Failed to create profile. " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+      }
+    }
+
+    static bool IsValidDictionaryName(string input)
+    {
+      return !string.IsNullOrEmpty(input) && input.All(c => char.IsLetterOrDigit(c) || c == '_');
     }
   }
 }

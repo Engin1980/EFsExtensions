@@ -62,7 +62,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     }
 
-    private readonly Context Context = null!;
+    private readonly RunContext Context = null!;
     private readonly NewSimObject simObject = null!;
     private readonly SimPropValues simPropValues = null!;
 
@@ -72,13 +72,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       InitializeComponent();
     }
 
-    public CtrRun(Context context) : this()
+    public CtrRun(RunContext context) : this()
     {
       this.simObject = NewSimObject.GetInstance();
       this.simPropValues = new SimPropValues(this.simObject.ExtValue);
 
-      this.Context = context;
-      this.Context.RunModel = new RunModel();
+      //this.Context = context;
+      //this.Context.RunModel = new RunModel();
 
       this.DataContext = this.Context;
 
