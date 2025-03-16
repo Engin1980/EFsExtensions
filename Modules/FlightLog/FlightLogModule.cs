@@ -32,7 +32,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       set => UpdateProperty(nameof(RunContext), value);
     }
 
-
     public Control InitControl { get; private set; } = null!;
 
     public Control RunControl { get; private set; } = null!;

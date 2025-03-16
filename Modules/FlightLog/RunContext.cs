@@ -1,4 +1,5 @@
 ﻿using Eng.EFsExtensions.Libs.AirportsLib;
+using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel;
 using ESimConnect;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -19,20 +21,20 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private const int EMPTY_TYPE_ID = -1;
       private readonly ESimConnect.Extenders.ValueCacheExtender cache;
 
-      private TypeId[] engRunningTypeId = new TypeId[] { new(EMPTY_TYPE_ID), new(EMPTY_TYPE_ID), new(EMPTY_TYPE_ID), new(EMPTY_TYPE_ID) };
-      private TypeId[] wheelOnGroundTypeId = new TypeId[] { new(EMPTY_TYPE_ID), new(EMPTY_TYPE_ID), new(EMPTY_TYPE_ID) };
+      private readonly TypeId[] engRunningTypeId = new TypeId[] { new(EMPTY_TYPE_ID), new(EMPTY_TYPE_ID), new(EMPTY_TYPE_ID), new(EMPTY_TYPE_ID) };
+      private readonly TypeId[] wheelOnGroundTypeId = new TypeId[] { new(EMPTY_TYPE_ID), new(EMPTY_TYPE_ID), new(EMPTY_TYPE_ID) };
 
-      private TypeId parkingBrakeTypeId = new(EMPTY_TYPE_ID);
-      private TypeId heightTypeId = new(EMPTY_TYPE_ID);
-      private TypeId latitudeTypeId = new(EMPTY_TYPE_ID);
-      private TypeId longitudeTypeId = new(EMPTY_TYPE_ID);
-      private TypeId iasTypeId = new(EMPTY_TYPE_ID);
-      private TypeId fuelQuantityKgTypeId = new(EMPTY_TYPE_ID);
-      private TypeId touchdownBankDegrees = new(EMPTY_TYPE_ID);
-      private TypeId touchdownLatitude = new(EMPTY_TYPE_ID);
-      private TypeId touchdownLongitude = new(EMPTY_TYPE_ID);
-      private TypeId touchdownPitchDegrees = new(EMPTY_TYPE_ID);
-      private TypeId touchdownVelocity = new(EMPTY_TYPE_ID);
+      private readonly TypeId parkingBrakeTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId heightTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId latitudeTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId longitudeTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId iasTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId fuelQuantityKgTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId touchdownBankDegrees = new(EMPTY_TYPE_ID);
+      private readonly TypeId touchdownLatitude = new(EMPTY_TYPE_ID);
+      private readonly TypeId touchdownLongitude = new(EMPTY_TYPE_ID);
+      private readonly TypeId touchdownPitchDegrees = new(EMPTY_TYPE_ID);
+      private readonly TypeId touchdownVelocity = new(EMPTY_TYPE_ID);
 
       public SimPropValues(ESimConnect.Extenders.ValueCacheExtender cache)
       {
@@ -85,7 +87,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     private readonly SimPropValues simPropValues = null!;
     private readonly Settings settings = null!;
-    private readonly ESimConnect.Extenders.ValueCacheExtender cache;
+    private readonly List<Airport> airports;
 
     public RunContext(InitContext initContext, ESimConnect.Extenders.ValueCacheExtender cache, Settings settings)
     {
@@ -94,8 +96,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       EAssert.Argument.IsNotNull(cache, nameof(cache));
 
       this.RunVM.Profile = initContext.SelectedProfile;
-      this.cache = cache;
+      this.RunVM.Clear();
       this.settings = settings;
+      this.airports = settings.Airports;
     }
 
     internal RunViewModel RunVM
@@ -136,6 +139,87 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       if (this.simPropValues.IsAnyEngineRunning) return;
 
       this.RunVM.ShutDownCache = new(DateTime.Now, this.simPropValues.TotalFuelKg, this.simPropValues.Latitude, this.simPropValues.Longitude);
+      LogFlight logFlight = GenerateLogFlight(this.RunVM);
+    }
+
+    private LogFlight GenerateLogFlight(RunViewModel runVM)
+    {
+      EAssert.IsNotNull(runVM.StartUpCache, "StartUpCache not set.");
+      EAssert.IsNotNull(runVM.TakeOffCache, "TakeOffCache not set.");
+      EAssert.IsNotNull(runVM.LandingCache, "LandingCache not set.");
+      EAssert.IsNotNull(runVM.ShutDownCache, "ShutDownCache not set.");
+
+      string? departureICAO = runVM.SimDataCache?.DepartureICAO
+        ?? RunVM.VatsimCache?.DepartureICAO
+        ?? GetAirportByCoordinates(runVM.StartUpCache!.Latitude, runVM.StartUpCache!.Longitude);
+      string? destinationICAO = runVM.SimDataCache?.DestinationICAO
+        ?? RunVM.VatsimCache?.DestinationICAO
+        ?? GetAirportByCoordinates(runVM.LandingCache!.Latitude, runVM.LandingCache!.Longitude);
+      string? alternateICAO = runVM.SimDataCache?.AlternateICAO
+        ?? RunVM.VatsimCache?.AlternateICAO
+        ?? null;
+      double zfw = runVM.SimDataCache?.ZFW ?? double.NaN;
+      int? passengerCount = RunVM.SimDataCache?.NumberOfPassengers;
+      int? cargoWeight = RunVM.SimDataCache?.Cargo;
+      int? fuelWeight = RunVM.SimDataCache?.TotalFuel;
+      string aircraftType = RunVM.SimDataCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft ?? "UNSET"; //TODO get from FS
+      string aircraftRegistration = runVM.SimDataCache?.AirplaneRegistration ?? RunVM.VatsimCache?.Registration ?? "UNSET"; //TODO get from FS
+      string? aircraftModel = RunVM.SimDataCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft;
+
+      LogStartUp startUp = new(
+        runVM.SimDataCache?.OffBlockPlannedTime ?? runVM.VatsimCache?.PlannedDepartureTime, runVM.StartUpCache.Time,
+        (int)runVM.StartUpCache.TotalFuel,
+        new GPS(runVM.StartUpCache.Latitude, runVM.StartUpCache.Longitude));
+
+      LogTakeOff takeOff = new(
+        runVM.SimDataCache?.TakeOffPlannedTime, runVM.TakeOffCache.Time,
+        runVM.SimDataCache?.EstimatedTOW, (int)runVM.TakeOffCache.TotalFuel,
+        new GPS(runVM.TakeOffCache.Latitude, runVM.TakeOffCache.Longitude),
+        (int)runVM.TakeOffCache.IAS);
+
+      LogLanding landing = new(
+        runVM.SimDataCache?.LandingPlannedTime, runVM.LandingCache!.Time,
+        runVM.SimDataCache?.EstimatedLW, (int)runVM.LandingCache!.TotalFuel,
+        new GPS(runVM.LandingCache!.TouchdownLatitude, runVM.LandingCache!.TouchdownLongitude),
+        (int)runVM.LandingCache!.IAS,
+        runVM.LandingCache!.TouchdownVelocity, runVM.LandingCache!.TouchdownPitchDegrees);
+
+      LogShutDown shutDown = new(
+        runVM.SimDataCache?.OnBlockPlannedTime, runVM.ShutDownCache.Time, (int)runVM.ShutDownCache!.TotalFuel,
+        new GPS(runVM.ShutDownCache!.Latitude, runVM.ShutDownCache!.Longitude));
+
+      DivertReason divertReason = DivertReason.NotDiverted; //TODO this
+
+      LogFlight ret = new(
+        departureICAO, destinationICAO, alternateICAO, zfw, passengerCount, cargoWeight, fuelWeight,
+        aircraftType, aircraftRegistration, aircraftModel,
+        startUp, takeOff, landing, shutDown, divertReason);
+      return ret;
+    }
+
+    private string? GetAirportByCoordinates(double latitude, double longitude)
+    {
+      string? ret;
+
+      double minLat, maxLat, minLon, maxLon;
+      (minLat, maxLat) = (latitude - 1, latitude + 1);
+      (minLon, maxLon) = (longitude - 1, longitude + 1);
+      var tmp = airports
+        .Where(q => q.Coordinate.Latitude > minLat && q.Coordinate.Latitude < maxLat)
+        .Where(q => q.Coordinate.Longitude > minLon && q.Coordinate.Longitude < maxLon)
+        .ToList();
+      var dsts = tmp
+        .Select(q => new { Airport = q, Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, latitude, longitude) })
+        .OrderBy(q => q.Distance)
+        .ToList();
+      var minDist = dsts.FirstOrDefault();
+
+      if (minDist != null && minDist.Distance < 5) // some close airport
+        ret = minDist.Airport.ICAO;
+      else
+        ret = null;
+
+      return ret;
     }
 
     private void ProcssWaitForLanding()
@@ -154,12 +238,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       if (!this.simPropValues.IsFlying) return;
 
       this.RunVM.TakeOffCache = new(DateTime.Now, this.simPropValues.TotalFuelKg, this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
-
-      //TODO both do in async
-      if (this.RunVM.VatsimCache == null && this.settings.VatsimId != null)
-        RunVM.VatsimCache = VatsimProvider.CreateData(this.settings.VatsimId);
-      if (this.RunVM.SimDataCache == null && this.settings.SimBriefId != null)
-        RunVM.SimDataCache = SimBriefProvider.CreateData(this.settings.SimBriefId);
+      UpdateSimbriefAndVatsimIfRequired();
 
       this.RunVM.State = RunViewModel.RunModelState.InFlightWaitingForLanding;
     }
@@ -168,20 +247,22 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       if (this.simPropValues.ParkingBrakeSet) return;
 
+      if (RunVM.State == RunViewModel.RunModelState.AfterShutdown)
+        this.RunVM.Clear();
+
       RunVM.StartUpCache = new(DateTime.Now, simPropValues.TotalFuelKg, simPropValues.Latitude, simPropValues.Longitude);
-
-      //TODO do both in async:
-      if (this.settings.VatsimId != null)
-        RunVM.VatsimCache = VatsimProvider.CreateData(this.settings.VatsimId);
-      else
-        RunVM.VatsimCache = null;
-
-      if (this.settings.SimBriefId != null)
-        RunVM.SimDataCache = SimBriefProvider.CreateData(this.settings.SimBriefId);
-      else
-        RunVM.SimDataCache = null;
+      UpdateSimbriefAndVatsimIfRequired();
 
       RunVM.State = RunViewModel.RunModelState.StartedWaitingForTakeOff;
+    }
+
+    private void UpdateSimbriefAndVatsimIfRequired()
+    {
+      //TODO do both in async:
+      if (this.RunVM.VatsimCache == null && this.settings.VatsimId != null)
+        RunVM.VatsimCache = VatsimProvider.CreateData(this.settings.VatsimId);
+      if (this.RunVM.SimDataCache == null && this.settings.SimBriefId != null)
+        RunVM.SimDataCache = SimBriefProvider.CreateData(this.settings.SimBriefId);
     }
   }
 }

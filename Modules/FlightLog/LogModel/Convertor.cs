@@ -12,7 +12,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 {
   internal static class Convertor
   {
-    public static Flight Convert(RunViewModel run, IEnumerable<Airport> airports)
+    public static LogFlight Convert(RunViewModel run, IEnumerable<Airport> airports)
     {
       EAssert.IsNotNull(run.StartUpCache);
       EAssert.IsNotNull(run.TakeOffCache);
@@ -22,7 +22,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
       Airport? departureAirport = GetClosestAirport(airports, new GPS(run.TakeOffCache.Latitude, run.TakeOffCache.Longitude), 5);
       Airport? destinationAirport = GetClosestAirport(airports, new GPS(run.TakeOffCache.Latitude, run.TakeOffCache.Longitude), 5);
 
-      Flight ret = new(
+      LogFlight ret = new(
         departureAirport?.ICAO,
         destinationAirport?.ICAO,
         new DateTime(), new DateTime(), null, null, null, "",

@@ -23,14 +23,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
   /// </summary>
   public partial class CtrRun : UserControl
   {
-
-
-    private readonly RunContext Context = null!;
     private readonly NewSimObject simObject = null!;
-    
-
-    private RunContext context;
-
+    private readonly RunContext context = null!;
 
     public CtrRun()
     {
@@ -40,12 +34,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     public CtrRun(InitContext initContext, Settings settings) : this()
     {
       this.simObject = NewSimObject.GetInstance();
-      this.DataContext = this.Context = new RunContext(initContext, this.simObject.ExtValue, settings);
+      this.DataContext = this.context = new RunContext(initContext, this.simObject.ExtValue, settings);
     }
 
     public void Start()
     {
       this.simObject.ExtTime.SimSecondElapsed += () => this.context.ProcessSecondElapsed();
-    }    
+    }
   }
 }

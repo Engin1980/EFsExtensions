@@ -10,12 +10,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   internal class RunViewModel : NotifyPropertyChanged
   {
-    public record RunModelVatsimCache(string FlightRules, string Callsign, string Aircraft, string DepartureICAO, string DestinationICAO, string AlternateICAO, string Route, string PlannedFlightLevel, DateTime PlannedDepartureTime, TimeSpan PlannedRouteTime);
+    public record RunModelVatsimCache(string FlightRules, string Callsign, string Aircraft, string? Registration, 
+      string DepartureICAO, string DestinationICAO, string AlternateICAO, string Route, string PlannedFlightLevel, 
+      DateTime PlannedDepartureTime, TimeSpan PlannedRouteTime);
     public record RunModelSimDataCache(string DepartureICAO, string DestinationICAO, string AlternateICAO,
-      DateTime OffBlockPlannedTime, DateTime OnBlockPlannedTime,
+      DateTime OffBlockPlannedTime, DateTime TakeOffPlannedTime, DateTime LandingPlannedTime, DateTime OnBlockPlannedTime,
       int AirDistanceNM, int RouteDistanceNM,
       string AirplaneType, string AirplaneRegistration,
-      int NumberOfPassengers, int PayLoad, int Cargo, int ZFW, int EstimatedTOW, int EstimatedLW);
+      int NumberOfPassengers, int PayLoad, int Cargo, int ZFW, int TotalFuel, int EstimatedTOW, int EstimatedLW);
     public record RunModelTakeOffCache(DateTime Time, double TotalFuel, double IAS, double Latitude, double Longitude);
     public record RunModelStartUpCache(DateTime Time, double TotalFuel, double Latitude, double Longitude);
     public record RunModelShutDownCache(DateTime Time, double TotalFuel, double Latitude, double Longitude);
@@ -23,18 +25,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       double TouchdownBankDegrees, double TouchdownLatitude, double TouchdownLongitude, double TouchdownVelocity, double TouchdownPitchDegrees,
       double Latitude, double Longitude);
 
-    // TOTAL WEIGHT
-    // TOTAL VELOCITY
-
-
-
-
     public enum RunModelState
     {
+      Unset,
       WaitingForStartup,
       StartedWaitingForTakeOff,
       InFlightWaitingForLanding,
-      LandedWaitingForShutdown
+      LandedWaitingForShutdown,
+      AfterShutdown
     }
 
 
@@ -90,6 +88,17 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     public RunViewModel()
     {
       State = RunModelState.WaitingForStartup;
+    }
+
+    internal void Clear()
+    {
+      this.VatsimCache = null;
+      this.SimDataCache = null;
+      this.StartUpCache = null;
+      this.LandingCache = null;
+      this.ShutDownCache = null;
+      this.TakeOffCache = null;
+      this.State = RunModelState.Unset;
     }
   }
 }
