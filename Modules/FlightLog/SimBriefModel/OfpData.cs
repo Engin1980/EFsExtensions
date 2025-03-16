@@ -10,6 +10,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
   [XmlRoot("OFP")]
   public class OfpData
   {
+    public Fuel Fuel { get; set; } = null!;
     public Weights Weights { get; set; } = null!;
     public Aircraft Aircraft { get; set; } = null!;
     public Times Times { get; set; } = null!;

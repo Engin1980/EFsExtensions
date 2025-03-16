@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
@@ -29,5 +30,20 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
     string AssignedSquawk,
     string ModifiedByCid,
     string ModifiedByCallsign
-  );
+  )
+  {
+    public string? GetRegistration()
+    {
+        string? ret;
+        string pattern = @"(?<=\bREG/)[A-Z0-9]+";
+
+        Match match = Regex.Match(this.Rmks, pattern);
+        if (match.Success)
+          ret = match.Value;
+        else
+          ret = null;
+
+        return ret;
+    }
+  }
 }

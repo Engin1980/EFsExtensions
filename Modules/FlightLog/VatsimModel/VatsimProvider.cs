@@ -44,7 +44,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
       var plans = LoadFromUrlAsync(vatsimId).GetAwaiter().GetResult();
       var plan = plans.First();
       RunViewModel.RunModelVatsimCache ret = new RunViewModel.RunModelVatsimCache(
-        plan.FlightType, plan.Callsign, plan.Aircraft.Split("/")[0], plan.Dep, plan.Arr, plan.Alt, plan.Route, plan.Altitude,
+        plan.FlightType, plan.Callsign, plan.Aircraft.Split("/")[0], plan.GetRegistration(), plan.Dep, plan.Arr, plan.Alt, plan.Route, plan.Altitude,
         ConvertHHMMToDateTime(plan.DeptTime), new TimeSpan(plan.HrsEnroute, plan.MinEnroute, 0));
 
       return ret;

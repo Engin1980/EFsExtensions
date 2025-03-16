@@ -35,12 +35,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
     internal static RunViewModel.RunModelSimDataCache CreateData(string simBriefId)
     {
       OfpData data = LoadFromUrlAsync(simBriefId).GetAwaiter().GetResult();
-      RunViewModel.RunModelSimDataCache ret = new RunViewModel.RunModelSimDataCache(
+      RunViewModel.RunModelSimDataCache ret = new(
         data.Origin.IcaoCode, data.Destination.IcaoCode, data.Alternate.IcaoCode,
-        ConvertEpochToDateTime(data.Times.SchedOff), ConvertEpochToDateTime(data.Times.SchedOn),
+        ConvertEpochToDateTime(data.Times.SchedOut), ConvertEpochToDateTime(data.Times.SchedOff), ConvertEpochToDateTime(data.Times.SchedOn), ConvertEpochToDateTime(data.Times.SchedIn),
         data.General.AirDistance, data.General.RouteDistance,
         data.Aircraft.IcaoCode, data.Aircraft.Reg,
-        data.Weights.PaxCount, data.Weights.Payload, data.Weights.Cargo, data.Weights.estZfw, data.Weights.estTow, data.Weights.estLw);
+        data.Weights.PaxCount, data.Weights.Payload, data.Weights.Cargo, data.Weights.estZfw, data.Fuel.Taxi + data.Fuel.PlanTakeoff, data.Weights.estTow, data.Weights.estLw);
       return ret;
     }
 
