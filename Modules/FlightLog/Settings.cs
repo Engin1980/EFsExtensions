@@ -11,6 +11,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public class Settings : NotifyPropertyChanged
   {
+
+    public string? VatsimId
+    {
+      get => base.GetProperty<string?>(nameof(VatsimId))!;
+      set => base.UpdateProperty(nameof(VatsimId), value);
+    }
+
     public string? SimBriefId
     {
       get => base.GetProperty<string?>(nameof(SimBriefId))!;

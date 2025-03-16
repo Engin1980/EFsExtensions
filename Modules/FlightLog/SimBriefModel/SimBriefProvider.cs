@@ -31,5 +31,22 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
       XmlSerializer serializer = new(typeof(OfpData));
       return (OfpData)(serializer.Deserialize(stringReader) ?? throw new UnexpectedNullException());
     }
+
+    internal static RunViewModel.RunModelSimDataCache CreateData(string simBriefId)
+    {
+      OfpData data = LoadFromUrlAsync(simBriefId).GetAwaiter().GetResult();
+      RunViewModel.RunModelSimDataCache ret = new RunViewModel.RunModelSimDataCache(
+        data.Origin.IcaoCode, data.Destination.IcaoCode, data.Alternate.IcaoCode,
+        ConvertEpochToDateTime(data.Times.SchedOff), ConvertEpochToDateTime(data.Times.SchedOn),
+        data.General.AirDistance, data.General.RouteDistance,
+        data.Aircraft.IcaoCode, data.Aircraft.Reg,
+        data.Weights.PaxCount, data.Weights.Payload, data.Weights.Cargo, data.Weights.estZfw, data.Weights.estTow, data.Weights.estLw);
+      return ret;
+    }
+
+    private static DateTime ConvertEpochToDateTime(long unixTimestamp)
+    {
+      return DateTimeOffset.FromUnixTimeSeconds(unixTimestamp).UtcDateTime;
+    }
   }
 }

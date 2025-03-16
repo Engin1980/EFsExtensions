@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
 {
+  public record Weights(int PaxCount, int Payload, int Cargo, int estZfw, int estLw, int estTow);
+  public record Aircraft(string IcaoCode, string BaseType, string Name, string Reg);
+  public record Times(long EstTimeEnroute, long SchedOut, long SchedOn, long SchedOff, long SchedIn, int OriginTimezone, int DestTimeZone, long TaxiOut, long TaxiIn);
   public record Fetch(int UserId, string? StaticId, string Status, double Time);
   public record Params(long RequestId, string SequenceId, string? StaticId, int UserId, long TimeGenerated, string XmlFile, string OfpLayout, int Airac, string Units);
   public record General(int Release, string IcaoAirline, string FlightNumber, bool IsEtops, string DxRmk, string? SysRmk,
