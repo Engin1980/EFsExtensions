@@ -52,7 +52,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public void Run()
     {
-      //this.RunControl = new CtrRun(this.InitContext);
+      this.RunControl = new CtrRun(this.InitContext, this.settings);
     }
 
     public void SetUp(ModuleSetUpInfo setUpInfo)

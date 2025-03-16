@@ -29,10 +29,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private TypeId iasTypeId = new(EMPTY_TYPE_ID);
       private TypeId fuelQuantityKgTypeId = new(EMPTY_TYPE_ID);
       private TypeId touchdownBankDegrees = new(EMPTY_TYPE_ID);
-      private TypeId touchdownLatitude = new (EMPTY_TYPE_ID);
-      private TypeId touchdownLongitude = new (EMPTY_TYPE_ID);
-      private TypeId touchdownPitchDegrees = new (EMPTY_TYPE_ID);
-      private TypeId touchdownVelocity = new (EMPTY_TYPE_ID);
+      private TypeId touchdownLatitude = new(EMPTY_TYPE_ID);
+      private TypeId touchdownLongitude = new(EMPTY_TYPE_ID);
+      private TypeId touchdownPitchDegrees = new(EMPTY_TYPE_ID);
+      private TypeId touchdownVelocity = new(EMPTY_TYPE_ID);
 
       public SimPropValues(ESimConnect.Extenders.ValueCacheExtender cache)
       {
@@ -135,7 +135,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       if (!this.simPropValues.ParkingBrakeSet) return;
       if (this.simPropValues.IsAnyEngineRunning) return;
 
-      this.RunVM.ShutDownCache = new(DateTime.Now);
+      this.RunVM.ShutDownCache = new(DateTime.Now, this.simPropValues.TotalFuelKg, this.simPropValues.Latitude, this.simPropValues.Longitude);
     }
 
     private void ProcssWaitForLanding()

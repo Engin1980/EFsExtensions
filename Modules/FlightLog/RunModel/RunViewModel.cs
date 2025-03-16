@@ -18,7 +18,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       int NumberOfPassengers, int PayLoad, int Cargo, int ZFW, int EstimatedTOW, int EstimatedLW);
     public record RunModelTakeOffCache(DateTime Time, double TotalFuel, double IAS, double Latitude, double Longitude);
     public record RunModelStartUpCache(DateTime Time, double TotalFuel, double Latitude, double Longitude);
-    public record RunModelShutDownCache(DateTime Time);
+    public record RunModelShutDownCache(DateTime Time, double TotalFuel, double Latitude, double Longitude);
     public record RunModelLandingCache(DateTime Time, double TotalFuel, double IAS,
       double TouchdownBankDegrees, double TouchdownLatitude, double TouchdownLongitude, double TouchdownVelocity, double TouchdownPitchDegrees,
       double Latitude, double Longitude);

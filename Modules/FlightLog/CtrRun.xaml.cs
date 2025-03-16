@@ -37,11 +37,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       InitializeComponent();
     }
 
-    public CtrRun(InitContext initContext) : this()
+    public CtrRun(InitContext initContext, Settings settings) : this()
     {
       this.simObject = NewSimObject.GetInstance();
-      this.simPropValues = new SimPropValues(this.simObject.ExtValue);
-      this.DataContext = this.Context = new RunContext(initContext);
+      this.DataContext = this.Context = new RunContext(initContext, this.simObject.ExtValue, settings);
     }
 
     public void Start()
