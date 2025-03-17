@@ -1,5 +1,6 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
 using ESimConnect;
+using ESystem.Asserting;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -31,15 +32,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       InitializeComponent();
     }
 
-    public CtrRun(InitContext initContext, Settings settings) : this()
+    public CtrRun(RunContext runContext) : this()
     {
-      this.simObject = NewSimObject.GetInstance();
-      this.DataContext = this.context = new RunContext(initContext, this.simObject.ExtValue, settings);
-    }
-
-    public void Start()
-    {
-      this.simObject.ExtTime.SimSecondElapsed += () => this.context.ProcessSecondElapsed();
+      EAssert.Argument.IsNotNull(runContext, nameof(runContext));
+      
+      this.DataContext = this.context = runContext;
     }
   }
 }

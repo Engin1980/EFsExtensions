@@ -10,11 +10,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   internal class RunViewModel : NotifyPropertyChanged
   {
-    public record RunModelVatsimCache(string FlightRules, string Callsign, string Aircraft, string? Registration, 
-      string DepartureICAO, string DestinationICAO, string AlternateICAO, string Route, string PlannedFlightLevel, 
+    public record RunModelVatsimCache(string FlightRules, string Callsign, string Aircraft, string? Registration,
+      string DepartureICAO, string DestinationICAO, string AlternateICAO, string Route, int PlannedFlightLevel,
       DateTime PlannedDepartureTime, TimeSpan PlannedRouteTime);
     public record RunModelSimDataCache(string DepartureICAO, string DestinationICAO, string AlternateICAO,
       DateTime OffBlockPlannedTime, DateTime TakeOffPlannedTime, DateTime LandingPlannedTime, DateTime OnBlockPlannedTime,
+      int Altitude,
       int AirDistanceNM, int RouteDistanceNM,
       string AirplaneType, string AirplaneRegistration,
       int NumberOfPassengers, int PayLoad, int Cargo, int ZFW, int TotalFuel, int EstimatedTOW, int EstimatedLW);
@@ -27,12 +28,18 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public enum RunModelState
     {
-      Unset,
       WaitingForStartup,
       StartedWaitingForTakeOff,
       InFlightWaitingForLanding,
       LandedWaitingForShutdown,
       AfterShutdown
+    }
+
+
+    public int MaxAchievedAltitude
+    {
+      get => base.GetProperty<int>(nameof(MaxAchievedAltitude))!;
+      set => base.UpdateProperty(nameof(MaxAchievedAltitude), value);
     }
 
 
@@ -98,7 +105,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.LandingCache = null;
       this.ShutDownCache = null;
       this.TakeOffCache = null;
-      this.State = RunModelState.Unset;
+      this.State = RunModelState.WaitingForStartup;
     }
   }
 }

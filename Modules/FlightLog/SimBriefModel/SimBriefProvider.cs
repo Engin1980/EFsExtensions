@@ -38,6 +38,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
       RunViewModel.RunModelSimDataCache ret = new(
         data.Origin.IcaoCode, data.Destination.IcaoCode, data.Alternate.IcaoCode,
         ConvertEpochToDateTime(data.Times.SchedOut), ConvertEpochToDateTime(data.Times.SchedOff), ConvertEpochToDateTime(data.Times.SchedOn), ConvertEpochToDateTime(data.Times.SchedIn),
+        data.General.InitialAltitude,
         data.General.AirDistance, data.General.RouteDistance,
         data.Aircraft.IcaoCode, data.Aircraft.Reg,
         data.Weights.PaxCount, data.Weights.Payload, data.Weights.Cargo, data.Weights.estZfw, data.Fuel.Taxi + data.Fuel.PlanTakeoff, data.Weights.estTow, data.Weights.estLw);

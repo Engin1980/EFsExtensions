@@ -1,4 +1,5 @@
-﻿using Eng.EFsExtensions.Libs.AirportsLib;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel;
@@ -85,20 +86,25 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       public double TouchdownVelocity => cache.GetValue(touchdownVelocity);
     }
 
-    private readonly SimPropValues simPropValues = null!;
+    private SimPropValues simPropValues = null!;
     private readonly Settings settings = null!;
     private readonly List<Airport> airports;
+    private readonly NewSimObject simObj;
 
-    public RunContext(InitContext initContext, ESimConnect.Extenders.ValueCacheExtender cache, Settings settings)
+    public RunContext(InitContext initContext, Settings settings)
     {
       EAssert.Argument.IsNotNull(initContext, nameof(initContext));
       EAssert.IsNotNull(initContext.SelectedProfile, "SelectedProfile not set.");
-      EAssert.Argument.IsNotNull(cache, nameof(cache));
+
+      this.simObj = NewSimObject.GetInstance();
+
+      this.RunVM = new RunViewModel();
 
       this.RunVM.Profile = initContext.SelectedProfile;
       this.RunVM.Clear();
       this.settings = settings;
       this.airports = settings.Airports;
+      this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj.ExtValue));
     }
 
     internal RunViewModel RunVM
@@ -107,13 +113,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       set { base.UpdateProperty(nameof(RunVM), value); }
     }
 
-    public void ProcessSecondElapsed()
-    {
-      CheckForNextState();
-    }
-
     private void CheckForNextState()
     {
+      if (this.simPropValues == null) return; // not initialized yet
       switch (RunVM.State)
       {
         case RunViewModel.RunModelState.WaitingForStartup:
@@ -165,6 +167,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       string aircraftType = RunVM.SimDataCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft ?? "UNSET"; //TODO get from FS
       string aircraftRegistration = runVM.SimDataCache?.AirplaneRegistration ?? RunVM.VatsimCache?.Registration ?? "UNSET"; //TODO get from FS
       string? aircraftModel = RunVM.SimDataCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft;
+      int cruizeAltitude = runVM.SimDataCache?.Altitude ?? runVM.VatsimCache?.PlannedFlightLevel ?? runVM.MaxAchievedAltitude;
+      double airDistance = runVM.SimDataCache?.AirDistanceNM ?? TryGetAirDistance(departureICAO, destinationICAO);
+      double? routeDistance = runVM.SimDataCache?.RouteDistanceNM;
 
       LogStartUp startUp = new(
         runVM.SimDataCache?.OffBlockPlannedTime ?? runVM.VatsimCache?.PlannedDepartureTime, runVM.StartUpCache.Time,
@@ -193,7 +198,25 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       LogFlight ret = new(
         departureICAO, destinationICAO, alternateICAO, zfw, passengerCount, cargoWeight, fuelWeight,
         aircraftType, aircraftRegistration, aircraftModel,
+        cruizeAltitude, airDistance, routeDistance,
         startUp, takeOff, landing, shutDown, divertReason);
+      return ret;
+    }
+
+    private double TryGetAirDistance(string? departureIcao, string? destinationIcao)
+    {
+      double ret;
+      if (departureIcao == null || destinationIcao == null)
+        ret = double.NaN;
+      else
+      {
+        Airport? depAirport = airports.FirstOrDefault(q => q.ICAO == departureIcao);
+        Airport? destAirport = airports.FirstOrDefault(q => q.ICAO == destinationIcao);
+        if (depAirport == null || destAirport == null)
+          ret = Double.NaN;
+        else
+          ret = GpsCalculator.GetDistance(depAirport.Coordinate, destAirport.Coordinate);
+      }
       return ret;
     }
 
@@ -263,6 +286,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         RunVM.VatsimCache = VatsimProvider.CreateData(this.settings.VatsimId);
       if (this.RunVM.SimDataCache == null && this.settings.SimBriefId != null)
         RunVM.SimDataCache = SimBriefProvider.CreateData(this.settings.SimBriefId);
+    }
+
+    internal void Start()
+    {
+      this.simObj.ExtTime.SimSecondElapsed += () => CheckForNextState();
     }
   }
 }

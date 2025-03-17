@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Automation.Peers;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -63,6 +64,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.DataFolder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "EFsExtensions");
       if (System.IO.Directory.Exists(this.DataFolder) == false)
         System.IO.Directory.CreateDirectory(this.DataFolder);
+
+      //todo remove
+      this.AirportsXmlFile = ".\\xmls\\airports.xml";
+      this.SimBriefId = "475902";
+      this.VatsimId = "964586";
     }
   }
 }

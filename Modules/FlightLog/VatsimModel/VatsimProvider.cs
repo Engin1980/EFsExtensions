@@ -33,9 +33,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
     {
       EAssert.Argument.IsNonEmptyString(vatsimId, nameof(vatsimId));
 
-      string url = $"https://api.vatsim.net/v2/members/{vatsimId}/flightplans";
+      string url = $"http://api.vatsim.net/v2/members/{vatsimId}/flightplans";
       using HttpClient client = new();
-      string json = await client.GetStringAsync(url);
+      using var stream = await client.GetStreamAsync(url);
+      stream.Position = 0;
+      using StreamReader streamReader = new(stream);
+      string json = await streamReader.ReadToEndAsync();
       return JsonConvert.DeserializeObject<List<FlightPlan>>(json) ?? new List<FlightPlan>();
     }
 
@@ -44,7 +47,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
       var plans = LoadFromUrlAsync(vatsimId).GetAwaiter().GetResult();
       var plan = plans.First();
       RunViewModel.RunModelVatsimCache ret = new RunViewModel.RunModelVatsimCache(
-        plan.FlightType, plan.Callsign, plan.Aircraft.Split("/")[0], plan.GetRegistration(), plan.Dep, plan.Arr, plan.Alt, plan.Route, plan.Altitude,
+        plan.FlightType, plan.Callsign, plan.Aircraft.Split("/")[0], plan.GetRegistration(), plan.Dep, plan.Arr, plan.Alt, plan.Route, int.Parse(plan.Altitude),
         ConvertHHMMToDateTime(plan.DeptTime), new TimeSpan(plan.HrsEnroute, plan.MinEnroute, 0));
 
       return ret;

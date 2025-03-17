@@ -6,7 +6,88 @@
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+  <TabControl>
+    <TabItem Header="SimBrief">
+      <ScrollViewer>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+          </Grid.RowDefinitions>
+
+          <Label Grid.Column="0" Grid.Row="0" Content="Departure ICAO" />
+          <Label Grid.Column="1" Grid.Row="0" Content="{Binding DepartureICAO}" />
+          <Label Grid.Column="0" Grid.Row="1" Content="Destination ICAO" />
+          <Label Grid.Column="1" Grid.Row="1" Content="{Binding DestinationICAO}" />
+          <Label Grid.Column="0" Grid.Row="2" Content="Alternate ICAO" />
+          <Label Grid.Column="1" Grid.Row="2" Content="{Binding AlternateICAO}" />
+
+          <Label Grid.Column="0" Grid.Row="3" Content="Off-Block Estimated Time" />
+          <Label Grid.Column="1" Grid.Row="3" Content="{Binding OffBlockPlannedTime}" />
+          <Label Grid.Column="0" Grid.Row="4" Content="Take Off Estimated Time" />
+          <Label Grid.Column="1" Grid.Row="4" Content="{Binding TakeOffPlannedTime}" />
+          <Label Grid.Column="0" Grid.Row="5" Content="Landing Estimated Time" />
+          <Label Grid.Column="1" Grid.Row="5" Content="{Binding LandingPlannedTime}" />
+          <Label Grid.Column="0" Grid.Row="6" Content="On-Block Estimated Time" />
+          <Label Grid.Column="1" Grid.Row="6" Content="{Binding OnBlockPlannedTime}" />
+
+          <Label Grid.Column="0" Grid.Row="7" Content="Cruize Altitude" />
+          <Label Grid.Column="1" Grid.Row="7" Content="{Binding Altitude}" />
+          <Label Grid.Column="0" Grid.Row="8" Content="Air Distance (NM)" />
+          <Label Grid.Column="1" Grid.Row="8" Content="{Binding AirDistanceNM}" />
+          <Label Grid.Column="0" Grid.Row="9" Content="Route Distance (NM)" />
+          <Label Grid.Column="1" Grid.Row="9" Content="{Binding RouteDistanceNM}" />
+
+          <Label Grid.Column="0" Grid.Row="10" Content="Airplane Type" />
+          <Label Grid.Column="1" Grid.Row="10" Content="{Binding AirplaneType}" />
+          <Label Grid.Column="0" Grid.Row="11" Content="Airplane Registration" />
+          <Label Grid.Column="1" Grid.Row="11" Content="{Binding AirplaneRegistration}" />
+
+          <Label Grid.Column="0" Grid.Row="12" Content="Number of Passengers" />
+          <Label Grid.Column="1" Grid.Row="12" Content="{Binding NumberOfPassengers}" />
+          <Label Grid.Column="0" Grid.Row="13" Content="PayLoad (kg)" />
+          <Label Grid.Column="1" Grid.Row="13" Content="{Binding PayLoad}" />
+          <Label Grid.Column="0" Grid.Row="14" Content="Cargo (kg)" />
+          <Label Grid.Column="1" Grid.Row="14" Content="{Binding Cargo}" />
+
+          <Label Grid.Column="0" Grid.Row="15" Content="ZFW (kg)" />
+          <Label Grid.Column="1" Grid.Row="15" Content="{Binding ZFW}" />
+          <Label Grid.Column="0" Grid.Row="16" Content="Total fuel (kg)" />
+          <Label Grid.Column="1" Grid.Row="16" Content="{Binding TotalFuel}" />
+          <Label Grid.Column="0" Grid.Row="17" Content="Estimated TOW (kg)" />
+          <Label Grid.Column="1" Grid.Row="17" Content="{Binding EstimatedTOW}" />
+          <Label Grid.Column="0" Grid.Row="18" Content="Estimated LW (kg)" />
+          <Label Grid.Column="1" Grid.Row="18" Content="{Binding EstimatedLW}" />
+        </Grid>
+      </ScrollViewer>
+    </TabItem>
+    <TabItem Header="Vatsim"></TabItem>
+    <TabItem Header="Block-off"></TabItem>
+    <TabItem Header="Take-off"></TabItem>
+    <TabItem Header="Landing"></TabItem>
+    <TabItem Header="Block-on"></TabItem>
+    <TabItem Header="Current Flight Entry"></TabItem>
+    <TabItem Header="Flights Log"></TabItem>
+  </TabControl>
 </UserControl>

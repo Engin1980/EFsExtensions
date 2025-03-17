@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.Libs.AirportsLib;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -42,6 +43,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       this.InitContext = new InitContext(this.settings, () => this.IsReady = true);
       InitControl = new CtrInit(InitContext);
+      this.IsReady = true;
     }
 
     public void Restore(Dictionary<string, string> restoreData)
@@ -51,7 +53,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public void Run()
     {
-      this.RunControl = new CtrRun(this.InitContext, this.settings);
+      var runContext = new RunContext(this.InitContext, this.settings);
+      this.RunControl = new CtrRun(runContext);
+
+      runContext.Start();
     }
 
     public void SetUp(ModuleSetUpInfo setUpInfo)

@@ -22,6 +22,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
   internal record LogFlight(string? DepartureICAO, string? DestinationICAO, string? AlternateICAO,
     double ZFW, int? PassengerCount, int? CargoWeight, int? FuelWeight,
     string? AircraftType, string? AircraftRegistration, string? AircraftModel,
+    int cruizeAltitude, double airDistance, double? flightDistance,
     LogStartUp StartUp, LogTakeOff TakeOff, LogLanding Landing, LogShutDown ShutDown,
     DivertReason? DivertReason);
 }
