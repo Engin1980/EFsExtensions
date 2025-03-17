@@ -34,17 +34,17 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
       EAssert.Argument.IsNonEmptyString(vatsimId, nameof(vatsimId));
 
       string url = $"http://api.vatsim.net/v2/members/{vatsimId}/flightplans";
-      using HttpClient client = new();
+      using var client = new HttpClient();
       using var stream = await client.GetStreamAsync(url);
-      stream.Position = 0;
-      using StreamReader streamReader = new(stream);
+      using var streamReader = new StreamReader(stream);
       string json = await streamReader.ReadToEndAsync();
       return JsonConvert.DeserializeObject<List<FlightPlan>>(json) ?? new List<FlightPlan>();
     }
 
     internal static RunViewModel.RunModelVatsimCache? CreateData(string vatsimId)
     {
-      var plans = LoadFromUrlAsync(vatsimId).GetAwaiter().GetResult();
+      var downloadTask = Task.Run(async () => await LoadFromUrlAsync(vatsimId));
+      var plans = downloadTask.Result;
       var plan = plans.First();
       RunViewModel.RunModelVatsimCache ret = new RunViewModel.RunModelVatsimCache(
         plan.FlightType, plan.Callsign, plan.Aircraft.Split("/")[0], plan.GetRegistration(), plan.Dep, plan.Arr, plan.Alt, plan.Route, int.Parse(plan.Altitude),
@@ -56,8 +56,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
     private static DateTime ConvertHHMMToDateTime(string deptTime)
     {
       EAssert.IsTrue(deptTime.Length == 4, $"{nameof(deptTime)} must be in HHMM format.");
-      var hh = deptTime.Substring(0, 2);
-      var mm = deptTime.Substring(2);
+      var hh = deptTime[..2];
+      var mm = deptTime[2..];
 
       return new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, int.Parse(hh), int.Parse(mm), 0);
     }
