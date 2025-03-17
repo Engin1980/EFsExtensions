@@ -32,16 +32,23 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
       return (OfpData)(serializer.Deserialize(stringReader) ?? throw new UnexpectedNullException());
     }
 
-    internal static RunViewModel.RunModelSimDataCache CreateData(string simBriefId)
+    internal static RunViewModel.RunModelSimBriefCache CreateData(string simBriefId)
     {
-      OfpData data = LoadFromUrlAsync(simBriefId).GetAwaiter().GetResult();
-      RunViewModel.RunModelSimDataCache ret = new(
+      var downloadTask = Task.Run(async () => await LoadFromUrlAsync(simBriefId));
+      OfpData data = downloadTask.Result;
+
+      if (data.Fetch.Status != "Success")
+        throw new ApplicationException($"Expected status != Success, got: {data.Fetch.Status}");
+      if (data.Params.Units != "kgs")
+        throw new ApplicationException($"Expected unit == 'Kgs', got:  {data.Params.Units}");
+
+      RunViewModel.RunModelSimBriefCache ret = new(
         data.Origin.IcaoCode, data.Destination.IcaoCode, data.Alternate.IcaoCode,
         ConvertEpochToDateTime(data.Times.SchedOut), ConvertEpochToDateTime(data.Times.SchedOff), ConvertEpochToDateTime(data.Times.SchedOn), ConvertEpochToDateTime(data.Times.SchedIn),
         data.General.InitialAltitude,
         data.General.AirDistance, data.General.RouteDistance,
         data.Aircraft.IcaoCode, data.Aircraft.Reg,
-        data.Weights.PaxCount, data.Weights.Payload, data.Weights.Cargo, data.Weights.estZfw, data.Fuel.Taxi + data.Fuel.PlanTakeoff, data.Weights.estTow, data.Weights.estLw);
+        data.Weights.PaxCount, data.Weights.Payload, data.Weights.Cargo, data.Weights.EstZfw, data.Fuel.Taxi + data.Fuel.PlanTakeoff, data.Weights.EstTow, data.Weights.EstLdw);
       return ret;
     }
 

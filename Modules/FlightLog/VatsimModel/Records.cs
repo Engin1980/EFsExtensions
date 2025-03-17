@@ -10,18 +10,18 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
   public record FlightPlan(
     long Id,
     long ConnectionId,
-    string VatsimId,
-    string FlightType,
+    string vatsim_id,
+    string flight_type,
     string Callsign,
     string Aircraft,
-    string CruiseSpeed,
+    string cruisespeed,
     string Dep,
     string Arr,
     string Alt,
     string Altitude,
     string Rmks,
     string Route,
-    string DeptTime,
+    string DepTime,
     int HrsEnroute,
     int MinEnroute,
     int HrsFuel,
@@ -32,6 +32,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
     string ModifiedByCallsign
   )
   {
+    public string CruiseSpeed = cruisespeed;
+    public string VatsimId => vatsim_id;
+    public string FlightType => flight_type;
     public string? GetRegistration()
     {
         string? ret;
@@ -45,5 +48,16 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
 
         return ret;
     }
+
+    public DateTime GetDepartureDateTime()
+    {
+        DateTime now = DateTime.Now;
+        int hrs = int.Parse(DepTime[..2]);
+        int mns = int.Parse(DepTime[2..]);
+        DateTime ret = new(now.Year, now.Month, now.Day, hrs, mns, 0);
+        return ret;
+    }
+    public TimeSpan GetEnrouteTime() => new(HrsEnroute, MinEnroute, 0);
+    public TimeSpan GetFuelDurationTime() => new(HrsFuel, MinFuel, 0);
   }
 }

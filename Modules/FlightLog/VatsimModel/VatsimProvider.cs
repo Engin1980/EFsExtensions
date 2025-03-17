@@ -46,20 +46,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
       var downloadTask = Task.Run(async () => await LoadFromUrlAsync(vatsimId));
       var plans = downloadTask.Result;
       var plan = plans.First();
-      RunViewModel.RunModelVatsimCache ret = new RunViewModel.RunModelVatsimCache(
-        plan.FlightType, plan.Callsign, plan.Aircraft.Split("/")[0], plan.GetRegistration(), plan.Dep, plan.Arr, plan.Alt, plan.Route, int.Parse(plan.Altitude),
-        ConvertHHMMToDateTime(plan.DeptTime), new TimeSpan(plan.HrsEnroute, plan.MinEnroute, 0));
+      RunViewModel.RunModelVatsimCache ret = new(
+        plan.FlightType, plan.Callsign, plan.Aircraft.Split("/")[0], plan.GetRegistration(), plan.Dep, plan.Arr, plan.Alt, plan.Route, 
+        int.Parse(plan.Altitude),
+        plan.GetDepartureDateTime(), plan.GetEnrouteTime(), plan.GetFuelDurationTime());
 
       return ret;
-    }
-
-    private static DateTime ConvertHHMMToDateTime(string deptTime)
-    {
-      EAssert.IsTrue(deptTime.Length == 4, $"{nameof(deptTime)} must be in HHMM format.");
-      var hh = deptTime[..2];
-      var mm = deptTime[2..];
-
-      return new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, int.Parse(hh), int.Parse(mm), 0);
     }
   }
 }

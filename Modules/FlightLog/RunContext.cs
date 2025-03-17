@@ -1,4 +1,5 @@
-﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+﻿using ELogging;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
 using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel;
@@ -90,12 +91,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     private readonly Settings settings = null!;
     private readonly List<Airport> airports;
     private readonly NewSimObject simObj;
+    private readonly Logger logger;
 
     public RunContext(InitContext initContext, Settings settings)
     {
       EAssert.Argument.IsNotNull(initContext, nameof(initContext));
       EAssert.IsNotNull(initContext.SelectedProfile, "SelectedProfile not set.");
 
+      this.logger = Logger.Create(this);
       this.simObj = NewSimObject.GetInstance();
 
       this.RunVM = new RunViewModel();
@@ -104,10 +107,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.RunVM.Clear();
       this.settings = settings;
       this.airports = settings.Airports;
+
       this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj.ExtValue));
     }
 
-    internal RunViewModel RunVM
+    public RunViewModel RunVM
     {
       get { return base.GetProperty<RunViewModel>(nameof(RunVM))!; }
       set { base.UpdateProperty(nameof(RunVM), value); }
@@ -151,46 +155,46 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       EAssert.IsNotNull(runVM.LandingCache, "LandingCache not set.");
       EAssert.IsNotNull(runVM.ShutDownCache, "ShutDownCache not set.");
 
-      string? departureICAO = runVM.SimDataCache?.DepartureICAO
+      string? departureICAO = runVM.SimBriefCache?.DepartureICAO
         ?? RunVM.VatsimCache?.DepartureICAO
         ?? GetAirportByCoordinates(runVM.StartUpCache!.Latitude, runVM.StartUpCache!.Longitude);
-      string? destinationICAO = runVM.SimDataCache?.DestinationICAO
+      string? destinationICAO = runVM.SimBriefCache?.DestinationICAO
         ?? RunVM.VatsimCache?.DestinationICAO
         ?? GetAirportByCoordinates(runVM.LandingCache!.Latitude, runVM.LandingCache!.Longitude);
-      string? alternateICAO = runVM.SimDataCache?.AlternateICAO
+      string? alternateICAO = runVM.SimBriefCache?.AlternateICAO
         ?? RunVM.VatsimCache?.AlternateICAO
         ?? null;
-      double zfw = runVM.SimDataCache?.ZFW ?? double.NaN;
-      int? passengerCount = RunVM.SimDataCache?.NumberOfPassengers;
-      int? cargoWeight = RunVM.SimDataCache?.Cargo;
-      int? fuelWeight = RunVM.SimDataCache?.TotalFuel;
-      string aircraftType = RunVM.SimDataCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft ?? "UNSET"; //TODO get from FS
-      string aircraftRegistration = runVM.SimDataCache?.AirplaneRegistration ?? RunVM.VatsimCache?.Registration ?? "UNSET"; //TODO get from FS
-      string? aircraftModel = RunVM.SimDataCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft;
-      int cruizeAltitude = runVM.SimDataCache?.Altitude ?? runVM.VatsimCache?.PlannedFlightLevel ?? runVM.MaxAchievedAltitude;
-      double airDistance = runVM.SimDataCache?.AirDistanceNM ?? TryGetAirDistance(departureICAO, destinationICAO);
-      double? routeDistance = runVM.SimDataCache?.RouteDistanceNM;
+      double zfw = runVM.SimBriefCache?.ZFW ?? double.NaN;
+      int? passengerCount = RunVM.SimBriefCache?.NumberOfPassengers;
+      int? cargoWeight = RunVM.SimBriefCache?.Cargo;
+      int? fuelWeight = RunVM.SimBriefCache?.TotalFuel;
+      string aircraftType = RunVM.SimBriefCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft ?? "UNSET"; //TODO get from FS
+      string aircraftRegistration = runVM.SimBriefCache?.AirplaneRegistration ?? RunVM.VatsimCache?.Registration ?? "UNSET"; //TODO get from FS
+      string? aircraftModel = RunVM.SimBriefCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft;
+      int cruizeAltitude = runVM.SimBriefCache?.Altitude ?? runVM.VatsimCache?.PlannedFlightLevel ?? runVM.MaxAchievedAltitude;
+      double airDistance = runVM.SimBriefCache?.AirDistanceNM ?? TryGetAirDistance(departureICAO, destinationICAO);
+      double? routeDistance = runVM.SimBriefCache?.RouteDistanceNM;
 
       LogStartUp startUp = new(
-        runVM.SimDataCache?.OffBlockPlannedTime ?? runVM.VatsimCache?.PlannedDepartureTime, runVM.StartUpCache.Time,
+        runVM.SimBriefCache?.OffBlockPlannedTime ?? runVM.VatsimCache?.PlannedDepartureTime, runVM.StartUpCache.Time,
         (int)runVM.StartUpCache.TotalFuel,
         new GPS(runVM.StartUpCache.Latitude, runVM.StartUpCache.Longitude));
 
       LogTakeOff takeOff = new(
-        runVM.SimDataCache?.TakeOffPlannedTime, runVM.TakeOffCache.Time,
-        runVM.SimDataCache?.EstimatedTOW, (int)runVM.TakeOffCache.TotalFuel,
+        runVM.SimBriefCache?.TakeOffPlannedTime, runVM.TakeOffCache.Time,
+        runVM.SimBriefCache?.EstimatedTOW, (int)runVM.TakeOffCache.TotalFuel,
         new GPS(runVM.TakeOffCache.Latitude, runVM.TakeOffCache.Longitude),
         (int)runVM.TakeOffCache.IAS);
 
       LogLanding landing = new(
-        runVM.SimDataCache?.LandingPlannedTime, runVM.LandingCache!.Time,
-        runVM.SimDataCache?.EstimatedLW, (int)runVM.LandingCache!.TotalFuel,
+        runVM.SimBriefCache?.LandingPlannedTime, runVM.LandingCache!.Time,
+        runVM.SimBriefCache?.EstimatedLW, (int)runVM.LandingCache!.TotalFuel,
         new GPS(runVM.LandingCache!.TouchdownLatitude, runVM.LandingCache!.TouchdownLongitude),
         (int)runVM.LandingCache!.IAS,
         runVM.LandingCache!.TouchdownVelocity, runVM.LandingCache!.TouchdownPitchDegrees);
 
       LogShutDown shutDown = new(
-        runVM.SimDataCache?.OnBlockPlannedTime, runVM.ShutDownCache.Time, (int)runVM.ShutDownCache!.TotalFuel,
+        runVM.SimBriefCache?.OnBlockPlannedTime, runVM.ShutDownCache.Time, (int)runVM.ShutDownCache!.TotalFuel,
         new GPS(runVM.ShutDownCache!.Latitude, runVM.ShutDownCache!.Longitude));
 
       DivertReason divertReason = DivertReason.NotDiverted; //TODO this
@@ -283,9 +287,25 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       //TODO do both in async:
       if (this.RunVM.VatsimCache == null && this.settings.VatsimId != null)
-        RunVM.VatsimCache = VatsimProvider.CreateData(this.settings.VatsimId);
-      if (this.RunVM.SimDataCache == null && this.settings.SimBriefId != null)
-        RunVM.SimDataCache = SimBriefProvider.CreateData(this.settings.SimBriefId);
+        try
+        {
+          RunVM.VatsimCache = VatsimProvider.CreateData(this.settings.VatsimId);
+          logger.Log(LogLevel.INFO, "VATSIM flight plan downloaded.");
+        }
+        catch (Exception ex)
+        {
+          logger.Log(LogLevel.ERROR, "VATSIM flight plan download failed. " + ex.Message);
+        }
+      if (this.RunVM.SimBriefCache == null && this.settings.SimBriefId != null)
+        try
+        {
+          RunVM.SimBriefCache = SimBriefProvider.CreateData(this.settings.SimBriefId);
+          logger.Log(LogLevel.INFO, "SimBrief flight plan downloaded.");
+        }
+        catch (Exception ex)
+        {
+          logger.Log(LogLevel.ERROR, "SimBrief flight plan download failed. " + ex.Message);
+        }
     }
 
     internal void Start()

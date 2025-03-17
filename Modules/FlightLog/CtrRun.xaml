@@ -7,7 +7,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <TabControl>
-    <TabItem Header="SimBrief">
+    <TabItem Header="SimBrief" DataContext="{Binding RunVM.SimBriefCache}">
       <ScrollViewer>
         <Grid>
           <Grid.ColumnDefinitions>
@@ -82,7 +82,77 @@
         </Grid>
       </ScrollViewer>
     </TabItem>
-    <TabItem Header="Vatsim"></TabItem>
+    <TabItem Header="VATSIM" DataContext="{Binding RunVM.VatsimCache}">
+      <ScrollViewer>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />
+          </Grid.RowDefinitions>
+
+          <Label Grid.Column="0" Grid.Row="0" Content="Fligh Rule" />
+          <Label Grid.Column="1" Grid.Row="0" Content="{Binding FlightRules}" />
+
+          <Label Grid.Column="0" Grid.Row="1" Content="Registration" />
+          <Label Grid.Column="1" Grid.Row="1" Content="{Binding Registration}" />
+
+          <Label Grid.Column="0" Grid.Row="2" Content="Callsing" />
+          <Label Grid.Column="1" Grid.Row="2" Content="{Binding Callsign}" />
+
+          <Label Grid.Column="0" Grid.Row="3" Content="Aircraft" />
+          <Label Grid.Column="1" Grid.Row="3" Content="{Binding Aircraft}" />
+
+          <Label Grid.Column="0" Grid.Row="4" Content="Cruise Speed (IAS)" />
+          <Label Grid.Column="1" Grid.Row="4" Content="{Binding CruiseSpeed}" />
+
+          <Label Grid.Column="0" Grid.Row="5" Content="Departure ICAO" />
+          <Label Grid.Column="1" Grid.Row="5" Content="{Binding DepartureICAO}" />
+
+          <Label Grid.Column="0" Grid.Row="6" Content="Destination ICAO" />
+          <Label Grid.Column="1" Grid.Row="6" Content="{Binding DestinationICAO}" />
+
+          <Label Grid.Column="0" Grid.Row="7" Content="Alternate ICAO" />
+          <Label Grid.Column="1" Grid.Row="7" Content="{Binding AlternateICAO}" />
+          
+          <Label Grid.Column="0" Grid.Row="9" Content="Planned Flight Level" />
+          <Label Grid.Column="1" Grid.Row="9" Content="{Binding PlannedFlightLevel}" />
+          
+          <Label Grid.Column="0" Grid.Row="10" Content="Route" />
+          <Label Grid.Column="1" Grid.Row="10" Content="{Binding Route}" />
+          
+          <Label Grid.Column="0" Grid.Row="11" Content="Planned Departure Time" />
+          <Label Grid.Column="1" Grid.Row="11" Content="{Binding PlannedDepartureTime}" />
+          
+          <Label Grid.Column="0" Grid.Row="12" Content="Planned Enroute Time" />
+          <Label Grid.Column="1" Grid.Row="12" Content="{Binding PlannedRouteTime}" />
+          
+          <Label Grid.Column="0" Grid.Row="13" Content="Fuel Duration" />
+          <Label Grid.Column="1" Grid.Row="13" Content="{Binding FuelDurationTime}" />
+          
+        </Grid>
+      </ScrollViewer>
+    </TabItem>
     <TabItem Header="Block-off"></TabItem>
     <TabItem Header="Take-off"></TabItem>
     <TabItem Header="Landing"></TabItem>

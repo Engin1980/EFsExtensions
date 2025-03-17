@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
-  internal class RunViewModel : NotifyPropertyChanged
+  public class RunViewModel : NotifyPropertyChanged
   {
     public record RunModelVatsimCache(string FlightRules, string Callsign, string Aircraft, string? Registration,
       string DepartureICAO, string DestinationICAO, string AlternateICAO, string Route, int PlannedFlightLevel,
-      DateTime PlannedDepartureTime, TimeSpan PlannedRouteTime);
-    public record RunModelSimDataCache(string DepartureICAO, string DestinationICAO, string AlternateICAO,
+      DateTime PlannedDepartureTime, TimeSpan PlannedRouteTime, TimeSpan FuelDurationTime);
+    public record RunModelSimBriefCache(string DepartureICAO, string DestinationICAO, string AlternateICAO,
       DateTime OffBlockPlannedTime, DateTime TakeOffPlannedTime, DateTime LandingPlannedTime, DateTime OnBlockPlannedTime,
       int Altitude,
       int AirDistanceNM, int RouteDistanceNM,
@@ -56,10 +56,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       set => base.UpdateProperty(nameof(VatsimCache), value);
     }
 
-    public RunModelSimDataCache? SimDataCache
+    public RunModelSimBriefCache? SimBriefCache
     {
-      get => base.GetProperty<RunModelSimDataCache?>(nameof(SimDataCache))!;
-      set => base.UpdateProperty(nameof(SimDataCache), value);
+      get => base.GetProperty<RunModelSimBriefCache?>(nameof(SimBriefCache))!;
+      set => base.UpdateProperty(nameof(SimBriefCache), value);
     }
 
     public RunModelTakeOffCache? TakeOffCache
@@ -100,7 +100,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     internal void Clear()
     {
       this.VatsimCache = null;
-      this.SimDataCache = null;
+      this.SimBriefCache = null;
       this.StartUpCache = null;
       this.LandingCache = null;
       this.ShutDownCache = null;
