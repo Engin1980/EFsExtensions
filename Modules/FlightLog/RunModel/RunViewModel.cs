@@ -18,11 +18,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       int Altitude,
       int AirDistanceNM, int RouteDistanceNM,
       string AirplaneType, string AirplaneRegistration,
-      int NumberOfPassengers, int PayLoad, int Cargo, int ZFW, int TotalFuel, int EstimatedTOW, int EstimatedLW);
-    public record RunModelTakeOffCache(DateTime Time, double TotalFuel, double IAS, double Latitude, double Longitude);
-    public record RunModelStartUpCache(DateTime Time, double TotalFuel, double Latitude, double Longitude);
-    public record RunModelShutDownCache(DateTime Time, double TotalFuel, double Latitude, double Longitude);
-    public record RunModelLandingCache(DateTime Time, double TotalFuel, double IAS,
+      int NumberOfPassengers, int PayLoad, int Cargo, int ZfwKg, int FuelKg, int EstimatedTOW, int EstimatedLW);
+    public record RunModelTakeOffCache(DateTime Time, int FuelKg, double IAS, double Latitude, double Longitude);
+    public record RunModelStartUpCache(DateTime Time, int EmptyWeight, int PayloadAndCargoKg, int FuelKg, double Latitude, double Longitude)
+    {
+      public int ZFW => EmptyWeight + PayloadAndCargoKg;
+    }
+    public record RunModelShutDownCache(DateTime Time, int FuelKg, double Latitude, double Longitude);
+    public record RunModelLandingCache(DateTime Time, int FuelKg, double IAS,
       double TouchdownBankDegrees, double TouchdownLatitude, double TouchdownLongitude, double TouchdownVelocity, double TouchdownPitchDegrees,
       double Latitude, double Longitude);
 

@@ -48,6 +48,7 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
     public List<IStringGroupItem> PredefinedSimEvents { get; private set; }
     public BindingList<string> AppliedSimEvents { get; } = new();
     public BindingList<Watch> Watches { get; } = new();
+    private int watchesUpdaterFlag = 0;
     private readonly System.Timers.Timer watchesUpdater = new()
     {
       Interval = 500,
@@ -115,12 +116,15 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
 
     private void ReadOutWatches()
     {
+      if (Interlocked.Exchange(ref watchesUpdaterFlag, 1) == 1)
+        return;
       var w = simObject.ExtValue;
       var snapShot = w.GetAllValues();
 
       foreach (var item in snapShot)
       {
         Action a;
+        int x = Watches.Count;
         var watch = Watches.FirstOrDefault(q => q.SimVarName == item.SimVarDefinition.Name);
         if (watch != null)
           a = () => { watch.Value = item.Value; };
@@ -129,6 +133,7 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
 
         Application.Current.Dispatcher.Invoke(a);
       }
+      Interlocked.Exchange(ref watchesUpdaterFlag, 0);
     }
 
     private void SimCon_ThrowsException(ESimConnect.ESimConnect sender, SimConnectException ex)

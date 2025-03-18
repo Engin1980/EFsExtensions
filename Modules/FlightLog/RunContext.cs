@@ -18,6 +18,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public class RunContext : NotifyPropertyChanged
   {
+    private const double FUEL_LITRES_TO_KG = 0.8;
     private class SimPropValues
     {
       private const int EMPTY_TYPE_ID = -1;
@@ -31,12 +32,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private readonly TypeId latitudeTypeId = new(EMPTY_TYPE_ID);
       private readonly TypeId longitudeTypeId = new(EMPTY_TYPE_ID);
       private readonly TypeId iasTypeId = new(EMPTY_TYPE_ID);
-      private readonly TypeId fuelQuantityKgTypeId = new(EMPTY_TYPE_ID);
-      private readonly TypeId touchdownBankDegrees = new(EMPTY_TYPE_ID);
-      private readonly TypeId touchdownLatitude = new(EMPTY_TYPE_ID);
-      private readonly TypeId touchdownLongitude = new(EMPTY_TYPE_ID);
-      private readonly TypeId touchdownPitchDegrees = new(EMPTY_TYPE_ID);
-      private readonly TypeId touchdownVelocity = new(EMPTY_TYPE_ID);
+      private readonly TypeId fuelQuantityLtrsTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId touchdownBankDegreesTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId touchdownLatitudeTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId touchdownLongitudeTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId touchdownPitchDegreesTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId touchdownVelocityTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId emptyWeightKgTypeId = new(EMPTY_TYPE_ID);
+      private readonly TypeId totalWeightKgTypeId = new(EMPTY_TYPE_ID);
 
       public SimPropValues(ESimConnect.Extenders.ValueCacheExtender cache)
       {
@@ -60,12 +63,15 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         this.iasTypeId = cache.Register(
           ESimConnect.Definitions.SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED,
           ESimConnect.Definitions.SimUnits.Speed.KNOT);
-        this.fuelQuantityKgTypeId = cache.Register("FUEL TOTAL QUANTITY", ESimConnect.Definitions.SimUnits.Weight.KILOGRAM);
-        this.touchdownBankDegrees = cache.Register("PLANE TOUCHDOWN BANK DEGREES");
-        this.touchdownLatitude = cache.Register("PLANE TOUCHDOWN LATITUDE");
-        this.touchdownLongitude = cache.Register("PLANE TOUCHDOWN LONGITUDE");
-        this.touchdownPitchDegrees = cache.Register("PLANE TOUCHDOWN PITCH DEGREES");
-        this.touchdownVelocity = cache.Register("PLANE TOUCHDOWN NORMAL VELOCITY");
+        this.fuelQuantityLtrsTypeId = cache.Register("FUEL TOTAL QUANTITY", ESimConnect.Definitions.SimUnits.Volume.LITER); // weights Kgs not working
+        this.touchdownBankDegreesTypeId = cache.Register("PLANE TOUCHDOWN BANK DEGREES");
+        this.touchdownLatitudeTypeId = cache.Register("PLANE TOUCHDOWN LATITUDE");
+        this.touchdownLongitudeTypeId = cache.Register("PLANE TOUCHDOWN LONGITUDE");
+        this.touchdownPitchDegreesTypeId = cache.Register("PLANE TOUCHDOWN PITCH DEGREES");
+        this.touchdownVelocityTypeId = cache.Register("PLANE TOUCHDOWN NORMAL VELOCITY");
+
+        this.emptyWeightKgTypeId = cache.Register("EMPTY WEIGHT", ESimConnect.Definitions.SimUnits.Weight.KILOGRAM);
+        this.totalWeightKgTypeId = cache.Register("TOTAL WEIGHT", ESimConnect.Definitions.SimUnits.Weight.KILOGRAM);
       }
 
       public bool ParkingBrakeSet => cache.GetValue(parkingBrakeTypeId) == 1;
@@ -75,16 +81,18 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       public bool IsAnyEngineRunning => engRunningTypeId.Any(q => cache.GetValue(q) == 1);
       public bool IsAnyWheelOnGround => wheelOnGroundTypeId.Any(q => cache.GetValue(q) != 0);
       public double IAS => cache.GetValue(iasTypeId);
-      //public bool IsFlying => Height > 20 && IAS > 40;
       public bool IsFlying => !IsAnyWheelOnGround;
 
-      public double TotalFuelKg => cache.GetValue(fuelQuantityKgTypeId);
+      public double TotalFuelLtrs => cache.GetValue(fuelQuantityLtrsTypeId);
 
-      public double TouchdownBankDegrees => cache.GetValue(touchdownBankDegrees);
-      public double TouchdownLatitude => cache.GetValue(touchdownLatitude);
-      public double TouchdownLongitude => cache.GetValue(touchdownLongitude);
-      public double TouchdownPitchDegrees => cache.GetValue(touchdownPitchDegrees);
-      public double TouchdownVelocity => cache.GetValue(touchdownVelocity);
+      public double TouchdownBankDegrees => cache.GetValue(touchdownBankDegreesTypeId);
+      public double TouchdownLatitude => cache.GetValue(touchdownLatitudeTypeId);
+      public double TouchdownLongitude => cache.GetValue(touchdownLongitudeTypeId);
+      public double TouchdownPitchDegrees => cache.GetValue(touchdownPitchDegreesTypeId);
+      public double TouchdownVelocity => cache.GetValue(touchdownVelocityTypeId);
+
+      public int EmptyWeightKg => (int)cache.GetValue(emptyWeightKgTypeId);
+      public int TotalWeightKg => (int)cache.GetValue(totalWeightKgTypeId);
     }
 
     private SimPropValues simPropValues = null!;
@@ -144,8 +152,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       if (!this.simPropValues.ParkingBrakeSet) return;
       if (this.simPropValues.IsAnyEngineRunning) return;
 
-      this.RunVM.ShutDownCache = new(DateTime.Now, this.simPropValues.TotalFuelKg, this.simPropValues.Latitude, this.simPropValues.Longitude);
+      this.RunVM.ShutDownCache = new(DateTime.Now, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
+        this.simPropValues.Latitude, this.simPropValues.Longitude);
       LogFlight logFlight = GenerateLogFlight(this.RunVM);
+      //TODO add logFlight to DB
     }
 
     private LogFlight GenerateLogFlight(RunViewModel runVM)
@@ -164,10 +174,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       string? alternateICAO = runVM.SimBriefCache?.AlternateICAO
         ?? RunVM.VatsimCache?.AlternateICAO
         ?? null;
-      double zfw = runVM.SimBriefCache?.ZFW ?? double.NaN;
+      double zfw = runVM.SimBriefCache?.ZfwKg ?? RunVM.StartUpCache!.ZFW;
       int? passengerCount = RunVM.SimBriefCache?.NumberOfPassengers;
       int? cargoWeight = RunVM.SimBriefCache?.Cargo;
-      int? fuelWeight = RunVM.SimBriefCache?.TotalFuel;
+
+      int? fuelWeight = RunVM.SimBriefCache?.FuelKg ?? RunVM.StartUpCache!.FuelKg;
       string aircraftType = RunVM.SimBriefCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft ?? "UNSET"; //TODO get from FS
       string aircraftRegistration = runVM.SimBriefCache?.AirplaneRegistration ?? RunVM.VatsimCache?.Registration ?? "UNSET"; //TODO get from FS
       string? aircraftModel = RunVM.SimBriefCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft;
@@ -177,24 +188,24 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       LogStartUp startUp = new(
         runVM.SimBriefCache?.OffBlockPlannedTime ?? runVM.VatsimCache?.PlannedDepartureTime, runVM.StartUpCache.Time,
-        (int)runVM.StartUpCache.TotalFuel,
+        (int)runVM.StartUpCache.FuelKg,
         new GPS(runVM.StartUpCache.Latitude, runVM.StartUpCache.Longitude));
 
       LogTakeOff takeOff = new(
         runVM.SimBriefCache?.TakeOffPlannedTime, runVM.TakeOffCache.Time,
-        runVM.SimBriefCache?.EstimatedTOW, (int)runVM.TakeOffCache.TotalFuel,
+        runVM.SimBriefCache?.EstimatedTOW, runVM.TakeOffCache.FuelKg,
         new GPS(runVM.TakeOffCache.Latitude, runVM.TakeOffCache.Longitude),
         (int)runVM.TakeOffCache.IAS);
 
       LogLanding landing = new(
         runVM.SimBriefCache?.LandingPlannedTime, runVM.LandingCache!.Time,
-        runVM.SimBriefCache?.EstimatedLW, (int)runVM.LandingCache!.TotalFuel,
+        runVM.SimBriefCache?.EstimatedLW, runVM.LandingCache!.FuelKg,
         new GPS(runVM.LandingCache!.TouchdownLatitude, runVM.LandingCache!.TouchdownLongitude),
         (int)runVM.LandingCache!.IAS,
         runVM.LandingCache!.TouchdownVelocity, runVM.LandingCache!.TouchdownPitchDegrees);
 
       LogShutDown shutDown = new(
-        runVM.SimBriefCache?.OnBlockPlannedTime, runVM.ShutDownCache.Time, (int)runVM.ShutDownCache!.TotalFuel,
+        runVM.SimBriefCache?.OnBlockPlannedTime, runVM.ShutDownCache.Time, runVM.ShutDownCache!.FuelKg,
         new GPS(runVM.ShutDownCache!.Latitude, runVM.ShutDownCache!.Longitude));
 
       DivertReason divertReason = DivertReason.NotDiverted; //TODO this
@@ -253,7 +264,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       if (this.simPropValues.IsFlying) return;
 
-      this.RunVM.LandingCache = new(DateTime.Now, this.simPropValues.TotalFuelKg, this.simPropValues.IAS,
+      this.RunVM.LandingCache = new(DateTime.Now, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
+        this.simPropValues.IAS,
         this.simPropValues.TouchdownBankDegrees, this.simPropValues.TouchdownLatitude, this.simPropValues.TouchdownLongitude,
         this.simPropValues.TouchdownVelocity, this.simPropValues.TouchdownPitchDegrees,
         this.simPropValues.Latitude, this.simPropValues.Longitude);
@@ -264,7 +276,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       if (!this.simPropValues.IsFlying) return;
 
-      this.RunVM.TakeOffCache = new(DateTime.Now, this.simPropValues.TotalFuelKg, this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
+      this.RunVM.TakeOffCache = new(DateTime.Now, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
+        this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
       UpdateSimbriefAndVatsimIfRequired();
 
       this.RunVM.State = RunViewModel.RunModelState.InFlightWaitingForLanding;
@@ -277,7 +290,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       if (RunVM.State == RunViewModel.RunModelState.AfterShutdown)
         this.RunVM.Clear();
 
-      RunVM.StartUpCache = new(DateTime.Now, simPropValues.TotalFuelKg, simPropValues.Latitude, simPropValues.Longitude);
+      int emptyWeight = (int)(this.simPropValues.EmptyWeightKg);
+      int totalWeight = (int)(this.simPropValues.TotalWeightKg);
+      int fuelWeight = (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG);
+      int payloadAndCargoWeight = totalWeight - fuelWeight - emptyWeight;
+
+      RunVM.StartUpCache = new(DateTime.Now, emptyWeight, payloadAndCargoWeight, fuelWeight,
+        this.simPropValues.Latitude, this.simPropValues.Longitude);
+
       UpdateSimbriefAndVatsimIfRequired();
 
       RunVM.State = RunViewModel.RunModelState.StartedWaitingForTakeOff;
