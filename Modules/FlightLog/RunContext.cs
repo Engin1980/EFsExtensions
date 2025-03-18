@@ -41,6 +41,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private readonly TypeId emptyWeightKgTypeId = new(EMPTY_TYPE_ID);
       private readonly TypeId totalWeightKgTypeId = new(EMPTY_TYPE_ID);
 
+      // see comment below, should be supported in future
+      //private readonly TypeId titleTypeId = new(EMPTY_TYPE_ID);
+      //private readonly RequestId titleRequestId = new RequestId(EMPTY_TYPE_ID);
+      //private string title = string.Empty;
+
       public SimPropValues(ESimConnect.Extenders.ValueCacheExtender cache)
       {
         this.cache = cache;
@@ -72,7 +77,18 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
         this.emptyWeightKgTypeId = cache.Register("EMPTY WEIGHT", ESimConnect.Definitions.SimUnits.Weight.KILOGRAM);
         this.totalWeightKgTypeId = cache.Register("TOTAL WEIGHT", ESimConnect.Definitions.SimUnits.Weight.KILOGRAM);
+
+        // ESimConnect cannot handle strings now, so not possible to implement.
+        //NewSimObject.GetInstance().ESimCon.DataReceived += ESimCon_DataReceived;
+        //this.titleTypeId = NewSimObject.GetInstance().ESimCon.Values.Register<string>("TITLE");
+        //this.titleRequestId = NewSimObject.GetInstance().ESimCon.Values.Request(this.titleTypeId);
       }
+
+      //private void ESimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
+      //{
+      //  if (e.RequestId == this.titleRequestId)
+      //    this.title = (string) e.Data;
+      //}
 
       public bool ParkingBrakeSet => cache.GetValue(parkingBrakeTypeId) == 1;
       public double Height => cache.GetValue(heightTypeId);
