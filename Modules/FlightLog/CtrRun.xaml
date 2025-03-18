@@ -153,7 +153,34 @@
         </Grid>
       </ScrollViewer>
     </TabItem>
-    <TabItem Header="Block-off"></TabItem>
+    <TabItem Header="Block-off" DataContext="{Binding RunVM.StartUpCache}">
+      <ScrollViewer>
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto"  />
+            <RowDefinition Height="Auto"  />
+            <RowDefinition Height="Auto"  />
+          </Grid.RowDefinitions>
+
+          <Label Grid.Column="0" Grid.Row="0" Content="Time" />
+          <Label Grid.Column="1" Grid.Row="0" Content="{Binding Time}" />
+
+          <Label Grid.Column="0" Grid.Row="1" Content="Total Fuel" />
+          <Label Grid.Column="1" Grid.Row="1" Content="{Binding TotalFuel}" />
+
+          <Label Grid.Column="0" Grid.Row="2" Content="Latitude" />
+          <Label Grid.Column="1" Grid.Row="2" Content="{Binding Latitude}" />
+
+          <Label Grid.Column="0" Grid.Row="3" Content="Longitude" />
+          <Label Grid.Column="1" Grid.Row="3" Content="{Binding Longitude}" />
+        </Grid>
+      </ScrollViewer>
+    </TabItem>
     <TabItem Header="Take-off"></TabItem>
     <TabItem Header="Landing"></TabItem>
     <TabItem Header="Block-on"></TabItem>
