@@ -8,27 +8,18 @@
     ".NETCoreApp,Version=v6.0": {
       "ESimConnect/1.0.0": {
         "dependencies": {
-          "ELogging": "1.5.0.4",
-          "ESystem": "1.5.0.4",
+          "ESystem": "1.6.0.0",
           "Microsoft.FlightSimulator.SimConnect": "11.0.62651.3"
         },
         "runtime": {
           "ESimConnect.dll": {}
         }
       },
-      "ELogging/1.5.0.4": {
-        "runtime": {
-          "ELogging.dll": {
-            "assemblyVersion": "1.5.0.4",
-            "fileVersion": "1.5.0.4"
-          }
-        }
-      },
-      "ESystem/1.5.0.4": {
+      "ESystem/1.6.0.0": {
         "runtime": {
           "ESystem.dll": {
-            "assemblyVersion": "1.5.0.4",
-            "fileVersion": "1.5.0.4"
+            "assemblyVersion": "1.6.0.0",
+            "fileVersion": "1.6.0.0"
           }
         }
       },
@@ -48,12 +39,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "ELogging/1.5.0.4": {
-      "type": "reference",
-      "serviceable": false,
-      "sha512": ""
-    },
-    "ESystem/1.5.0.4": {
+    "ESystem/1.6.0.0": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
