@@ -1,4 +1,4 @@
-﻿using ELogging;
+﻿using ESystem.Logging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents;

@@ -1,4 +1,5 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.Players;
+using ESystem.Logging;
 using ESystem.Miscelaneous;
 using Microsoft.WindowsAPICodePack.Shell;
 using NAudio.Wave;
@@ -28,7 +29,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.ElevenLabs
   /// </summary>
   public partial class CtrSettings : UserControl
   {
-    private readonly ELogging.Logger logger = ELogging.Logger.Create(nameof(ElevenLabsTtsModule) + "+Settings");
+    private readonly Logger logger = Logger.Create(nameof(ElevenLabsTtsModule) + "+Settings");
     private readonly ViewModel VM;
 
     internal class ViewModel : NotifyPropertyChanged
@@ -100,21 +101,21 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.ElevenLabs
       try
       {
         this.VM.Voices = (await ElevenLabsTtsProvider.GetVoicesAsync(this.VM.Settings.ApiKey)).OrderBy(q => q.Name).ToList();
-        this.logger.Log(ELogging.LogLevel.INFO, $"Successfully loaded {this.VM.Voices.Count} voices.");
+        this.logger.Log(LogLevel.INFO, $"Successfully loaded {this.VM.Voices.Count} voices.");
       }
       catch (Exception ex)
       {
-        this.logger.Log(ELogging.LogLevel.ERROR, $"Failed to download voices. API key issue? Reason: " + ex.Message);
+        this.logger.Log(LogLevel.ERROR, $"Failed to download voices. API key issue? Reason: " + ex.Message);
       }
 
       try
       {
         this.VM.Models = (await ElevenLabsTtsProvider.GetModelsAsync(this.VM.Settings.ApiKey)).OrderBy(q => q).ToList();
-        this.logger.Log(ELogging.LogLevel.INFO, $"Successfully loaded {this.VM.Models.Count} models.");
+        this.logger.Log(LogLevel.INFO, $"Successfully loaded {this.VM.Models.Count} models.");
       }
       catch (Exception ex)
       {
-        this.logger.Log(ELogging.LogLevel.ERROR, $"Failed to download models. API key issue? Reason: " + ex.Message);
+        this.logger.Log(LogLevel.ERROR, $"Failed to download models. API key issue? Reason: " + ex.Message);
       }
 
 

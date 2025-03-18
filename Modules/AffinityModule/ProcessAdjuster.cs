@@ -1,5 +1,4 @@
 ﻿using Eng.EFsExtensions.Modules.AffinityModule;
-using ELogging;
 using ESystem.Asserting;
 using static ESystem.Functions;
 using System;
@@ -13,6 +12,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using ESystem.Logging;
 
 namespace Eng.EFsExtensions.Modules.AffinityModule
 {

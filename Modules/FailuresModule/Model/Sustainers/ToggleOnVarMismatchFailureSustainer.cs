@@ -1,4 +1,4 @@
-﻿using ELogging;
+﻿using ESystem.Logging;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.Failures;
 using System;
 using System.Collections.Generic;

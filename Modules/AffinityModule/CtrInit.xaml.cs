@@ -1,4 +1,4 @@
-using ELogging;
+using ESystem.Logging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable;
 using Eng.EFsExtensions.Modules.AffinityModule;
 using Microsoft.WindowsAPICodePack.Dialogs;

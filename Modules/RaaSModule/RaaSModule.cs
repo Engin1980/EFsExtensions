@@ -1,4 +1,4 @@
-﻿using ELogging;
+﻿using ESystem.Logging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using ESystem;
 using ESystem.Miscelaneous;
@@ -14,7 +14,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
   public class RaaSModule : NotifyPropertyChanged, IModule
   {
     private readonly Context context;
-    private readonly Logger logger = ELogging.Logger.Create(nameof(RaaSModule));
+    private readonly Logger logger = Logger.Create(nameof(RaaSModule));
     private CtrInit? ctrInit;
     private CtrRun? ctrRun;
 

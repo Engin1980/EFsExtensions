@@ -1,5 +1,4 @@
 ﻿using Eng.EFsExtensions.Modules.AffinityModule;
-using ELogging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils;
 using ESystem;
@@ -17,6 +16,7 @@ using System.Threading.Tasks;
 using System.Timers;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using ESystem.Logging;
 
 namespace Eng.EFsExtensions.Modules.AffinityModule
 {

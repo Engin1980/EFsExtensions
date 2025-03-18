@@ -1,4 +1,4 @@
-﻿using ELogging;
+﻿using ESystem.Logging;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
@@ -18,14 +18,12 @@ namespace Eng.EFsExtensions.App
     {
       [XmlAttribute]
       public string Regex { get; set; } = "";
-      [XmlAttribute] 
+      [XmlAttribute]
       public string Level { get; set; }
 
-      internal ELogging.LogRule ToELogRule()
+      internal ESystem.Logging.LogRule ToELogRule()
       {
-        ELogging.LogRule ret = new(
-          this.Regex,
-          LogUtils.ConvertStringToLogLevel(Level));
+        var ret = new ESystem.Logging.LogRule(this.Regex, LogUtils.ConvertStringToLogLevel(this.Level));
         return ret;
       }
     }
@@ -53,7 +51,7 @@ namespace Eng.EFsExtensions.App
       ret.LogFileLogRules.Add(new LogRule()
       {
         Regex = ".+",
-        Level= "verbose"
+        Level = "verbose"
       });
       return ret;
     }

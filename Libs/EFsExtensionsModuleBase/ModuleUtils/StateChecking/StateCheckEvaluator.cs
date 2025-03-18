@@ -1,5 +1,4 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.Exceptions;
-using ELogging;
 using ESystem.Asserting;
 using System;
 using System.Collections.Generic;
@@ -11,6 +10,7 @@ using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 using System.Windows;
 using ESystem;
 using System.Runtime.CompilerServices;
+using ESystem.Logging;
 
 namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking
 {
