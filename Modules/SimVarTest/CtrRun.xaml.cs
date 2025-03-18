@@ -47,13 +47,6 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
       this.context.RegisterNewSimVar(name, validate);
     }
 
-    private void NewValue_NewValueRequested(NewValue sender, double newValue)
-    {
-      SimVarCase simVarCase = (SimVarCase)sender.Tag;
-
-      this.context.SetValue(simVarCase, newValue);
-    }
-
     private void btnDelete_Click(object sender, RoutedEventArgs e)
     {
       Button btn = (Button)sender;

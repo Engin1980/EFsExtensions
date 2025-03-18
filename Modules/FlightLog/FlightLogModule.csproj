@@ -12,24 +12,24 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Model\**" />
+    <EmbeddedResource Remove="Model\**" />
+    <None Remove="Model\**" />
+    <Page Remove="Model\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\Libs\AirportsLib\AirportsLib.csproj" />
     <ProjectReference Include="..\..\Libs\EFsExtensionsModuleBase\EFsExtensionsModuleBase.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="ELogging">
-      <HintPath>..\..\DLLs\ELogging.dll</HintPath>
-    </Reference>
     <Reference Include="ESimConnect">
       <HintPath>..\..\DLLs\ESimConnect.dll</HintPath>
     </Reference>
     <Reference Include="ESystem">
       <HintPath>..\..\DLLs\ESystem.dll</HintPath>
     </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Model\" />
   </ItemGroup>
 
 </Project>
