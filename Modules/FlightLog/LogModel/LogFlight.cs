@@ -1,0 +1,158 @@
+﻿using Eng.EFsExtensions.Libs.AirportsLib;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
+{
+  public enum DivertReason
+  {
+    NotDiverted,
+    Weather,
+    Medical,
+    Mechanical,
+    Other
+  }
+  internal class LogStartUp
+  {
+    public DateTime? ScheduledTime { get; set; }
+    public DateTime RealTime { get; set; }
+    public int RealFuelAmountKg { get; set; }
+    public GPS Location { get; set; }
+
+    public LogStartUp(DateTime? scheduledTime, DateTime realTime, int realFuelAmountKg, GPS location)
+    {
+      ScheduledTime = scheduledTime;
+      RealTime = realTime;
+      RealFuelAmountKg = realFuelAmountKg;
+      Location = location;
+    }
+
+    public LogStartUp()
+    {
+    }
+  }
+
+  internal class LogTakeOff
+  {
+    public DateTime? ScheduledTime { get; set; }
+    public DateTime RealTime { get; set; }
+    public int? ScheduledFuelAmountKg { get; set; }
+    public int FuelAmountKg { get; set; }
+    public GPS Location { get; set; }
+    public int IAS { get; set; }
+
+    public LogTakeOff(DateTime? scheduledTime, DateTime realTime, int? scheduledFuelAmountKg, int fuelAmountKg, GPS location, int iAS)
+    {
+      ScheduledTime = scheduledTime;
+      RealTime = realTime;
+      ScheduledFuelAmountKg = scheduledFuelAmountKg;
+      FuelAmountKg = fuelAmountKg;
+      Location = location;
+      IAS = iAS;
+    }
+
+    public LogTakeOff()
+    {
+    }
+  }
+
+  internal class LogLanding
+  {
+    public DateTime? ScheduledTime { get; set; }
+    public DateTime RealTime { get; set; }
+    public int? ScheduledFuelAmountKg { get; set; }
+    public int FuelAmountKg { get; set; }
+    public GPS Location { get; set; }
+    public int IAS { get; set; }
+    public double Velocity { get; set; }
+    public double Pitch { get; set; }
+
+    public LogLanding(DateTime? scheduledTime, DateTime realTime, int? scheduledFuelAmountKg, int fuelAmountKg, GPS location, int iAS, double velocity, double pitch)
+    {
+      ScheduledTime = scheduledTime;
+      RealTime = realTime;
+      ScheduledFuelAmountKg = scheduledFuelAmountKg;
+      FuelAmountKg = fuelAmountKg;
+      Location = location;
+      IAS = iAS;
+      Velocity = velocity;
+      Pitch = pitch;
+    }
+
+    public LogLanding()
+    {
+    }
+  }
+
+  internal class LogShutDown
+  {
+    public DateTime? ScheduledTime { get; set; }
+    public DateTime RealTime { get; set; }
+    public int FuelAmountKg { get; set; }
+    public GPS Location { get; set; }
+
+    public LogShutDown(DateTime? scheduledTime, DateTime realTime, int fuelAmountKg, GPS location)
+    {
+      ScheduledTime = scheduledTime;
+      RealTime = realTime;
+      FuelAmountKg = fuelAmountKg;
+      Location = location;
+    }
+
+    public LogShutDown()
+    {
+    }
+  }
+
+  internal class LogFlight
+  {
+    public string? DepartureICAO { get; set; }
+    public string? DestinationICAO { get; set; }
+    public string? AlternateICAO { get; set; }
+    public double ZFW { get; set; }
+    public int? PassengerCount { get; set; }
+    public int? CargoWeight { get; set; }
+    public int? FuelWeight { get; set; }
+    public string? AircraftType { get; set; }
+    public string? AircraftRegistration { get; set; }
+    public string? AircraftModel { get; set; }
+    public int CruizeAltitude { get; set; }
+    public double AirDistance { get; set; }
+    public double? FlightDistance { get; set; }
+    public LogStartUp StartUp { get; set; } = null!;
+    public LogTakeOff TakeOff { get; set; } = null!;
+    public LogLanding Landing { get; set; } = null!;
+    public LogShutDown ShutDown { get; set; } = null!;
+    public DivertReason? DivertReason { get; set; } = null!;
+
+    public LogFlight()
+    {
+    }
+
+    public LogFlight(string? departureICAO, string? destinationICAO, string? alternateICAO, double zFW, int? passengerCount, int? cargoWeight, int? fuelWeight, string? aircraftType, string? aircraftRegistration, string? aircraftModel, int cruizeAltitude, double airDistance, double? flightDistance, LogStartUp startUp, LogTakeOff takeOff, LogLanding landing, LogShutDown shutDown, DivertReason? divertReason)
+    {
+      DepartureICAO = departureICAO;
+      DestinationICAO = destinationICAO;
+      AlternateICAO = alternateICAO;
+      ZFW = zFW;
+      PassengerCount = passengerCount;
+      CargoWeight = cargoWeight;
+      FuelWeight = fuelWeight;
+      AircraftType = aircraftType;
+      AircraftRegistration = aircraftRegistration;
+      AircraftModel = aircraftModel;
+      CruizeAltitude = cruizeAltitude;
+      AirDistance = airDistance;
+      FlightDistance = flightDistance;
+      StartUp = startUp;
+      TakeOff = takeOff;
+      Landing = landing;
+      ShutDown = shutDown;
+      DivertReason = divertReason;
+    }
+  }
+
+}

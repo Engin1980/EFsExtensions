@@ -169,6 +169,11 @@
             Offers operations over SimVars.
             </summary>
         </member>
+        <member name="P:ESimConnect.ESimConnect.Strings">
+            <summary>
+            Offers operations over Strings.
+            </summary>
+        </member>
         <member name="P:ESimConnect.ESimConnect.ClientEvents">
             <summary>
             Offers operation onver Client Events.

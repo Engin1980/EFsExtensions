@@ -40,15 +40,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private readonly TypeId touchdownVelocityTypeId = new(EMPTY_TYPE_ID);
       private readonly TypeId emptyWeightKgTypeId = new(EMPTY_TYPE_ID);
       private readonly TypeId totalWeightKgTypeId = new(EMPTY_TYPE_ID);
+      private readonly RequestId atcIdRequestId = new RequestId(EMPTY_TYPE_ID);
 
-      // see comment below, should be supported in future
-      //private readonly TypeId titleTypeId = new(EMPTY_TYPE_ID);
-      //private readonly RequestId titleRequestId = new RequestId(EMPTY_TYPE_ID);
-      //private string title = string.Empty;
-
-      public SimPropValues(ESimConnect.Extenders.ValueCacheExtender cache)
+      public SimPropValues(NewSimObject simObject)
       {
-        this.cache = cache;
+        this.cache = simObject.ExtValue;
         this.parkingBrakeTypeId = cache.Register(ESimConnect.Definitions.SimVars.Aircraft.BrakesAndLandingGear.BRAKE_PARKING_POSITION);
         this.heightTypeId = cache.Register(
           ESimConnect.Definitions.SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND,
@@ -78,18 +74,21 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         this.emptyWeightKgTypeId = cache.Register("EMPTY WEIGHT", ESimConnect.Definitions.SimUnits.Weight.KILOGRAM);
         this.totalWeightKgTypeId = cache.Register("TOTAL WEIGHT", ESimConnect.Definitions.SimUnits.Weight.KILOGRAM);
 
-        // ESimConnect cannot handle strings now, so not possible to implement.
-        //NewSimObject.GetInstance().ESimCon.DataReceived += ESimCon_DataReceived;
-        //this.titleTypeId = NewSimObject.GetInstance().ESimCon.Values.Register<string>("TITLE");
-        //this.titleRequestId = NewSimObject.GetInstance().ESimCon.Values.Request(this.titleTypeId);
+
+
+        var simCon = simObject.ESimCon;
+        simCon.DataReceived += ESimCon_DataReceived;
+        TypeId typeId;
+        typeId = simCon.Strings.Register("ATC ID", ESimConnect.ESimConnect.StringsHandler.StringLength._8);
+        atcIdRequestId = simCon.Strings.Request(typeId);
       }
 
-      //private void ESimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
-      //{
-      //  if (e.RequestId == this.titleRequestId)
-      //    this.title = (string) e.Data;
-      //}
-
+      private void ESimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
+      {
+        if (e.RequestId == atcIdRequestId)
+          this.AtcId = (string)e.Data;
+      }
+      public string? AtcId { get; private set; }
       public bool ParkingBrakeSet => cache.GetValue(parkingBrakeTypeId) == 1;
       public double Height => cache.GetValue(heightTypeId);
       public double Latitude => cache.GetValue(latitudeTypeId);
@@ -116,6 +115,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     private readonly List<Airport> airports;
     private readonly NewSimObject simObj;
     private readonly Logger logger;
+    private readonly LogFlightsManager flightsManager;
 
     public RunContext(InitContext initContext, Settings settings)
     {
@@ -132,7 +132,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.settings = settings;
       this.airports = settings.Airports;
 
-      this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj.ExtValue));
+      this.flightsManager = LogFlightsManager.Init(settings.DataFolder);
+
+      this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }
 
     public RunViewModel RunVM
@@ -171,7 +173,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.RunVM.ShutDownCache = new(DateTime.Now, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.Latitude, this.simPropValues.Longitude);
       LogFlight logFlight = GenerateLogFlight(this.RunVM);
-      //TODO add logFlight to DB
+      
+      this.flightsManager.StoreFlight(logFlight);
     }
 
     private LogFlight GenerateLogFlight(RunViewModel runVM)
@@ -209,13 +212,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       LogTakeOff takeOff = new(
         runVM.SimBriefCache?.TakeOffPlannedTime, runVM.TakeOffCache.Time,
-        runVM.SimBriefCache?.EstimatedTOW, runVM.TakeOffCache.FuelKg,
+        runVM.SimBriefCache?.EstimatedTakeOffFuelKg, runVM.TakeOffCache.FuelKg,
         new GPS(runVM.TakeOffCache.Latitude, runVM.TakeOffCache.Longitude),
         (int)runVM.TakeOffCache.IAS);
 
       LogLanding landing = new(
         runVM.SimBriefCache?.LandingPlannedTime, runVM.LandingCache!.Time,
-        runVM.SimBriefCache?.EstimatedLW, runVM.LandingCache!.FuelKg,
+        runVM.SimBriefCache?.EstimatedLandingFuelKg, runVM.LandingCache!.FuelKg,
         new GPS(runVM.LandingCache!.TouchdownLatitude, runVM.LandingCache!.TouchdownLongitude),
         (int)runVM.LandingCache!.IAS,
         runVM.LandingCache!.TouchdownVelocity, runVM.LandingCache!.TouchdownPitchDegrees);
