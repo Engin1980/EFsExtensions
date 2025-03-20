@@ -15,7 +15,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     Mechanical,
     Other
   }
-  internal class LogStartUp
+  public class LogStartUp
   {
     public DateTime? ScheduledTime { get; set; }
     public DateTime RealTime { get; set; }
@@ -35,7 +35,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     }
   }
 
-  internal class LogTakeOff
+  public class LogTakeOff
   {
     public DateTime? ScheduledTime { get; set; }
     public DateTime RealTime { get; set; }
@@ -59,7 +59,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     }
   }
 
-  internal class LogLanding
+  public class LogLanding
   {
     public DateTime? ScheduledTime { get; set; }
     public DateTime RealTime { get; set; }
@@ -87,7 +87,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     }
   }
 
-  internal class LogShutDown
+  public class LogShutDown
   {
     public DateTime? ScheduledTime { get; set; }
     public DateTime RealTime { get; set; }
@@ -107,7 +107,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     }
   }
 
-  internal class LogFlight
+  public class LogFlight
   {
     public string? DepartureICAO { get; set; }
     public string? DestinationICAO { get; set; }

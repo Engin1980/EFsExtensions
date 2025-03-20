@@ -11,7 +11,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
   public class RunViewModel : NotifyPropertyChanged
   {
     public record RunModelVatsimCache(string FlightRules, string Callsign, string Aircraft, string? Registration,
-      string DepartureICAO, string DestinationICAO, string AlternateICAO, string Route, int PlannedFlightLevel,
+      string DepartureICAO, string DestinationICAO, string AlternateICAO, string Route, int PlannedFlightLevel, int CruiseSpeed,
       DateTime PlannedDepartureTime, TimeSpan PlannedRouteTime, TimeSpan FuelDurationTime);
     public record RunModelSimBriefCache(string DepartureICAO, string DestinationICAO, string AlternateICAO,
       DateTime OffBlockPlannedTime, DateTime TakeOffPlannedTime, DateTime LandingPlannedTime, DateTime OnBlockPlannedTime,

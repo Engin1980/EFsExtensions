@@ -134,6 +134,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       this.flightsManager = LogFlightsManager.Init(settings.DataFolder);
 
+      // DEBUG STUFF, DELETE LATER
+      //UpdateSimbriefAndVatsimIfRequiredAsync();
+      //this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now, 49000, 174 * 95, 5500, 11, 22);
+      //this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now, 5200, 137, 11, 22);
+      //this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now, 2100, 120, 3.023, 11, 22, 121, 3.423, 11, 22);
+      //this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
+
       this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }
 
@@ -173,7 +180,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.RunVM.ShutDownCache = new(DateTime.Now, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.Latitude, this.simPropValues.Longitude);
       LogFlight logFlight = GenerateLogFlight(this.RunVM);
-      
+
       this.flightsManager.StoreFlight(logFlight);
     }
 
@@ -320,6 +327,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       UpdateSimbriefAndVatsimIfRequired();
 
       RunVM.State = RunViewModel.RunModelState.StartedWaitingForTakeOff;
+    }
+
+    private Task UpdateSimbriefAndVatsimIfRequiredAsync()
+    {
+      Task t = new(() => UpdateSimbriefAndVatsimIfRequired());
+      t.Start();
+      return t;
     }
 
     private void UpdateSimbriefAndVatsimIfRequired()
