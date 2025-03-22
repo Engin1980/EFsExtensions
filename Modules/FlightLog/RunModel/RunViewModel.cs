@@ -31,11 +31,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public enum RunModelState
     {
-      WaitingForStartup,
+      WaitingForStartupForTheFirstTime,
       StartedWaitingForTakeOff,
       InFlightWaitingForLanding,
       LandedWaitingForShutdown,
-      AfterShutdown
+      WaitingForStartupAfterShutdown
     }
 
 
@@ -97,7 +97,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public RunViewModel()
     {
-      State = RunModelState.WaitingForStartup;
+      State = RunModelState.WaitingForStartupForTheFirstTime;
     }
 
     internal void Clear()
@@ -108,7 +108,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.LandingCache = null;
       this.ShutDownCache = null;
       this.TakeOffCache = null;
-      this.State = RunModelState.WaitingForStartup;
+      this.State = RunModelState.WaitingForStartupForTheFirstTime;
     }
   }
 }
