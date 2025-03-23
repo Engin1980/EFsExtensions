@@ -1,10 +1,12 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
 using ESimConnect;
+using ESimConnect.Definitions;
 using NAudio.Midi;
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,17 +16,37 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public partial class RunContext
   {
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
     public struct LandingStruct
     {
+      [DataDefinition(SimVars.Aircraft.BrakesAndLandingGear.GEAR_IS_ON_GROUND__index + "0")]
       public double gear0;
+
+      [DataDefinition(SimVars.Aircraft.BrakesAndLandingGear.GEAR_IS_ON_GROUND__index + "1")]
       public double gear1;
+
+      [DataDefinition(SimVars.Aircraft.BrakesAndLandingGear.GEAR_IS_ON_GROUND__index + "2")]
       public double gear2;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND, SimUnits.Length.FOOT)]
       public double height;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE, SimUnits.Length.FOOT)]
       public double altitude;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_PITCH_DEGREES, SimUnits.Angle.DEGREE)]
       public double pitch;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_BANK_DEGREES, SimUnits.Angle.DEGREE)]
       public double bank;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.VERTICAL_SPEED, SimUnits.Speed.FEETBYMINUTE)]
       public double vs;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED, SimUnits.Speed.KNOT)]
       public double ias;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.ACCELERATION_BODY_Y)]
       public double accelerationY;
     }
 
