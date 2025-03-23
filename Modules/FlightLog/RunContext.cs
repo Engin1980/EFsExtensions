@@ -21,7 +21,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     private const double FUEL_LITRES_TO_KG = 0.8;
 
     private LandingDetector? landingDetector = null;
-    private readonly SimPropValues simPropValues = null!;
+    private SimPropValues simPropValues = null!;
     private readonly Settings settings = null!;
     private readonly List<Airport> airports;
     private readonly NewSimObject simObj;
@@ -46,20 +46,20 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.flightsManager = LogFlightsManager.Init(settings.DataFolder);
 
       // DEBUG STUFF, DELETE LATER
-      UpdateSimbriefAndVatsimIfRequiredAsync();
-      this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now, 49000, 174 * 95, 5500, 11, 22);
-      this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now, 5200, 137, 11, 22);
-      this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now, 2100, 120, 3.023, 11, 22, 121, 3.423, 11, 22);
-      this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
-      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now));
-      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now));
-      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now));
+      //UpdateSimbriefAndVatsimIfRequiredAsync();
+      //this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now, 49000, 174 * 95, 5500, 11, 22);
+      //this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now, 5200, 137, 11, 22);
+      //this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now, 2100, 120, 3.023, 11, 22, 121, 3.423, 11, 22);
+      //this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
+      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now));
+      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now));
+      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now));
 
-      var fl = GenerateLogFlight(this.RunVM);
-      flightsManager.StoreFlight(fl);
+      //var fl = GenerateLogFlight(this.RunVM);
+      //flightsManager.StoreFlight(fl);
 
 
-      //this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
+      this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }
 
     public RunViewModel RunVM
@@ -200,6 +200,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         if (this.landingDetector == null && this.simPropValues.Height < 125)
         {
           this.landingDetector = new(this.simObj, this.RunVM);
+          this.landingDetector.AttemptRecorded += r => this.RunVM.LandingAttempts.Add(r);
           this.landingDetector.InitAndStart();
         }
         else if (this.landingDetector != null && this.simPropValues.Height > 175)
@@ -224,7 +225,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       this.RunVM.TakeOffCache = new(DateTime.Now, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
-      UpdateSimbriefAndVatsimIfRequired();
+      UpdateSimbriefAndVatsimIfRequiredAsync();
 
       this.RunVM.State = RunViewModel.RunModelState.InFlightWaitingForLanding;
     }
@@ -244,7 +245,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       RunVM.StartUpCache = new(DateTime.Now, emptyWeight, payloadAndCargoWeight, fuelWeight,
         this.simPropValues.Latitude, this.simPropValues.Longitude);
 
-      UpdateSimbriefAndVatsimIfRequired();
+      UpdateSimbriefAndVatsimIfRequiredAsync();
 
       RunVM.State = RunViewModel.RunModelState.StartedWaitingForTakeOff;
     }

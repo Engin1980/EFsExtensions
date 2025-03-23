@@ -6,6 +6,11 @@
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+  <UserControl.Resources>
+    <Style x:Key="TextRight" TargetType="{x:Type TextBlock}">
+      <Setter Property="TextAlignment" Value="Right" />
+    </Style>
+  </UserControl.Resources>
   <TabControl>
     <TabItem Header="SimBrief" DataContext="{Binding RunVM.SimBriefCache}">
       <ScrollViewer>
@@ -241,7 +246,7 @@
           <Label Grid.Column="1" Grid.Row="4">
             <StackPanel Orientation="Horizontal">
               <TextBlock Text="{Binding Latitude, StringFormat=N5}" />
-              <TextBlock Text="; " />
+              <TextBlock Text=" " />
               <TextBlock Text="{Binding Longitude, StringFormat=N5}" />
             </StackPanel>
           </Label>
@@ -283,7 +288,7 @@
           <Label Grid.Column="1" Grid.Row="3">
             <StackPanel Orientation="Horizontal">
               <TextBlock Text="{Binding Latitude, StringFormat=N5}" />
-              <TextBlock Text="; " />
+              <TextBlock Text=" " />
               <TextBlock Text="{Binding Longitude, StringFormat=N5}" />
             </StackPanel>
           </Label>
@@ -343,7 +348,7 @@
           <Label Grid.Column="1" Grid.Row="6">
             <StackPanel Orientation="Horizontal">
               <TextBlock Text="{Binding TouchdownLatitude, StringFormat=N5}" />
-              <TextBlock Text="; " />
+              <TextBlock Text=" " />
               <TextBlock Text="{Binding TouchdownLongitude, StringFormat=N5}" />
             </StackPanel>
           </Label>
@@ -352,7 +357,7 @@
           <Label Grid.Column="1" Grid.Row="7">
             <StackPanel Orientation="Horizontal">
               <TextBlock Text="{Binding Latitude, StringFormat=N5}" />
-              <TextBlock Text="; " />
+              <TextBlock Text=" " />
               <TextBlock Text="{Binding Longitude, StringFormat=N5}" />
             </StackPanel>
           </Label>
@@ -389,7 +394,7 @@
           <Label Grid.Column="1" Grid.Row="4">
             <StackPanel Orientation="Horizontal">
               <TextBlock Text="{Binding Latitude, StringFormat=N5}" />
-              <TextBlock Text="; " />
+              <TextBlock Text=" " />
               <TextBlock Text="{Binding Longitude, StringFormat=N5}" />
             </StackPanel>
           </Label>
@@ -398,12 +403,16 @@
       </ScrollViewer>
     </TabItem>
     <TabItem Header="Landing Attempts" DataContext="{Binding RunVM.LandingAttempts}">
-      <DataGrid AutoGenerateColumns="True" ItemsSource="{Binding}" >
+      <DataGrid ItemsSource="{Binding}" CanUserAddRows="False"  CanUserDeleteRows="False" AutoGenerateColumns="False">
         <DataGrid.Columns>
           <DataGridTextColumn Header="Date/Time" Binding="{Binding DateTime, StringFormat={}{0:yyyy-MM-dd HH:mm:ss}}" />
-          <DataGridTextColumn Header="IAS" Binding="{Binding IAS, StringFormat={}{0:N0} kts}" />
-          <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" />
-          <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" />
+          <DataGridTextColumn Header="IAS" Binding="{Binding IAS, StringFormat={}{0:N0} kts}" ElementStyle="{StaticResource TextRight}" />
+          <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" ElementStyle="{StaticResource TextRight}" />
+          <DataGridTextColumn Header="Bank" Binding="{Binding Bank, StringFormat={}{0:N2}°}" ElementStyle="{StaticResource TextRight}" />
+          <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch, StringFormat={}{0:N2}°}" ElementStyle="{StaticResource TextRight}" />
+          <DataGridTextColumn Header="Max-Acc-Y" Binding="{Binding MaxAccY, StringFormat={}{0:N3}}" ElementStyle="{StaticResource TextRight}" />
+          <DataGridTextColumn Header="Main gear" Binding="{Binding MainGearTime, StringFormat={}{0:N2} sec}" ElementStyle="{StaticResource TextRight}" />
+          <DataGridTextColumn Header="All gear" Binding="{Binding AllGearTime, StringFormat={}{0:N2} sec}" ElementStyle="{StaticResource TextRight}" />
         </DataGrid.Columns>
       </DataGrid>
     </TabItem>

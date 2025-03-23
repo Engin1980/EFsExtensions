@@ -142,10 +142,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           return;
 
         double mainGearTime = Math.Abs(this.current.gear1Count - this.current.gear2Count) * (1 / 50d);
-        double allGearTime = Math.Max(this.current.gear1Count,
+        double allGearTime = (Math.Max(this.current.gear1Count,
             Math.Max(this.current.gear2Count, this.current.gear0Count)) -
           Math.Min(this.current.gear1Count,
-            Math.Min(this.current.gear2Count, this.current.gear0Count)) * (1 / 50d);
+            Math.Min(this.current.gear2Count, this.current.gear0Count))) * (1 / 50d);
 
         LandingAttemptData item = new(
           this.current.bank,
