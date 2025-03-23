@@ -11,7 +11,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public class RunViewModel : NotifyPropertyChanged
   {
-    public record LandingAttemptData(double Bank, double Pitch, double IAS, double VS, double MainGearTime, double AllGearTime, double MaxAccY, DateTime DateTime);
+    public record LandingAttemptData(double Bank, double Pitch, double IAS, double VS, double MainGearTime, double AllGearTime, double MaxAccY, DateTime DateTime,
+      double Latitude, double Longitude);
 
     public record RunModelVatsimCache(string FlightRules, string Callsign, string Aircraft, string? Registration,
       string DepartureICAO, string DestinationICAO, string AlternateICAO, string Route, int PlannedFlightLevel, int CruiseSpeed,
@@ -28,9 +29,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       public int ZFW => EmptyWeight + PayloadAndCargoKg;
     }
     public record RunModelShutDownCache(DateTime Time, int FuelKg, double Latitude, double Longitude);
-    public record RunModelLandingCache(DateTime Time, int FuelKg, double IAS,
-      double TouchdownBankDegrees, double TouchdownLatitude, double TouchdownLongitude, double TouchdownVelocity, double TouchdownPitchDegrees,
-      double Latitude, double Longitude);
+    public record RunModelLandingCache(DateTime Time, int FuelKg, double IAS, double Latitude, double Longitude);
 
     public enum RunModelState
     {
@@ -107,7 +106,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     public RunViewModel()
     {
       State = RunModelState.WaitingForStartupForTheFirstTime;
-      LandingAttempts = new ();
+      LandingAttempts = new();
     }
 
     internal void Clear()

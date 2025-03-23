@@ -36,9 +36,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.logger = Logger.Create(this);
       this.simObj = NewSimObject.GetInstance();
 
-      this.RunVM = new RunViewModel();
-
-      this.RunVM.Profile = initContext.SelectedProfile;
+      this.RunVM = new RunViewModel
+      {
+        Profile = initContext.SelectedProfile
+      };
       this.RunVM.Clear();
       this.settings = settings;
       this.airports = settings.Airports;
@@ -46,20 +47,20 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.flightsManager = LogFlightsManager.Init(settings.DataFolder);
 
       // DEBUG STUFF, DELETE LATER
-      //UpdateSimbriefAndVatsimIfRequiredAsync();
-      //this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now, 49000, 174 * 95, 5500, 11, 22);
-      //this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now, 5200, 137, 11, 22);
-      //this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now, 2100, 120, 3.023, 11, 22, 121, 3.423, 11, 22);
-      //this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
-      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now));
-      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now));
-      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now));
+      UpdateSimbriefAndVatsimIfRequired();
+      this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now, 49000, 174 * 95, 5500, 52.8, -118.08);
+      this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now, 5200, 137, 11, 22);
+      this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now, 2100, 120, 11, 22);
+      this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
+      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
+      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 12, 23));
+      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
 
-      //var fl = GenerateLogFlight(this.RunVM);
-      //flightsManager.StoreFlight(fl);
+      var fl = GenerateLogFlight(this.RunVM);
+      flightsManager.StoreFlight(fl);
 
 
-      this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
+      //this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }
 
     public RunViewModel RunVM
@@ -98,6 +99,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       EAssert.IsNotNull(runVM.LandingCache, "LandingCache not set.");
       EAssert.IsNotNull(runVM.ShutDownCache, "ShutDownCache not set.");
 
+      InvalidateSimBriefOrVatsimIfRequired(runVM);
+
+      List<LogTouchdown> touchdowns = CollectTouchdowns();
+
       string? departureICAO = runVM.SimBriefCache?.DepartureICAO
         ?? RunVM.VatsimCache?.DepartureICAO
         ?? GetAirportByCoordinates(runVM.StartUpCache!.Latitude, runVM.StartUpCache!.Longitude);
@@ -131,11 +136,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         (int)runVM.TakeOffCache.IAS);
 
       LogLanding landing = new(
-        runVM.SimBriefCache?.LandingPlannedTime, runVM.LandingCache!.Time,
-        runVM.SimBriefCache?.EstimatedLandingFuelKg, runVM.LandingCache!.FuelKg,
-        new GPS(runVM.LandingCache!.TouchdownLatitude, runVM.LandingCache!.TouchdownLongitude),
-        (int)runVM.LandingCache!.IAS,
-        runVM.LandingCache!.TouchdownVelocity, runVM.LandingCache!.TouchdownPitchDegrees);
+        runVM.SimBriefCache?.LandingPlannedTime, runVM.SimBriefCache?.EstimatedLandingFuelKg, runVM.LandingCache!.FuelKg, touchdowns);
 
       LogShutDown shutDown = new(
         runVM.SimBriefCache?.OnBlockPlannedTime, runVM.ShutDownCache.Time, runVM.ShutDownCache!.FuelKg,
@@ -149,6 +150,104 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         cruizeAltitude, airDistance, routeDistance,
         startUp, takeOff, landing, shutDown, divertReason);
       return ret;
+    }
+
+    private List<LogTouchdown> CollectTouchdowns()
+    {
+      List<LogTouchdown> ret = new List<LogTouchdown>();
+
+      List<List<RunViewModel.LandingAttemptData>> groups = new();
+      DateTime last = DateTime.MinValue;
+      for (int i = 0; i < this.RunVM.LandingAttempts.Count; i++)
+      {
+        var la = this.RunVM.LandingAttempts[i];
+        if (i == 0)
+        {
+          var tmp = new List<RunViewModel.LandingAttemptData>()
+          {
+            la
+          };
+          groups.Add(tmp);
+        }
+        else if (la.DateTime.Subtract(last).TotalSeconds < 20)
+        {
+          groups.Last().Add(la);
+        }
+        else
+        {
+          var tmp = new List<RunViewModel.LandingAttemptData>
+          {
+            la
+          };
+          groups.Add(tmp);
+        }
+        last = la.DateTime;
+      }
+
+      foreach (var group in groups)
+      {
+        LogTouchdown lt = new()
+        {
+          DateTime = group.First().DateTime,
+          Location = new GPS(group.First().Latitude, group.First().Longitude),
+          IAS = (int)Math.Round(group.First().IAS),
+          Bank = group.First().Bank,
+          Pitch = group.First().Pitch,
+          MaxAccY = group.Max(q => q.MaxAccY),
+          AllGearTime = group.Last().DateTime.Subtract(group.First().DateTime).TotalSeconds, //TODO really last?
+          MainGearTime = group.Last().DateTime.Subtract(group.First().DateTime).TotalSeconds
+        };
+        ret.Add(lt);
+      }
+      return ret;
+    }
+
+    private void InvalidateSimBriefOrVatsimIfRequired(RunViewModel runVM)
+    {
+      if (runVM.SimBriefCache != null)
+      {
+        TimeSpan timeDiff = runVM.SimBriefCache.OffBlockPlannedTime - runVM.StartUpCache.Time;
+        if (timeDiff.TotalHours > 1)
+        {
+          logger.Log(LogLevel.WARNING, $"SimBrief offblock time is {timeDiff.TotalHours} hours off actual offblock time. SimBrief ignored.");
+          runVM.SimBriefCache = null;
+        }
+      }
+      if (runVM.SimBriefCache != null)
+      {
+        double? simBriefDistance = TryGetDistance(runVM.SimBriefCache.DepartureICAO, runVM.StartUpCache.Latitude, runVM.StartUpCache.Longitude);
+        if (simBriefDistance == null || simBriefDistance > 7000)
+        {
+          logger.Log(LogLevel.WARNING, $"SimBrief departure airport distance is {simBriefDistance} km from actual departure airport. SimBrief ignored.");
+          runVM.SimBriefCache = null;
+        }
+      }
+      if (runVM.VatsimCache != null)
+      {
+        TimeSpan timeDiff = runVM.VatsimCache.PlannedDepartureTime - runVM.StartUpCache.Time;
+        if (timeDiff.TotalHours > 1)
+        {
+          logger.Log(LogLevel.WARNING, $"VATSIM offblock time is {timeDiff.TotalHours} hours off actual offblock time. VATSIM ignored.");
+          runVM.VatsimCache = null;
+        }
+      }
+      if (runVM.VatsimCache != null)
+      {
+        double? vatsimDistance = TryGetDistance(runVM.VatsimCache.DepartureICAO, runVM.StartUpCache.Latitude, runVM.StartUpCache.Longitude);
+        if (vatsimDistance == null || vatsimDistance > 7000)
+        {
+          logger.Log(LogLevel.WARNING, $"VATSIM departure airport distance is {vatsimDistance} km from actual departure airport. VATSIM ignored.");
+          runVM.VatsimCache = null;
+        }
+      }
+    }
+
+    private double? TryGetDistance(string icao, double latitude, double longitude)
+    {
+      Airport? airport = airports.FirstOrDefault(q => q.ICAO == icao);
+      if (airport == null) return null;
+
+      return GpsCalculator.GetDistance(airport.Coordinate.Latitude, airport.Coordinate.Longitude, latitude, longitude);
     }
 
     private double TryGetAirDistance(string? departureIcao, string? destinationIcao)
@@ -212,10 +311,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       }
 
       this.RunVM.LandingCache = new(DateTime.Now, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
-        this.simPropValues.IAS,
-        this.simPropValues.TouchdownBankDegrees, this.simPropValues.TouchdownLatitude, this.simPropValues.TouchdownLongitude,
-        this.simPropValues.TouchdownVelocity, this.simPropValues.TouchdownPitchDegrees,
-        this.simPropValues.Latitude, this.simPropValues.Longitude);
+        this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
       this.RunVM.State = RunViewModel.RunModelState.LandedWaitingForShutdown;
     }
 
@@ -254,6 +350,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       if (!this.simPropValues.ParkingBrakeSet) return;
       if (this.simPropValues.IsAnyEngineRunning) return;
+      if (this.simPropValues.IsFlying)
+      {
+        // got airborne after landing
+        this.RunVM.State = RunViewModel.RunModelState.InFlightWaitingForLanding;
+        return;
+      }
 
       if (this.landingDetector != null)
       {

@@ -48,6 +48,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       [DataDefinition(SimVars.Aircraft.Miscelaneous.ACCELERATION_BODY_Y)]
       public double accelerationY;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_LATITUDE, SimUnits.Angle.DEGREE)]
+      public double latitude;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_LONGITUDE, SimUnits.Angle.DEGREE)]
+      public double longitude;
     }
 
     private class LandingDetector : IDisposable
@@ -64,6 +70,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         public double vs;
         public double maxAccY;
         public DateTime? dateTime;
+        public double latitude;
+        public double longitude;
       }
 
       private readonly NewSimObject simObj;
@@ -130,6 +138,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
             current.vs = data.vs;
             current.dateTime = DateTime.Now;
 
+            current.latitude = data.latitude;
+            current.longitude = data.longitude;
+
             current.notGroundCount = 0;
           }
         }
@@ -142,10 +153,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           return;
 
         double mainGearTime = Math.Abs(this.current.gear1Count - this.current.gear2Count) * (1 / 50d);
-        double allGearTime = (Math.Max(this.current.gear1Count,
-            Math.Max(this.current.gear2Count, this.current.gear0Count)) -
-          Math.Min(this.current.gear1Count,
-            Math.Min(this.current.gear2Count, this.current.gear0Count))) * (1 / 50d);
+        double allGearTime =
+          (Math.Max(this.current.gear1Count, Math.Max(this.current.gear2Count, this.current.gear0Count))
+          - Math.Min(this.current.gear1Count, Math.Min(this.current.gear2Count, this.current.gear0Count)))
+          * (1 / 50d);
 
         LandingAttemptData item = new(
           this.current.bank,
@@ -155,7 +166,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           mainGearTime,
           allGearTime,
           this.current.maxAccY,
-          this.current.dateTime.Value);
+          this.current.dateTime.Value,
+          this.current.latitude,
+          this.current.longitude);
 
         recordedData.Add(item);
 

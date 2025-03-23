@@ -1,4 +1,5 @@
 ﻿using Eng.EFsExtensions.Libs.AirportsLib;
+using ESystem.Asserting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -59,27 +60,38 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     }
   }
 
+  public class LogTouchdown
+  {
+    public DateTime DateTime { get; set; }
+    public GPS Location { get; set; }
+    public int IAS { get; set; }
+    public double Bank { get; set; }
+    public double Pitch { get; set; }
+    public double MaxAccY { get; set; }
+    public double MainGearTime { get; set; }
+    public double AllGearTime { get; set; }
+  }
+
   public class LogLanding
   {
     public DateTime? ScheduledTime { get; set; }
-    public DateTime RealTime { get; set; }
+    public List<LogTouchdown> Touchdowns { get; set; } = null!;
+    public DateTime RealTime => Touchdowns.Last().DateTime;
     public int? ScheduledFuelAmountKg { get; set; }
     public int FuelAmountKg { get; set; }
-    public GPS Location { get; set; }
-    public int IAS { get; set; }
-    public double Velocity { get; set; }
-    public double Pitch { get; set; }
+    public GPS Location => Touchdowns.Last().Location;
+    public int IAS => Touchdowns.Last().IAS;
+    public double Bank => Touchdowns.Last().Bank;
+    public double Pitch => Touchdowns.Last().Pitch;
 
-    public LogLanding(DateTime? scheduledTime, DateTime realTime, int? scheduledFuelAmountKg, int fuelAmountKg, GPS location, int iAS, double velocity, double pitch)
+    public LogLanding(DateTime? scheduledTime, int? scheduledFuelAmountKg, int fuelAmountKg, List<LogTouchdown> touchdowns)
     {
+      EAssert.Argument.IsTrue(touchdowns.Count > 0, nameof(touchdowns), "Touchdowns must have at least one entry");
+
       ScheduledTime = scheduledTime;
-      RealTime = realTime;
+      this.Touchdowns = touchdowns;
       ScheduledFuelAmountKg = scheduledFuelAmountKg;
       FuelAmountKg = fuelAmountKg;
-      Location = location;
-      IAS = iAS;
-      Velocity = velocity;
-      Pitch = pitch;
     }
 
     public LogLanding()
