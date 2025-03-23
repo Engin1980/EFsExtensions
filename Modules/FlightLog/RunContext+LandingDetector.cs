@@ -7,12 +7,14 @@ using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using static Eng.EFsExtensions.Modules.FlightLogModule.RunViewModel;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public partial class RunContext
   {
-    public struct LandingData
+    public struct LandingStruct
     {
       public double gear0;
       public double gear1;
@@ -39,17 +41,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         public double ias;
         public double vs;
         public double maxAccY;
-      }
-
-      public class RecordedData
-      {
-        public double Bank { get; internal set; }
-        public double Pitch { get; internal set; }
-        public double IAS { get; internal set; }
-        public double VS { get; internal set; }
-        public int MainGearTime { get; internal set; }
-        public int AllGearTime { get; internal set; }
-        public double MaxAccY { get; internal set; }
+        public DateTime? dateTime;
       }
 
       private readonly NewSimObject simObj;
@@ -57,10 +49,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private RequestId? requestId;
       private bool isDisposed = false;
       private readonly RecordingData current = new();
-      private readonly List<RecordedData> recordedData = new();
+      private readonly List<LandingAttemptData> recordedData = new();
 
-      public event Action? CloseRequested;
-      public event Action<RecordedData>? AttemptRecorded;
+      public event Action<LandingAttemptData>? AttemptRecorded;
 
       public LandingDetector(NewSimObject simObj, RunViewModel runVM)
       {
@@ -71,8 +62,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       internal void InitAndStart()
       {
         var simCon = this.simObj.ESimCon;
-        var typeId = simCon.Structs.Register<LandingData>();
-        requestId = simCon.Structs.RequestRepeatedly<LandingData>(SimConnectPeriod.SIM_FRAME, true);
+        var typeId = simCon.Structs.Register<LandingStruct>();
+        requestId = simCon.Structs.RequestRepeatedly<LandingStruct>(SimConnectPeriod.SIM_FRAME, true);
         simCon.DataReceived += SimCon_DataReceived;
       }
 
@@ -80,11 +71,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       {
         if (e.RequestId != requestId) return;
 
-        LandingData data = (LandingData)e.Data;
+        LandingStruct data = (LandingStruct)e.Data;
         UpdateByData(data);
       }
 
-      private void UpdateByData(LandingData data)
+      private void UpdateByData(LandingStruct data)
       {
         if (data.gear0 + data.gear1 + data.gear2 == 0)
         {
@@ -95,12 +86,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           if (current.notGroundCount > 50 && current.gear0Count + current.gear1Count + current.gear2Count > 0)
           {
             CloseCurrentAttempt();
-          }
-
-          // too high for landing
-          if (data.height > 100)
-          {
-            CloseLandingDetector();
           }
         }
         else
@@ -121,30 +106,34 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
             current.pitch = data.pitch;
             current.ias = data.ias;
             current.vs = data.vs;
+            current.dateTime = DateTime.Now;
 
             current.notGroundCount = 0;
-          }
-          if (current.ias < 30)
-          {
-            // end of landing
-            CloseCurrentAttempt();
-            CloseLandingDetector();
           }
         }
       }
 
       private void CloseCurrentAttempt()
       {
-        RecordedData item = new()
-        {
-          Bank = current.bank,
-          Pitch = current.pitch,
-          IAS = current.ias,
-          VS = current.vs,
-          MainGearTime = Math.Abs(current.gear1Count - current.gear2Count) * (1 / 50),
-          AllGearTime = Math.Abs(Math.Min(current.gear1Count, current.gear2Count) - current.gear0Count) * (1 / 50),
-          MaxAccY = current.maxAccY
-        };
+        // no active landing in progress
+        if (this.current.dateTime == null)
+          return;
+
+        double mainGearTime = Math.Abs(this.current.gear1Count - this.current.gear2Count) * (1 / 50d);
+        double allGearTime = Math.Max(this.current.gear1Count,
+            Math.Max(this.current.gear2Count, this.current.gear0Count)) -
+          Math.Min(this.current.gear1Count,
+            Math.Min(this.current.gear2Count, this.current.gear0Count)) * (1 / 50d);
+
+        LandingAttemptData item = new(
+          this.current.bank,
+          this.current.pitch,
+          this.current.ias,
+          this.current.vs,
+          mainGearTime,
+          allGearTime,
+          this.current.maxAccY,
+          this.current.dateTime.Value);
 
         recordedData.Add(item);
 
@@ -158,21 +147,20 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         current.gear0Count = 0;
         current.maxAccY = 0;
         current.notGroundCount = 51; // to behave like not on ground for more than second
+        current.dateTime = null;
 
         this.AttemptRecorded?.Invoke(item);
       }
 
-      private void CloseLandingDetector()
-      {
-        this.CloseRequested?.Invoke();
-      }
 
       internal void Stop()
       {
         var simCon = this.simObj.ESimCon;
-        simCon.Structs.Unregister<LandingData>();
+        simCon.Structs.Unregister<LandingStruct>();
         this.simObj.ESimCon.DataReceived -= SimCon_DataReceived;
         this.isDisposed = true;
+
+        CloseCurrentAttempt();
       }
 
       public void Dispose()

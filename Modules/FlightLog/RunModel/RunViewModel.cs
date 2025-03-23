@@ -2,6 +2,7 @@
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,6 +11,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public class RunViewModel : NotifyPropertyChanged
   {
+    public record LandingAttemptData(double Bank, double Pitch, double IAS, double VS, double MainGearTime, double AllGearTime, double MaxAccY, DateTime DateTime);
+
     public record RunModelVatsimCache(string FlightRules, string Callsign, string Aircraft, string? Registration,
       string DepartureICAO, string DestinationICAO, string AlternateICAO, string Route, int PlannedFlightLevel, int CruiseSpeed,
       DateTime PlannedDepartureTime, TimeSpan PlannedRouteTime, TimeSpan FuelDurationTime);
@@ -89,6 +92,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       set { base.UpdateProperty(nameof(ShutDownCache), value); }
     }
 
+    public BindingList<LandingAttemptData> LandingAttempts
+    {
+      get { return base.GetProperty<BindingList<LandingAttemptData>?>(nameof(LandingAttempts))!; }
+      set { base.UpdateProperty(nameof(LandingAttempts), value); }
+    }
+
     public InitContext.Profile Profile
     {
       get => base.GetProperty<InitContext.Profile>(nameof(Profile))!;
@@ -98,6 +107,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     public RunViewModel()
     {
       State = RunModelState.WaitingForStartupForTheFirstTime;
+      LandingAttempts = new ();
     }
 
     internal void Clear()

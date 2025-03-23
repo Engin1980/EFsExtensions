@@ -51,6 +51,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now, 5200, 137, 11, 22);
       this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now, 2100, 120, 3.023, 11, 22, 121, 3.423, 11, 22);
       this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
+      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now));
+      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now));
+      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now));
 
       var fl = GenerateLogFlight(this.RunVM);
       flightsManager.StoreFlight(fl);
@@ -194,10 +197,15 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       if (this.simPropValues.IsFlying)
       {
-        if (this.landingDetector == null && this.simPropValues.Height < 200)
+        if (this.landingDetector == null && this.simPropValues.Height < 125)
         {
           this.landingDetector = new(this.simObj, this.RunVM);
           this.landingDetector.InitAndStart();
+        }
+        else if (this.landingDetector != null && this.simPropValues.Height > 175)
+        {
+          this.landingDetector.Stop();
+          this.landingDetector = null;
         }
         return;
       }

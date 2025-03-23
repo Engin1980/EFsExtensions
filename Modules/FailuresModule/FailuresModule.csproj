@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <RootNamespace>Eng.Chloat.Modules.FailuresModule</RootNamespace>
-    <AssemblyVersion>1.4.0.67</AssemblyVersion>
-    <FileVersion>1.4.0.65</FileVersion>
+    <AssemblyVersion>1.4.0.69</AssemblyVersion>
+    <FileVersion>1.4.0.67</FileVersion>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 

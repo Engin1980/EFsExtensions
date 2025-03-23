@@ -163,7 +163,7 @@
           <Label Grid.Column="0" Grid.Row="7" Content="Planned Departure Time" />
           <Label Grid.Column="1" Grid.Row="7">
             <TextBlock Text="{Binding PlannedDepartureTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" TextAlignment="Right" />
-          </Label>  
+          </Label>
 
           <Label Grid.Column="0" Grid.Row="8" Content="Planned Enroute Time" />
           <Label Grid.Column="1" Grid.Row="8">
@@ -396,6 +396,16 @@
 
         </Grid>
       </ScrollViewer>
+    </TabItem>
+    <TabItem Header="Landing Attempts" DataContext="{Binding RunVM.LandingAttempts}">
+      <DataGrid AutoGenerateColumns="True" ItemsSource="{Binding}" >
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Date/Time" Binding="{Binding DateTime, StringFormat={}{0:yyyy-MM-dd HH:mm:ss}}" />
+          <DataGridTextColumn Header="IAS" Binding="{Binding IAS, StringFormat={}{0:N0} kts}" />
+          <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" />
+          <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" />
+        </DataGrid.Columns>
+      </DataGrid>
     </TabItem>
     <TabItem Header="Current Flight Entry"></TabItem>
     <TabItem Header="Flights Log"></TabItem>
