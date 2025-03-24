@@ -5,8 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <RootNamespace>Eng.EFsExtensions.Libs.AirportsLib</RootNamespace>
-    <AssemblyVersion>1.4.0.14</AssemblyVersion>
-    <FileVersion>1.4.0.13</FileVersion>
+    <AssemblyVersion>1.4.0.15</AssemblyVersion>
+    <FileVersion>1.4.0.14</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

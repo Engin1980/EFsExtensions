@@ -1,4 +1,5 @@
-﻿using Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel;
+﻿using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
+using Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -101,6 +102,19 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       get => base.GetProperty<InitContext.Profile>(nameof(Profile))!;
       set => base.UpdateProperty(nameof(Profile), value);
+    }
+
+    public BindingList<LogFlight> LoggedFlights
+    {
+      get => base.GetProperty<BindingList<LogFlight>>(nameof(LoggedFlights))!;
+      set => base.UpdateProperty(nameof(LoggedFlights), value);
+    }
+
+
+    public LogFlight? LastLoggedFlight
+    {
+      get => base.GetProperty<LogFlight?>(nameof(LastLoggedFlight))!;
+      set => base.UpdateProperty(nameof(LastLoggedFlight), value);
     }
 
     public RunViewModel()

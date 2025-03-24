@@ -417,6 +417,10 @@
       </DataGrid>
     </TabItem>
     <TabItem Header="Current Flight Entry"></TabItem>
-    <TabItem Header="Flights Log"></TabItem>
+    <TabItem Header="Flights Log" DataContext="{Binding RunVM.}">
+      <DataGrid>
+        
+      </DataGrid>
+    </TabItem>
   </TabControl>
 </UserControl>

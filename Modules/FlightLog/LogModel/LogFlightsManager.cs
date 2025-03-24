@@ -14,6 +14,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     private readonly List<LogFlight> flights = new();
     private readonly string dataFolder;
 
+    public IReadOnlyList<LogFlight> Flights => this.flights.AsReadOnly();
+
     public static LogFlightsManager Init(string dataFolder)
     {
       EAssert.Argument.IsNonEmptyString(dataFolder, nameof(dataFolder));
