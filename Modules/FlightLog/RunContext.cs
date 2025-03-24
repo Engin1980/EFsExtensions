@@ -47,20 +47,20 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.flightsManager = LogFlightsManager.Init(settings.DataFolder);
 
       // DEBUG STUFF, DELETE LATER
-      UpdateSimbriefAndVatsimIfRequired();
-      this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now, 49000, 174 * 95, 5500, 52.8, -118.08);
-      this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now, 5200, 137, 11, 22);
-      this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now, 2100, 120, 11, 22);
-      this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
-      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
-      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 12, 23));
-      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
+      //UpdateSimbriefAndVatsimIfRequired();
+      //this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now, 49000, 174 * 95, 5500, 52.8, -118.08);
+      //this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now, 5200, 137, 11, 22);
+      //this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now, 2100, 120, 11, 22);
+      //this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
+      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
+      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 12, 23));
+      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
 
-      var fl = GenerateLogFlight(this.RunVM);
-      flightsManager.StoreFlight(fl);
+      //var fl = GenerateLogFlight(this.RunVM);
+      //flightsManager.StoreFlight(fl);
 
 
-      //this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
+      this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }
 
     public RunViewModel RunVM

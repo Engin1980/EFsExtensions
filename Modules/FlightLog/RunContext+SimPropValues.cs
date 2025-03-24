@@ -26,6 +26,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private readonly TypeId emptyWeightKgTypeId = new(EMPTY_TYPE_ID);
       private readonly TypeId totalWeightKgTypeId = new(EMPTY_TYPE_ID);
       private readonly RequestId atcIdRequestId = new RequestId(EMPTY_TYPE_ID);
+      private readonly TypeId fbwParkingBrakeTypeId = new (EMPTY_TYPE_ID);
 
       public SimPropValues(NewSimObject simObject)
       {
@@ -52,7 +53,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         this.emptyWeightKgTypeId = cache.Register("EMPTY WEIGHT", ESimConnect.Definitions.SimUnits.Weight.KILOGRAM);
         this.totalWeightKgTypeId = cache.Register("TOTAL WEIGHT", ESimConnect.Definitions.SimUnits.Weight.KILOGRAM);
 
-
+        this.parkingBrakeTypeId = cache.Register("L:A32NX_PARK_BRAKE_LEVER_POS");
 
         var simCon = simObject.ESimCon;
         simCon.DataReceived += ESimCon_DataReceived;
@@ -67,7 +68,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           this.AtcId = (string)e.Data;
       }
       public string? AtcId { get; private set; }
-      public bool ParkingBrakeSet => cache.GetValue(parkingBrakeTypeId) == 1;
+      public bool ParkingBrakeSet => cache.GetValue(parkingBrakeTypeId) == 1 || cache.GetValue(fbwParkingBrakeTypeId) == 1;
       public double Height => cache.GetValue(heightTypeId);
       public double Latitude => cache.GetValue(latitudeTypeId);
       public double Longitude => cache.GetValue(longitudeTypeId);
