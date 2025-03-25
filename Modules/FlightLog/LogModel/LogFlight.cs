@@ -76,7 +76,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
   {
     public DateTime? ScheduledTime { get; set; }
     public List<LogTouchdown> Touchdowns { get; set; } = null!;
-    public DateTime RealTime => Touchdowns.Last().DateTime;
+    public DateTime? RealTime => Touchdowns.LastOrDefault()?.DateTime;
     public int? ScheduledFuelAmountKg { get; set; }
     public int FuelAmountKg { get; set; }
     public GPS Location => Touchdowns.Last().Location;

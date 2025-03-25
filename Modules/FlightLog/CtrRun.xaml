@@ -416,10 +416,54 @@
         </DataGrid.Columns>
       </DataGrid>
     </TabItem>
-    <TabItem Header="Current Flight Entry"></TabItem>
-    <TabItem Header="Flights Log" DataContext="{Binding RunVM.}">
-      <DataGrid>
-        
+    <TabItem Header="Current Flight Entry" DataContext="{Binding LogVM.RecentFlight}">
+      <DockPanel>
+        <GroupBox Header="Dates">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Row="0" Grid.Column="1">Scheduled</TextBlock>
+            <TextBlock Grid.Row="0" Grid.Column="2">Real</TextBlock>
+
+            <TextBlock Grid.Row="1" Grid.Column="0">Off-block</TextBlock>
+            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding StartUp.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding StartUp.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+
+            <TextBlock Grid.Row="2" Grid.Column="0">Take-off</TextBlock>
+            <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding TakeOff.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+
+            <TextBlock Grid.Row="3" Grid.Column="0">Landing</TextBlock>
+            <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Landing.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+
+            <TextBlock Grid.Row="4" Grid.Column="0">On-block</TextBlock>
+            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ShutDown.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding ShutDown.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+
+          </Grid>
+        </GroupBox>
+      </DockPanel>
+    </TabItem>
+    <TabItem Header="Flights Log" DataContext="{Binding LogVM}">
+      <DataGrid ItemsSource="{Binding Flights}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" >
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Date &amp; Time" Binding="{Binding StartUp.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          <DataGridTextColumn Header="From" Binding="{Binding DepartureICAO}" />
+          <DataGridTextColumn Header="To" Binding="{Binding DestinationICAO}" />
+          <DataGridTextColumn Header="Div" Binding="{Binding AlternateICAO}" />
+          <DataGridTextColumn Header="Aircraft" Binding="{Binding AircraftType}" />
+          <DataGridTextColumn Header="Reg" Binding="{Binding AircraftRegistration}" />
+        </DataGrid.Columns>
       </DataGrid>
     </TabItem>
   </TabControl>

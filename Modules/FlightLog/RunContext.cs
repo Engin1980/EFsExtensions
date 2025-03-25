@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Eng.EFsExtensions.Modules.FlightLogModule.RunModel;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -45,12 +46,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.airports = settings.Airports;
 
       this.flightsManager = LogFlightsManager.Init(settings.DataFolder);
+      this.LogVM = new(this.flightsManager);
+
 
       // DEBUG STUFF, DELETE LATER
       UpdateSimbriefAndVatsimIfRequired();
-      this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now, 49000, 174 * 95, 5500, 52.8, -118.08);
-      this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now, 5200, 137, 11, 22);
-      this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now, 2100, 120, 11, 22);
+      this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now.AddMinutes(-70), 49000, 174 * 95, 5500, 52.8, -118.08);
+      this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now.AddMinutes(-60), 5200, 137, 11, 22);
+      this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now.AddMinutes(-10), 2100, 120, 11, 22);
       this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
       this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
       this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 12, 23));
@@ -66,6 +69,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       get { return base.GetProperty<RunViewModel>(nameof(RunVM))!; }
       set { base.UpdateProperty(nameof(RunVM), value); }
+    }
+
+
+    public LogViewModel LogVM
+    {
+      get => base.GetProperty<LogViewModel>(nameof(LogVM))!;
+      set => base.UpdateProperty(nameof(LogVM), value);
     }
 
     private void CheckForNextState()

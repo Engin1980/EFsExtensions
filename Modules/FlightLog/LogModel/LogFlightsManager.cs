@@ -14,6 +14,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     private readonly List<LogFlight> flights = new();
     private readonly string dataFolder;
 
+    public event Action<LogFlight>? NewFlightLogged;
+
     public IReadOnlyList<LogFlight> Flights => this.flights.AsReadOnly();
 
     public static LogFlightsManager Init(string dataFolder)
@@ -38,6 +40,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
         using System.IO.FileStream fileStream = new(file, System.IO.FileMode.Open);
         LogFlight flight = (LogFlight)(serializer.Deserialize(fileStream) ?? throw new ApplicationException($"Failed to deserialize '{file}'"));
         this.flights.Add(flight);
+
+        this.NewFlightLogged?.Invoke(flight);
       }
     }
 
@@ -53,6 +57,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
       {
         ser.Serialize(System.IO.File.Create(fileName), logFlight);
         this.flights.Add(logFlight);
+
+        this.NewFlightLogged?.Invoke(logFlight);
       }
       catch (Exception ex)
       {
