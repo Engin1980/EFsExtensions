@@ -45,7 +45,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.settings = settings;
       this.airports = settings.Airports;
 
-      this.flightsManager = LogFlightsManager.Init(settings.DataFolder);
+      this.flightsManager = LogFlightsManager.Init(initContext.SelectedProfile.Path);
       this.LogVM = new(this.flightsManager);
 
 

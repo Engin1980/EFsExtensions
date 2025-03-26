@@ -7,17 +7,33 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls.Primitives;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule.RunModel
 {
   public class LogViewModel : NotifyPropertyChanged
   {
+    private class LogFlightComparer : IComparer<LogFlight>
+    {
+      public int Compare(LogFlight? x, LogFlight? y) => y!.StartUp.RealTime.CompareTo(x!.StartUp.RealTime);
+    }
+    private static LogFlightComparer logFlightComparer = new();
+
     public LogViewModel(LogFlightsManager flightsManager)
     {
-      this.Flights = flightsManager.Flights.ToBindingList();
+      this.Flights = flightsManager.Flights.OrderByDescending(q => q.StartUp.RealTime).ToBindingList();
       this.RecentFlight = this.Flights.LastOrDefault();
       this.SelectedFlight = null;
-      flightsManager.NewFlightLogged += f => this.Flights.Add(f);
+      flightsManager.NewFlightLogged += f => this.AddFlight(f);
+    }
+
+    private void AddFlight(LogFlight flight)
+    {
+      int index = this.Flights.ToList().BinarySearch(flight, logFlightComparer);
+      if (index < 0)
+        index = ~index;
+
+      this.Flights.Insert(index, flight);
     }
 
     public BindingList<LogFlight> Flights

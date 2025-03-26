@@ -416,7 +416,7 @@
         </DataGrid.Columns>
       </DataGrid>
     </TabItem>
-    <TabItem Header="Current Flight Entry" DataContext="{Binding LogVM.RecentFlight}">
+    <TabItem Header="Current Flight Entry" DataContext="{Binding LogVM.SelectedFlight}">
       <DockPanel>
         <GroupBox Header="Dates">
           <Grid>
@@ -433,29 +433,87 @@
               <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock Grid.Row="0" Grid.Column="1">Scheduled</TextBlock>
-            <TextBlock Grid.Row="0" Grid.Column="2">Real</TextBlock>
+            <Label Grid.Row="0" Grid.Column="1" Content="Scheduled" />
+            <Label Grid.Row="0" Grid.Column="2" Content="Real" />
 
-            <TextBlock Grid.Row="1" Grid.Column="0">Off-block</TextBlock>
-            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding StartUp.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-            <TextBlock Grid.Row="1" Grid.Column="2" Text="{Binding StartUp.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            <Label Grid.Row="1" Grid.Column="0" Content="Off-block" />
+            <Label Grid.Row="1" Grid.Column="1">
+              <TextBlock Text="{Binding StartUp.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            </Label>
+            <Label Grid.Row="1" Grid.Column="2">
+              <TextBlock Text="{Binding StartUp.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            </Label>
 
-            <TextBlock Grid.Row="2" Grid.Column="0">Take-off</TextBlock>
-            <TextBlock Grid.Row="2" Grid.Column="2" Text="{Binding TakeOff.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            <Label Grid.Row="2" Grid.Column="0" Content="Take-off" />
+            <Label Grid.Row="2" Grid.Column="2">
+              <TextBlock Text="{Binding TakeOff.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            </Label>
 
-            <TextBlock Grid.Row="3" Grid.Column="0">Landing</TextBlock>
-            <TextBlock Grid.Row="3" Grid.Column="2" Text="{Binding Landing.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            <Label Grid.Row="3" Grid.Column="0" Content="Landing" />
+            <Label Grid.Row="3" Grid.Column="2">
+              <TextBlock Text="{Binding Landing.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            </Label>
 
-            <TextBlock Grid.Row="4" Grid.Column="0">On-block</TextBlock>
-            <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ShutDown.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-            <TextBlock Grid.Row="4" Grid.Column="2" Text="{Binding ShutDown.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            <Label Grid.Row="4" Grid.Column="0" Content="On-block" />
+            <Label Grid.Row="4" Grid.Column="1">
+              <TextBlock Text="{Binding ShutDown.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            </Label>
+            <Label Grid.Row="4" Grid.Column="2">
+              <TextBlock Text="{Binding ShutDown.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            </Label>
+
+          </Grid>
+        </GroupBox>
+        <GroupBox Header="Fuel">
+          <Grid>
+            <Grid.RowDefinitions>
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+              <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Label Grid.Row="0" Grid.Column="1" Content="Scheduled" />
+            <Label Grid.Row="0" Grid.Column="2" Content="Real" />
+
+            <Label Grid.Row="1" Grid.Column="0" Content="Off-block" />
+            <Label Grid.Row="1" Grid.Column="2">
+              <TextBlock Text="{Binding StartUp.RealFuelAmountKg, StringFormat={}{0:N0} kg}" />
+            </Label>
+
+            <Label Grid.Row="2" Grid.Column="0" Content="Take-off" />
+            <Label Grid.Row="2" Grid.Column="1">
+              <TextBlock Text="{Binding TakeOff.ScheduledFuelAmountKg, StringFormat={}{0:N0} kg}" />
+            </Label>
+            <Label Grid.Row="2" Grid.Column="2">
+              <TextBlock Text="{Binding TakeOff.FuelAmountKg, StringFormat={}{0:N0} kg}" />
+            </Label>
+
+            <Label Grid.Row="3" Grid.Column="0" Content="Landing" />
+            <Label Grid.Row="3" Grid.Column="1">
+              <TextBlock Text="{Binding Landing.ScheduledFuelAmountKg, StringFormat={}{0:N0} kg}" />
+            </Label>
+            <Label Grid.Row="3" Grid.Column="2">
+              <TextBlock Text="{Binding Landing.FuelAmountKg, StringFormat={}{0:N0} kg}" />
+            </Label>
+
+            <Label Grid.Row="4" Grid.Column="0" Content="On-block" />
+            <Label Grid.Row="4" Grid.Column="2">
+              <TextBlock Text="{Binding ShutDown.FuelAmountKg, StringFormat={}{0:N0} kg}" />
+            </Label>
 
           </Grid>
         </GroupBox>
       </DockPanel>
     </TabItem>
     <TabItem Header="Flights Log" DataContext="{Binding LogVM}">
-      <DataGrid ItemsSource="{Binding Flights}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" >
+      <DataGrid ItemsSource="{Binding Flights}" SelectedItem="{Binding SelectedFlight}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" >
         <DataGrid.Columns>
           <DataGridTextColumn Header="Date &amp; Time" Binding="{Binding StartUp.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
           <DataGridTextColumn Header="From" Binding="{Binding DepartureICAO}" />
