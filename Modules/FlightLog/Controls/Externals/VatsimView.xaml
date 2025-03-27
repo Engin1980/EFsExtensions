@@ -1,0 +1,98 @@
+﻿<UserControl x:Class="Eng.EFsExtensions.Modules.FlightLogModule.Controls.Externals.VatsimView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.Externals"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+  <ScrollViewer>
+    <Grid>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+        <RowDefinition />
+      </Grid.RowDefinitions>
+
+      <Label Grid.Column="0" Grid.Row="0" Content="Callsing" />
+      <Label Grid.Column="1" Grid.Row="0" Content="{Binding Callsign}" />
+
+      <Label Grid.Column="0" Grid.Row="1" Content="Departure ICAO" />
+      <Label Grid.Column="1" Grid.Row="1" Content="{Binding DepartureICAO}" />
+
+      <Label Grid.Column="0" Grid.Row="2" Content="Destination ICAO" />
+      <Label Grid.Column="1" Grid.Row="2" Content="{Binding DestinationICAO}" />
+
+      <Label Grid.Column="0" Grid.Row="3" Content="Alternate ICAO" />
+      <Label Grid.Column="1" Grid.Row="3" Content="{Binding AlternateICAO}" />
+
+      <Label Grid.Column="0" Grid.Row="4" Content="Flight Rule" />
+      <Label Grid.Column="1" Grid.Row="4" Content="{Binding FlightRules}" />
+
+      <Label Grid.Column="0" Grid.Row="5" Content="Registration" />
+      <Label Grid.Column="1" Grid.Row="5" Content="{Binding Registration}" />
+
+      <Label Grid.Column="0" Grid.Row="6" Content="Aircraft" />
+      <Label Grid.Column="1" Grid.Row="6" Content="{Binding Aircraft}" />
+
+      <Label Grid.Column="0" Grid.Row="7" Content="Planned Departure Time" />
+      <Label Grid.Column="1" Grid.Row="7">
+        <TextBlock Text="{Binding PlannedDepartureTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" TextAlignment="Right" />
+      </Label>
+
+      <Label Grid.Column="0" Grid.Row="8" Content="Planned Enroute Time" />
+      <Label Grid.Column="1" Grid.Row="8">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Text="{Binding PlannedRouteTime.Hours}"/>
+          <TextBlock Text=":" />
+          <TextBlock Text="{Binding PlannedRouteTime.Minutes, StringFormat={}{0:00}}"/>
+        </StackPanel>
+      </Label>
+
+      <Label Grid.Column="0" Grid.Row="9" Content="Fuel Duration" />
+      <Label Grid.Column="1" Grid.Row="9">
+        <StackPanel Orientation="Horizontal" Width="75">
+          <TextBlock Text="{Binding FuelDurationTime.Hours}"/>
+          <TextBlock Text=":" />
+          <TextBlock Text="{Binding FuelDurationTime.Minutes, StringFormat={}{0:00}}"/>
+        </StackPanel>
+      </Label>
+
+      <Label Grid.Column="0" Grid.Row="10" Content="Cruise Speed" />
+      <Label Grid.Column="1" Grid.Row="10">
+        <TextBlock Text="{Binding CruiseSpeed, StringFormat={}{0:N0} kts}" TextAlignment="Right" Width="75"  />
+      </Label>
+
+      <Label Grid.Column="0" Grid.Row="11" Content="Planned Flight Level" />
+      <Label Grid.Column="1" Grid.Row="11">
+        <TextBlock Text="{Binding PlannedFlightLevel, StringFormat={}{0:N0} ft}" TextAlignment="Right" Width="75"  />
+      </Label>
+
+      <Label Grid.Column="0" Grid.Row="12" Content="Route" />
+      <Label Grid.Column="1" Grid.Row="12">
+        <TextBox Text="{Binding Route}" IsReadOnly="True" BorderThickness="0" />
+      </Label>
+
+    </Grid>
+  </ScrollViewer>
+</UserControl>

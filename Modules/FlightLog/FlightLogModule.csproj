@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyVersion>1.0.0.84</AssemblyVersion>
-    <FileVersion>1.0.0.73</FileVersion>
+    <AssemblyVersion>1.0.0.91</AssemblyVersion>
+    <FileVersion>1.0.0.80</FileVersion>
     <RootNamespace>Eng.EFsExtensions.Modules.FlightLogModule</RootNamespace>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
@@ -30,6 +30,10 @@
     <Reference Include="ESystem">
       <HintPath>..\..\DLLs\ESystem.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Controls\ActiveFlight\" />
   </ItemGroup>
 
 </Project>
