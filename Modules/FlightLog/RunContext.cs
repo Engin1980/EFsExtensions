@@ -59,8 +59,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 12, 23));
       this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
 
-      var fl = GenerateLogFlight(this.RunVM);
-      flightsManager.StoreFlight(fl);
+      //var fl = GenerateLogFlight(this.RunVM);
+      //fl.DepartureICAO = "CYVR";
+      //fl.DestinationICAO = "CYYC";
+      //fl.AlternateICAO = "CYEG";
+      //flightsManager.StoreFlight(fl);
 
       // this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }

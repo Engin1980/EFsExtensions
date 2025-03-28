@@ -6,27 +6,41 @@
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-  <DockPanel>
+  <DockPanel DataContext="{Binding SelectedFlight}">
     <GroupBox DockPanel.Dock="Top" Header="Overview">
       <StackPanel>
         <StackPanel Orientation="Horizontal">
-          <Label Content="Callsign / Type / Registration / Rule" />
+          <Label Content="Callsign / Type / Registration / Model / Rule ::" />
           <Label Content="{Binding Callsign}" />
-          <Label Content="{Binding Type}" />
-          <Label Content="{Binding Registration}" />
+          <Label Content=" / " />
+          <Label Content="{Binding AircraftType}" />
+          <Label Content=" / " />
+          <Label Content="{Binding AircraftRegistration}" />
+          <Label Content=" / " />
+          <Label Content="{Binding AircraftModel}" />
+          <Label Content=" / " />
           <Label Content="{Binding FlightRules}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal">
-          <Label Content="Departure / Destination / Alternate" />
+          <Label Content="Departure / Destination / Alternate ::" />
           <Label Content="{Binding DepartureICAO}" />
+          <Label Content=" / " />
           <Label Content="{Binding DestinationICAO}" />
+          <Label Content=" / " />
           <Label Content="{Binding AlternateICAO}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal">
-          <Label Content="Distance / Duration" />
-          <Label Content="{Binding Distance}" />
+          <Label Content="Date &amp; Time / Duration / Distance ::" />
           <Label>
-            <TextBlock Text="{Binding PlannedDepartureTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" TextAlignment="Right" />
+            <TextBlock Text="{Binding StartUp.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          </Label>
+          <Label Content=" / " />
+          <Label>
+            <TextBlock Text="{Binding FlightDuration, StringFormat={}{0:yyyy-MM-dd HH:mm}}" TextAlignment="Right" />
+          </Label>
+          <Label Content=" / " />
+          <Label>
+            <TextBlock Text="{Binding AirDistance, StringFormat={}{0:N0} NM}" />
           </Label>
         </StackPanel>
       </StackPanel>
@@ -125,19 +139,21 @@
     </GroupBox>
     <StackPanel>
       <GroupBox Header="Take-Off">
-        <Label>WIP</Label>
+        <Label>Work in Progress...</Label>
       </GroupBox>
       <GroupBox Header="Landings">
-        <DataGrid>
-          <DataGrid.Columns>
-            <DataGridTextColumn Header="Time" Binding="{Binding RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-            <DataGridTextColumn Header="IAS" Binding="{Binding ICAO}" />
-            <DataGridTextColumn Header="VS" Binding="{Binding Runway}" />
-            <DataGridTextColumn Header="Acc-Y" Binding="{Binding Runway}" />
-            <DataGridTextColumn Header="Pitch" Binding="{Binding Type}" />
-            <DataGridTextColumn Header="Bank" Binding="{Binding Type}" />
-          </DataGrid.Columns>
-        </DataGrid>
+        <StackPanel>
+          <DataGrid ItemsSource="{Binding Landing.Touchdowns}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Time" Binding="{Binding DateTime, StringFormat={}{0:HH:mm:ss}}" />
+              <DataGridTextColumn Header="IAS" Binding="{Binding IAS, StringFormat={}{0:N0} kt}" />
+              <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" />
+              <DataGridTextColumn Header="Acc-Y" Binding="{Binding MaxAccY, StringFormat={}{0:N3}}" />
+              <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch, StringFormat={}{0:N3}°}" />
+              <DataGridTextColumn Header="Bank" Binding="{Binding Bank, StringFormat={}{0:N3}°}" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </StackPanel>
       </GroupBox>
     </StackPanel>
   </DockPanel>

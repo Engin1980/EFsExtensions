@@ -14,7 +14,7 @@
     </Style>
   </UserControl.Resources>
   <TabControl>
-    <TabItem Header="Active Flight">
+    <!--<TabItem Header="Active Flight">
       <TabControl>
         <TabItem Header="SimBrief" DataContext="{Binding RunVM.SimBriefCache}">
           <ctrExternals:SimBriefView />
@@ -239,8 +239,8 @@
           </TabControl>
         </TabItem>
       </TabControl>
-    </TabItem>
-    <TabItem Header="Flight Log" DataContext="{Binding LogVM.SelectedFlight}">
+    </TabItem>-->
+    <TabItem Header="Flight Log" DataContext="{Binding LogVM}">
       <ctrFlightLog:LogFlightOverview />
     </TabItem>
   </TabControl>
