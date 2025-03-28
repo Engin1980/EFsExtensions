@@ -1,0 +1,160 @@
+﻿<UserControl x:Class="Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.LogFlight"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+  <DockPanel DataContext="{Binding SelectedFlight}">
+    <GroupBox DockPanel.Dock="Top" Header="Overview">
+      <StackPanel>
+        <StackPanel Orientation="Horizontal">
+          <Label Content="Callsign / Type / Registration / Model / Rule ::" />
+          <Label Content="{Binding Callsign}" />
+          <Label Content=" / " />
+          <Label Content="{Binding AircraftType}" />
+          <Label Content=" / " />
+          <Label Content="{Binding AircraftRegistration}" />
+          <Label Content=" / " />
+          <Label Content="{Binding AircraftModel}" />
+          <Label Content=" / " />
+          <Label Content="{Binding FlightRules}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+          <Label Content="Departure / Destination / Alternate ::" />
+          <Label Content="{Binding DepartureICAO}" />
+          <Label Content=" / " />
+          <Label Content="{Binding DestinationICAO}" />
+          <Label Content=" / " />
+          <Label Content="{Binding AlternateICAO}" />
+        </StackPanel>
+        <StackPanel Orientation="Horizontal">
+          <Label Content="Date &amp; Time / Duration / Distance ::" />
+          <Label>
+            <TextBlock Text="{Binding StartUp.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          </Label>
+          <Label Content=" / " />
+          <Label>
+            <TextBlock Text="{Binding FlightDuration, StringFormat={}{0:yyyy-MM-dd HH:mm}}" TextAlignment="Right" />
+          </Label>
+          <Label Content=" / " />
+          <Label>
+            <TextBlock Text="{Binding AirDistance, StringFormat={}{0:N0} NM}" />
+          </Label>
+        </StackPanel>
+      </StackPanel>
+    </GroupBox>
+    <GroupBox Header="Dates">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="1" Content="Scheduled" />
+        <Label Grid.Row="0" Grid.Column="2" Content="Real" />
+
+        <Label Grid.Row="1" Grid.Column="0" Content="Off-block" />
+        <Label Grid.Row="1" Grid.Column="1">
+          <TextBlock Text="{Binding StartUp.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+        </Label>
+        <Label Grid.Row="1" Grid.Column="2">
+          <TextBlock Text="{Binding StartUp.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+        </Label>
+
+        <Label Grid.Row="2" Grid.Column="0" Content="Take-off" />
+        <Label Grid.Row="2" Grid.Column="2">
+          <TextBlock Text="{Binding TakeOff.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+        </Label>
+
+        <Label Grid.Row="3" Grid.Column="0" Content="Landing" />
+        <Label Grid.Row="3" Grid.Column="2">
+          <TextBlock Text="{Binding Landing.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+        </Label>
+
+        <Label Grid.Row="4" Grid.Column="0" Content="On-block" />
+        <Label Grid.Row="4" Grid.Column="1">
+          <TextBlock Text="{Binding ShutDown.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+        </Label>
+        <Label Grid.Row="4" Grid.Column="2">
+          <TextBlock Text="{Binding ShutDown.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+        </Label>
+
+      </Grid>
+    </GroupBox>
+    <GroupBox Header="Fuel">
+      <Grid>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="1" Content="Scheduled" />
+        <Label Grid.Row="0" Grid.Column="2" Content="Real" />
+
+        <Label Grid.Row="1" Grid.Column="0" Content="Off-block" />
+        <Label Grid.Row="1" Grid.Column="2">
+          <TextBlock Text="{Binding StartUp.RealFuelAmountKg, StringFormat={}{0:N0} kg}" />
+        </Label>
+
+        <Label Grid.Row="2" Grid.Column="0" Content="Take-off" />
+        <Label Grid.Row="2" Grid.Column="1">
+          <TextBlock Text="{Binding TakeOff.ScheduledFuelAmountKg, StringFormat={}{0:N0} kg}" />
+        </Label>
+        <Label Grid.Row="2" Grid.Column="2">
+          <TextBlock Text="{Binding TakeOff.FuelAmountKg, StringFormat={}{0:N0} kg}" />
+        </Label>
+
+        <Label Grid.Row="3" Grid.Column="0" Content="Landing" />
+        <Label Grid.Row="3" Grid.Column="1">
+          <TextBlock Text="{Binding Landing.ScheduledFuelAmountKg, StringFormat={}{0:N0} kg}" />
+        </Label>
+        <Label Grid.Row="3" Grid.Column="2">
+          <TextBlock Text="{Binding Landing.FuelAmountKg, StringFormat={}{0:N0} kg}" />
+        </Label>
+
+        <Label Grid.Row="4" Grid.Column="0" Content="On-block" />
+        <Label Grid.Row="4" Grid.Column="2">
+          <TextBlock Text="{Binding ShutDown.FuelAmountKg, StringFormat={}{0:N0} kg}" />
+        </Label>
+
+      </Grid>
+    </GroupBox>
+    <StackPanel>
+      <GroupBox Header="Take-Off">
+        <Label>Work in Progress...</Label>
+      </GroupBox>
+      <GroupBox Header="Landings">
+        <StackPanel>
+          <DataGrid ItemsSource="{Binding Landing.Touchdowns}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Time" Binding="{Binding DateTime, StringFormat={}{0:HH:mm:ss}}" />
+              <DataGridTextColumn Header="IAS" Binding="{Binding IAS, StringFormat={}{0:N0} kt}" />
+              <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" />
+              <DataGridTextColumn Header="Acc-Y" Binding="{Binding MaxAccY, StringFormat={}{0:N3}}" />
+              <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch, StringFormat={}{0:N3}°}" />
+              <DataGridTextColumn Header="Bank" Binding="{Binding Bank, StringFormat={}{0:N3}°}" />
+            </DataGrid.Columns>
+          </DataGrid>
+        </StackPanel>
+      </GroupBox>
+    </StackPanel>
+  </DockPanel>
+</UserControl>

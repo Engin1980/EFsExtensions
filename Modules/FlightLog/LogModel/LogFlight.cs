@@ -3,6 +3,7 @@ using ESystem.Asserting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -64,6 +65,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
   {
     public DateTime DateTime { get; set; }
     public GPS Location { get; set; }
+    public double VS { get; set; }
     public int IAS { get; set; }
     public double Bank { get; set; }
     public double Pitch { get; set; }
@@ -76,7 +78,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
   {
     public DateTime? ScheduledTime { get; set; }
     public List<LogTouchdown> Touchdowns { get; set; } = null!;
-    public DateTime RealTime => Touchdowns.Last().DateTime;
+    public DateTime? RealTime => Touchdowns.LastOrDefault()?.DateTime;
     public int? ScheduledFuelAmountKg { get; set; }
     public int FuelAmountKg { get; set; }
     public GPS Location => Touchdowns.Last().Location;
@@ -121,6 +123,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 
   public class LogFlight
   {
+    public string? Callsign { get; set; }
+    public string FlightRules { get; set; }
     public string? DepartureICAO { get; set; }
     public string? DestinationICAO { get; set; }
     public string? AlternateICAO { get; set; }
@@ -134,6 +138,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public int CruizeAltitude { get; set; }
     public double AirDistance { get; set; }
     public double? FlightDistance { get; set; }
+    public TimeSpan? FlightDuration => this.ShutDown.ScheduledTime - this.StartUp.ScheduledTime;
     public LogStartUp StartUp { get; set; } = null!;
     public LogTakeOff TakeOff { get; set; } = null!;
     public LogLanding Landing { get; set; } = null!;
