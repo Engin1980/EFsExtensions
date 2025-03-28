@@ -69,7 +69,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       }
       public string? AtcId { get; private set; }
       //TODO rewrite to better way:
-      public bool ParkingBrakeSet => cache.GetValue(parkingBrakeTypeId) == 1 || (fbwParkingBrakeTypeId.ToInt() == EMPTY_TYPE_ID) ? false : cache.GetValue(fbwParkingBrakeTypeId) == 1;
+      public bool ParkingBrakeSet => cache.GetValue(parkingBrakeTypeId) == 1;
+      public bool FbwParkingBrakeSet => fbwParkingBrakeTypeId.ToInt() == EMPTY_TYPE_ID ? false : cache.GetValue(fbwParkingBrakeTypeId) == 1;
+      public bool FbwParkingBrakeDefined => fbwParkingBrakeTypeId.ToInt() != EMPTY_TYPE_ID;
+      public bool SmartParkingBrakeSet => FbwParkingBrakeDefined ? FbwParkingBrakeSet : ParkingBrakeSet;
       public double Height => cache.GetValue(heightTypeId);
       public double Latitude => cache.GetValue(latitudeTypeId);
       public double Longitude => cache.GetValue(longitudeTypeId);

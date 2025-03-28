@@ -328,7 +328,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     private void ProcessWaitForOffBlocks()
     {
-      if (this.simPropValues.ParkingBrakeSet) return;
+      if (this.simPropValues.SmartParkingBrakeSet) return;
 
       if (RunVM.State == RunViewModel.RunModelState.WaitingForStartupAfterShutdown)
         this.RunVM.Clear();
@@ -348,7 +348,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     private void ProcessLandedWaitingForShutdown()
     {
-      if (!this.simPropValues.ParkingBrakeSet) return;
+      if (!this.simPropValues.SmartParkingBrakeSet) return;
       if (this.simPropValues.IsAnyEngineRunning) return;
       if (this.simPropValues.IsFlying)
       {
