@@ -17,6 +17,9 @@
     <Compile Update="Controls\FlightLog\LogFlightOverview.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\FlightLog\LogFlightToolTip.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Controls\FlightLog\LogStats.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -32,7 +35,7 @@
     <Compile Update="CtrSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="InputBox.xaml.cs">
+    <Compile Update="Windows\InputBox.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

@@ -1,6 +1,7 @@
 ﻿using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,26 +17,26 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 
     static LogStats()
     {
-      DescriptiveLogStats.Add(new("Landing VS", q => q.Landing.Touchdowns.Last().VS));
-      DescriptiveLogStats.Add(new("Landing IAS", q => q.Landing.Touchdowns.Last().IAS));
-      DescriptiveLogStats.Add(new("Landing Bank", q => q.Landing.Touchdowns.Last().Bank));
-      DescriptiveLogStats.Add(new("Landing Pitch", q => q.Landing.Touchdowns.Last().Pitch));
-      DescriptiveLogStats.Add(new("Landing MaxAccY", q => q.Landing.Touchdowns.Last().MaxAccY));
-      DescriptiveLogStats.Add(new("Takeoff IAS", q => q.TakeOff.IAS));
+      DescriptiveLogStats.Add(new("Landing VS", q => q.Landing.Touchdowns.Last().VS, "{0:N3} ft/min"));
+      DescriptiveLogStats.Add(new("Landing IAS", q => q.Landing.Touchdowns.Last().IAS, "{0:N0} kt"));
+      DescriptiveLogStats.Add(new("Landing Bank", q => q.Landing.Touchdowns.Last().Bank, "{0:N3}°"));
+      DescriptiveLogStats.Add(new("Landing Pitch", q => q.Landing.Touchdowns.Last().Pitch, "{0:N3}°"));
+      DescriptiveLogStats.Add(new("Landing MaxAccY", q => q.Landing.Touchdowns.Last().MaxAccY, "{0:N3}"));
+      DescriptiveLogStats.Add(new("Takeoff IAS", q => q.TakeOff.IAS, "{0:N0} kt"));
 
-      DescriptiveLogStats.Add(new("Distance", q => q.FlightDistance));
-      DescriptiveLogStats.Add(new("Fuel Used", q => q.StartUp.FuelAmountKg - q.ShutDown.FuelAmountKg));
+      DescriptiveLogStats.Add(new("Distance", q => q.FlightDistance, "{0:N0} NM"));
+      DescriptiveLogStats.Add(new("Fuel Used", q => q.StartUp.FuelAmountKg - q.ShutDown.FuelAmountKg, "{0:N0} kg"));
 
-      DescriptiveLogStats.Add(new("Flight Time", q => q.AirTime.TotalSeconds));
-      DescriptiveLogStats.Add(new("Block Time", q => q.BlockTime.TotalSeconds));
-      DescriptiveLogStats.Add(new("Air Time Ratio", q => q.AirTime.TotalSeconds / q.BlockTime.TotalSeconds));
+      DescriptiveLogStats.Add(new("Flight Time", q => q.AirTime.TotalHours, "{0:N2} hrs"));
+      DescriptiveLogStats.Add(new("Block Time", q => q.BlockTime.TotalHours, "{0:N2} hrs"));
+      DescriptiveLogStats.Add(new("Air Time Ratio", q => q.AirTime.TotalSeconds * 100 / q.BlockTime.TotalSeconds, "{0:N1} %"));
 
       GroupingLogStats.Add(new("Departure Airports", q => q.DepartureICAO));
       GroupingLogStats.Add(new("Arrival Airports", q => q.DestinationICAO));
       // TODO GroupingLogStats.Add(new("Flight Types", q => q));
       GroupingLogStats.Add(new("Registration", q => q.AircraftRegistration));
       GroupingLogStats.Add(new("Aircraft Type", q => q.AircraftType));
-      DescriptiveLogStats.Add(new("Cruise Altitudes", q => q.CruizeAltitude));
+      GroupingLogStats.Add(new("Cruise Altitudes", q => q.CruizeAltitude));
     }
 
     public static StatsData Calculate(List<LogFlight> flights)
@@ -92,10 +93,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
       var avg = tmp.Average(q => q.Value!.Value);
 
 
+      DescriptiveLogStatRecord createStats(double value, LogFlight flight) => new(value, String.Format(stat.StringFormat, value), flight);
+
       DescriptiveLogStatView view = new(
         stat,
-        new DescriptiveLogStatRecord(min!.Value!.Value, min.Flight),
-        new DescriptiveLogStatRecord(max!.Value!.Value, max.Flight),
+        createStats(min!.Value!.Value, min.Flight),
+        createStats(max!.Value!.Value, max.Flight),
         avg);
 
 
@@ -116,11 +119,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public GroupingLogStatRecord Best => Records.First();
   }
 
-  public record DescriptiveLogStatItem(string Title, Func<LogFlight, double?> ValueSelector);
-  public record DescriptiveLogStatRecord(double Value, LogFlight Flight);
+  public record DescriptiveLogStatItem(string Title, Func<LogFlight, double?> ValueSelector, string StringFormat = "{0:N3}");
+  public record DescriptiveLogStatRecord(double Value, string DisplayValue, LogFlight Flight);
   public record DescriptiveLogStatView(
     DescriptiveLogStatItem Stat,
     DescriptiveLogStatRecord Min,
     DescriptiveLogStatRecord Max,
-    double Avg);
+    double Avg)
+  {
+  }
 }
