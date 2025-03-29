@@ -18,13 +18,24 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.RunModel
       public int Compare(LogFlight? x, LogFlight? y) => y!.StartUp.RealTime.CompareTo(x!.StartUp.RealTime);
     }
     private static LogFlightComparer logFlightComparer = new();
+    private LogFlightsManager flightsManager;
 
     public LogViewModel(LogFlightsManager flightsManager)
     {
+      this.flightsManager = flightsManager;
+      flightsManager.NewFlightLogged += f => this.AddFlight(f);
+      flightsManager.StatsUpdated += FlightsManager_StatsUpdated;
+
       this.Flights = flightsManager.Flights.OrderByDescending(q => q.StartUp.RealTime).ToBindingList();
       this.RecentFlight = this.Flights.LastOrDefault();
       this.SelectedFlight = null;
-      flightsManager.NewFlightLogged += f => this.AddFlight(f);
+
+      this.Stats = flightsManager.StatsData;
+    }
+
+    private void FlightsManager_StatsUpdated()
+    {
+      this.Stats = flightsManager.StatsData;
     }
 
     private void AddFlight(LogFlight flight)
@@ -54,6 +65,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.RunModel
     {
       get => base.GetProperty<LogFlight?>(nameof(SelectedFlight))!;
       set => base.UpdateProperty(nameof(SelectedFlight), value);
+    }
+
+
+    public StatsData Stats
+    {
+      get => base.GetProperty<StatsData>(nameof(Stats))!;
+      set => base.UpdateProperty(nameof(Stats), value);
     }
   }
 }

@@ -15,8 +15,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     private readonly string dataFolder;
 
     public event Action<LogFlight>? NewFlightLogged;
+    public event Action? StatsUpdated;
 
     public IReadOnlyList<LogFlight> Flights => this.flights.AsReadOnly();
+    public StatsData StatsData { get; private set; }
 
     public static LogFlightsManager Init(string dataFolder)
     {
@@ -39,8 +41,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
       {
         using System.IO.FileStream fileStream = new(file, System.IO.FileMode.Open);
         LogFlight flight = (LogFlight)(serializer.Deserialize(fileStream) ?? throw new ApplicationException($"Failed to deserialize '{file}'"));
-        this.flights.Add(flight);        
+        this.flights.Add(flight);
       }
+
+      RecalculateStats();
     }
 
     internal void StoreFlight(LogFlight logFlight)
@@ -63,11 +67,21 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
         // TODO handle
         throw new ApplicationException();
       }
+
+      RecalculateStats();
     }
 
     public LogFlightsManager(string dataFolder)
     {
       this.dataFolder = dataFolder;
+      this.StatsData = null!;
+      RecalculateStats();
+    }
+
+    private void RecalculateStats()
+    {
+      this.StatsData = LogStats.Calculate(this.flights);
+      this.StatsUpdated?.Invoke();
     }
   }
 }

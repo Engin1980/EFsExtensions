@@ -17,18 +17,19 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     Mechanical,
     Other
   }
+
   public class LogStartUp
   {
     public DateTime? ScheduledTime { get; set; }
     public DateTime RealTime { get; set; }
-    public int RealFuelAmountKg { get; set; }
+    public int FuelAmountKg { get; set; }
     public GPS Location { get; set; }
 
     public LogStartUp(DateTime? scheduledTime, DateTime realTime, int realFuelAmountKg, GPS location)
     {
       ScheduledTime = scheduledTime;
       RealTime = realTime;
-      RealFuelAmountKg = realFuelAmountKg;
+      FuelAmountKg = realFuelAmountKg;
       Location = location;
     }
 
@@ -78,7 +79,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
   {
     public DateTime? ScheduledTime { get; set; }
     public List<LogTouchdown> Touchdowns { get; set; } = null!;
-    public DateTime? RealTime => Touchdowns.LastOrDefault()?.DateTime;
+    public DateTime RealTime => Touchdowns.Last().DateTime;
     public int? ScheduledFuelAmountKg { get; set; }
     public int FuelAmountKg { get; set; }
     public GPS Location => Touchdowns.Last().Location;
@@ -144,6 +145,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public LogLanding Landing { get; set; } = null!;
     public LogShutDown ShutDown { get; set; } = null!;
     public DivertReason? DivertReason { get; set; } = null!;
+
+    public TimeSpan DepartureTaxiTime => this.TakeOff.RealTime - this.StartUp.RealTime;
+    public TimeSpan ArrivalTaxiTime => this.ShutDown.RealTime - this.Landing.RealTime;
+    public TimeSpan TaxiTime => this.DepartureTaxiTime + this.ArrivalTaxiTime;
+    public TimeSpan AirTime => this.Landing.RealTime - this.TakeOff.RealTime;
+    public TimeSpan BlockTime => this.ShutDown.RealTime - this.StartUp.RealTime;
 
     public LogFlight()
     {

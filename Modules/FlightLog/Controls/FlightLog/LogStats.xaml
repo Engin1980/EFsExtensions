@@ -6,7 +6,44 @@
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
-    </Grid>
+  <TabControl DataContext="{Binding Stats}">
+    <TabItem Header="Descriptive">
+      <DataGrid ItemsSource="{Binding DescriptiveStats}">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Title" Binding="{Binding Stat.Title}" />
+          <DataGridTemplateColumn Header="Min">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Min.Value}" />
+                    <TextBlock Text=" (" />
+                    <TextBlock Text="{Binding Min.Flight.DepartureICAO}" />
+                    <TextBlock Text=".." />
+                    <TextBlock Text="{Binding Min.Flight.DestinationICAO}" />
+                    <TextBlock Text=")" />
+                  </StackPanel>
+                </Label>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="Max">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <StackPanel>
+                  <Label Content="{Binding Max.Value}" />
+                </StackPanel>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTextColumn Header="Avg" Binding="{Binding Avg}" />
+        </DataGrid.Columns>
+      </DataGrid>
+    </TabItem>
+    <TabItem Header="Grouping">
+      <DataGrid ItemsSource="{Binding GroupingStats}" >
+
+      </DataGrid>
+    </TabItem>
+  </TabControl>
 </UserControl>

@@ -13,8 +13,8 @@
     <TabItem Header="Selected Flight">
       <local:LogFlight />
     </TabItem>
-    <!--<TabItem Header="Stats">
+    <TabItem Header="Stats">
       <local:LogStats />
-    </TabItem>-->
+    </TabItem>
   </TabControl>
 </UserControl>
