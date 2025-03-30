@@ -1,4 +1,5 @@
-﻿using ESystem.Asserting;
+﻿using Eng.EFsExtensions.Modules.FlightLogModule.Models;
+using ESystem.Asserting;
 using ESystem.Exceptions;
 using System;
 using System.Collections.Generic;

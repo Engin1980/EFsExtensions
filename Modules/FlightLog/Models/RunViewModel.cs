@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
 {
   public class RunViewModel : NotifyPropertyChanged
   {
@@ -43,74 +43,74 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public int MaxAchievedAltitude
     {
-      get => base.GetProperty<int>(nameof(MaxAchievedAltitude))!;
-      set => base.UpdateProperty(nameof(MaxAchievedAltitude), value);
+      get => GetProperty<int>(nameof(MaxAchievedAltitude))!;
+      set => UpdateProperty(nameof(MaxAchievedAltitude), value);
     }
 
     public RunModelState State
     {
-      get { return base.GetProperty<RunModelState>(nameof(State))!; }
-      set { base.UpdateProperty(nameof(State), value); }
+      get { return GetProperty<RunModelState>(nameof(State))!; }
+      set { UpdateProperty(nameof(State), value); }
     }
 
     public RunModelVatsimCache? VatsimCache
     {
-      get => base.GetProperty<RunModelVatsimCache?>(nameof(VatsimCache))!;
-      set => base.UpdateProperty(nameof(VatsimCache), value);
+      get => GetProperty<RunModelVatsimCache?>(nameof(VatsimCache))!;
+      set => UpdateProperty(nameof(VatsimCache), value);
     }
 
     public RunModelSimBriefCache? SimBriefCache
     {
-      get => base.GetProperty<RunModelSimBriefCache?>(nameof(SimBriefCache))!;
-      set => base.UpdateProperty(nameof(SimBriefCache), value);
+      get => GetProperty<RunModelSimBriefCache?>(nameof(SimBriefCache))!;
+      set => UpdateProperty(nameof(SimBriefCache), value);
     }
 
     public RunModelTakeOffCache? TakeOffCache
     {
-      get { return base.GetProperty<RunModelTakeOffCache?>(nameof(TakeOffCache))!; }
-      set { base.UpdateProperty(nameof(TakeOffCache), value); }
+      get { return GetProperty<RunModelTakeOffCache?>(nameof(TakeOffCache))!; }
+      set { UpdateProperty(nameof(TakeOffCache), value); }
     }
 
     public RunModelStartUpCache? StartUpCache
     {
-      get { return base.GetProperty<RunModelStartUpCache?>(nameof(StartUpCache))!; }
-      set { base.UpdateProperty(nameof(StartUpCache), value); }
+      get { return GetProperty<RunModelStartUpCache?>(nameof(StartUpCache))!; }
+      set { UpdateProperty(nameof(StartUpCache), value); }
     }
 
     public RunModelLandingCache? LandingCache
     {
-      get { return base.GetProperty<RunModelLandingCache?>(nameof(LandingCache))!; }
-      set { base.UpdateProperty(nameof(LandingCache), value); }
+      get { return GetProperty<RunModelLandingCache?>(nameof(LandingCache))!; }
+      set { UpdateProperty(nameof(LandingCache), value); }
     }
 
     public RunModelShutDownCache? ShutDownCache
     {
-      get { return base.GetProperty<RunModelShutDownCache?>(nameof(ShutDownCache))!; }
-      set { base.UpdateProperty(nameof(ShutDownCache), value); }
+      get { return GetProperty<RunModelShutDownCache?>(nameof(ShutDownCache))!; }
+      set { UpdateProperty(nameof(ShutDownCache), value); }
     }
 
     public BindingList<LandingAttemptData> LandingAttempts
     {
-      get { return base.GetProperty<BindingList<LandingAttemptData>?>(nameof(LandingAttempts))!; }
-      set { base.UpdateProperty(nameof(LandingAttempts), value); }
+      get { return GetProperty<BindingList<LandingAttemptData>?>(nameof(LandingAttempts))!; }
+      set { UpdateProperty(nameof(LandingAttempts), value); }
     }
 
     public InitContext.Profile Profile
     {
-      get => base.GetProperty<InitContext.Profile>(nameof(Profile))!;
-      set => base.UpdateProperty(nameof(Profile), value);
+      get => GetProperty<InitContext.Profile>(nameof(Profile))!;
+      set => UpdateProperty(nameof(Profile), value);
     }
 
     public BindingList<LogFlight> LoggedFlights
     {
-      get => base.GetProperty<BindingList<LogFlight>>(nameof(LoggedFlights))!;
-      set => base.UpdateProperty(nameof(LoggedFlights), value);
+      get => GetProperty<BindingList<LogFlight>>(nameof(LoggedFlights))!;
+      set => UpdateProperty(nameof(LoggedFlights), value);
     }
     
     public LogFlight? LastLoggedFlight
     {
-      get => base.GetProperty<LogFlight?>(nameof(LastLoggedFlight))!;
-      set => base.UpdateProperty(nameof(LastLoggedFlight), value);
+      get => GetProperty<LogFlight?>(nameof(LastLoggedFlight))!;
+      set => UpdateProperty(nameof(LastLoggedFlight), value);
     }
 
     public RunViewModel()
@@ -121,13 +121,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     internal void Clear()
     {
-      this.VatsimCache = null;
-      this.SimBriefCache = null;
-      this.StartUpCache = null;
-      this.LandingCache = null;
-      this.ShutDownCache = null;
-      this.TakeOffCache = null;
-      this.State = RunModelState.WaitingForStartupForTheFirstTime;
+      VatsimCache = null;
+      SimBriefCache = null;
+      StartUpCache = null;
+      LandingCache = null;
+      ShutDownCache = null;
+      TakeOffCache = null;
+      State = RunModelState.WaitingForStartupForTheFirstTime;
     }
   }
 }

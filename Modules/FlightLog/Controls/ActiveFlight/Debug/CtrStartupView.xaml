@@ -1,0 +1,55 @@
+﻿<UserControl x:Class="Eng.EFsExtensions.Modules.FlightLogModule.Controls.ActiveFlight.Debug.CtrStartupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.ActiveFlight.Debug"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+  <ScrollViewer>
+    <Grid DataContext="{Binding RunVM.StartUpCache}">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition />
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto" />
+        <RowDefinition Height="Auto"  />
+        <RowDefinition Height="Auto"  />
+        <RowDefinition Height="Auto"  />
+        <RowDefinition Height="Auto"  />
+      </Grid.RowDefinitions>
+
+      <Label Grid.Column="0" Grid.Row="0" Content="Time" />
+      <Label Grid.Column="1" Grid.Row="0">
+        <TextBlock Text="{Binding Time, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+      </Label>
+
+      <Label Grid.Column="0" Grid.Row="1" Content="Empty Weight" />
+      <Label Grid.Column="1" Grid.Row="1">
+        <TextBlock Text="{Binding EmptyWeight, StringFormat={}{0:N0} kg}" TextAlignment="Right" Width="75"  />
+      </Label>
+
+      <Label Grid.Column="0" Grid.Row="2" Content="Payload + Cargo" />
+      <Label Grid.Column="1" Grid.Row="2" >
+        <TextBlock Text="{Binding PayloadAndCargoKg, StringFormat={}{0:N0} kg}" TextAlignment="Right" Width="75"  />
+      </Label>
+
+
+      <Label Grid.Column="0" Grid.Row="3" Content="Fuel" />
+      <Label Grid.Column="1" Grid.Row="3" >
+        <TextBlock Text="{Binding FuelKg, StringFormat={}{0:N0} kg}" TextAlignment="Right" Width="75"  />
+      </Label>
+
+      <Label Grid.Column="0" Grid.Row="4" Content="GPS" />
+      <Label Grid.Column="1" Grid.Row="4">
+        <StackPanel Orientation="Horizontal">
+          <TextBlock Text="{Binding Latitude, StringFormat=N5}" />
+          <TextBlock Text=" " />
+          <TextBlock Text="{Binding Longitude, StringFormat=N5}" />
+        </StackPanel>
+      </Label>
+
+    </Grid>
+  </ScrollViewer>
+</UserControl>

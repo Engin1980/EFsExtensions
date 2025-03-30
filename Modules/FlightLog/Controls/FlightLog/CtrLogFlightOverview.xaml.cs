@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
 {
     /// <summary>
-    /// Interaction logic for LogFlight.xaml
+    /// Interaction logic for LogFlightOverview.xaml
     /// </summary>
-    public partial class LogFlight : UserControl
+    public partial class CtrLogFlightOverview : UserControl
     {
-        public LogFlight()
+        public CtrLogFlightOverview()
         {
             InitializeComponent();
         }

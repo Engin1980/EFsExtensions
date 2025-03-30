@@ -1,4 +1,5 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models;
 using ESimConnect;
 using ESimConnect.Definitions;
 using NAudio.Midi;
@@ -10,7 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Eng.EFsExtensions.Modules.FlightLogModule.RunViewModel;
+using static Eng.EFsExtensions.Modules.FlightLogModule.Models.RunViewModel;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {

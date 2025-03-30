@@ -1,0 +1,145 @@
+﻿<UserControl x:Class="Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.CtrLogStats"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+  <UserControl.Resources>
+    <local:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter" />
+    <Style x:Key="TextRight" TargetType="{x:Type TextBlock}">
+      <Setter Property="TextAlignment" Value="Right" />
+    </Style>
+  </UserControl.Resources>
+  <TabControl DataContext="{Binding Stats}">
+    <TabItem Header="Descriptive">
+      <DataGrid ItemsSource="{Binding DescriptiveStats}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="Title" Binding="{Binding Stat.Title}" />
+          <DataGridTemplateColumn Header="Min">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label>
+                  <TextBlock Text="{Binding Min.DisplayValue}" TextAlignment="Right" Width="75"/>
+                  <Label.ToolTip>
+                    <local:CtrLogFlightToolTip LogFlight="{Binding Min.Flight}" />
+                  </Label.ToolTip>
+                </Label>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="Max">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label >
+                  <TextBlock Text="{Binding Max.DisplayValue}" TextAlignment="Right" Width="75"/>
+                  <Label.ToolTip>
+                    <local:CtrLogFlightToolTip LogFlight="{Binding Max.Flight}" />
+                  </Label.ToolTip>
+                </Label>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="Avg">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label>
+                  <TextBlock Text="{Binding Avg}" TextAlignment="Right" Width="75" />
+                </Label>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+          <DataGridTemplateColumn Header="">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Button Padding="16 0 16 0">(...)</Button>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+        </DataGrid.Columns>
+      </DataGrid>
+    </TabItem>
+    <TabItem Header="Grouping">
+      <DataGrid ItemsSource="{Binding GroupingStats}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+        <DataGrid.Columns>
+          <DataGridTemplateColumn Header="Title">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label Content="{Binding Stat.Title}" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+
+          <DataGridTemplateColumn Header="1st">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding First.Key}" />
+                    <TextBlock Text=" ("/>
+                    <TextBlock Text="{Binding First.Count}" />
+                    <TextBlock Text="x)"/>
+                  </StackPanel>
+                </Label>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+
+          <DataGridTemplateColumn Header="2nd">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label Visibility="{Binding Second, Converter={StaticResource NotNullToVisibilityConverter}}">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Second.Key}" />
+                    <TextBlock Text=" ("/>
+                    <TextBlock Text="{Binding Second.Count}" />
+                    <TextBlock Text="x)"/>
+                  </StackPanel>
+                </Label>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+
+          <DataGridTemplateColumn Header="3rd">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label Visibility="{Binding Third, Converter={StaticResource NotNullToVisibilityConverter}}">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Third.Key}" />
+                    <TextBlock Text=" ("/>
+                    <TextBlock Text="{Binding Third.Count}" />
+                    <TextBlock Text="x)"/>
+                  </StackPanel>
+                </Label>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+
+          <DataGridTemplateColumn Header="Last">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label Visibility="{Binding Last, Converter={StaticResource NotNullToVisibilityConverter}}">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Last.Key}" />
+                    <TextBlock Text=" ("/>
+                    <TextBlock Text="{Binding Last.Count}" />
+                    <TextBlock Text="x)"/>
+                  </StackPanel>
+                </Label>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+
+          <DataGridTemplateColumn Header="">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Button Padding="16 0 16 0">(...)</Button>
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+        </DataGrid.Columns>
+      </DataGrid>
+    </TabItem>
+  </TabControl>
+</UserControl>

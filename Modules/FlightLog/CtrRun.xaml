@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule"
              xmlns:ctrFlightLog="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
              xmlns:ctrExternals="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.Externals"
+             xmlns:ctrActive="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.ActiveFlight"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
@@ -14,234 +15,24 @@
     </Style>
   </UserControl.Resources>
   <TabControl>
-    <!--<TabItem Header="Active Flight">
+    <TabItem Header="Active Flight">
       <TabControl>
         <TabItem Header="SimBrief" DataContext="{Binding RunVM.SimBriefCache}">
-          <ctrExternals:SimBriefView />
+          <ctrExternals:CtrSimBriefView />
         </TabItem>
         <TabItem Header="VATSIM" DataContext="{Binding RunVM.VatsimCache}">
-          <ctrExternals:VatsimView />
+          <ctrExternals:CtrVatsimView />
         </TabItem>
-        <TabItem Header="Active">
+        <TabItem Header="Sim-Flight">
+          <ctrActive:CtrActiveFlightView />
         </TabItem>
         <TabItem Header="Debug">
-          <TabControl>
-            <TabItem Header="Block-off" DataContext="{Binding RunVM.StartUpCache}">
-              <ScrollViewer>
-                <Grid>
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                  </Grid.ColumnDefinitions>
-                  <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                  </Grid.RowDefinitions>
-
-                  <Label Grid.Column="0" Grid.Row="0" Content="Time" />
-                  <Label Grid.Column="1" Grid.Row="0">
-                    <TextBlock Text="{Binding Time, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="1" Content="Empty Weight" />
-                  <Label Grid.Column="1" Grid.Row="1">
-                    <TextBlock Text="{Binding EmptyWeight, StringFormat={}{0:N0} kg}" TextAlignment="Right" Width="75"  />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="2" Content="Payload + Cargo" />
-                  <Label Grid.Column="1" Grid.Row="2" >
-                    <TextBlock Text="{Binding PayloadAndCargoKg, StringFormat={}{0:N0} kg}" TextAlignment="Right" Width="75"  />
-                  </Label>
-
-
-                  <Label Grid.Column="0" Grid.Row="3" Content="Fuel" />
-                  <Label Grid.Column="1" Grid.Row="3" >
-                    <TextBlock Text="{Binding FuelKg, StringFormat={}{0:N0} kg}" TextAlignment="Right" Width="75"  />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="4" Content="GPS" />
-                  <Label Grid.Column="1" Grid.Row="4">
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="{Binding Latitude, StringFormat=N5}" />
-                      <TextBlock Text=" " />
-                      <TextBlock Text="{Binding Longitude, StringFormat=N5}" />
-                    </StackPanel>
-                  </Label>
-
-                </Grid>
-              </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Take-off" DataContext="{Binding RunVM.TakeOffCache}">
-              <ScrollViewer>
-                <Grid>
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                  </Grid.ColumnDefinitions>
-                  <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                  </Grid.RowDefinitions>
-
-                  <Label Grid.Column="0" Grid.Row="0" Content="Time" />
-                  <Label Grid.Column="1" Grid.Row="0">
-                    <TextBlock Text="{Binding Time, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="1" Content="IAS" />
-                  <Label Grid.Column="1" Grid.Row="1" >
-                    <TextBlock Text="{Binding IAS, StringFormat={}{0:N0} kts}" TextAlignment="Right" Width="75"  />
-                  </Label>
-
-
-                  <Label Grid.Column="0" Grid.Row="2" Content="Fuel" />
-                  <Label Grid.Column="1" Grid.Row="2" >
-                    <TextBlock Text="{Binding FuelKg, StringFormat={}{0:N0} kg}" TextAlignment="Right" Width="75"  />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="3" Content="GPS" />
-                  <Label Grid.Column="1" Grid.Row="3">
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="{Binding Latitude, StringFormat=N5}" />
-                      <TextBlock Text=" " />
-                      <TextBlock Text="{Binding Longitude, StringFormat=N5}" />
-                    </StackPanel>
-                  </Label>
-
-                </Grid>
-              </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Landing" DataContext="{Binding RunVM.LandingCache}">
-              <ScrollViewer>
-                <Grid>
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                  </Grid.ColumnDefinitions>
-                  <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                  </Grid.RowDefinitions>
-
-                  <Label Grid.Column="0" Grid.Row="0" Content="Time" />
-                  <Label Grid.Column="1" Grid.Row="0">
-                    <TextBlock Text="{Binding Time, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="1" Content="IAS" />
-                  <Label Grid.Column="1" Grid.Row="1" >
-                    <TextBlock Text="{Binding IAS, StringFormat={}{0:N0} kts}" TextAlignment="Right" Width="75" />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="2" Content="Fuel" />
-                  <Label Grid.Column="1" Grid.Row="2" >
-                    <TextBlock Text="{Binding FuelKg, StringFormat={}{0:N0} kg}" TextAlignment="Right" Width="75"  />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="3" Content="Touchdown Velocity" />
-                  <Label Grid.Column="1" Grid.Row="3" >
-                    <TextBlock Text="{Binding TouchdownVelocity, StringFormat={}{0:N0} kts}" TextAlignment="Right" Width="75"  />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="4" Content="Touchdown Pitch Degrees" />
-                  <Label Grid.Column="1" Grid.Row="4" >
-                    <TextBlock Text="{Binding TouchdownPitchDegrees, StringFormat={}{0:N3} °}" TextAlignment="Right" Width="75"  />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="5" Content="Touchdown Bank Degrees" />
-                  <Label Grid.Column="1" Grid.Row="5" >
-                    <TextBlock Text="{Binding TouchdownBankDegrees, StringFormat={}{0:N3} °}" TextAlignment="Right" Width="75"  />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="6" Content="GPS (Touchdown)" />
-                  <Label Grid.Column="1" Grid.Row="6">
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="{Binding TouchdownLatitude, StringFormat=N5}" />
-                      <TextBlock Text=" " />
-                      <TextBlock Text="{Binding TouchdownLongitude, StringFormat=N5}" />
-                    </StackPanel>
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="7" Content="GPS (Reported)" />
-                  <Label Grid.Column="1" Grid.Row="7">
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="{Binding Latitude, StringFormat=N5}" />
-                      <TextBlock Text=" " />
-                      <TextBlock Text="{Binding Longitude, StringFormat=N5}" />
-                    </StackPanel>
-                  </Label>
-
-                </Grid>
-              </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Block-on" DataContext="{Binding RunVM.ShutDownCache}">
-              <ScrollViewer>
-                <Grid>
-                  <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition />
-                  </Grid.ColumnDefinitions>
-                  <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                    <RowDefinition Height="Auto"  />
-                  </Grid.RowDefinitions>
-
-                  <Label Grid.Column="0" Grid.Row="0" Content="Time" />
-                  <Label Grid.Column="1" Grid.Row="0">
-                    <TextBlock Text="{Binding Time, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="3" Content="Fuel" />
-                  <Label Grid.Column="1" Grid.Row="3" >
-                    <TextBlock Text="{Binding FuelKg, StringFormat={}{0:N0} kg}" TextAlignment="Right" Width="75"  />
-                  </Label>
-
-                  <Label Grid.Column="0" Grid.Row="4" Content="GPS" />
-                  <Label Grid.Column="1" Grid.Row="4">
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="{Binding Latitude, StringFormat=N5}" />
-                      <TextBlock Text=" " />
-                      <TextBlock Text="{Binding Longitude, StringFormat=N5}" />
-                    </StackPanel>
-                  </Label>
-
-                </Grid>
-              </ScrollViewer>
-            </TabItem>
-            <TabItem Header="Landing Attempts" DataContext="{Binding RunVM.LandingAttempts}">
-              <DataGrid ItemsSource="{Binding}" CanUserAddRows="False"  CanUserDeleteRows="False" AutoGenerateColumns="False">
-                <DataGrid.Columns>
-                  <DataGridTextColumn Header="Date/Time" Binding="{Binding DateTime, StringFormat={}{0:yyyy-MM-dd HH:mm:ss}}" />
-                  <DataGridTextColumn Header="IAS" Binding="{Binding IAS, StringFormat={}{0:N0} kts}" ElementStyle="{StaticResource TextRight}" />
-                  <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" ElementStyle="{StaticResource TextRight}" />
-                  <DataGridTextColumn Header="Bank" Binding="{Binding Bank, StringFormat={}{0:N2}°}" ElementStyle="{StaticResource TextRight}" />
-                  <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch, StringFormat={}{0:N2}°}" ElementStyle="{StaticResource TextRight}" />
-                  <DataGridTextColumn Header="Max-Acc-Y" Binding="{Binding MaxAccY, StringFormat={}{0:N3}}" ElementStyle="{StaticResource TextRight}" />
-                  <DataGridTextColumn Header="Main gear" Binding="{Binding MainGearTime, StringFormat={}{0:N2} sec}" ElementStyle="{StaticResource TextRight}" />
-                  <DataGridTextColumn Header="All gear" Binding="{Binding AllGearTime, StringFormat={}{0:N2} sec}" ElementStyle="{StaticResource TextRight}" />
-                </DataGrid.Columns>
-              </DataGrid>
-            </TabItem>
-          </TabControl>
+          <ctrActive:CtrDebugView />
         </TabItem>
       </TabControl>
-    </TabItem>-->
+    </TabItem>
     <TabItem Header="Flight Log" DataContext="{Binding LogVM}">
-      <ctrFlightLog:LogFlightOverview />
+      <ctrFlightLog:CtrLogFlightOverview />
     </TabItem>
   </TabControl>
 </UserControl>

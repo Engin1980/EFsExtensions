@@ -1,4 +1,5 @@
-﻿using Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel;
+﻿using Eng.EFsExtensions.Modules.FlightLogModule.Models;
+using Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel;
 using ESystem.Asserting;
 using ESystem.Exceptions;
 using Newtonsoft.Json;

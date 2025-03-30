@@ -2,25 +2,43 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup />
   <ItemGroup>
-    <Compile Update="Controls\Externals\SimBriefView.xaml.cs">
+    <Compile Update="Controls\ActiveFlight\CtrActiveFlightView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\Externals\VatsimView.xaml.cs">
+    <Compile Update="Controls\ActiveFlight\CtrDebugView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\FlightLog\LogFlight.xaml.cs">
+    <Compile Update="Controls\ActiveFlight\Debug\CtrLandingView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\FlightLog\LogFlightListSimple.xaml.cs">
+    <Compile Update="Controls\ActiveFlight\Debug\CtrShutDownView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\FlightLog\LogFlightOverview.xaml.cs">
+    <Compile Update="Controls\ActiveFlight\Debug\CtrStartupView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\FlightLog\LogFlightToolTip.xaml.cs">
+    <Compile Update="Controls\ActiveFlight\Debug\CtrTakeOffView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\FlightLog\LogStats.xaml.cs">
+    <Compile Update="Controls\Externals\CtrSimBriefView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\Externals\CtrVatsimView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FlightLog\LogStatsOverview\CtrLogFlight.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FlightLog\LogStatsOverview\CtrLogFlightListSimple.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FlightLog\CtrLogFlightOverview.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FlightLog\CtrLogFlightToolTip.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FlightLog\LogStatsOverview\CtrLogStats.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="CtrFlightLog.xaml.cs">

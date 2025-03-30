@@ -1,4 +1,5 @@
-﻿using ESystem.Miscelaneous;
+﻿using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
 {
   internal class LogStats
   {
@@ -17,19 +18,22 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 
     static LogStats()
     {
+      DescriptiveLogStats.Add(new("Flight Time", q => q.AirTime.Ticks, ValueStringFormatter: q => new TimeSpan((long)q).ToString(@"h\:mm\:ss")));
+      DescriptiveLogStats.Add(new("Block Time", q => q.BlockTime.Ticks, ValueStringFormatter: q => new TimeSpan((long)q).ToString(@"h\:mm\:ss")));
+      DescriptiveLogStats.Add(new("Air Time Ratio", q => q.AirTime.TotalSeconds * 100 / q.BlockTime.TotalSeconds, "{0:N1} %"));
+
+      DescriptiveLogStats.Add(new("Distance", q => q.FlightDistance, "{0:N0} NM"));
+      DescriptiveLogStats.Add(new("Fuel Used", q => q.StartUp.FuelAmountKg - q.ShutDown.FuelAmountKg, "{0:N0} kg"));
+      DescriptiveLogStats.Add(new("Landing Fuel", q => q.Landing.FuelAmountKg, "{0:N0} kg"));
+
+      DescriptiveLogStats.Add(new("Takeoff IAS", q => q.TakeOff.IAS, "{0:N0} kt"));
+
       DescriptiveLogStats.Add(new("Landing VS", q => q.Landing.Touchdowns.Last().VS, "{0:N3} ft/min"));
       DescriptiveLogStats.Add(new("Landing IAS", q => q.Landing.Touchdowns.Last().IAS, "{0:N0} kt"));
       DescriptiveLogStats.Add(new("Landing Bank", q => q.Landing.Touchdowns.Last().Bank, "{0:N3}°"));
       DescriptiveLogStats.Add(new("Landing Pitch", q => q.Landing.Touchdowns.Last().Pitch, "{0:N3}°"));
       DescriptiveLogStats.Add(new("Landing MaxAccY", q => q.Landing.Touchdowns.Last().MaxAccY, "{0:N3}"));
-      DescriptiveLogStats.Add(new("Takeoff IAS", q => q.TakeOff.IAS, "{0:N0} kt"));
 
-      DescriptiveLogStats.Add(new("Distance", q => q.FlightDistance, "{0:N0} NM"));
-      DescriptiveLogStats.Add(new("Fuel Used", q => q.StartUp.FuelAmountKg - q.ShutDown.FuelAmountKg, "{0:N0} kg"));
-
-      DescriptiveLogStats.Add(new("Flight Time", q => q.AirTime.TotalHours, "{0:N2} hrs"));
-      DescriptiveLogStats.Add(new("Block Time", q => q.BlockTime.TotalHours, "{0:N2} hrs"));
-      DescriptiveLogStats.Add(new("Air Time Ratio", q => q.AirTime.TotalSeconds * 100 / q.BlockTime.TotalSeconds, "{0:N1} %"));
 
       GroupingLogStats.Add(new("Departure Airports", q => q.DepartureICAO));
       GroupingLogStats.Add(new("Arrival Airports", q => q.DestinationICAO));
@@ -92,15 +96,26 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
       var max = tmp.MaxBy(q => q.Value!.Value);
       var avg = tmp.Average(q => q.Value!.Value);
 
+      string formatByStats(double value, DescriptiveLogStatItem stat)
+      {
+        if (stat.ValueStringFormat is not null)
+          return string.Format(stat.ValueStringFormat, value);
+        else if (stat.ValueStringFormatter is not null)
+          return stat.ValueStringFormatter(value);
+        else
+          return value.ToString();
+      }
 
-      DescriptiveLogStatRecord createStats(double value, LogFlight flight) => new(value, String.Format(stat.StringFormat, value), flight);
+      DescriptiveLogStatRecord createStats(double value, LogFlight flight)
+      {
+        return new(value, formatByStats(value, stat), flight);
+      }
 
       DescriptiveLogStatView view = new(
         stat,
         createStats(min!.Value!.Value, min.Flight),
         createStats(max!.Value!.Value, max.Flight),
-        avg);
-
+        formatByStats(avg, stat));
 
       return view;
     }
@@ -116,16 +131,20 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     GroupingLogStatItem Stat,
     List<GroupingLogStatRecord> Records)
   {
-    public GroupingLogStatRecord Best => Records.First();
+    public GroupingLogStatRecord First => Records.First();
+    public GroupingLogStatRecord? Second => Records.Count() > 1 ? Records.Skip(1).First() : null;
+    public GroupingLogStatRecord? Third => Records.Count() > 2 ? Records.Skip(2).First() : null;
+    public GroupingLogStatRecord? Last => Records.Count() > 3 ? Records.Last() : null;
   }
 
-  public record DescriptiveLogStatItem(string Title, Func<LogFlight, double?> ValueSelector, string StringFormat = "{0:N3}");
+  public record DescriptiveLogStatItem(string Title, Func<LogFlight, double?> ValueSelector,
+    string? ValueStringFormat = null, Func<double, string>? ValueStringFormatter = null);
   public record DescriptiveLogStatRecord(double Value, string DisplayValue, LogFlight Flight);
   public record DescriptiveLogStatView(
     DescriptiveLogStatItem Stat,
     DescriptiveLogStatRecord Min,
     DescriptiveLogStatRecord Max,
-    double Avg)
+    string Avg)
   {
   }
 }

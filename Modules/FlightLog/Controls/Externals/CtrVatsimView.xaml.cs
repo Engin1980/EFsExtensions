@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.Externals
 {
     /// <summary>
-    /// Interaction logic for LogFlightListSimple.xaml
+    /// Interaction logic for VatsimView.xaml
     /// </summary>
-    public partial class LogFlightListSimple : UserControl
+    public partial class CtrVatsimView : UserControl
     {
-        public LogFlightListSimple()
+        public CtrVatsimView()
         {
             InitializeComponent();
         }

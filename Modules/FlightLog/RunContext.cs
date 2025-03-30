@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Eng.EFsExtensions.Modules.FlightLogModule.RunModel;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {

@@ -1,4 +1,5 @@
-﻿using ESystem.Asserting;
+﻿using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
+using ESystem.Asserting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -53,7 +54,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 
       string fileName = System.IO.Path.Combine(
         this.dataFolder,
-        $"{logFlight.StartUp.RealTime:yyyy-mm-dd-hh-mm-ss}_{logFlight.DepartureICAO}_{logFlight.DestinationICAO}.xml");
+        $"{logFlight.StartUp.Time:yyyy-mm-dd-hh-mm-ss}_{logFlight.DepartureICAO}_{logFlight.DestinationICAO}.xml");
       XmlSerializer ser = new(typeof(LogFlight));
       try
       {

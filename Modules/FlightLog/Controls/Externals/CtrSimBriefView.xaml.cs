@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.Externals
 {
     /// <summary>
-    /// Interaction logic for LogStats.xaml
+    /// Interaction logic for SimBriefView.xaml
     /// </summary>
-    public partial class LogStats : UserControl
+    public partial class CtrSimBriefView : UserControl
     {
-        public LogStats()
+        public CtrSimBriefView()
         {
             InitializeComponent();
         }

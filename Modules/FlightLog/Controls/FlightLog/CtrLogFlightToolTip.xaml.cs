@@ -18,12 +18,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
   /// <summary>
   /// Interaction logic for LogFlightToolTip.xaml
   /// </summary>
-  public partial class LogFlightToolTip : UserControl
+  public partial class CtrLogFlightToolTip : UserControl
   {
     public static DependencyProperty LogFlightProperty = DependencyProperty.Register(
       nameof(LogFlight),
       typeof(Eng.EFsExtensions.Modules.FlightLogModule.LogModel.LogFlight),
-      typeof(LogFlightToolTip),
+      typeof(CtrLogFlightToolTip),
       new PropertyMetadata(null));
 
 
@@ -32,7 +32,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
       get => GetValue(LogFlightProperty) as Eng.EFsExtensions.Modules.FlightLogModule.LogModel.LogFlight;
       set => SetValue(LogFlightProperty, value);
     }
-    public LogFlightToolTip()
+    public CtrLogFlightToolTip()
     {
       InitializeComponent();
     }

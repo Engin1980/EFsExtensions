@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.Externals
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.ActiveFlight.Debug
 {
     /// <summary>
-    /// Interaction logic for SimBriefView.xaml
+    /// Interaction logic for ShutDownView.xaml
     /// </summary>
-    public partial class SimBriefView : UserControl
+    public partial class CtrShutDownView : UserControl
     {
-        public SimBriefView()
+        public CtrShutDownView()
         {
             InitializeComponent();
         }
