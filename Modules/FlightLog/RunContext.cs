@@ -322,7 +322,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         return;
       }
 
-      this.RunVM.LandingCache = new(DateTime.Now, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
+      this.RunVM.LandingCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
       this.RunVM.State = RunViewModel.RunModelState.LandedWaitingForShutdown;
     }
@@ -331,7 +331,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       if (!this.simPropValues.IsFlying) return;
 
-      this.RunVM.TakeOffCache = new(DateTime.Now, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
+      this.RunVM.TakeOffCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
       UpdateSimbriefAndVatsimIfRequiredAsync();
 
@@ -350,7 +350,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       int fuelWeight = (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG);
       int payloadAndCargoWeight = totalWeight - fuelWeight - emptyWeight;
 
-      RunVM.StartUpCache = new(DateTime.Now, emptyWeight, payloadAndCargoWeight, fuelWeight,
+      RunVM.StartUpCache = new(DateTime.UtcNow, emptyWeight, payloadAndCargoWeight, fuelWeight,
         this.simPropValues.Latitude, this.simPropValues.Longitude);
 
       UpdateSimbriefAndVatsimIfRequiredAsync();
@@ -375,7 +375,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         this.landingDetector = null;
       }
 
-      this.RunVM.ShutDownCache = new(DateTime.Now, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
+      this.RunVM.ShutDownCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.Latitude, this.simPropValues.Longitude);
       LogFlight logFlight = GenerateLogFlight(this.RunVM);
 
