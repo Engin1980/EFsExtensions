@@ -339,18 +339,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       if (!this.simPropValues.IsFlying) return;
 
-      if (takeoffDetector == null)
-      {
-        this.takeoffDetector = new(this.simObj, this.RunVM);
-        this.takeoffDetector.AttemptRecorded += r =>
-        {
-          this.RunVM.TakeOffAttempt = r;
-          this.takeoffDetector.Stop();
-          this.takeoffDetector = null;
-        };
-        this.takeoffDetector.InitAndStart();
-      }
-
       this.RunVM.TakeOffCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
       UpdateSimbriefAndVatsimIfRequiredAsync();
@@ -375,6 +363,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       UpdateSimbriefAndVatsimIfRequiredAsync();
 
+      this.takeoffDetector = new(this.simObj, this.RunVM);
+      this.takeoffDetector.AttemptRecorded += r =>
+      {
+        this.RunVM.TakeOffAttempt = r;
+        this.takeoffDetector.Stop();
+        this.takeoffDetector = null;
+      };
+      this.takeoffDetector.InitAndStart();
       RunVM.State = RunViewModel.RunModelState.StartedWaitingForTakeOff;
     }
 

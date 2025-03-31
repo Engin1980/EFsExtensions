@@ -86,15 +86,16 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         public double maxVs = 0;
         public double maxAccY = 0;
         public int deccelerationCounter = 0;
-        public int deccelerationCounterIas = 0;
+        public double deccelerationCounterIas = 0;
       }
-      private record TakeOffRunList(int Heading, DateTime DateTime, double latitude, double longitude);
+      private record TakeOffRunList(int Heading, DateTime dateTime, double latitude, double longitude);
       private readonly TakeOffRunData runData = new();
       private readonly NewSimObject simObj;
       private readonly RunViewModel runVM;
       private RequestId? requestId;
       private bool isDisposed = false;
       public event Action<TakeOffAttemptData>? AttemptRecorded;
+      private bool isActive = true;
 
       public TakeOffDetector(NewSimObject simObj, RunViewModel runVM)
       {
@@ -108,9 +109,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         var typeId = simCon.Structs.Register<TakeOffStruct>();
         requestId = simCon.Structs.RequestRepeatedly<TakeOffStruct>(SimConnectPeriod.SIM_FRAME, true);
         simCon.DataReceived += SimCon_DataReceived;
+        this.isActive = true;
       }
       private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
       {
+        if (!isActive) return;
         if (e.RequestId != requestId) return;
 
         TakeOffStruct data = (TakeOffStruct)e.Data;
@@ -119,17 +122,33 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       private void UpdateByData(TakeOffStruct data)
       {
-        if (runData.deccelerationCounterIas < data.ias)
-          runData.deccelerationCounter++;
-        else
-          runData.deccelerationCounter = 0;
+        bool isFlying = data.gear0 + data.gear1 + data.gear2 == 0;
 
-        if (runData.noseGearInAirDateTime == null && (data.ias < 5 || runData.deccelerationCounter > 50)) // 50 records is 1 second
+        if (!isFlying)
         {
-          if (runData.takeOffRunList.Count > 0)
+          if (runData.deccelerationCounterIas > data.ias)
+            runData.deccelerationCounter++;
+          else
+            runData.deccelerationCounter = 0;
+
+          if (data.ias < 5 && runData.takeOffRunList.Count > 0)
+          {
             runData.takeOffRunList.Clear();
+          }
+          else if (runData.deccelerationCounter > 1 * 50 && runData.takeOffRunList.Count > 0) // 50 records is 1 second
+          {
+            runData.takeOffRunList.Clear();
+            runData.deccelerationCounter = 0;
+          }
+          runData.deccelerationCounterIas = data.ias;
+
+          if (data.gear0 == 0)
+            runData.noseGearInAirDateTime = DateTime.UtcNow;
+          else
+            runData.noseGearInAirDateTime = null;
         }
-        else
+
+        if (data.ias > 0)
         {
           if (runData.takeOffRunList.Count == 0)
             runData.takeOffRunList.Add(new((int)data.heading, DateTime.UtcNow, data.latitude, data.longitude));
@@ -137,17 +156,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
             runData.takeOffRunList.Add(new((int)data.heading, DateTime.UtcNow, data.latitude, data.longitude));
         }
 
-        if (data.gear0 != 0)
-          runData.noseGearInAirDateTime = DateTime.UtcNow;
-        else
-          runData.noseGearInAirDateTime = null;
-
-        if (data.gear0 + data.gear1 + data.gear2 == 0)
+        if (isFlying)
         {
-          // is flying
           if (runData.allGearInAirDateTime == null)
           {
             // for the first time
+            if (runData.noseGearInAirDateTime == null)
+              runData.noseGearInAirDateTime = DateTime.UtcNow;
             runData.allGearInAirDateTime = DateTime.UtcNow;
             runData.allGearInAirLatitude = data.latitude;
             runData.allGearInAirLongitude = data.longitude;
@@ -175,6 +190,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       private void CloseCurrentAttempt()
       {
+        isActive = false;
+        DateTime now = DateTime.UtcNow;
+
         if (runData.allGearInAirDateTime == null)
           return;
 
@@ -190,17 +208,17 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         maxPitch = runData.maxPitch;
         ias = runData.allGearInAirIas!.Value;
         maxVS = runData.maxVs;
-        rollToFrontGearTime = runData.noseGearInAirDateTime!.Value - takeOffRunStart.DateTime;
-        rollToAllGearTime = runData.allGearInAirDateTime!.Value - takeOffRunStart.DateTime;
+        rollToFrontGearTime = runData.noseGearInAirDateTime!.Value - takeOffRunStart.dateTime;
+        rollToAllGearTime = runData.allGearInAirDateTime!.Value - takeOffRunStart.dateTime;
         maxAccY = runData.maxAccY;
-        rollStartDateTime = takeOffRunStart.DateTime;
+        rollStartDateTime = takeOffRunStart.dateTime;
         rollStartLatitude = takeOffRunStart.latitude;
         rollStartLongitude = takeOffRunStart.longitude;
         takeOffLatitude = runData.allGearInAirLatitude!.Value;
         takeOffLongitude = runData.allGearInAirLongitude!.Value;
 
 
-        TakeOffAttemptData toad = new TakeOffAttemptData(
+        TakeOffAttemptData toad = new(
           maxBank, maxPitch, ias, maxVS, rollToFrontGearTime, rollToAllGearTime, maxAccY, rollStartDateTime,
           rollStartLatitude, rollStartLongitude, takeOffLatitude, takeOffLongitude);
 
@@ -231,11 +249,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       internal void Stop()
       {
         var simCon = this.simObj.ESimCon;
-        simCon.Structs.Unregister<TakeOffStruct>();
         this.simObj.ESimCon.DataReceived -= SimCon_DataReceived;
+        simCon.Structs.Unregister<TakeOffStruct>();
         this.isDisposed = true;
-
-        CloseCurrentAttempt();
       }
 
       public void Dispose()
