@@ -1,0 +1,247 @@
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models;
+using ESimConnect;
+using ESimConnect.Definitions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Threading.Tasks;
+using static Eng.EFsExtensions.Modules.FlightLogModule.Models.RunViewModel;
+
+namespace Eng.EFsExtensions.Modules.FlightLogModule
+{
+  public partial class RunContext
+  {
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi, Pack = 1)]
+    public struct TakeOffStruct
+    {
+      [DataDefinition(SimVars.Aircraft.BrakesAndLandingGear.GEAR_IS_ON_GROUND__index + "0")]
+      public double gear0;
+
+      [DataDefinition(SimVars.Aircraft.BrakesAndLandingGear.GEAR_IS_ON_GROUND__index + "1")]
+      public double gear1;
+
+      [DataDefinition(SimVars.Aircraft.BrakesAndLandingGear.GEAR_IS_ON_GROUND__index + "2")]
+      public double gear2;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALT_ABOVE_GROUND, SimUnits.Length.FOOT)]
+      public double height;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_PITCH_DEGREES, SimUnits.Angle.DEGREE)]
+      public double pitch;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_BANK_DEGREES, SimUnits.Angle.DEGREE)]
+      public double bank;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.VERTICAL_SPEED, SimUnits.Speed.FEETBYMINUTE)]
+      public double vs;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED, SimUnits.Speed.KNOT)]
+      public double ias;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.ACCELERATION_BODY_Y)]
+      public double accelerationY;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_LATITUDE, SimUnits.Angle.DEGREE)]
+      public double latitude;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_LONGITUDE, SimUnits.Angle.DEGREE)]
+      public double longitude;
+
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_HEADING_DEGREES_TRUE, SimUnits.Angle.DEGREE)]
+      public double heading;
+    }
+
+    public class TakeOffDetector
+    {
+      private class RecordingData
+      {
+        public int gear0Count;
+        public int gear1Count;
+        public int gear2Count;
+        public int notGroundCount;
+        public double bank;
+        public double pitch;
+        public double ias;
+        public double vs;
+        public double maxAccY;
+        public DateTime? dateTime;
+        public double latitude;
+        public double longitude;
+      }
+      private class TakeOffRunData
+      {
+        public readonly List<TakeOffRunList> takeOffRunList = new();
+        public DateTime? noseGearInAirDateTime = null;
+        public DateTime? allGearInAirDateTime = null;
+        public double? allGearInAirLatitude = null;
+        public double? allGearInAirLongitude = null;
+        public double? allGearInAirIas = null;
+        public double maxBank = 0;
+        public double maxPitch = 0;
+        public DateTime? maxPitchDateTime = null;
+        public double maxVs = 0;
+        public double maxAccY = 0;
+        public int deccelerationCounter = 0;
+        public int deccelerationCounterIas = 0;
+      }
+      private record TakeOffRunList(int Heading, DateTime DateTime, double latitude, double longitude);
+      private readonly TakeOffRunData runData = new();
+      private readonly NewSimObject simObj;
+      private readonly RunViewModel runVM;
+      private RequestId? requestId;
+      private bool isDisposed = false;
+      public event Action<TakeOffAttemptData>? AttemptRecorded;
+
+      public TakeOffDetector(NewSimObject simObj, RunViewModel runVM)
+      {
+        this.simObj = simObj;
+        this.runVM = runVM;
+      }
+
+      internal void InitAndStart()
+      {
+        var simCon = this.simObj.ESimCon;
+        var typeId = simCon.Structs.Register<TakeOffStruct>();
+        requestId = simCon.Structs.RequestRepeatedly<TakeOffStruct>(SimConnectPeriod.SIM_FRAME, true);
+        simCon.DataReceived += SimCon_DataReceived;
+      }
+      private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
+      {
+        if (e.RequestId != requestId) return;
+
+        TakeOffStruct data = (TakeOffStruct)e.Data;
+        UpdateByData(data);
+      }
+
+      private void UpdateByData(TakeOffStruct data)
+      {
+        if (runData.deccelerationCounterIas < data.ias)
+          runData.deccelerationCounter++;
+        else
+          runData.deccelerationCounter = 0;
+
+        if (runData.noseGearInAirDateTime == null && (data.ias < 5 || runData.deccelerationCounter > 50)) // 50 records is 1 second
+        {
+          if (runData.takeOffRunList.Count > 0)
+            runData.takeOffRunList.Clear();
+        }
+        else
+        {
+          if (runData.takeOffRunList.Count == 0)
+            runData.takeOffRunList.Add(new((int)data.heading, DateTime.UtcNow, data.latitude, data.longitude));
+          else if (runData.takeOffRunList.Last().Heading != (int)data.heading)
+            runData.takeOffRunList.Add(new((int)data.heading, DateTime.UtcNow, data.latitude, data.longitude));
+        }
+
+        if (data.gear0 != 0)
+          runData.noseGearInAirDateTime = DateTime.UtcNow;
+        else
+          runData.noseGearInAirDateTime = null;
+
+        if (data.gear0 + data.gear1 + data.gear2 == 0)
+        {
+          // is flying
+          if (runData.allGearInAirDateTime == null)
+          {
+            // for the first time
+            runData.allGearInAirDateTime = DateTime.UtcNow;
+            runData.allGearInAirLatitude = data.latitude;
+            runData.allGearInAirLongitude = data.longitude;
+            runData.allGearInAirIas = data.ias;
+            runData.maxBank = 0;
+            runData.maxPitch = 0;
+            runData.maxVs = 0;
+          }
+
+          runData.maxAccY = Math.Max(runData.maxAccY, data.accelerationY);
+          runData.maxVs = Math.Max(runData.maxVs, data.vs);
+          runData.maxBank = Math.Max(runData.maxBank, data.bank);
+          if (runData.maxPitch < data.pitch)
+          {
+            runData.maxPitch = data.pitch;
+            runData.maxPitchDateTime = DateTime.UtcNow;
+          }
+
+          if (data.height > 100)
+          {
+            CloseCurrentAttempt();
+          }
+        }
+      }
+
+      private void CloseCurrentAttempt()
+      {
+        if (runData.allGearInAirDateTime == null)
+          return;
+
+        double maxBank; double maxPitch; double ias; double maxVS;
+        TimeSpan rollToFrontGearTime; TimeSpan rollToAllGearTime;
+        double maxAccY; DateTime rollStartDateTime;
+        double rollStartLatitude; double rollStartLongitude;
+        double takeOffLatitude; double takeOffLongitude;
+
+        TakeOffRunList takeOffRunStart = ExtractTakeOffRunStartData();
+
+        maxBank = runData.maxBank;
+        maxPitch = runData.maxPitch;
+        ias = runData.allGearInAirIas!.Value;
+        maxVS = runData.maxVs;
+        rollToFrontGearTime = runData.noseGearInAirDateTime!.Value - takeOffRunStart.DateTime;
+        rollToAllGearTime = runData.allGearInAirDateTime!.Value - takeOffRunStart.DateTime;
+        maxAccY = runData.maxAccY;
+        rollStartDateTime = takeOffRunStart.DateTime;
+        rollStartLatitude = takeOffRunStart.latitude;
+        rollStartLongitude = takeOffRunStart.longitude;
+        takeOffLatitude = runData.allGearInAirLatitude!.Value;
+        takeOffLongitude = runData.allGearInAirLongitude!.Value;
+
+
+        TakeOffAttemptData toad = new TakeOffAttemptData(
+          maxBank, maxPitch, ias, maxVS, rollToFrontGearTime, rollToAllGearTime, maxAccY, rollStartDateTime,
+          rollStartLatitude, rollStartLongitude, takeOffLatitude, takeOffLongitude);
+
+        this.AttemptRecorded?.Invoke(toad);
+      }
+
+      private TakeOffRunList ExtractTakeOffRunStartData()
+      {
+        int currentHeading = runData.takeOffRunList.Last().Heading;
+        TakeOffRunList ret = runData.takeOffRunList.Last();
+
+        static int headingDifference(int heading1, int heading2)
+        {
+          int diff = Math.Abs(heading1 - heading2);
+          return Math.Min(diff, 360 - diff);
+        }
+
+        for (int i = runData.takeOffRunList.Count - 1; i >= 0; i--)
+        {
+          int diff = headingDifference(runData.takeOffRunList[i].Heading, currentHeading);
+          if (diff < 8)
+            ret = runData.takeOffRunList[i];
+        }
+
+        return ret;
+      }
+
+      internal void Stop()
+      {
+        var simCon = this.simObj.ESimCon;
+        simCon.Structs.Unregister<TakeOffStruct>();
+        this.simObj.ESimCon.DataReceived -= SimCon_DataReceived;
+        this.isDisposed = true;
+
+        CloseCurrentAttempt();
+      }
+
+      public void Dispose()
+      {
+        if (!isDisposed) Stop();
+      }
+    }
+  }
+}

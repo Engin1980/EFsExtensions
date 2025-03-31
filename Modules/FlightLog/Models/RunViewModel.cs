@@ -1,4 +1,5 @@
-﻿using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
+﻿using Eng.EFsExtensions.Libs.AirportsLib;
+using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel;
 using ESystem.Miscelaneous;
 using System;
@@ -12,8 +13,18 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
 {
   public class RunViewModel : NotifyPropertyChanged
   {
-    public record LandingAttemptData(double Bank, double Pitch, double IAS, double VS, double MainGearTime, double AllGearTime, double MaxAccY, DateTime DateTime,
+    public record LandingAttemptData(double Bank, double Pitch, double IAS, double VS, double MainGearTime, double AllGearTime,
+      double MaxAccY, DateTime DateTime,
       double Latitude, double Longitude);
+
+    public record TakeOffAttemptData(double MaxBank, double MaxPitch, double IAS, double MaxVS,
+      TimeSpan RollToFrontGearTime, TimeSpan RollToAllGearTime,
+      double MaxAccY, DateTime RollStartDateTime,
+      double RollStartLatitude, double RollStartLongitude,
+      double TakeOffLatitude, double TakeOffLongitude)
+    {
+      public double RollDistance => GpsCalculator.GetDistance(RollStartLatitude, RollStartLongitude, TakeOffLatitude, TakeOffLongitude);
+    }
 
     public record RunModelVatsimCache(string FlightRules, string Callsign, string Aircraft, string? Registration,
       string DepartureICAO, string DestinationICAO, string AlternateICAO, string Route, int PlannedFlightLevel, int CruiseSpeed,
@@ -95,6 +106,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       set { UpdateProperty(nameof(LandingAttempts), value); }
     }
 
+    public TakeOffAttemptData? TakeOffAttempt
+    {
+      get => base.GetProperty<TakeOffAttemptData?>(nameof(TakeOffAttempt))!;
+      set => base.UpdateProperty(nameof(TakeOffAttempt), value);
+    }
+
     public InitContext.Profile Profile
     {
       get => GetProperty<InitContext.Profile>(nameof(Profile))!;
@@ -106,7 +123,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       get => GetProperty<BindingList<LogFlight>>(nameof(LoggedFlights))!;
       set => UpdateProperty(nameof(LoggedFlights), value);
     }
-    
+
     public LogFlight? LastLoggedFlight
     {
       get => GetProperty<LogFlight?>(nameof(LastLoggedFlight))!;

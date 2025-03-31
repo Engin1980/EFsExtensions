@@ -6,44 +6,99 @@
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.ActiveFlight.Debug"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-  <ScrollViewer>
-    <Grid DataContext="{Binding RunVM.TakeOffCache}">
-      <Grid.ColumnDefinitions>
-        <ColumnDefinition Width="Auto" />
-        <ColumnDefinition />
-      </Grid.ColumnDefinitions>
-      <Grid.RowDefinitions>
-        <RowDefinition Height="Auto" />
-        <RowDefinition Height="Auto"  />
-        <RowDefinition Height="Auto"  />
-        <RowDefinition Height="Auto"  />
-      </Grid.RowDefinitions>
+  <StackPanel>
+    <ScrollViewer>
+      <Grid DataContext="{Binding RunVM.TakeOffCache}">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="Auto" />
+          <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto"  />
+          <RowDefinition Height="Auto"  />
+          <RowDefinition Height="Auto"  />
+        </Grid.RowDefinitions>
 
-      <Label Grid.Column="0" Grid.Row="0" Content="Time" />
-      <Label Grid.Column="1" Grid.Row="0">
-        <TextBlock Text="{Binding Time, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-      </Label>
+        <Label Grid.Column="0" Grid.Row="0" Content="Time" />
+        <Label Grid.Column="1" Grid.Row="0">
+          <TextBlock Text="{Binding Time, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+        </Label>
 
-      <Label Grid.Column="0" Grid.Row="1" Content="IAS" />
-      <Label Grid.Column="1" Grid.Row="1" >
-        <TextBlock Text="{Binding IAS, StringFormat={}{0:N0} kts}" TextAlignment="Right" Width="75"  />
-      </Label>
+        <Label Grid.Column="0" Grid.Row="1" Content="IAS" />
+        <Label Grid.Column="1" Grid.Row="1" >
+          <TextBlock Text="{Binding IAS, StringFormat={}{0:N0} kts}" TextAlignment="Right" Width="75"  />
+        </Label>
 
 
-      <Label Grid.Column="0" Grid.Row="2" Content="Fuel" />
-      <Label Grid.Column="1" Grid.Row="2" >
-        <TextBlock Text="{Binding FuelKg, StringFormat={}{0:N0} kg}" TextAlignment="Right" Width="75"  />
-      </Label>
+        <Label Grid.Column="0" Grid.Row="2" Content="Fuel" />
+        <Label Grid.Column="1" Grid.Row="2" >
+          <TextBlock Text="{Binding FuelKg, StringFormat={}{0:N0} kg}" TextAlignment="Right" Width="75"  />
+        </Label>
 
-      <Label Grid.Column="0" Grid.Row="3" Content="GPS" />
-      <Label Grid.Column="1" Grid.Row="3">
-        <StackPanel Orientation="Horizontal">
-          <TextBlock Text="{Binding Latitude, StringFormat=N5}" />
-          <TextBlock Text=" " />
-          <TextBlock Text="{Binding Longitude, StringFormat=N5}" />
-        </StackPanel>
-      </Label>
+        <Label Grid.Column="0" Grid.Row="3" Content="GPS" />
+        <Label Grid.Column="1" Grid.Row="3">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding Latitude, StringFormat=N5}" />
+            <TextBlock Text=" " />
+            <TextBlock Text="{Binding Longitude, StringFormat=N5}" />
+          </StackPanel>
+        </Label>
 
-    </Grid>
-  </ScrollViewer>
+      </Grid>
+    </ScrollViewer>
+    <ScrollViewer>
+      <Grid DataContext="{Binding RunVM.TakeOffAttempt}">
+        <Grid.RowDefinitions>
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0">Roll Start Time</Label>
+        <Label Grid.Row="0" Grid.Column="1" Content="{Binding RollStartDateTime}" />
+        <Label Grid.Row="1" Grid.Column="0">Front-gear-air</Label>
+        <Label Grid.Row="1" Grid.Column="1" Content="{Binding RollToFrontGearTime}" />
+        <Label Grid.Row="2" Grid.Column="0">All-gear-air</Label>
+        <Label Grid.Row="2" Grid.Column="1" Content="{Binding RollToAllGearTime}" />
+        <Label Grid.Row="3" Grid.Column="0">Roll Start GPS</Label>
+        <Label Grid.Row="3" Grid.Column="1">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding RollStartLatitude, StringFormat=N5}" />
+            <TextBlock Text=" " />
+            <TextBlock Text="{Binding RollStartLongitude, StringFormat=N5}" />
+          </StackPanel>
+        </Label>
+        <Label Grid.Row="4" Grid.Column="0">Air GPS</Label>
+        <Label Grid.Row="4" Grid.Column="1">
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="{Binding TakeOffLatitude, StringFormat=N5}" />
+            <TextBlock Text=" " />
+            <TextBlock Text="{Binding TakeOffLongitude, StringFormat=N5}" />
+          </StackPanel>
+        </Label>
+        <Label Grid.Row="5" Grid.Column="0">Roll Distance</Label>
+        <Label Grid.Row="5" Grid.Column="1" Content="{Binding RollDistance}" />
+
+
+        <Label Grid.Row="0" Grid.Column="2">IAS</Label>
+        <Label Grid.Row="0" Grid.Column="3" Content="{Binding IAS}" />
+        <Label Grid.Row="1" Grid.Column="2">Max Bank</Label>
+        <Label Grid.Row="1" Grid.Column="3" Content="{Binding MaxBank}" />
+        <Label Grid.Row="2" Grid.Column="2">Max Pitch</Label>
+        <Label Grid.Row="2" Grid.Column="3" Content="{Binding MaxPitch}" />
+        <Label Grid.Row="3" Grid.Column="2">Max VS</Label>
+        <Label Grid.Row="3" Grid.Column="3" Content="{Binding MaxVS}" />
+      </Grid>
+    </ScrollViewer>
+  </StackPanel>
 </UserControl>

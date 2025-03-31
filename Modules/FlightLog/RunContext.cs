@@ -22,6 +22,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     private const double FUEL_LITRES_TO_KG = 0.8;
 
     private LandingDetector? landingDetector = null;
+    private TakeOffDetector? takeoffDetector = null;
     private SimPropValues simPropValues = null!;
     private readonly Settings settings = null!;
     private readonly List<Airport> airports;
@@ -50,14 +51,21 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
 
       // DEBUG STUFF, DELETE LATER
-      UpdateSimbriefAndVatsimIfRequired();
-      this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now.AddMinutes(-70), 49000, 174 * 95, 5500, 52.8, -118.08);
-      this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now.AddMinutes(-60), 5200, 137, 11, 22);
-      this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now.AddMinutes(-10), 2100, 120, 11, 22);
-      this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
-      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
-      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 12, 23));
-      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
+      //UpdateSimbriefAndVatsimIfRequired();
+      //this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now.AddMinutes(-70), 49000, 174 * 95, 5500, 52.8, -118.08);
+      //this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now.AddMinutes(-60), 5200, 137, 11, 22);
+      //this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now.AddMinutes(-10), 2100, 120, 11, 22);
+      //this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
+      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
+      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 12, 23));
+      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
+      //this.RunVM.TakeOffAttempt = new RunViewModel.TakeOffAttemptData(
+      //  0.21243, 19.412, 154, 3400.13213,
+      //  new TimeSpan(0, 0, 0, 43, 121), new TimeSpan(0, 0, 0, 48, 313),
+      //  13.1413,
+      //  DateTime.Now.AddMinutes(-180),
+      //  54.137132, -12.12313,
+      //  54.137239, -12.12398);
 
       //var fl = GenerateLogFlight(this.RunVM);
       //fl.DepartureICAO = "CYVR";
@@ -65,7 +73,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       //fl.AlternateICAO = "CYEG";
       //flightsManager.StoreFlight(fl);
 
-      // this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
+      this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }
 
     public RunViewModel RunVM
@@ -330,6 +338,18 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     private void ProcessWaitForTakeOff()
     {
       if (!this.simPropValues.IsFlying) return;
+
+      if (takeoffDetector == null)
+      {
+        this.takeoffDetector = new(this.simObj, this.RunVM);
+        this.takeoffDetector.AttemptRecorded += r =>
+        {
+          this.RunVM.TakeOffAttempt = r;
+          this.takeoffDetector.Stop();
+          this.takeoffDetector = null;
+        };
+        this.takeoffDetector.InitAndStart();
+      }
 
       this.RunVM.TakeOffCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);

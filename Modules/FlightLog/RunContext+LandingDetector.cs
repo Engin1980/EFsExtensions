@@ -80,7 +80,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private RequestId? requestId;
       private bool isDisposed = false;
       private readonly RecordingData current = new();
-      private readonly List<LandingAttemptData> recordedData = new();
 
       public event Action<LandingAttemptData>? AttemptRecorded;
 
@@ -170,8 +169,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           this.current.dateTime.Value,
           this.current.latitude,
           this.current.longitude);
-
-        recordedData.Add(item);
 
         // reset current:
         current.bank = 0;

@@ -25,7 +25,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private readonly TypeId fuelQuantityLtrsTypeId = new(EMPTY_TYPE_ID);
       private readonly TypeId emptyWeightKgTypeId = new(EMPTY_TYPE_ID);
       private readonly TypeId totalWeightKgTypeId = new(EMPTY_TYPE_ID);
-      private readonly RequestId atcIdRequestId = new RequestId(EMPTY_TYPE_ID);
+      private readonly RequestId atcIdRequestId = new(EMPTY_TYPE_ID);
       private readonly TypeId fbwParkingBrakeTypeId = new (EMPTY_TYPE_ID);
 
       public SimPropValues(NewSimObject simObject)
