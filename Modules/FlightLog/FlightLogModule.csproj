@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyVersion>1.0.0.152</AssemblyVersion>
-    <FileVersion>1.0.0.134</FileVersion>
+    <AssemblyVersion>1.0.0.160</AssemblyVersion>
+    <FileVersion>1.0.0.142</FileVersion>
     <RootNamespace>Eng.EFsExtensions.Modules.FlightLogModule</RootNamespace>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>

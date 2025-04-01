@@ -41,6 +41,12 @@
     <Compile Update="Controls\FlightLog\LogStatsOverview\CtrLogStats.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\Shared\GpsLabel.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\Shared\TimeSpanLabel.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="CtrFlightLog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
