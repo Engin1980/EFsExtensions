@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models;
 using System.Runtime.CompilerServices;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -119,6 +120,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       EAssert.IsNotNull(runVM.TakeOffCache, "TakeOffCache not set.");
       EAssert.IsNotNull(runVM.LandingCache, "LandingCache not set.");
       EAssert.IsNotNull(runVM.ShutDownCache, "ShutDownCache not set.");
+      EAssert.IsNotNull(runVM.TakeOffAttempt, "TakeOffAttempt not set.");
+      EAssert.IsNotNull(runVM.LandingAttempts, "LandingAttempts not set.");
+      EAssert.IsTrue(runVM.LandingAttempts.Count > 0, "LandingAttempts is empty.");
 
       InvalidateSimBriefOrVatsimIfRequired(runVM);
 
@@ -144,7 +148,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       string aircraftRegistration = runVM.SimBriefCache?.AirplaneRegistration ?? RunVM.VatsimCache?.Registration ?? "UNSET"; //TODO get from FS
       string? aircraftModel = RunVM.SimBriefCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft;
       int cruizeAltitude = runVM.SimBriefCache?.Altitude ?? runVM.VatsimCache?.PlannedFlightLevel ?? runVM.MaxAchievedAltitude;
-      double airDistance = runVM.SimBriefCache?.AirDistanceNM 
+      double airDistance = runVM.SimBriefCache?.AirDistanceNM
         ?? TryGetAirDistance(departureICAO, destinationICAO)
         ?? GpsCalculator.GetDistance(runVM.StartUpCache!.Latitude, runVM.StartUpCache!.Longitude, runVM.ShutDownCache!.Latitude, runVM.ShutDownCache!.Longitude);
       double? routeDistance = runVM.SimBriefCache?.RouteDistanceNM;
@@ -152,6 +156,19 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       DivertReason divertReason = DivertReason.NotDiverted; //TODO this
 
       FlightRules flightRules = runVM.SimBriefCache?.FlightRules ?? runVM.VatsimCache?.FlightType ?? FlightRules.Unknown;
+
+      LogTakeOff takeOff = new()
+      {
+        RunStartLocation = new GPS(runVM.TakeOffAttempt.RollStartLatitude, runVM.TakeOffAttempt.RollStartLongitude),
+        AirborneLocation = new GPS(runVM.TakeOffAttempt.TakeOffLatitude, runVM.TakeOffAttempt.TakeOffLongitude),
+        MaxVS = runVM.TakeOffAttempt.MaxVS,
+        IAS = (int)runVM.TakeOffAttempt.IAS,
+        MaxBank = runVM.TakeOffAttempt.MaxBank,
+        MaxPitch = runVM.TakeOffAttempt.MaxPitch,
+        MaxAccY = runVM.TakeOffAttempt.MaxAccY,
+        MainGearTime = runVM.TakeOffAttempt.RollToFrontGearTime,
+        AllGearTime = runVM.TakeOffAttempt.RollToAllGearTime
+      };
 
       LogFlight ret = new()
       {
@@ -181,8 +198,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         StartUpScheduledDateTime = runVM.SimBriefCache?.OffBlockPlannedTime ?? runVM.VatsimCache?.PlannedDepartureTime,
         StartUpFuelWeight = runVM.StartUpCache.FuelKg,
         TakeOffFuelWeight = runVM.TakeOffCache.FuelKg,
-        TakeOffIAS = (int)runVM.TakeOffCache.IAS,
-        TakeOffLocation = new GPS(runVM.TakeOffCache.Latitude, runVM.TakeOffCache.Longitude),
+        TakeOff = takeOff,
         TakeOffDateTime = runVM.TakeOffCache.Time,
         TakeOffScheduledFuelWeight = runVM.SimBriefCache?.EstimatedTakeOffFuelKg,
         TakeOffScheduledDateTime = runVM.SimBriefCache?.TakeOffPlannedTime,

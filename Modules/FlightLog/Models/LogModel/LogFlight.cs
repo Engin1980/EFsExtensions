@@ -1,5 +1,6 @@
 ﻿using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,30 +34,31 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public DateTime StartUpDateTime { get; set; }
     public DateTime? TakeOffScheduledDateTime { get; set; }
     public DateTime TakeOffDateTime { get; set; }
-    public int TakeOffIAS { get; set; }
     public int? TakeOffScheduledFuelWeight { get; set; }
     public int TakeOffFuelWeight { get; set; }
-    public GPS TakeOffLocation { get; set; }
     public DateTime? LandingScheduledDateTime { get; set; }
-    public DateTime LandingDateTime => Touchdowns.Last().DateTime;
     public DateTime? ScheduledTime { get; set; }
     public List<LogTouchdown> Touchdowns { get; set; } = null!;
-    public DateTime Time => Touchdowns.Last().DateTime;
+    public LogTakeOff TakeOff { get; set; } = null!;
     public int? LandingScheduledFuelWeight { get; set; }
     public int LandingFuelWeight { get; set; }
-    public GPS LandingLocation => Touchdowns.Last().Location;
-    public int LandingIAS => Touchdowns.Last().IAS;
-    public double LandingBank => Touchdowns.Last().Bank;
-    public double LandingPitch => Touchdowns.Last().Pitch;
     public DateTime? ShutDownScheduledDateTime { get; set; }
     public DateTime ShutDownDateTime { get; set; }
     public int ShutDownFuelWeight { get; set; }
     public GPS ShutDownLocation { get; set; }
+    public GPS TakeOffLocation => TakeOff.RunStartLocation;
     public TimeSpan DepartureTaxiTime => this.TakeOffDateTime - this.StartUpDateTime;
+    public int LandingIAS => Touchdowns.Last().IAS;
+    public double LandingBank => Touchdowns.Last().Bank;
+    public double LandingPitch => Touchdowns.Last().Pitch;
     public TimeSpan ArrivalTaxiTime => this.ShutDownDateTime - this.LandingDateTime;
     public TimeSpan TaxiTime => this.DepartureTaxiTime + this.ArrivalTaxiTime;
     public TimeSpan AirTime => this.LandingDateTime - this.TakeOffDateTime;
+    public DateTime Time => Touchdowns.Last().DateTime;
     public TimeSpan BlockTime => this.ShutDownDateTime - this.StartUpDateTime;
+    public int TakeOffIAS => TakeOff.IAS;
+    public GPS LandingLocation => Touchdowns.Last().Location;
+    public DateTime LandingDateTime => Touchdowns.Last().DateTime;
   }
 
 }

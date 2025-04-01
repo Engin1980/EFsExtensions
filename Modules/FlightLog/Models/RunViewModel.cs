@@ -36,6 +36,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       int AirDistanceNM, int RouteDistanceNM,
       string AirplaneType, string AirplaneRegistration,
       int NumberOfPassengers, int PayLoad, int Cargo, int ZfwKg, int FuelKg, int EstimatedTakeOffFuelKg, int EstimatedLandingFuelKg);
+    
+    //TODO delete IAS & GPS if not used
     public record RunModelTakeOffCache(DateTime Time, int FuelKg, double IAS, double Latitude, double Longitude);
     public record RunModelStartUpCache(DateTime Time, int EmptyWeight, int PayloadAndCargoKg, int FuelKg, double Latitude, double Longitude)
     {

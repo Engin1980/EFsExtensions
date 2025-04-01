@@ -1,29 +1,22 @@
 ﻿using Eng.EFsExtensions.Libs.AirportsLib;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
 {
   public class LogTakeOff
   {
-    public DateTime? ScheduledTime { get; set; }
-    public DateTime Time { get; set; }
-    public int? ScheduledFuelAmountKg { get; set; }
-    public int FuelAmountKg { get; set; }
-    public GPS Location { get; set; }
+    public GPS RunStartLocation { get; set; }
+    public GPS AirborneLocation { get; set; }
+    public double MaxVS { get; set; }
     public int IAS { get; set; }
-
-    public LogTakeOff(DateTime? scheduledTime, DateTime realTime, int? scheduledFuelAmountKg, int fuelAmountKg, GPS location, int iAS)
-    {
-      ScheduledTime = scheduledTime;
-      Time = realTime;
-      ScheduledFuelAmountKg = scheduledFuelAmountKg;
-      FuelAmountKg = fuelAmountKg;
-      Location = location;
-      IAS = iAS;
-    }
-
-    public LogTakeOff()
-    {
-    }
+    public double MaxBank { get; set; }
+    public double MaxPitch { get; set; }
+    public double MaxAccY { get; set; }
+    public TimeSpan MainGearTime { get; set; }
+    public TimeSpan AllGearTime { get; set; }
   }
-
 }
