@@ -26,18 +26,24 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
       DescriptiveLogStats.Add(new("Fuel Used", q => q.StartUpFuelWeight - q.ShutDownFuelWeight, "{0:N0} kg"));
       DescriptiveLogStats.Add(new("Landing Fuel", q => q.LandingFuelWeight, "{0:N0} kg"));
 
-      DescriptiveLogStats.Add(new("Takeoff IAS", q => q.TakeOffIAS, "{0:N0} kt"));
+      DescriptiveLogStats.Add(new("Takeoff IAS", q => q.TakeOff.IAS, "{0:N0} kt"));
+      DescriptiveLogStats.Add(new("Takeoff VS", q => q.TakeOff.MaxVS, "{0:N0} ft/min"));
+      DescriptiveLogStats.Add(new("Takeoff Bank", q => q.TakeOff.MaxBank, "{0:N0}°"));
+      DescriptiveLogStats.Add(new("Takeoff Pitch", q => q.TakeOff.MaxPitch, "{0:N0}°"));
+      DescriptiveLogStats.Add(new("Takeoff MaxAccY", q => q.TakeOff.MaxAccY, "{0:N0}"));
+      DescriptiveLogStats.Add(new("Takeoff Run", q => q.TakeOff.RunLength, "{0:N3} NM"));
 
       DescriptiveLogStats.Add(new("Landing VS", q => q.Touchdowns.Last().VS, "{0:N3} ft/min"));
       DescriptiveLogStats.Add(new("Landing IAS", q => q.Touchdowns.Last().IAS, "{0:N0} kt"));
       DescriptiveLogStats.Add(new("Landing Bank", q => q.Touchdowns.Last().Bank, "{0:N3}°"));
       DescriptiveLogStats.Add(new("Landing Pitch", q => q.Touchdowns.Last().Pitch, "{0:N3}°"));
       DescriptiveLogStats.Add(new("Landing MaxAccY", q => q.Touchdowns.Last().MaxAccY, "{0:N3}"));
+      //TODO landing run?
 
 
       GroupingLogStats.Add(new("Departure Airports", q => q.DepartureICAO));
       GroupingLogStats.Add(new("Arrival Airports", q => q.DestinationICAO));
-      // TODO GroupingLogStats.Add(new("Flight Types", q => q));
+      GroupingLogStats.Add(new("Flight Types", q => q.FlightRules));
       GroupingLogStats.Add(new("Registration", q => q.AircraftRegistration));
       GroupingLogStats.Add(new("Aircraft Type", q => q.AircraftType));
       GroupingLogStats.Add(new("Cruise Altitudes", q => q.CruizeAltitude));

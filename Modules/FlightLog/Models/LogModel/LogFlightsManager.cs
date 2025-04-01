@@ -38,20 +38,33 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
       var files = System.IO.Directory.GetFiles(dataFolder, "*.xml");
       XmlSerializer serializer = new(typeof(LogFlight));
 
+      //TODO errors should be logged, not crashing apps
       foreach (var file in files)
       {
         using System.IO.FileStream fileStream = new(file, System.IO.FileMode.Open);
         LogFlight flight = (LogFlight)(serializer.Deserialize(fileStream) ?? throw new ApplicationException($"Failed to deserialize '{file}'"));
+        
+        flight.CheckValidity(out bool resaveNeeded);
+        if (resaveNeeded)
+          this.SaveFlight(flight);
+
         this.flights.Add(flight);
       }
 
       RecalculateStats();
     }
 
-    internal void StoreFlight(LogFlight logFlight)
+    internal void StoreNewFlight(LogFlight logFlight)
     {
       //TODO do some duplicity check here
+      this.SaveFlight(logFlight);
+      this.flights.Add(logFlight);
+      this.NewFlightLogged?.Invoke(logFlight);
+      RecalculateStats();
+    }
 
+    private void SaveFlight(LogFlight logFlight)
+    {
       string fileName = System.IO.Path.Combine(
         this.dataFolder,
         $"{logFlight.StartUpDateTime:yyyy-mm-dd-hh-mm-ss}_{logFlight.DepartureICAO}_{logFlight.DestinationICAO}.xml");
@@ -59,17 +72,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
       try
       {
         ser.Serialize(System.IO.File.Create(fileName), logFlight);
-        this.flights.Add(logFlight);
-
-        this.NewFlightLogged?.Invoke(logFlight);
       }
       catch (Exception ex)
       {
         // TODO handle
         throw new ApplicationException();
       }
-
-      RecalculateStats();
     }
 
     public LogFlightsManager(string dataFolder)

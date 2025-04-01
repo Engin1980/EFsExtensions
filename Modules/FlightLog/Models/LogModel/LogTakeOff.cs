@@ -18,5 +18,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
     public double MaxAccY { get; set; }
     public TimeSpan MainGearTime { get; set; }
     public TimeSpan AllGearTime { get; set; }
+    public double RunLength => GpsCalculator.GetDistance(RunStartLocation, AirborneLocation);
   }
 }

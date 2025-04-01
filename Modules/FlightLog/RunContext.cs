@@ -73,7 +73,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       fl.DepartureICAO = "CYVR";
       fl.DestinationICAO = "CYYC";
       fl.AlternateICAO = "CYEG";
-      flightsManager.StoreFlight(fl);
+      flightsManager.StoreNewFlight(fl);
 
       // this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }
@@ -433,7 +433,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         this.simPropValues.Latitude, this.simPropValues.Longitude);
       LogFlight logFlight = GenerateLogFlight(this.RunVM);
 
-      this.flightsManager.StoreFlight(logFlight);
+      this.flightsManager.StoreNewFlight(logFlight);
 
       this.RunVM.State = RunViewModel.RunModelState.WaitingForStartupForTheFirstTime;
     }

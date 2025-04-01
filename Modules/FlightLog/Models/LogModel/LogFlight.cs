@@ -4,6 +4,7 @@ using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 {
   public class LogFlight
   {
+    public int Version { get; set; } = 1;
     public string Callsign { get; set; } = string.Empty;
     public FlightRules FlightRules { get; set; } = FlightRules.Unknown;
     public string? DepartureICAO { get; set; } = string.Empty;
@@ -59,6 +61,41 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public int TakeOffIAS => TakeOff.IAS;
     public GPS LandingLocation => Touchdowns.Last().Location;
     public DateTime LandingDateTime => Touchdowns.Last().DateTime;
+
+    public void CheckValidity(out bool resaveNeeded)
+    {
+      AdjustVersion(out resaveNeeded);
+      try
+      {
+        ValidateAllPropertiesByRead();
+      }
+      catch (Exception e)
+      {
+        throw new ApplicationException($"Flight '{Callsign}' is not valid: {e.Message}", e);
+      }
+    }
+
+    private void ValidateAllPropertiesByRead()
+    {
+      var props = typeof(LogFlight).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+      foreach (PropertyInfo prop in props)
+      {
+        try
+        {
+          prop.GetValue(this);
+        }
+        catch (Exception e)
+        {
+          throw new ApplicationException($"Property '{prop.Name}' cannot be read: {e.Message}", e);
+        }
+      }
+    }
+
+    private void AdjustVersion(out bool resaveNeeded)
+    {
+      // do necessary changes to file be valid for newer versions
+      resaveNeeded = false;
+    }
   }
 
 }
