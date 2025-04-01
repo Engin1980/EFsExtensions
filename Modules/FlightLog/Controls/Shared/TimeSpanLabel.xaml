@@ -6,5 +6,5 @@
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-  <Label Content="{Binding }" />
+  <Label Content="{Binding DisplayValue, RelativeSource={RelativeSource AncestorType=UserControl}}" />
 </UserControl>

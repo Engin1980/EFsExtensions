@@ -20,36 +20,43 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared
   /// </summary>
   public partial class TimeSpanLabel : UserControl
   {
-    private static DependencyProperty ValueProperty = DependencyProperty.Register(
-      "Value", typeof(TimeSpan), typeof(TimeSpanLabel), null);
+    private static readonly DependencyProperty ValueProperty = DependencyProperty.Register(
+      nameof(Value), typeof(TimeSpan?), typeof(TimeSpanLabel), new PropertyMetadata(null, OnValueChanged));
 
     public TimeSpan? Value
     {
       get => (TimeSpan?)GetValue(ValueProperty);
-      set
-      {
-        SetValue(ValueProperty, value);
-        UpdateDisplayValue();
-      }
+      set => SetValue(ValueProperty, value);
     }
 
-    private static DependencyProperty StringFormatProperty = DependencyProperty.Register(
-      "StringFormat", typeof(string), typeof(TimeSpanLabel), null);
+    private static readonly DependencyProperty StringFormatProperty = DependencyProperty.Register(
+      nameof(StringFormat), typeof(string), typeof(TimeSpanLabel), new PropertyMetadata(null, OnValueChanged));
 
     public string? StringFormat
     {
       get => (string?)GetValue(StringFormatProperty);
-      set
-      {
-        SetValue(StringFormatProperty, value);
-        UpdateDisplayValue();
-      }
+      set => SetValue(StringFormatProperty, value);
+    }
+
+    private static readonly DependencyProperty DisplayValueProperty = DependencyProperty.Register(
+      nameof(DisplayValue), typeof(string), typeof(TimeSpanLabel), new PropertyMetadata(string.Empty));
+
+    public string DisplayValue
+    {
+      get => (string)GetValue(DisplayValueProperty);
+      set => SetValue(DisplayValueProperty, value);
+    }
+
+    private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+      if (d is TimeSpanLabel tsl)
+        tsl.UpdateDisplayValue();
     }
 
     private void UpdateDisplayValue()
     {
       if (StringFormat == null || Value == null)
-        this.DataContext = "(nulls)";
+        this.DisplayValue = string.Empty;
       else
       {
         string sf = this.StringFormat;
@@ -64,9 +71,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared
           .Replace("ss", Value.Value.Seconds.ToString("00"))
           .Replace("s", Value.Value.Seconds.ToString())
           .Replace("fff", Value.Value.Milliseconds.ToString("000"))
-          .Replace("ff", Value.Value.Milliseconds.ToString("00"))
-          .Replace("f", Value.Value.Milliseconds.ToString());
-        this.DataContext = tmp;
+          .Replace("ff", (Value.Value.Milliseconds/10).ToString("00"))
+          .Replace("f", (Value.Value.Milliseconds/100).ToString());
+        this.DisplayValue = tmp;
       }
     }
 

@@ -41,13 +41,7 @@
         </Label>
 
         <Label Grid.Column="0" Grid.Row="3" Content="GPS" />
-        <Label Grid.Column="1" Grid.Row="3">
-          <StackPanel Orientation="Horizontal">
-            <TextBlock Text="{Binding Latitude, StringFormat=N5}" />
-            <TextBlock Text=" " />
-            <TextBlock Text="{Binding Longitude, StringFormat=N5}" />
-          </StackPanel>
-        </Label>
+        <shared:GpsLabel Grid.Column="1" Grid.Row="3" Latitude="{Binding Latitude}" Longitude="{Binding Longitude}"/>
 
       </Grid>
     </ScrollViewer>
@@ -71,10 +65,9 @@
         <Label Grid.Row="0" Grid.Column="0">Roll Start Time</Label>
         <Label Grid.Row="0" Grid.Column="1" Content="{Binding RollStartDateTime}" />
         <Label Grid.Row="1" Grid.Column="0">Front-gear-air</Label>
-        <!--<Label Grid.Row="1" Grid.Column="1" Content="{Binding RollToFrontGearTime}" />-->
-        <shared:TimeSpanLabel Grid.Row="1" Grid.Column="1" Value="{Binding RollToFrontGearTime}" StringFormat="h:mm:ss.ff" />
+        <shared:TimeSpanLabel Grid.Row="1" Grid.Column="1" Value="{Binding RollToFrontGearTime}" StringFormat="h:mm:ss.fff" />
         <Label Grid.Row="2" Grid.Column="0">All-gear-air</Label>
-        <Label Grid.Row="2" Grid.Column="1" Content="{Binding RollToAllGearTime}" />
+        <shared:TimeSpanLabel Grid.Row="2" Grid.Column="1" Value="{Binding RollToAllGearTime}" StringFormat="h:mm:ss.fff" />
         <Label Grid.Row="3" Grid.Column="0">Roll Start GPS</Label>
         <Label Grid.Row="3" Grid.Column="1">
           <StackPanel Orientation="Horizontal">
