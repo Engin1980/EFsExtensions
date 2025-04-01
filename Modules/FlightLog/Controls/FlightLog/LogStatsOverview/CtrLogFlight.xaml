@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
+             xmlns:shared="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <DockPanel DataContext="{Binding SelectedFlight}">
@@ -32,7 +33,7 @@
         <StackPanel Orientation="Horizontal">
           <Label Content="Date &amp; Time / Duration / Distance ::" />
           <Label>
-            <TextBlock Text="{Binding StartUp.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            <TextBlock Text="{Binding StartUpScheduledDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
           </Label>
           <Label Content=" / " />
           <Label>
@@ -65,28 +66,28 @@
 
         <Label Grid.Row="1" Grid.Column="0" Content="Off-block" />
         <Label Grid.Row="1" Grid.Column="1">
-          <TextBlock Text="{Binding StartUp.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          <TextBlock Text="{Binding StartUpScheduledDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
         </Label>
         <Label Grid.Row="1" Grid.Column="2">
-          <TextBlock Text="{Binding StartUp.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          <TextBlock Text="{Binding StartUpDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
         </Label>
 
         <Label Grid.Row="2" Grid.Column="0" Content="Take-off" />
         <Label Grid.Row="2" Grid.Column="2">
-          <TextBlock Text="{Binding TakeOff.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          <TextBlock Text="{Binding TakeOffDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
         </Label>
 
         <Label Grid.Row="3" Grid.Column="0" Content="Landing" />
         <Label Grid.Row="3" Grid.Column="2">
-          <TextBlock Text="{Binding Landing.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          <TextBlock Text="{Binding LandingDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
         </Label>
 
         <Label Grid.Row="4" Grid.Column="0" Content="On-block" />
         <Label Grid.Row="4" Grid.Column="1">
-          <TextBlock Text="{Binding ShutDown.ScheduledTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          <TextBlock Text="{Binding ShutDownScheduledDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
         </Label>
         <Label Grid.Row="4" Grid.Column="2">
-          <TextBlock Text="{Binding ShutDown.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          <TextBlock Text="{Binding ShutDownDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
         </Label>
 
       </Grid>
@@ -111,28 +112,28 @@
 
         <Label Grid.Row="1" Grid.Column="0" Content="Off-block" />
         <Label Grid.Row="1" Grid.Column="2">
-          <TextBlock Text="{Binding StartUp.RealFuelAmountKg, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding StartUpFuelWeight, StringFormat={}{0:N0} kg}" />
         </Label>
 
         <Label Grid.Row="2" Grid.Column="0" Content="Take-off" />
         <Label Grid.Row="2" Grid.Column="1">
-          <TextBlock Text="{Binding TakeOff.ScheduledFuelAmountKg, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding TakeOffScheduledFuelWeight, StringFormat={}{0:N0} kg}" />
         </Label>
         <Label Grid.Row="2" Grid.Column="2">
-          <TextBlock Text="{Binding TakeOff.FuelAmountKg, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding TakeOffFuelWeight, StringFormat={}{0:N0} kg}" />
         </Label>
 
         <Label Grid.Row="3" Grid.Column="0" Content="Landing" />
         <Label Grid.Row="3" Grid.Column="1">
-          <TextBlock Text="{Binding Landing.ScheduledFuelAmountKg, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding LandingScheduledFuelWeight, StringFormat={}{0:N0} kg}" />
         </Label>
         <Label Grid.Row="3" Grid.Column="2">
-          <TextBlock Text="{Binding Landing.FuelAmountKg, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding LandingFuelWeight, StringFormat={}{0:N0} kg}" />
         </Label>
 
         <Label Grid.Row="4" Grid.Column="0" Content="On-block" />
         <Label Grid.Row="4" Grid.Column="2">
-          <TextBlock Text="{Binding ShutDown.FuelAmountKg, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding ShutDownFuelWeight, StringFormat={}{0:N0} kg}" />
         </Label>
 
       </Grid>
@@ -143,7 +144,7 @@
       </GroupBox>
       <GroupBox Header="Landings">
         <StackPanel>
-          <DataGrid ItemsSource="{Binding Landing.Touchdowns}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False">
+          <DataGrid ItemsSource="{Binding Touchdowns}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False">
             <DataGrid.Columns>
               <DataGridTextColumn Header="Time" Binding="{Binding DateTime, StringFormat={}{0:HH:mm:ss}}" />
               <DataGridTextColumn Header="IAS" Binding="{Binding IAS, StringFormat={}{0:N0} kt}" />

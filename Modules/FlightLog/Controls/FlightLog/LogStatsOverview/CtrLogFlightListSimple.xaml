@@ -8,7 +8,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
   <DataGrid ItemsSource="{Binding Flights}" SelectedItem="{Binding SelectedFlight}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" >
     <DataGrid.Columns>
-      <DataGridTextColumn Header="Date &amp; Time" Binding="{Binding StartUp.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+      <DataGridTextColumn Header="Date &amp; Time" Binding="{Binding StartUpDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
       <DataGridTextColumn Header="From" Binding="{Binding DepartureICAO}" />
       <DataGridTextColumn Header="To" Binding="{Binding DestinationICAO}" />
       <DataGridTextColumn Header="Div" Binding="{Binding AlternateICAO}" />

@@ -14,6 +14,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models;
+using System.Runtime.CompilerServices;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -123,6 +124,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       List<LogTouchdown> touchdowns = CollectTouchdowns();
 
+      string callsign = runVM.SimBriefCache?.Callsign ?? runVM.VatsimCache?.Callsign ?? "???";
+
       string? departureICAO = runVM.SimBriefCache?.DepartureICAO
         ?? RunVM.VatsimCache?.DepartureICAO
         ?? GetAirportByCoordinates(runVM.StartUpCache!.Latitude, runVM.StartUpCache!.Longitude);
@@ -141,34 +144,51 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       string aircraftRegistration = runVM.SimBriefCache?.AirplaneRegistration ?? RunVM.VatsimCache?.Registration ?? "UNSET"; //TODO get from FS
       string? aircraftModel = RunVM.SimBriefCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft;
       int cruizeAltitude = runVM.SimBriefCache?.Altitude ?? runVM.VatsimCache?.PlannedFlightLevel ?? runVM.MaxAchievedAltitude;
-      double airDistance = runVM.SimBriefCache?.AirDistanceNM ?? TryGetAirDistance(departureICAO, destinationICAO);
+      double airDistance = runVM.SimBriefCache?.AirDistanceNM 
+        ?? TryGetAirDistance(departureICAO, destinationICAO)
+        ?? GpsCalculator.GetDistance(runVM.StartUpCache!.Latitude, runVM.StartUpCache!.Longitude, runVM.ShutDownCache!.Latitude, runVM.ShutDownCache!.Longitude);
       double? routeDistance = runVM.SimBriefCache?.RouteDistanceNM;
-
-      LogStartUp startUp = new(
-        runVM.SimBriefCache?.OffBlockPlannedTime ?? runVM.VatsimCache?.PlannedDepartureTime, runVM.StartUpCache.Time,
-        (int)runVM.StartUpCache.FuelKg,
-        new GPS(runVM.StartUpCache.Latitude, runVM.StartUpCache.Longitude));
-
-      LogTakeOff takeOff = new(
-        runVM.SimBriefCache?.TakeOffPlannedTime, runVM.TakeOffCache.Time,
-        runVM.SimBriefCache?.EstimatedTakeOffFuelKg, runVM.TakeOffCache.FuelKg,
-        new GPS(runVM.TakeOffCache.Latitude, runVM.TakeOffCache.Longitude),
-        (int)runVM.TakeOffCache.IAS);
-
-      LogLanding landing = new(
-        runVM.SimBriefCache?.LandingPlannedTime, runVM.SimBriefCache?.EstimatedLandingFuelKg, runVM.LandingCache!.FuelKg, touchdowns);
-
-      LogShutDown shutDown = new(
-        runVM.SimBriefCache?.OnBlockPlannedTime, runVM.ShutDownCache.Time, runVM.ShutDownCache!.FuelKg,
-        new GPS(runVM.ShutDownCache!.Latitude, runVM.ShutDownCache!.Longitude));
 
       DivertReason divertReason = DivertReason.NotDiverted; //TODO this
 
-      LogFlight ret = new(
-        departureICAO, destinationICAO, alternateICAO, zfw, passengerCount, cargoWeight, fuelWeight,
-        aircraftType, aircraftRegistration, aircraftModel,
-        cruizeAltitude, airDistance, routeDistance,
-        startUp, takeOff, landing, shutDown, divertReason);
+      FlightRules flightRules = runVM.SimBriefCache?.FlightRules ?? runVM.VatsimCache?.FlightType ?? FlightRules.Unknown;
+
+      LogFlight ret = new()
+      {
+        AircraftModel = aircraftModel,
+        AircraftRegistration = aircraftRegistration,
+        AircraftType = aircraftType,
+        AirDistance = airDistance,
+        CargoWeight = cargoWeight,
+        Callsign = callsign,
+        CruizeAltitude = cruizeAltitude,
+        DestinationICAO = destinationICAO,
+        DepartureICAO = departureICAO,
+        AlternateICAO = alternateICAO,
+        DivertReason = divertReason,
+        FlightDistance = routeDistance,
+        FlightRules = flightRules,
+        LandingFuelWeight = runVM.LandingCache!.FuelKg,
+        LandingScheduledFuelWeight = runVM.SimBriefCache?.EstimatedLandingFuelKg,
+        LandingScheduledDateTime = runVM.SimBriefCache?.LandingPlannedTime,
+        PassengerCount = passengerCount,
+        ShutDownScheduledDateTime = runVM.SimBriefCache?.OnBlockPlannedTime,
+        ShutDownFuelWeight = runVM.ShutDownCache!.FuelKg,
+        ShutDownLocation = new GPS(runVM.ShutDownCache!.Latitude, runVM.ShutDownCache!.Longitude),
+        ShutDownDateTime = runVM.ShutDownCache.Time,
+        StartupLocation = new GPS(runVM.StartUpCache.Latitude, runVM.StartUpCache.Longitude),
+        StartUpDateTime = runVM.StartUpCache.Time,
+        StartUpScheduledDateTime = runVM.SimBriefCache?.OffBlockPlannedTime ?? runVM.VatsimCache?.PlannedDepartureTime,
+        StartUpFuelWeight = runVM.StartUpCache.FuelKg,
+        TakeOffFuelWeight = runVM.TakeOffCache.FuelKg,
+        TakeOffIAS = (int)runVM.TakeOffCache.IAS,
+        TakeOffLocation = new GPS(runVM.TakeOffCache.Latitude, runVM.TakeOffCache.Longitude),
+        TakeOffDateTime = runVM.TakeOffCache.Time,
+        TakeOffScheduledFuelWeight = runVM.SimBriefCache?.EstimatedTakeOffFuelKg,
+        TakeOffScheduledDateTime = runVM.SimBriefCache?.TakeOffPlannedTime,
+        Touchdowns = touchdowns,
+        ZFW = zfw
+      };
       return ret;
     }
 
@@ -224,6 +244,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     private void InvalidateSimBriefOrVatsimIfRequired(RunViewModel runVM)
     {
+      EAssert.IsNotNull(runVM.StartUpCache, "StartUpCache not set.");
+
       if (runVM.SimBriefCache != null)
       {
         TimeSpan timeDiff = runVM.SimBriefCache.OffBlockPlannedTime - runVM.StartUpCache.Time;
@@ -270,17 +292,17 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       return GpsCalculator.GetDistance(airport.Coordinate.Latitude, airport.Coordinate.Longitude, latitude, longitude);
     }
 
-    private double TryGetAirDistance(string? departureIcao, string? destinationIcao)
+    private double? TryGetAirDistance(string? departureIcao, string? destinationIcao)
     {
-      double ret;
+      double? ret;
       if (departureIcao == null || destinationIcao == null)
-        ret = double.NaN;
+        ret = null;
       else
       {
         Airport? depAirport = airports.FirstOrDefault(q => q.ICAO == departureIcao);
         Airport? destAirport = airports.FirstOrDefault(q => q.ICAO == destinationIcao);
         if (depAirport == null || destAirport == null)
-          ret = Double.NaN;
+          ret = null;
         else
           ret = GpsCalculator.GetDistance(depAirport.Coordinate, destAirport.Coordinate);
       }

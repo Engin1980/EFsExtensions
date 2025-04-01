@@ -11,6 +11,16 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
     public int PlanTakeoff { get; set; }
   }
 
+  public class Atc
+  {
+    [XmlElement("flight_rules")]
+    public string FlightRules { get; set; } = null!;
+    [XmlElement("route")]
+    public string Route { get; set; } = null!;
+    [XmlElement("callsign")]
+    public string Callsign { get; set; } = null!;
+  }
+
   public class Weights
   {
     [XmlElement("pax_count")]

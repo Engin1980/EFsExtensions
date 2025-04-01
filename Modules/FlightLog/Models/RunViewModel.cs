@@ -26,10 +26,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       public double RollDistance => GpsCalculator.GetDistance(RollStartLatitude, RollStartLongitude, TakeOffLatitude, TakeOffLongitude);
     }
 
-    public record RunModelVatsimCache(string FlightRules, string Callsign, string Aircraft, string? Registration,
+    public record RunModelVatsimCache(FlightRules FlightType, string Callsign, string Aircraft, string? Registration,
       string DepartureICAO, string DestinationICAO, string AlternateICAO, string Route, int PlannedFlightLevel, int CruiseSpeed,
       DateTime PlannedDepartureTime, TimeSpan PlannedRouteTime, TimeSpan FuelDurationTime);
-    public record RunModelSimBriefCache(string DepartureICAO, string DestinationICAO, string AlternateICAO,
+    public record RunModelSimBriefCache(string Callsign, string DepartureICAO, string DestinationICAO, string AlternateICAO,
+      FlightRules FlightRules,
       DateTime OffBlockPlannedTime, DateTime TakeOffPlannedTime, DateTime LandingPlannedTime, DateTime OnBlockPlannedTime,
       int Altitude,
       int AirDistanceNM, int RouteDistanceNM,

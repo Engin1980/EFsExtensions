@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Eng.EFsExtensions.Libs.AirportsLib;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -9,59 +11,52 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 {
   public class LogFlight
   {
-    public string? Callsign { get; set; }
-    public string FlightRules { get; set; } = null!;
-    public string? DepartureICAO { get; set; }
-    public string? DestinationICAO { get; set; }
-    public string? AlternateICAO { get; set; }
-    public double ZFW { get; set; }
-    public int? PassengerCount { get; set; }
-    public int? CargoWeight { get; set; }
-    public int? FuelWeight { get; set; }
-    public string? AircraftType { get; set; }
-    public string? AircraftRegistration { get; set; }
-    public string? AircraftModel { get; set; }
+    public string Callsign { get; set; } = string.Empty;
+    public FlightRules FlightRules { get; set; } = FlightRules.Unknown;
+    public string? DepartureICAO { get; set; } = string.Empty;
+    public string? DestinationICAO { get; set; } = string.Empty;
+    public string? AlternateICAO { get; set; } = string.Empty;
     public int CruizeAltitude { get; set; }
     public double AirDistance { get; set; }
     public double? FlightDistance { get; set; }
-    public TimeSpan? ScheduledFlightDuration => this.ShutDown.ScheduledTime - this.StartUp.ScheduledTime;
-    public LogStartUp StartUp { get; set; } = null!;
-    public LogTakeOff TakeOff { get; set; } = null!;
-    public LogLanding Landing { get; set; } = null!;
-    public LogShutDown ShutDown { get; set; } = null!;
     public DivertReason? DivertReason { get; set; } = null!;
-
-    public TimeSpan DepartureTaxiTime => this.TakeOff.Time - this.StartUp.Time;
-    public TimeSpan ArrivalTaxiTime => this.ShutDown.Time - this.Landing.Time;
+    public GPS StartupLocation { get; set; }
+    public double ZFW { get; set; }
+    public int? PassengerCount { get; set; }
+    public int? CargoWeight { get; set; }
+    public int StartUpFuelWeight { get; set; }
+    public int? ScheduledTakeOffFuelWeight { get; set; }
+    public string? AircraftType { get; set; }
+    public string? AircraftRegistration { get; set; }
+    public string? AircraftModel { get; set; }
+    public DateTime? StartUpScheduledDateTime { get; set; }
+    public DateTime StartUpDateTime { get; set; }
+    public DateTime? TakeOffScheduledDateTime { get; set; }
+    public DateTime TakeOffDateTime { get; set; }
+    public int TakeOffIAS { get; set; }
+    public int? TakeOffScheduledFuelWeight { get; set; }
+    public int TakeOffFuelWeight { get; set; }
+    public GPS TakeOffLocation { get; set; }
+    public DateTime? LandingScheduledDateTime { get; set; }
+    public DateTime LandingDateTime => Touchdowns.Last().DateTime;
+    public DateTime? ScheduledTime { get; set; }
+    public List<LogTouchdown> Touchdowns { get; set; } = null!;
+    public DateTime Time => Touchdowns.Last().DateTime;
+    public int? LandingScheduledFuelWeight { get; set; }
+    public int LandingFuelWeight { get; set; }
+    public GPS LandingLocation => Touchdowns.Last().Location;
+    public int LandingIAS => Touchdowns.Last().IAS;
+    public double LandingBank => Touchdowns.Last().Bank;
+    public double LandingPitch => Touchdowns.Last().Pitch;
+    public DateTime? ShutDownScheduledDateTime { get; set; }
+    public DateTime ShutDownDateTime { get; set; }
+    public int ShutDownFuelWeight { get; set; }
+    public GPS ShutDownLocation { get; set; }
+    public TimeSpan DepartureTaxiTime => this.TakeOffDateTime - this.StartUpDateTime;
+    public TimeSpan ArrivalTaxiTime => this.ShutDownDateTime - this.LandingDateTime;
     public TimeSpan TaxiTime => this.DepartureTaxiTime + this.ArrivalTaxiTime;
-    public TimeSpan AirTime => this.Landing.Time - this.TakeOff.Time;
-    public TimeSpan BlockTime => this.ShutDown.Time - this.StartUp.Time;
-
-    public LogFlight()
-    {
-    }
-
-    public LogFlight(string? departureICAO, string? destinationICAO, string? alternateICAO, double zFW, int? passengerCount, int? cargoWeight, int? fuelWeight, string? aircraftType, string? aircraftRegistration, string? aircraftModel, int cruizeAltitude, double airDistance, double? flightDistance, LogStartUp startUp, LogTakeOff takeOff, LogLanding landing, LogShutDown shutDown, DivertReason? divertReason)
-    {
-      DepartureICAO = departureICAO;
-      DestinationICAO = destinationICAO;
-      AlternateICAO = alternateICAO;
-      ZFW = zFW;
-      PassengerCount = passengerCount;
-      CargoWeight = cargoWeight;
-      FuelWeight = fuelWeight;
-      AircraftType = aircraftType;
-      AircraftRegistration = aircraftRegistration;
-      AircraftModel = aircraftModel;
-      CruizeAltitude = cruizeAltitude;
-      AirDistance = airDistance;
-      FlightDistance = flightDistance;
-      StartUp = startUp;
-      TakeOff = takeOff;
-      Landing = landing;
-      ShutDown = shutDown;
-      DivertReason = divertReason;
-    }
+    public TimeSpan AirTime => this.LandingDateTime - this.TakeOffDateTime;
+    public TimeSpan BlockTime => this.ShutDownDateTime - this.StartUpDateTime;
   }
 
 }

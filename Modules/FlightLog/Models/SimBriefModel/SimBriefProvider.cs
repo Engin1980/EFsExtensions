@@ -49,7 +49,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
       int estLandingFuel = data.Weights.EstLdw - zfw;
 
       RunViewModel.RunModelSimBriefCache ret = new(
+        data.Atc.Callsign,
         data.Origin.IcaoCode, data.Destination.IcaoCode, data.Alternate.IcaoCode,
+        data.Atc.FlightRules == "I" ? FlightRules.IFR : data.Atc.FlightRules == "V" ? FlightRules.VFR : throw new ArgumentException("Unexpected flight rule " + data.Atc.FlightRules + ". Expected I/V."),
         ConvertEpochToDateTime(data.Times.SchedOut), ConvertEpochToDateTime(data.Times.SchedOff), ConvertEpochToDateTime(data.Times.SchedOn), ConvertEpochToDateTime(data.Times.SchedIn),
         data.General.InitialAltitude,
         data.General.AirDistance, data.General.RouteDistance,

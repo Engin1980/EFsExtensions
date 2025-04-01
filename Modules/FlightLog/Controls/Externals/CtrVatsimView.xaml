@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.Externals"
+             xmlns:shared="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <ScrollViewer>
@@ -61,22 +62,10 @@
       </Label>
 
       <Label Grid.Column="0" Grid.Row="8" Content="Planned Enroute Time" />
-      <Label Grid.Column="1" Grid.Row="8" >
-        <StackPanel Orientation="Horizontal">
-          <TextBlock Text="{Binding PlannedRouteTime.Hours}"/>
-          <TextBlock Text=":" />
-          <TextBlock Text="{Binding PlannedRouteTime.Minutes, StringFormat={}{0:00}}"/>
-        </StackPanel>
-      </Label>
+      <shared:TimeSpanLabel Grid.Column="1" Grid.Row="8" Value="{Binding PlannedRouteTime}" />
 
       <Label Grid.Column="0" Grid.Row="9" Content="Fuel Duration" />
-      <Label Grid.Column="1" Grid.Row="9">
-        <StackPanel Orientation="Horizontal" Width="75">
-          <TextBlock Text="{Binding FuelDurationTime.Hours}"/>
-          <TextBlock Text=":" />
-          <TextBlock Text="{Binding FuelDurationTime.Minutes, StringFormat={}{0:00}}"/>
-        </StackPanel>
-      </Label>
+      <shared:TimeSpanLabel Grid.Column="1" Grid.Row="9" Value="{Binding FuelDurationTime}" />
 
       <Label Grid.Column="0" Grid.Row="10" Content="Cruise Speed" />
       <Label Grid.Column="1" Grid.Row="10">

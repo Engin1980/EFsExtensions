@@ -39,6 +39,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
 
     [XmlElement("alternate")]
     public Location Alternate { get; set; } = null!;
+
+    [XmlElement("atc")]
+    public Atc Atc { get; set; } = null!;
   }
 
 }

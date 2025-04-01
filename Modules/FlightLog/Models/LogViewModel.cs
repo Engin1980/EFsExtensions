@@ -17,7 +17,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
     #region Static - comparing
     private class LogFlightComparer : IComparer<LogFlight>
     {
-      public int Compare(LogFlight? x, LogFlight? y) => y!.StartUp.Time.CompareTo(x!.StartUp.Time);
+      public int Compare(LogFlight? x, LogFlight? y) => y!.StartUpDateTime.CompareTo(x!.StartUpDateTime);
     }
     private static LogFlightComparer logFlightComparer = new();
     #endregion
@@ -30,7 +30,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       flightsManager.NewFlightLogged += f => AddFlight(f);
       flightsManager.StatsUpdated += FlightsManager_StatsUpdated;
 
-      Flights = flightsManager.Flights.OrderByDescending(q => q.StartUp.Time).ToBindingList();
+      Flights = flightsManager.Flights.OrderByDescending(q => q.StartUpDateTime).ToBindingList();
       RecentFlight = Flights.LastOrDefault();
       SelectedFlight = null;
 
