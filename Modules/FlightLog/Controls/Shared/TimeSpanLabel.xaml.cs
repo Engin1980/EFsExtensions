@@ -30,7 +30,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared
     }
 
     private static readonly DependencyProperty StringFormatProperty = DependencyProperty.Register(
-      nameof(StringFormat), typeof(string), typeof(TimeSpanLabel), new PropertyMetadata(null, OnValueChanged));
+      nameof(StringFormat), typeof(string), typeof(TimeSpanLabel), new PropertyMetadata("d. h:mm:ss", OnValueChanged));
 
     public string? StringFormat
     {

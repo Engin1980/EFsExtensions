@@ -61,6 +61,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public int TakeOffIAS => TakeOff.IAS;
     public GPS LandingLocation => Touchdowns.Last().Location;
     public DateTime LandingDateTime => Touchdowns.Last().DateTime;
+    public TimeSpan FlightDuration => LandingDateTime - TakeOffDateTime;
+    public TimeSpan TotalDuration => ShutDownDateTime - StartUpDateTime;
 
     public void CheckValidity(out bool resaveNeeded)
     {

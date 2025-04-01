@@ -16,7 +16,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
     public double MaxBank { get; set; }
     public double MaxPitch { get; set; }
     public double MaxAccY { get; set; }
-    public TimeSpan MainGearTime { get; set; }
+    public TimeSpan FrontGearTime { get; set; }
     public TimeSpan AllGearTime { get; set; }
     public double RunLength => GpsCalculator.GetDistance(RunStartLocation, AirborneLocation);
   }

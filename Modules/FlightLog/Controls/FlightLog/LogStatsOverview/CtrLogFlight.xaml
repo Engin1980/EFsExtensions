@@ -7,6 +7,9 @@
              xmlns:shared="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+  <UserControl.Resources>
+    <local:DistanceUnitConverter x:Key="DistanceUnitConverter" />
+  </UserControl.Resources>
   <DockPanel DataContext="{Binding SelectedFlight}">
     <GroupBox DockPanel.Dock="Top" Header="Overview">
       <StackPanel>
@@ -31,17 +34,17 @@
           <Label Content="{Binding AlternateICAO}" />
         </StackPanel>
         <StackPanel Orientation="Horizontal">
-          <Label Content="Date &amp; Time / Duration / Distance ::" />
+          <Label Content="Date &amp; Time / Duration-All / Duration-Flight / Distance ::" />
           <Label>
-            <TextBlock Text="{Binding StartUpScheduledDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            <TextBlock Text="{Binding StartUpDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
           </Label>
           <Label Content=" / " />
-          <Label>
-            <TextBlock Text="{Binding FlightDuration, StringFormat={}{0:yyyy-MM-dd HH:mm}}" TextAlignment="Right" />
-          </Label>
+          <shared:TimeSpanLabel Value="{Binding TotalDuration}" StringFormat="h:mm" />
+          <Label Content=" / " />
+          <shared:TimeSpanLabel Value="{Binding FlightDuration}" StringFormat="h:mm" />
           <Label Content=" / " />
           <Label>
-            <TextBlock Text="{Binding AirDistance, StringFormat={}{0:N0} NM}" />
+            <TextBlock Text="{Binding AirDistance, StringFormat={}{0:N0} NM, Converter={StaticResource DistanceUnitConverter}, ConverterParameter=m2NM }" />
           </Label>
         </StackPanel>
       </StackPanel>
@@ -140,7 +143,59 @@
     </GroupBox>
     <StackPanel>
       <GroupBox Header="Take-Off">
-        <Label>Work in Progress...</Label>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+          <Grid DataContext="{Binding TakeOff}">
+            <Grid.RowDefinitions>
+              <RowDefinition />
+              <RowDefinition />
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="0" Content="Length" />
+            <Label Grid.Row="1" Grid.Column="0">
+              <TextBlock Text="{Binding RunLength, StringFormat={}{0:N0} m}" />
+            </Label>
+
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="1" Content="Front Gear" />
+            <shared:TimeSpanLabel Grid.Row="1" Grid.Column="1" Value="{Binding FrontGearTime}" StringFormat="s.fff" />
+
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="2" Content="All Gear" />
+            <shared:TimeSpanLabel Grid.Row="1" Grid.Column="2" Value="{Binding AllGearTime}" StringFormat="s.fff" />
+
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="3" Content="IAS" />
+            <Label Grid.Row="1" Grid.Column="3">
+              <TextBlock Text="{Binding IAS, StringFormat={}{0:N0} kt}" />
+            </Label>
+
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="4" Content="MaxVS" />
+            <Label Grid.Row="1" Grid.Column="4">
+              <TextBlock Text="{Binding MaxVS, StringFormat={}{0:N0} ft/min}" />
+            </Label>
+
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="5" Content="MaxAccY" />
+            <Label Grid.Row="1" Grid.Column="5">
+              <TextBlock Text="{Binding MaxAccY, StringFormat={}{0:N3}}" />
+            </Label>
+
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="6" Content="MaxPitch" />
+            <Label Grid.Row="1" Grid.Column="6">
+              <TextBlock Text="{Binding MaxPitch, StringFormat={}{0:N2}°}" />
+            </Label>
+            
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="7" Content="MaxBank" />
+            <Label Grid.Row="1" Grid.Column="7">
+              <TextBlock Text="{Binding MaxBank, StringFormat={}{0:N2}°}" />
+            </Label>
+          </Grid>
+        </ScrollViewer>
       </GroupBox>
       <GroupBox Header="Landings">
         <StackPanel>

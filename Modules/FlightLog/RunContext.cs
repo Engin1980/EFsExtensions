@@ -166,7 +166,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         MaxBank = runVM.TakeOffAttempt.MaxBank,
         MaxPitch = runVM.TakeOffAttempt.MaxPitch,
         MaxAccY = runVM.TakeOffAttempt.MaxAccY,
-        MainGearTime = runVM.TakeOffAttempt.RollToFrontGearTime,
+        FrontGearTime = runVM.TakeOffAttempt.RollToFrontGearTime,
         AllGearTime = runVM.TakeOffAttempt.RollToAllGearTime
       };
 
