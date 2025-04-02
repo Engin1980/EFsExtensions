@@ -13,9 +13,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
 {
   public class RunViewModel : NotifyPropertyChanged
   {
-    public record LandingAttemptData(double Bank, double Pitch, double IAS, double VS, double MainGearTime, double AllGearTime,
-      double MaxAccY, DateTime DateTime,
-      double Latitude, double Longitude);
+    public record LandingAttemptData(double Bank, double Pitch, double IAS, double VS, 
+      TimeSpan MainGearTime, 
+      TimeSpan AllGearTime,
+      double MaxAccY, 
+      DateTime TouchDownDateTime, double TouchDownLatitude, double TouchDownLongitude,
+      DateTime? RollOutEndDateTime, double? RollOutEndLatitude, double? RollOutEndLongitude);
 
     public record TakeOffAttemptData(double MaxBank, double MaxPitch, double IAS, double MaxVS,
       TimeSpan RollToFrontGearTime, TimeSpan RollToAllGearTime,

@@ -208,7 +208,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     private List<LogTouchdown> CollectTouchdowns()
     {
-      List<LogTouchdown> ret = new List<LogTouchdown>();
+      List<LogTouchdown> ret = new();
 
       List<List<RunViewModel.LandingAttemptData>> groups = new();
       DateTime last = DateTime.MinValue;
@@ -223,7 +223,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           };
           groups.Add(tmp);
         }
-        else if (la.DateTime.Subtract(last).TotalSeconds < 20)
+        else if (la.TouchDownDateTime.Subtract(last).TotalSeconds < 20)
         {
           groups.Last().Add(la);
         }
@@ -235,21 +235,25 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           };
           groups.Add(tmp);
         }
-        last = la.DateTime;
+        last = la.TouchDownDateTime;
       }
 
       foreach (var group in groups)
       {
+        RunViewModel.LandingAttemptData f = group.First();
+        RunViewModel.LandingAttemptData l = group.Last();
         LogTouchdown lt = new()
         {
-          DateTime = group.First().DateTime,
-          Location = new GPS(group.First().Latitude, group.First().Longitude),
-          IAS = (int)Math.Round(group.First().IAS),
-          Bank = group.First().Bank,
-          Pitch = group.First().Pitch,
+          TouchDownDateTime = f.TouchDownDateTime,
+          TouchDownLocation = new GPS(f.TouchDownLatitude, f.TouchDownLongitude),
+          RollOutEndDateTime = l.RollOutEndDateTime,
+          RollOutEndLocation = l.RollOutEndDateTime == null ? null : new GPS(l.RollOutEndLatitude!.Value, l.RollOutEndLongitude!.Value),
+          IAS = (int)Math.Round(f.IAS),
+          Bank = f.Bank,
+          Pitch = f.Pitch,
           MaxAccY = group.Max(q => q.MaxAccY),
-          AllGearTime = group.Last().DateTime.Subtract(group.First().DateTime).TotalSeconds, //TODO really last?
-          MainGearTime = group.Last().DateTime.Subtract(group.First().DateTime).TotalSeconds
+          AllGearTime = l.AllGearTime,
+          MainGearTime = l.MainGearTime
         };
         ret.Add(lt);
       }
@@ -352,7 +356,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       if (this.simPropValues.IsFlying)
       {
-        if (this.landingDetector == null && this.simPropValues.Height < 125)
+        if (this.landingDetector == null && this.simPropValues.Height < 125) //TODO remove magic numbers
         {
           this.landingDetector = new(this.simObj, this.RunVM);
           this.landingDetector.AttemptRecorded += r => this.RunVM.LandingAttempts.Add(r);

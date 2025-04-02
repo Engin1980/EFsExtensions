@@ -31,7 +31,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
       DescriptiveLogStats.Add(new("Takeoff Bank", q => q.TakeOff.MaxBank, "{0:N0}°"));
       DescriptiveLogStats.Add(new("Takeoff Pitch", q => q.TakeOff.MaxPitch, "{0:N0}°"));
       DescriptiveLogStats.Add(new("Takeoff MaxAccY", q => q.TakeOff.MaxAccY, "{0:N0}"));
-      DescriptiveLogStats.Add(new("Takeoff Run", q => q.TakeOff.RunLength, "{0:N3} NM"));
+      DescriptiveLogStats.Add(new("Takeoff Run", q => q.TakeOff.Length, "{0:N3} NM"));
 
       DescriptiveLogStats.Add(new("Landing VS", q => q.Touchdowns.Last().VS, "{0:N3} ft/min"));
       DescriptiveLogStats.Add(new("Landing IAS", q => q.Touchdowns.Last().IAS, "{0:N0} kt"));

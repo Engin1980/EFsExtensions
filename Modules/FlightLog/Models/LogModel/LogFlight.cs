@@ -55,11 +55,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public TimeSpan ArrivalTaxiTime => this.ShutDownDateTime - this.LandingDateTime;
     public TimeSpan TaxiTime => this.DepartureTaxiTime + this.ArrivalTaxiTime;
     public TimeSpan AirTime => this.LandingDateTime - this.TakeOffDateTime;
-    public DateTime Time => Touchdowns.Last().DateTime;
+    public DateTime Time => Touchdowns.Last().TouchDownDateTime;
     public TimeSpan BlockTime => this.ShutDownDateTime - this.StartUpDateTime;
     public int TakeOffIAS => TakeOff.IAS;
-    public GPS LandingLocation => Touchdowns.Last().Location;
-    public DateTime LandingDateTime => Touchdowns.Last().DateTime;
+    public GPS LandingLocation => Touchdowns.Last().TouchDownLocation;
+    public DateTime LandingDateTime => Touchdowns.Last().TouchDownDateTime;
     public TimeSpan FlightDuration => LandingDateTime - TakeOffDateTime;
     public TimeSpan TotalDuration => ShutDownDateTime - StartUpDateTime;
 

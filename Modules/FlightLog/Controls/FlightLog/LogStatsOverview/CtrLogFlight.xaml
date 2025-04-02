@@ -163,40 +163,47 @@
               <ColumnDefinition />
               <ColumnDefinition />
               <ColumnDefinition />
+              <ColumnDefinition />
             </Grid.ColumnDefinitions>
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="0" Content="Length" />
+
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="0" Content="Time" />
             <Label Grid.Row="1" Grid.Column="0">
-              <TextBlock Text="{Binding RunLength, StringFormat={}{0:N0} m}" />
+              <TextBlock Text="N/A" />
             </Label>
 
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="1" Content="Front Gear" />
-            <shared:TimeSpanLabel Grid.Row="1" Grid.Column="1" Value="{Binding FrontGearTime}" StringFormat="s.fff" />
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="1" Content="Length" />
+            <Label Grid.Row="1" Grid.Column="1">
+              <TextBlock Text="{Binding Length, StringFormat={}{0:N0} m}" />
+            </Label>
 
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="2" Content="All Gear" />
-            <shared:TimeSpanLabel Grid.Row="1" Grid.Column="2" Value="{Binding AllGearTime}" StringFormat="s.fff" />
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="2" Content="Front Gear" />
+            <shared:TimeSpanLabel Grid.Row="1" Grid.Column="2" Value="{Binding FrontGearTime}" StringFormat="s.fff" />
 
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="3" Content="IAS" />
-            <Label Grid.Row="1" Grid.Column="3">
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="3" Content="All Gear" />
+            <shared:TimeSpanLabel Grid.Row="1" Grid.Column="3" Value="{Binding AllGearTime}" StringFormat="s.fff" />
+
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="4" Content="IAS" />
+            <Label Grid.Row="1" Grid.Column="4">
               <TextBlock Text="{Binding IAS, StringFormat={}{0:N0} kt}" />
             </Label>
 
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="4" Content="MaxVS" />
-            <Label Grid.Row="1" Grid.Column="4">
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="5" Content="MaxVS" />
+            <Label Grid.Row="1" Grid.Column="5">
               <TextBlock Text="{Binding MaxVS, StringFormat={}{0:N0} ft/min}" />
             </Label>
 
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="5" Content="MaxAccY" />
-            <Label Grid.Row="1" Grid.Column="5">
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="6" Content="MaxAccY" />
+            <Label Grid.Row="1" Grid.Column="6">
               <TextBlock Text="{Binding MaxAccY, StringFormat={}{0:N3}}" />
             </Label>
 
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="6" Content="MaxPitch" />
-            <Label Grid.Row="1" Grid.Column="6">
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="7" Content="MaxPitch" />
+            <Label Grid.Row="1" Grid.Column="7">
               <TextBlock Text="{Binding MaxPitch, StringFormat={}{0:N2}°}" />
             </Label>
 
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="7" Content="MaxBank" />
-            <Label Grid.Row="1" Grid.Column="7">
+            <DataGridColumnHeader  Grid.Row="0" Grid.Column="8" Content="MaxBank" />
+            <Label Grid.Row="1" Grid.Column="8">
               <TextBlock Text="{Binding MaxBank, StringFormat={}{0:N2}°}" />
             </Label>
           </Grid>
@@ -206,7 +213,22 @@
         <StackPanel>
           <DataGrid ItemsSource="{Binding Touchdowns}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False">
             <DataGrid.Columns>
-              <DataGridTextColumn Header="Time" Binding="{Binding DateTime, StringFormat={}{0:HH:mm:ss}}" />
+              <DataGridTextColumn Header="Time" Binding="{Binding TouchDownDateTime, StringFormat={}{0:HH:mm:ss}}" />
+              <DataGridTextColumn Header="Length" Binding="{Binding Length, StringFormat={}{0:N0} m}" />
+              <DataGridTemplateColumn Header="L/R Gear">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate>
+                    <shared:TimeSpanLabel Value="{Binding MainGearTime}" StringFormat="s.fff" />
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTemplateColumn Header="All Gear">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate>
+                    <shared:TimeSpanLabel Value="{Binding AllGearTime}" StringFormat="s.fff" />
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
               <DataGridTextColumn Header="IAS" Binding="{Binding IAS, StringFormat={}{0:N0} kt}" />
               <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" />
               <DataGridTextColumn Header="Acc-Y" Binding="{Binding MaxAccY, StringFormat={}{0:N3}}" />

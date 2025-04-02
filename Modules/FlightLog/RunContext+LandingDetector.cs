@@ -59,6 +59,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     private class LandingDetector : IDisposable
     {
+      private const int GEAR_IN_AIR = 0;
+
       private class RecordingData
       {
         public int gear0Count;
@@ -70,13 +72,17 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         public double ias;
         public double vs;
         public double maxAccY;
-        public DateTime? dateTime;
-        public double latitude;
-        public double longitude;
+        public DateTime? touchDownDateTime;
+        public double touchDownLatitude;
+        public double touchDownLongitude;
+        public DateTime? rollOutEndDateTime;
+        public double rollOutEndLatitude;
+        public double rollOutEndLongitude;
       }
 
       private readonly NewSimObject simObj;
       private readonly RunViewModel runVM;
+      private bool isCompleted = false;
       private RequestId? requestId;
       private bool isDisposed = false;
       private readonly RecordingData current = new();
@@ -107,13 +113,15 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       private void UpdateByData(LandingStruct data)
       {
-        if (data.gear0 + data.gear1 + data.gear2 == 0)
+        if (isCompleted) return;
+
+        if (data.gear0 + data.gear1 + data.gear2 == GEAR_IN_AIR)
         {
           // is flying
           current.notGroundCount++;
 
           // is flying long (over 50*20ms) and was on ground
-          if (current.notGroundCount > 50 && current.gear0Count + current.gear1Count + current.gear2Count > 0)
+          if (current.notGroundCount > 50 && current.gear0Count + current.gear1Count + current.gear2Count > GEAR_IN_AIR)
           {
             CloseCurrentAttempt();
           }
@@ -136,12 +144,22 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
             current.pitch = data.pitch;
             current.ias = data.ias;
             current.vs = data.vs;
-            current.dateTime = DateTime.UtcNow;
+            current.touchDownDateTime = DateTime.UtcNow;
 
-            current.latitude = data.latitude;
-            current.longitude = data.longitude;
+            current.touchDownLatitude = data.latitude;
+            current.touchDownLongitude = data.longitude;
 
             current.notGroundCount = 0;
+          }
+
+          if (data.ias < 15)
+          {
+            // becoming taxi
+            current.rollOutEndDateTime = DateTime.UtcNow;
+            current.rollOutEndLatitude = data.latitude;
+            current.rollOutEndLongitude = data.longitude;
+            this.isCompleted = true;
+            CloseCurrentAttempt();
           }
         }
       }
@@ -149,7 +167,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private void CloseCurrentAttempt()
       {
         // no active landing in progress
-        if (this.current.dateTime == null)
+        if (this.current.touchDownDateTime == null)
           return;
 
         double mainGearTime = Math.Abs(this.current.gear1Count - this.current.gear2Count) * (1 / 50d);
@@ -163,12 +181,15 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           this.current.pitch,
           this.current.ias,
           this.current.vs,
-          mainGearTime,
-          allGearTime,
+          TimeSpan.FromSeconds(mainGearTime),
+          TimeSpan.FromSeconds(allGearTime),
           this.current.maxAccY,
-          this.current.dateTime.Value,
-          this.current.latitude,
-          this.current.longitude);
+          this.current.touchDownDateTime.Value,
+          this.current.touchDownLatitude,
+          this.current.touchDownLongitude,
+          this.current.rollOutEndDateTime,
+          this.current.rollOutEndLatitude,
+          this.current.rollOutEndLongitude);
 
         // reset current:
         current.bank = 0;
@@ -180,7 +201,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         current.gear0Count = 0;
         current.maxAccY = 0;
         current.notGroundCount = 51; // to behave like not on ground for more than second
-        current.dateTime = null;
+        current.touchDownDateTime = null;
+        current.rollOutEndDateTime = null;
 
         this.AttemptRecorded?.Invoke(item);
       }
@@ -193,7 +215,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         this.simObj.ESimCon.DataReceived -= SimCon_DataReceived;
         this.isDisposed = true;
 
-        CloseCurrentAttempt();
+        if (!isCompleted)
+          CloseCurrentAttempt();
       }
 
       public void Dispose()
