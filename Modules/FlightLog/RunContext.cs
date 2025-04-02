@@ -148,10 +148,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       string aircraftRegistration = runVM.SimBriefCache?.AirplaneRegistration ?? RunVM.VatsimCache?.Registration ?? "UNSET"; //TODO get from FS
       string? aircraftModel = RunVM.SimBriefCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft;
       int cruizeAltitude = runVM.SimBriefCache?.Altitude ?? runVM.VatsimCache?.PlannedFlightLevel ?? runVM.MaxAchievedAltitude;
-      double airDistance = runVM.SimBriefCache?.AirDistanceNM
-        ?? TryGetAirDistance(departureICAO, destinationICAO) / 1_000
+      double distance = runVM.SimBriefCache?.AirDistanceNM * 1.852  // is in NM
+        ?? TryGetAirDistance(departureICAO, destinationICAO) / 1_000 // is in m
         ?? GpsCalculator.GetDistance(runVM.StartUpCache!.Latitude, runVM.StartUpCache!.Longitude, runVM.ShutDownCache!.Latitude, runVM.ShutDownCache!.Longitude) / 1_000;
-      double? routeDistance = runVM.SimBriefCache?.RouteDistanceNM;
 
       DivertReason divertReason = DivertReason.NotDiverted; //TODO this
 
@@ -175,7 +174,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         AircraftModel = aircraftModel,
         AircraftRegistration = aircraftRegistration,
         AircraftType = aircraftType,
-        AirDistance = airDistance,
+        Distance = distance,
         CargoWeight = cargoWeight,
         Callsign = callsign,
         CruizeAltitude = cruizeAltitude,
@@ -183,7 +182,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         DepartureICAO = departureICAO,
         AlternateICAO = alternateICAO,
         DivertReason = divertReason,
-        FlightDistance = routeDistance,
         FlightRules = flightRules,
         LandingFuelWeight = runVM.LandingCache!.FuelKg,
         LandingScheduledFuelWeight = runVM.SimBriefCache?.EstimatedLandingFuelKg,

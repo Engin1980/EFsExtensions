@@ -20,8 +20,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public string? DestinationICAO { get; set; } = string.Empty;
     public string? AlternateICAO { get; set; } = string.Empty;
     public int CruizeAltitude { get; set; }
-    public double AirDistance { get; set; }
-    public double? FlightDistance { get; set; }
+    public double Distance { get; set; }
     public DivertReason? DivertReason { get; set; } = null!;
     public GPS StartupLocation { get; set; }
     public double ZFW { get; set; }

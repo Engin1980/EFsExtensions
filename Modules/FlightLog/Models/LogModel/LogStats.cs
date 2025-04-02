@@ -22,7 +22,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
       DescriptiveLogStats.Add(new("Block Time", q => q.BlockTime.Ticks, ValueStringFormatter: q => new TimeSpan((long)q).ToString(@"h\:mm\:ss")));
       DescriptiveLogStats.Add(new("Air Time Ratio", q => q.AirTime.TotalSeconds * 100 / q.BlockTime.TotalSeconds, "{0:N1} %"));
 
-      DescriptiveLogStats.Add(new("Distance", q => q.FlightDistance, "{0:N0} NM"));
+      DescriptiveLogStats.Add(new("Distance", q => q.Distance, "{0:N0} NM"));
       DescriptiveLogStats.Add(new("Fuel Used", q => q.StartUpFuelWeight - q.ShutDownFuelWeight, "{0:N0} kg"));
       DescriptiveLogStats.Add(new("Landing Fuel", q => q.LandingFuelWeight, "{0:N0} kg"));
 

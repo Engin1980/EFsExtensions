@@ -45,9 +45,9 @@
           <Label Content=" / " />
           <Label>
             <StackPanel Orientation="Horizontal">
-              <TextBlock Text="{Binding FlightDistance, StringFormat={}{0:N0} km, Converter={StaticResource DistanceUnitConverter}, ConverterParameter=km2km }" />
+              <TextBlock Text="{Binding Distance, StringFormat={}{0:N0} km, Converter={StaticResource DistanceUnitConverter}, ConverterParameter=km2km }" />
               <TextBlock Text=" ("/>
-              <TextBlock Text="{Binding FlightDistance, StringFormat={}{0:N0} NM, Converter={StaticResource DistanceUnitConverter}, ConverterParameter=km2NM }" />
+              <TextBlock Text="{Binding Distance, StringFormat={}{0:N0} NM, Converter={StaticResource DistanceUnitConverter}, ConverterParameter=km2NM }" />
               <TextBlock Text=")"/>
             </StackPanel>
           </Label>
