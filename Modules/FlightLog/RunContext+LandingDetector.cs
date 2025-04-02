@@ -47,6 +47,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       [DataDefinition(SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED, SimUnits.Speed.KNOT)]
       public double ias;
 
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.SURFACE_RELATIVE_GROUND_SPEED, SimUnits.Speed.KNOT)]
+      public double gs;
+
       [DataDefinition(SimVars.Aircraft.Miscelaneous.ACCELERATION_BODY_Y)]
       public double accelerationY;
 
@@ -71,6 +74,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         public double pitch;
         public double ias;
         public double vs;
+        public double gs;
         public double maxAccY;
         public DateTime? touchDownDateTime;
         public double touchDownLatitude;
@@ -144,6 +148,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
             current.pitch = data.pitch;
             current.ias = data.ias;
             current.vs = data.vs;
+            current.gs = data.gs;
             current.touchDownDateTime = DateTime.UtcNow;
 
             current.touchDownLatitude = data.latitude;
@@ -181,6 +186,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           this.current.pitch,
           this.current.ias,
           this.current.vs,
+          this.current.gs,
           TimeSpan.FromSeconds(mainGearTime),
           TimeSpan.FromSeconds(allGearTime),
           this.current.maxAccY,

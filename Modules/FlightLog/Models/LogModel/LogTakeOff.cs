@@ -13,6 +13,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
     public GPS AirborneLocation { get; set; }
     public double MaxVS { get; set; }
     public int IAS { get; set; }
+    public int GS { get; set; }
     public double MaxBank { get; set; }
     public double MaxPitch { get; set; }
     public double MaxAccY { get; set; }

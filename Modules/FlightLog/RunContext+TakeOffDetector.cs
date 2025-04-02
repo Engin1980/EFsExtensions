@@ -42,6 +42,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       [DataDefinition(SimVars.Aircraft.Miscelaneous.AIRSPEED_INDICATED, SimUnits.Speed.KNOT)]
       public double ias;
 
+      [DataDefinition(SimVars.Aircraft.Miscelaneous.SURFACE_RELATIVE_GROUND_SPEED, SimUnits.Speed.KNOT)]
+      public double gs;
+
       [DataDefinition(SimVars.Aircraft.Miscelaneous.ACCELERATION_BODY_Y)]
       public double accelerationY;
 
@@ -57,21 +60,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public class TakeOffDetector
     {
-      private class RecordingData
-      {
-        public int gear0Count;
-        public int gear1Count;
-        public int gear2Count;
-        public int notGroundCount;
-        public double bank;
-        public double pitch;
-        public double ias;
-        public double vs;
-        public double maxAccY;
-        public DateTime? dateTime;
-        public double latitude;
-        public double longitude;
-      }
       private class TakeOffRunData
       {
         public readonly List<TakeOffRunList> takeOffRunList = new();
@@ -80,6 +68,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         public double? allGearInAirLatitude = null;
         public double? allGearInAirLongitude = null;
         public double? allGearInAirIas = null;
+        public double? allGearInAirGs = null;
         public double maxBank = 0;
         public double maxPitch = 0;
         public DateTime? maxPitchDateTime = null;
@@ -167,6 +156,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
             runData.allGearInAirLatitude = data.latitude;
             runData.allGearInAirLongitude = data.longitude;
             runData.allGearInAirIas = data.ias;
+            runData.allGearInAirGs = data.gs;
             runData.maxBank = 0;
             runData.maxPitch = 0;
             runData.maxVs = 0;
@@ -196,7 +186,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         if (runData.allGearInAirDateTime == null)
           return;
 
-        double maxBank; double maxPitch; double ias; double maxVS;
+        double maxBank; double maxPitch; double ias; double gs; double maxVS;
         TimeSpan rollToFrontGearTime; TimeSpan rollToAllGearTime;
         double maxAccY; DateTime rollStartDateTime;
         double rollStartLatitude; double rollStartLongitude;
@@ -207,6 +197,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         maxBank = runData.maxBank;
         maxPitch = runData.maxPitch;
         ias = runData.allGearInAirIas!.Value;
+        gs = runData.allGearInAirGs!.Value;
         maxVS = runData.maxVs;
         rollToFrontGearTime = runData.noseGearInAirDateTime!.Value - takeOffRunStart.dateTime;
         rollToAllGearTime = runData.allGearInAirDateTime!.Value - takeOffRunStart.dateTime;
@@ -219,7 +210,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
 
         TakeOffAttemptData toad = new(
-          maxBank, maxPitch, ias, maxVS, rollToFrontGearTime, rollToAllGearTime, maxAccY, rollStartDateTime,
+          maxBank, maxPitch, ias, gs, maxVS, rollToFrontGearTime, rollToAllGearTime, maxAccY, rollStartDateTime,
           rollStartLatitude, rollStartLongitude, takeOffLatitude, takeOffLongitude);
 
         this.AttemptRecorded?.Invoke(toad);

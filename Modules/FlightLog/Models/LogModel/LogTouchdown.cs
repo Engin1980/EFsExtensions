@@ -10,6 +10,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public GPS? RollOutEndLocation { get; set; }
     public double VS { get; set; }
     public int IAS { get; set; }
+    public int GS { get; set; }
     public double Bank { get; set; }
     public double Pitch { get; set; }
     public double MaxAccY { get; set; }
