@@ -44,7 +44,12 @@
           <shared:TimeSpanLabel Value="{Binding FlightDuration}" StringFormat="h:mm" />
           <Label Content=" / " />
           <Label>
-            <TextBlock Text="{Binding AirDistance, StringFormat={}{0:N0} NM, Converter={StaticResource DistanceUnitConverter}, ConverterParameter=m2NM }" />
+            <StackPanel Orientation="Horizontal">
+              <TextBlock Text="{Binding FlightDistance, StringFormat={}{0:N0} km, Converter={StaticResource DistanceUnitConverter}, ConverterParameter=km2km }" />
+              <TextBlock Text=" ("/>
+              <TextBlock Text="{Binding FlightDistance, StringFormat={}{0:N0} NM, Converter={StaticResource DistanceUnitConverter}, ConverterParameter=km2NM }" />
+              <TextBlock Text=")"/>
+            </StackPanel>
           </Label>
         </StackPanel>
       </StackPanel>
@@ -189,7 +194,7 @@
             <Label Grid.Row="1" Grid.Column="6">
               <TextBlock Text="{Binding MaxPitch, StringFormat={}{0:N2}°}" />
             </Label>
-            
+
             <DataGridColumnHeader  Grid.Row="0" Grid.Column="7" Content="MaxBank" />
             <Label Grid.Row="1" Grid.Column="7">
               <TextBlock Text="{Binding MaxBank, StringFormat={}{0:N2}°}" />

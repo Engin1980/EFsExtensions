@@ -136,7 +136,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
             current.pitch = data.pitch;
             current.ias = data.ias;
             current.vs = data.vs;
-            current.dateTime = DateTime.Now;
+            current.dateTime = DateTime.UtcNow;
 
             current.latitude = data.latitude;
             current.longitude = data.longitude;

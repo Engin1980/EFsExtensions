@@ -53,27 +53,27 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
 
       // DEBUG STUFF, DELETE LATER
-      UpdateSimbriefAndVatsimIfRequired();
-      this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now.AddMinutes(-70), 49000, 174 * 95, 5500, 52.8, -118.08);
-      this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now.AddMinutes(-60), 5200, 137, 11, 22);
-      this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now.AddMinutes(-10), 2100, 120, 11, 22);
-      this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
-      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
-      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 12, 23));
-      this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
-      this.RunVM.TakeOffAttempt = new RunViewModel.TakeOffAttemptData(
-        0.21243, 19.412, 154, 3400.13213,
-        new TimeSpan(0, 0, 0, 43, 121), new TimeSpan(0, 0, 0, 48, 313),
-        13.1413,
-        DateTime.Now.AddMinutes(-180),
-        54.137132, -12.12313,
-        54.137239, -12.12398);
+      //UpdateSimbriefAndVatsimIfRequired();
+      //this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now.AddMinutes(-70), 49000, 174 * 95, 5500, 52.8, -118.08);
+      //this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now.AddMinutes(-60), 5200, 137, 11, 22);
+      //this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now.AddMinutes(-10), 2100, 120, 11, 22);
+      //this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
+      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
+      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 12, 23));
+      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
+      //this.RunVM.TakeOffAttempt = new RunViewModel.TakeOffAttemptData(
+      //  0.21243, 19.412, 154, 3400.13213,
+      //  new TimeSpan(0, 0, 0, 43, 121), new TimeSpan(0, 0, 0, 48, 313),
+      //  13.1413,
+      //  DateTime.Now.AddMinutes(-180),
+      //  54.137132, -12.12313,
+      //  54.137239, -12.12398);
 
-      var fl = GenerateLogFlight(this.RunVM);
-      fl.DepartureICAO = "CYVR";
-      fl.DestinationICAO = "CYYC";
-      fl.AlternateICAO = "CYEG";
-      flightsManager.StoreNewFlight(fl);
+      //var fl = GenerateLogFlight(this.RunVM);
+      //fl.DepartureICAO = "CYVR";
+      //fl.DestinationICAO = "CYYC";
+      //fl.AlternateICAO = "CYEG";
+      //flightsManager.StoreNewFlight(fl);
 
       // this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }
@@ -149,8 +149,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       string? aircraftModel = RunVM.SimBriefCache?.AirplaneType ?? RunVM.VatsimCache?.Aircraft;
       int cruizeAltitude = runVM.SimBriefCache?.Altitude ?? runVM.VatsimCache?.PlannedFlightLevel ?? runVM.MaxAchievedAltitude;
       double airDistance = runVM.SimBriefCache?.AirDistanceNM
-        ?? TryGetAirDistance(departureICAO, destinationICAO)
-        ?? GpsCalculator.GetDistance(runVM.StartUpCache!.Latitude, runVM.StartUpCache!.Longitude, runVM.ShutDownCache!.Latitude, runVM.ShutDownCache!.Longitude);
+        ?? TryGetAirDistance(departureICAO, destinationICAO) / 1_000
+        ?? GpsCalculator.GetDistance(runVM.StartUpCache!.Latitude, runVM.StartUpCache!.Longitude, runVM.ShutDownCache!.Latitude, runVM.ShutDownCache!.Longitude) / 1_000;
       double? routeDistance = runVM.SimBriefCache?.RouteDistanceNM;
 
       DivertReason divertReason = DivertReason.NotDiverted; //TODO this
