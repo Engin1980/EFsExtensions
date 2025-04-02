@@ -25,8 +25,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private readonly TypeId fuelQuantityLtrsTypeId = new(EMPTY_TYPE_ID);
       private readonly TypeId emptyWeightKgTypeId = new(EMPTY_TYPE_ID);
       private readonly TypeId totalWeightKgTypeId = new(EMPTY_TYPE_ID);
-      private readonly RequestId atcIdRequestId = new(EMPTY_TYPE_ID);
       private readonly TypeId fbwParkingBrakeTypeId = new (EMPTY_TYPE_ID);
+      private readonly RequestId atcIdRequestId = new(EMPTY_TYPE_ID);
 
       public SimPropValues(NewSimObject simObject)
       {
@@ -53,7 +53,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         this.emptyWeightKgTypeId = cache.Register("EMPTY WEIGHT", ESimConnect.Definitions.SimUnits.Weight.KILOGRAM);
         this.totalWeightKgTypeId = cache.Register("TOTAL WEIGHT", ESimConnect.Definitions.SimUnits.Weight.KILOGRAM);
 
-        this.parkingBrakeTypeId = cache.Register("L:A32NX_PARK_BRAKE_LEVER_POS");
+        this.fbwParkingBrakeTypeId = cache.Register("L:A32NX_PARK_BRAKE_LEVER_POS");
 
         var simCon = simObject.ESimCon;
         simCon.DataReceived += ESimCon_DataReceived;
@@ -70,9 +70,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       public string? AtcId { get; private set; }
       //TODO rewrite to better way:
       public bool ParkingBrakeSet => cache.GetValue(parkingBrakeTypeId) == 1;
-      public bool FbwParkingBrakeSet => fbwParkingBrakeTypeId.ToInt() == EMPTY_TYPE_ID ? false : cache.GetValue(fbwParkingBrakeTypeId) == 1;
-      public bool FbwParkingBrakeDefined => fbwParkingBrakeTypeId.ToInt() != EMPTY_TYPE_ID;
-      public bool SmartParkingBrakeSet => FbwParkingBrakeDefined ? FbwParkingBrakeSet : ParkingBrakeSet;
+      public bool FbwParkingBrakeSet => cache.GetValue(fbwParkingBrakeTypeId) == 1;
+      public bool SmartParkingBrakeSet => FbwParkingBrakeSet || ParkingBrakeSet;
       public double Height => cache.GetValue(heightTypeId);
       public double Latitude => cache.GetValue(latitudeTypeId);
       public double Longitude => cache.GetValue(longitudeTypeId);
