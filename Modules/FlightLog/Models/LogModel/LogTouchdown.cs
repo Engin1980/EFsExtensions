@@ -16,9 +16,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public double MaxAccY { get; set; }
     public TimeSpan MainGearTime { get; set; }
     public TimeSpan AllGearTime { get; set; }
-    public double? Length => this.RollOutEndLocation != null
+    public double? RollOutLength => this.RollOutEndLocation != null
       ? GpsCalculator.GetDistance(this.TouchDownLocation, this.RollOutEndLocation.Value)
       : null;
+    public TimeSpan? RollOutDuration => RollOutEndDateTime == null ? null : RollOutEndDateTime.Value - TouchDownDateTime;
   }
 
 }

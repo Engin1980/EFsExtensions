@@ -180,15 +180,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       private void CloseCurrentAttempt()
       {
-        isActive = false;
-        DateTime now = DateTime.UtcNow;
+        this.isActive = false;
 
         if (runData.allGearInAirDateTime == null)
           return;
 
         double maxBank; double maxPitch; double ias; double gs; double maxVS;
         TimeSpan rollToFrontGearTime; TimeSpan rollToAllGearTime;
-        double maxAccY; DateTime rollStartDateTime;
+        double maxAccY; DateTime rollStartDateTime; DateTime airborneDateTime;
         double rollStartLatitude; double rollStartLongitude;
         double takeOffLatitude; double takeOffLongitude;
 
@@ -207,10 +206,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         rollStartLongitude = takeOffRunStart.longitude;
         takeOffLatitude = runData.allGearInAirLatitude!.Value;
         takeOffLongitude = runData.allGearInAirLongitude!.Value;
+        airborneDateTime = runData.allGearInAirDateTime!.Value;
 
 
         TakeOffAttemptData toad = new(
-          maxBank, maxPitch, ias, gs, maxVS, rollToFrontGearTime, rollToAllGearTime, maxAccY, rollStartDateTime,
+          maxBank, maxPitch, ias, gs, maxVS, rollToFrontGearTime, rollToAllGearTime, maxAccY,
+          rollStartDateTime, airborneDateTime,
           rollStartLatitude, rollStartLongitude, takeOffLatitude, takeOffLongitude);
 
         this.AttemptRecorded?.Invoke(toad);

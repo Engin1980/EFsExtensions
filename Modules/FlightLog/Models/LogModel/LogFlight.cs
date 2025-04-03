@@ -34,7 +34,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public DateTime? StartUpScheduledDateTime { get; set; }
     public DateTime StartUpDateTime { get; set; }
     public DateTime? TakeOffScheduledDateTime { get; set; }
-    public DateTime TakeOffDateTime { get; set; }
+    public DateTime TakeOffDateTime => TakeOff.RunStartDateTime;
     public int? TakeOffScheduledFuelWeight { get; set; }
     public int TakeOffFuelWeight { get; set; }
     public DateTime? LandingScheduledDateTime { get; set; }

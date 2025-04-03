@@ -9,7 +9,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
 {
   public class LogTakeOff
   {
+    public DateTime RunStartDateTime { get; set; }
     public GPS RunStartLocation { get; set; }
+    public DateTime AirborneDateTime { get; set; }
     public GPS AirborneLocation { get; set; }
     public double MaxVS { get; set; }
     public int IAS { get; set; }

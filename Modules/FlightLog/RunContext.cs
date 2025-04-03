@@ -158,6 +158,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       LogTakeOff takeOff = new()
       {
+        RunStartDateTime = runVM.TakeOffAttempt.RollStartDateTime,
+        AirborneDateTime = runVM.TakeOffAttempt.AirborneDateTime,
         RunStartLocation = new GPS(runVM.TakeOffAttempt.RollStartLatitude, runVM.TakeOffAttempt.RollStartLongitude),
         AirborneLocation = new GPS(runVM.TakeOffAttempt.TakeOffLatitude, runVM.TakeOffAttempt.TakeOffLongitude),
         MaxVS = runVM.TakeOffAttempt.MaxVS,
@@ -197,7 +199,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         StartUpFuelWeight = runVM.StartUpCache.FuelKg,
         TakeOffFuelWeight = runVM.TakeOffCache.FuelKg,
         TakeOff = takeOff,
-        TakeOffDateTime = runVM.TakeOffCache.Time,
         TakeOffScheduledFuelWeight = runVM.SimBriefCache?.EstimatedTakeOffFuelKg,
         TakeOffScheduledDateTime = runVM.SimBriefCache?.TakeOffPlannedTime,
         Touchdowns = touchdowns,
