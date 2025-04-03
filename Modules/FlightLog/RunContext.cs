@@ -436,6 +436,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       LogFlight logFlight = GenerateLogFlight(this.RunVM);
 
       this.flightsManager.StoreNewFlight(logFlight);
+      this.RunVM.VatsimCache = null;
+      this.RunVM.SimBriefCache = null;
 
       this.RunVM.State = RunViewModel.RunModelState.WaitingForStartupForTheFirstTime;
     }
