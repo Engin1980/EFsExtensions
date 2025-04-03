@@ -53,26 +53,31 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
 
       // DEBUG STUFF, DELETE LATER
-      //UpdateSimbriefAndVatsimIfRequired();
-      //this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now.AddMinutes(-70), 49000, 174 * 95, 5500, 52.8, -118.08);
-      //this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now.AddMinutes(-60), 5200, 137, 11, 22);
-      //this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now.AddMinutes(-10), 2100, 120, 11, 22);
-      //this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 11, 22);
-      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
-      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 12, 23));
-      //this.RunVM.LandingAttempts.Add(new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, -104.1031372, 0.740, 2.02471, 4.10721, DateTime.Now, 11, 22));
-      //this.RunVM.TakeOffAttempt = new RunViewModel.TakeOffAttemptData(
-      //  0.21243, 19.412, 154, 3400.13213,
-      //  new TimeSpan(0, 0, 0, 43, 121), new TimeSpan(0, 0, 0, 48, 313),
-      //  13.1413,
-      //  DateTime.Now.AddMinutes(-180),
-      //  54.137132, -12.12313,
-      //  54.137239, -12.12398);
+      UpdateSimbriefAndVatsimIfRequired();
+      this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now.AddMinutes(-70), 49000, 174 * 95, 5500, 32.6979, -16.7745);
+      this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now.AddMinutes(-60), 5200, 137, -1, -1);
+      this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now.AddMinutes(-10), 2100, 120, -1, -1);
+      this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 33.0734, -16.3498);
+      this.RunVM.LandingAttempts.Add(
+        new RunViewModel.LandingAttemptData(0.2497133, 0.4941731, 150, 143, -304.1031372,
+          TimeSpan.FromSeconds(0.4231), null,
+          14.10721, DateTime.Now.AddSeconds(-1.242), 33.0769278, 16.3204778, null, null, null));
+      this.RunVM.LandingAttempts.Add(
+        new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, 123, -104.1031372,
+          TimeSpan.FromSeconds(0.0123), TimeSpan.FromSeconds(4.2312),
+          4.10721, DateTime.Now, 33.0869278, 16.3504778, DateTime.Now.AddSeconds(38.123), 33.0598778, 16.3494139));
+      this.RunVM.TakeOffAttempt = new RunViewModel.TakeOffAttemptData(
+        0.21243, 19.412, 154, 134, 3400.13213,
+        new TimeSpan(0, 0, 0, 43, 121), new TimeSpan(0, 0, 0, 48, 313),
+        13.1413,
+        DateTime.Now.AddMinutes(-180), DateTime.Now.AddMinutes(-180).AddSeconds(49.112),
+        32.7062, -16.7652,
+         32.6934, -16.7784);
 
-      //var fl = GenerateLogFlight(this.RunVM);
-      //fl.DepartureICAO = "CYVR";
-      //fl.DestinationICAO = "CYYC";
-      //fl.AlternateICAO = "CYEG";
+      var fl = GenerateLogFlight(this.RunVM);
+      fl.DepartureICAO = "CYVR";
+      fl.DestinationICAO = "CYYC";
+      fl.AlternateICAO = "CYEG";
       //flightsManager.StoreNewFlight(fl);
 
       // this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
@@ -128,14 +133,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       List<LogTouchdown> touchdowns = CollectTouchdowns();
 
-      string callsign = runVM.SimBriefCache?.Callsign ?? runVM.VatsimCache?.Callsign ?? "???";
+      string callsign = runVM.SimBriefCache?.Callsign ?? runVM.VatsimCache?.Callsign ?? this.simPropValues?.AtcId ?? "???";
 
       string? departureICAO = runVM.SimBriefCache?.DepartureICAO
         ?? RunVM.VatsimCache?.DepartureICAO
         ?? GetAirportByCoordinates(runVM.StartUpCache!.Latitude, runVM.StartUpCache!.Longitude);
       string? destinationICAO = runVM.SimBriefCache?.DestinationICAO
         ?? RunVM.VatsimCache?.DestinationICAO
-        ?? GetAirportByCoordinates(runVM.LandingCache!.Latitude, runVM.LandingCache!.Longitude);
+        ?? GetAirportByCoordinates(runVM.ShutDownCache.Latitude, runVM.ShutDownCache.Longitude);
       string? alternateICAO = runVM.SimBriefCache?.AlternateICAO
         ?? RunVM.VatsimCache?.AlternateICAO
         ?? null;
@@ -268,7 +273,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       if (runVM.SimBriefCache != null)
       {
         TimeSpan timeDiff = runVM.SimBriefCache.OffBlockPlannedTime - runVM.StartUpCache.Time;
-        if (timeDiff.TotalHours > 1)
+        if (Math.Abs(timeDiff.TotalHours) > 1)
         {
           logger.Log(LogLevel.WARNING, $"SimBrief offblock time is {timeDiff.TotalHours} hours off actual offblock time. SimBrief ignored.");
           runVM.SimBriefCache = null;
@@ -286,7 +291,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       if (runVM.VatsimCache != null)
       {
         TimeSpan timeDiff = runVM.VatsimCache.PlannedDepartureTime - runVM.StartUpCache.Time;
-        if (timeDiff.TotalHours > 1)
+        if (Math.Abs(timeDiff.TotalHours) > 1)
         {
           logger.Log(LogLevel.WARNING, $"VATSIM offblock time is {timeDiff.TotalHours} hours off actual offblock time. VATSIM ignored.");
           runVM.VatsimCache = null;
@@ -345,7 +350,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         .ToList();
       var minDist = dsts.FirstOrDefault();
 
-      if (minDist != null && minDist.Distance < 5) // some close airport
+      if (minDist != null && minDist.Distance < (5 * 1_000)) // some close airport
         ret = minDist.Airport.ICAO;
       else
         ret = null;

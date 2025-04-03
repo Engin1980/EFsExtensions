@@ -15,7 +15,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public double Pitch { get; set; }
     public double MaxAccY { get; set; }
     public TimeSpan MainGearTime { get; set; }
-    public TimeSpan AllGearTime { get; set; }
+    public TimeSpan? AllGearTime { get; set; }
     public double? RollOutLength => this.RollOutEndLocation != null
       ? GpsCalculator.GetDistance(this.TouchDownLocation, this.RollOutEndLocation.Value)
       : null;

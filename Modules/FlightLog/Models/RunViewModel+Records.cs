@@ -12,7 +12,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
   {
     public record LandingAttemptData(double Bank, double Pitch, double IAS, double GS, double VS,
       TimeSpan MainGearTime,
-      TimeSpan AllGearTime,
+      TimeSpan? AllGearTime,
       double MaxAccY,
       DateTime TouchDownDateTime, double TouchDownLatitude, double TouchDownLongitude,
       DateTime? RollOutEndDateTime, double? RollOutEndLatitude, double? RollOutEndLongitude);

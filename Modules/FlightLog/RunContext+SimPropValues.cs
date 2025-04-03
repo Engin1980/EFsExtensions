@@ -68,7 +68,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           this.AtcId = (string)e.Data;
       }
       public string? AtcId { get; private set; }
-      //TODO rewrite to better way:
       public bool ParkingBrakeSet => cache.GetValue(parkingBrakeTypeId) == 1;
       public bool FbwParkingBrakeSet => cache.GetValue(fbwParkingBrakeTypeId) == 1;
       public bool SmartParkingBrakeSet => FbwParkingBrakeSet || ParkingBrakeSet;
