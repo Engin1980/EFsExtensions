@@ -114,6 +114,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       LandingCache = null;
       ShutDownCache = null;
       TakeOffCache = null;
+      TakeOffAttempt = null;
+      LandingAttempts.Clear();
       State = RunModelState.WaitingForStartupForTheFirstTime;
     }
   }

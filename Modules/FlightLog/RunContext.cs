@@ -53,7 +53,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
 
       // DEBUG STUFF, DELETE LATER
-      UpdateSimbriefAndVatsimIfRequired();
+      //UpdateSimbriefAndVatsimIfRequired();
       this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now.AddMinutes(-70), 49000, 174 * 95, 5500, 32.6979, -16.7745);
       this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now.AddMinutes(-60), 5200, 137, -1, -1);
       this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now.AddMinutes(-10), 2100, 120, -1, -1);
@@ -74,10 +74,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         32.7062, -16.7652,
          32.6934, -16.7784);
 
-      var fl = GenerateLogFlight(this.RunVM);
-      fl.DepartureICAO = "CYVR";
-      fl.DestinationICAO = "CYYC";
-      fl.AlternateICAO = "CYEG";
+      //var fl = GenerateLogFlight(this.RunVM);
+      //fl.DepartureICAO = "CYVR";
+      //fl.DestinationICAO = "CYYC";
+      //fl.AlternateICAO = "CYEG";
       //flightsManager.StoreNewFlight(fl);
 
       // this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
@@ -442,8 +442,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       LogFlight logFlight = GenerateLogFlight(this.RunVM);
 
       this.flightsManager.StoreNewFlight(logFlight);
-      this.RunVM.VatsimCache = null;
-      this.RunVM.SimBriefCache = null;
+      this.RunVM.Clear();
 
       this.RunVM.State = RunViewModel.RunModelState.WaitingForStartupForTheFirstTime;
     }

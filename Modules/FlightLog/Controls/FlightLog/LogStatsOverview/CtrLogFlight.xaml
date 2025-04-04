@@ -168,7 +168,7 @@
 
             <DataGridColumnHeader  Grid.Row="0" Grid.Column="0" Content="Time" />
             <Label Grid.Row="1" Grid.Column="0">
-              <TextBlock Text="N/A" />
+              <TextBlock Text="{Binding RunStartDateTime, StringFormat={}{0:H:MM:ss}}" />
             </Label>
 
             <DataGridColumnHeader  Grid.Row="0" Grid.Column="1" Content="Length" />
@@ -214,18 +214,18 @@
           <DataGrid ItemsSource="{Binding Touchdowns}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False">
             <DataGrid.Columns>
               <DataGridTextColumn Header="Time" Binding="{Binding TouchDownDateTime, StringFormat={}{0:HH:mm:ss}}" />
-              <DataGridTextColumn Header="Length" Binding="{Binding Length, StringFormat={}{0:N0} m}" />
+              <DataGridTextColumn Header="Length" Binding="{Binding RollOutLength, StringFormat={}{0:N0} m}" />
               <DataGridTemplateColumn Header="L/R Gear">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
-                    <shared:TimeSpanLabel Value="{Binding MainGearTime}" StringFormat="s.fff" />
+                    <shared:TimeSpanTextBlock Value="{Binding MainGearTime}" StringFormat="s.fff" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
               <DataGridTemplateColumn Header="All Gear">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
-                    <shared:TimeSpanLabel Value="{Binding AllGearTime}" StringFormat="s.fff" />
+                    <shared:TimeSpanTextBlock Value="{Binding AllGearTime}" StringFormat="s.fff" />
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>

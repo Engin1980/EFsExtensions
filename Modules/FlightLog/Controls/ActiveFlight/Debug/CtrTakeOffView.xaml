@@ -63,11 +63,13 @@
         </Grid.ColumnDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0">Roll Start Time</Label>
-        <Label Grid.Row="0" Grid.Column="1" Content="{Binding RollStartDateTime}" />
+        <Label Grid.Row="0" Grid.Column="1">
+          <TextBlock Text="{Binding RollStartDateTime, StringFormat={}{0:H:mm:ss}}" />
+        </Label>
         <Label Grid.Row="1" Grid.Column="0">Front-gear-air</Label>
-        <shared:TimeSpanLabel Grid.Row="1" Grid.Column="1" Value="{Binding RollToFrontGearTime}" StringFormat="h:mm:ss.fff" />
+        <shared:TimeSpanLabel Grid.Row="1" Grid.Column="1" Value="{Binding RollToFrontGearTime}" StringFormat="ss.fff" />
         <Label Grid.Row="2" Grid.Column="0">All-gear-air</Label>
-        <shared:TimeSpanLabel Grid.Row="2" Grid.Column="1" Value="{Binding RollToAllGearTime}" StringFormat="h:mm:ss.fff" />
+        <shared:TimeSpanLabel Grid.Row="2" Grid.Column="1" Value="{Binding RollToAllGearTime}" StringFormat="ss.fff" />
         <Label Grid.Row="3" Grid.Column="0">Roll Start GPS</Label>
         <Label Grid.Row="3" Grid.Column="1">
           <StackPanel Orientation="Horizontal">
@@ -89,13 +91,25 @@
 
 
         <Label Grid.Row="0" Grid.Column="2">IAS</Label>
-        <Label Grid.Row="0" Grid.Column="3" Content="{Binding IAS}" />
+        <Label Grid.Row="0" Grid.Column="3">
+          <TextBlock Text="{Binding IAS, StringFormat={}{0:N0} kt}" />
+        </Label>
+
         <Label Grid.Row="1" Grid.Column="2">Max Bank</Label>
-        <Label Grid.Row="1" Grid.Column="3" Content="{Binding MaxBank}" />
+        <Label Grid.Row="1" Grid.Column="3">
+          <TextBlock Text="{Binding MaxBank, StringFormat={}{0:N3} °}" />
+        </Label>
+
         <Label Grid.Row="2" Grid.Column="2">Max Pitch</Label>
-        <Label Grid.Row="2" Grid.Column="3" Content="{Binding MaxPitch}" />
+        <Label Grid.Row="2" Grid.Column="3">
+          <TextBlock Text="{Binding MaxPitch, StringFormat={}{0:N3} °}" />
+        </Label>
+
         <Label Grid.Row="3" Grid.Column="2">Max VS</Label>
-        <Label Grid.Row="3" Grid.Column="3" Content="{Binding MaxVS}" />
+        <Label Grid.Row="3" Grid.Column="3">
+          <TextBlock Text="{Binding MaxVS, StringFormat={}{0:N0} ft/min}" />
+        </Label>
+
       </Grid>
     </ScrollViewer>
   </StackPanel>
