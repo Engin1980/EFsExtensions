@@ -157,15 +157,15 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
             runData.allGearInAirLongitude = data.longitude;
             runData.allGearInAirIas = data.ias;
             runData.allGearInAirGs = data.gs;
-            runData.maxBank = 0;
-            runData.maxPitch = 0;
-            runData.maxVs = 0;
+            runData.maxBank = double.MinValue;
+            runData.maxPitch = double.MaxValue;
+            runData.maxVs = double.MinValue;
           }
 
           runData.maxAccY = Math.Max(runData.maxAccY, data.accelerationY);
           runData.maxVs = Math.Max(runData.maxVs, data.vs);
-          runData.maxBank = Math.Max(runData.maxBank, data.bank);
-          if (runData.maxPitch < data.pitch)
+          runData.maxBank = Math.Max(runData.maxBank, Math.Abs(data.bank));
+          if (runData.maxPitch > data.pitch)
           {
             runData.maxPitch = data.pitch;
             runData.maxPitchDateTime = DateTime.UtcNow;
