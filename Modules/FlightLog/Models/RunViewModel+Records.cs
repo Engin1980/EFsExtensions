@@ -15,7 +15,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       TimeSpan? AllGearTime,
       double MaxAccY,
       DateTime TouchDownDateTime, double TouchDownLatitude, double TouchDownLongitude,
-      DateTime? RollOutEndDateTime, double? RollOutEndLatitude, double? RollOutEndLongitude);
+      DateTime? RollOutEndDateTime, double? RollOutEndLatitude, double? RollOutEndLongitude)
+    {
+      public double? RollDistance => RollOutEndDateTime == null 
+        ? null 
+        : GpsCalculator.GetDistance(TouchDownLatitude, TouchDownLongitude, RollOutEndLatitude!.Value, RollOutEndLongitude!.Value);
+      public TimeSpan? RollOutDuration => RollOutEndDateTime == null ? null : RollOutEndDateTime - TouchDownDateTime;
+    }
 
     public record TakeOffAttemptData(double MaxBank, double MaxPitch, double IAS, double GS, double MaxVS,
       TimeSpan RollToFrontGearTime, TimeSpan RollToAllGearTime,
@@ -24,6 +30,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       double TakeOffLatitude, double TakeOffLongitude)
     {
       public double RollDistance => GpsCalculator.GetDistance(RollStartLatitude, RollStartLongitude, TakeOffLatitude, TakeOffLongitude);
+      public TimeSpan RollDuration => AirborneDateTime - RollStartDateTime;
     }
 
     public record RunModelVatsimCache(FlightRules FlightType, string Callsign, string Aircraft, string? Registration,

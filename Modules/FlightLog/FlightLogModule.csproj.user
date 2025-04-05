@@ -47,6 +47,9 @@
     <Compile Update="Controls\Shared\TimeSpanLabel.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\Shared\TimeSpanTextBlock.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="CtrFlightLog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
