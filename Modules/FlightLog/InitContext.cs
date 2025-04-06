@@ -1,4 +1,5 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.Libs.AirportsLib;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       get => base.GetProperty<BindingList<Profile>>(nameof(Profiles))!;
       set => base.UpdateProperty(nameof(Profiles), value);
+    }
+
+    public List<Airport> Airports
+    {
+      get => this.settings.Airports;
     }
 
     public Profile? SelectedProfile

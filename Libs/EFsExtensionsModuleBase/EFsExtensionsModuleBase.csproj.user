@@ -5,5 +5,11 @@
     <Compile Update="ModuleUtils\TTSs\MsSapi\CtrSettings.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="ModuleUtils\WPF\Controls\AirportsOverview.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="ModuleUtils\WPF\Controls\AirportsTreeView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 </Project>

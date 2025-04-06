@@ -100,6 +100,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       this.Context = context;
       this.DataContext = context;
+
       //this.pnlFilteredAirportList.DataContext = Filtered = new FilteredNavdata(context.AirportsList);
     }
 
