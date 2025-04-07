@@ -31,8 +31,8 @@
         </TabItem>
       </TabControl>
     </TabItem>
-    <TabItem Header="Flight Log" DataContext="{Binding LogVM}">
-      <ctrFlightLog:CtrLogFlightOverview />
+    <TabItem Header="Flight Log">
+      <ctrFlightLog:CtrLogFlightOverview Flights="{Binding LoggedFlights}" />
     </TabItem>
   </TabControl>
 </UserControl>

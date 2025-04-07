@@ -16,7 +16,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public class InitContext : NotifyPropertyChanged
   {
-    private Action<bool> onReadyChange;
+    private readonly Action<bool> onReadyChange;
     private readonly Settings settings;
 
     public bool IsActive

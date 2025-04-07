@@ -18,6 +18,8 @@ using Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.VatsimModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.SimBriefModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.Shared;
+using System.ComponentModel;
+using Eng.EFsExtensions.EFsExtensionsModuleBase;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -51,11 +53,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.airports = settings.Airports;
       this.selectedProfile = initContext.SelectedProfile;
 
-      this.LogVM = new();
+      this.LoggedFlights = ProfileManager.GetProfileFlights(initContext.SelectedProfile);
 
-
-
-      this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
+      //this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }
 
     public ActiveFlightViewModel RunVM
@@ -64,11 +64,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       set { base.UpdateProperty(nameof(RunVM), value); }
     }
 
-
-    public object LogVM
+    public List<LoggedFlight> LoggedFlights
     {
-      get => base.GetProperty<object>(nameof(LogVM))!;
-      set => base.UpdateProperty(nameof(LogVM), value);
+      get => base.GetProperty<List<LoggedFlight>>(nameof(LoggedFlights))!;
+      set => base.UpdateProperty(nameof(LoggedFlights), value);
     }
 
     private void CheckForNextState()
@@ -420,6 +419,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       LoggedFlight logFlight = GenerateLogFlight(this.RunVM);
 
       ProfileManager.SaveFlight(logFlight, selectedProfile);
+      this.LoggedFlights = ProfileManager.GetProfileFlights(this.selectedProfile);
       this.RunVM.Clear();
 
       this.RunVM.State = ActiveFlightViewModel.RunModelState.WaitingForStartupForTheFirstTime;

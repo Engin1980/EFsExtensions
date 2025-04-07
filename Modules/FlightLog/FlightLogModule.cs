@@ -43,7 +43,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       this.InitContext = new InitContext(this.settings, q => this.IsReady = q);
       InitControl = new CtrInit(InitContext);
-      this.IsReady = true;
     }
 
     public void Restore(Dictionary<string, string> restoreData)
