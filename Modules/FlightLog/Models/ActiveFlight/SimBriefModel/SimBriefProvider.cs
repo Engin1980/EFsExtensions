@@ -1,4 +1,4 @@
-﻿using Eng.EFsExtensions.Modules.FlightLogModule.Models;
+﻿using Eng.EFsExtensions.Modules.FlightLogModule.Models.Shared;
 using ESystem.Asserting;
 using ESystem.Exceptions;
 using System;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.SimBriefModel
 {
   public static class SimBriefProvider
   {
@@ -33,7 +33,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
       return (OfpData)(serializer.Deserialize(stringReader) ?? throw new UnexpectedNullException());
     }
 
-    internal static RunViewModel.RunModelSimBriefCache CreateData(string simBriefId)
+    internal static ActiveFlightViewModel.RunModelSimBriefCache CreateData(string simBriefId)
     {
       var downloadTask = Task.Run(async () => await LoadFromUrlAsync(simBriefId));
       OfpData data = downloadTask.Result;
@@ -48,7 +48,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
       int estTakeOffFuel = data.Weights.EstTow - zfw;
       int estLandingFuel = data.Weights.EstLdw - zfw;
 
-      RunViewModel.RunModelSimBriefCache ret = new(
+      ActiveFlightViewModel.RunModelSimBriefCache ret = new(
         data.Atc.Callsign,
         data.Origin.IcaoCode, data.Destination.IcaoCode, data.Alternate.IcaoCode,
         data.Atc.FlightRules == "I" ? FlightRules.IFR : data.Atc.FlightRules == "V" ? FlightRules.VFR : throw new ArgumentException("Unexpected flight rule " + data.Atc.FlightRules + ". Expected I/V."),

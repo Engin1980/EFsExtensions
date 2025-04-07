@@ -1,6 +1,6 @@
 ﻿using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
-using Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
 {
-  public partial class RunViewModel : NotifyPropertyChanged
+  public partial class ActiveFlightViewModel : NotifyPropertyChanged
   {
     public enum RunModelState
     {
@@ -82,30 +82,31 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       set => base.UpdateProperty(nameof(TakeOffAttempt), value);
     }
 
-    public InitContext.Profile Profile
+    public Profile Profile
     {
-      get => GetProperty<InitContext.Profile>(nameof(Profile))!;
+      get => GetProperty<Profile>(nameof(Profile))!;
       set => UpdateProperty(nameof(Profile), value);
     }
 
-    public BindingList<LogFlight> LoggedFlights
+    public BindingList<LoggedFlight> LoggedFlights
     {
-      get => GetProperty<BindingList<LogFlight>>(nameof(LoggedFlights))!;
+      get => GetProperty<BindingList<LoggedFlight>>(nameof(LoggedFlights))!;
       set => UpdateProperty(nameof(LoggedFlights), value);
     }
 
-    public LogFlight? LastLoggedFlight
+    public LoggedFlight? LastLoggedFlight
     {
-      get => GetProperty<LogFlight?>(nameof(LastLoggedFlight))!;
+      get => GetProperty<LoggedFlight?>(nameof(LastLoggedFlight))!;
       set => UpdateProperty(nameof(LastLoggedFlight), value);
     }
 
-    public RunViewModel()
+    public ActiveFlightViewModel()
     {
       State = RunModelState.WaitingForStartupForTheFirstTime;
       LandingAttempts = new();
     }
 
+    [Obsolete("Use new instance instead?")]
     internal void Clear()
     {
       VatsimCache = null;

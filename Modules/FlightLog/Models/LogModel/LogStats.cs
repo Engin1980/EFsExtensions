@@ -1,4 +1,5 @@
 ﻿using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
+using ESystem;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
@@ -49,8 +50,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
       GroupingLogStats.Add(new("Cruise Altitudes", q => q.CruizeAltitude));
     }
 
-    public static StatsData Calculate(List<LogFlight> flights)
+    public static StatsData Calculate(List<LoggedFlight> flights)
     {
+      OverallStats all = new(flights.Count, TimeSpan.FromTicks(flights.Sum(q => q.BlockTime.Ticks)), TimeSpan.FromTicks(flights.Sum(q => q.AirTime.Ticks)));
       List<DescriptiveLogStatView> des = new();
       List<GroupingLogStatView> grp = new();
 
@@ -68,30 +70,33 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
           grp.Add(tmp);
       }
 
-      StatsData ret = new(des, grp);
+      StatsData ret = new(all, des, grp);
 
       return ret;
     }
 
-    private static GroupingLogStatView? CalculateStat(GroupingLogStatItem stat, List<LogFlight> flights)
+    private static GroupingLogStatView? CalculateStat(GroupingLogStatItem stat, List<LoggedFlight> flights)
     {
       var tmp = flights
         .Where(q => stat.GroupSelector(q) != null);
 
       if (!tmp.Any()) return null;
 
+      int uniqueCount = -1;
+
       List<GroupingLogStatRecord> records = tmp
         .GroupBy(stat.GroupSelector)
+        .Tap(q => uniqueCount = q.Count())
         .Select(q => new GroupingLogStatRecord(q.Count(), q.Key!, q.ToList()))
         .OrderByDescending(q => q.Count)
         .ToList();
 
-      GroupingLogStatView view = new GroupingLogStatView(stat, records);
+      GroupingLogStatView view = new GroupingLogStatView(stat, records, uniqueCount);
 
       return view;
     }
 
-    private static DescriptiveLogStatView? CalculateStat(DescriptiveLogStatItem stat, List<LogFlight> flights)
+    private static DescriptiveLogStatView? CalculateStat(DescriptiveLogStatItem stat, List<LoggedFlight> flights)
     {
       var tmp = flights.Select(q => new { Value = stat.ValueSelector(q), Flight = q });
       tmp = tmp.Where(q => q.Value.HasValue);
@@ -112,7 +117,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
           return value.ToString();
       }
 
-      DescriptiveLogStatRecord createStats(double value, LogFlight flight)
+      DescriptiveLogStatRecord createStats(double value, LoggedFlight flight)
       {
         return new(value, formatByStats(value, stat), flight);
       }
@@ -130,12 +135,16 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
     private LogStats() { }
   }
 
-  public record StatsData(List<DescriptiveLogStatView> DescriptiveStats, List<GroupingLogStatView> GroupingStats);
-  public record GroupingLogStatItem(string Title, Func<LogFlight, object?> GroupSelector);
-  public record GroupingLogStatRecord(int Count, object Key, List<LogFlight> Flights);
+  public record StatsData(OverallStats OverallStats, List<DescriptiveLogStatView> DescriptiveStats, List<GroupingLogStatView> GroupingStats);
+
+  public record OverallStats(int TotalFlights, TimeSpan TotalBlockDuration, TimeSpan TotalAirDuration);
+
+  public record GroupingLogStatItem(string Title, Func<LoggedFlight, object?> GroupSelector);
+  public record GroupingLogStatRecord(int Count, object Key, List<LoggedFlight> Flights);
   public record GroupingLogStatView(
     GroupingLogStatItem Stat,
-    List<GroupingLogStatRecord> Records)
+    List<GroupingLogStatRecord> Records,
+    int UniqueCount)
   {
     public GroupingLogStatRecord First => Records.First();
     public GroupingLogStatRecord? Second => Records.Count() > 1 ? Records.Skip(1).First() : null;
@@ -143,9 +152,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
     public GroupingLogStatRecord? Last => Records.Count() > 3 ? Records.Last() : null;
   }
 
-  public record DescriptiveLogStatItem(string Title, Func<LogFlight, double?> ValueSelector,
+  public record DescriptiveLogStatItem(string Title, Func<LoggedFlight, double?> ValueSelector,
     string? ValueStringFormat = null, Func<double, string>? ValueStringFormatter = null);
-  public record DescriptiveLogStatRecord(double Value, string DisplayValue, LogFlight Flight);
+  public record DescriptiveLogStatRecord(double Value, string DisplayValue, LoggedFlight Flight);
   public record DescriptiveLogStatView(
     DescriptiveLogStatItem Stat,
     DescriptiveLogStatRecord Min,

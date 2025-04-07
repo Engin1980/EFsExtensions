@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
-using static Eng.EFsExtensions.Modules.FlightLogModule.Models.RunViewModel;
+using static Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlightViewModel;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -80,13 +80,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private record TakeOffRunList(int Heading, DateTime dateTime, double latitude, double longitude);
       private readonly TakeOffRunData runData = new();
       private readonly NewSimObject simObj;
-      private readonly RunViewModel runVM;
+      private readonly ActiveFlightViewModel runVM;
       private RequestId? requestId;
       private bool isDisposed = false;
       public event Action<TakeOffAttemptData>? AttemptRecorded;
       private bool isActive = true;
 
-      public TakeOffDetector(NewSimObject simObj, RunViewModel runVM)
+      public TakeOffDetector(NewSimObject simObj, ActiveFlightViewModel runVM)
       {
         this.simObj = simObj;
         this.runVM = runVM;

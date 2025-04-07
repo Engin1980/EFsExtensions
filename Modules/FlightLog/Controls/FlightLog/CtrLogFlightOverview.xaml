@@ -6,15 +6,17 @@
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-  <TabControl>
-    <TabItem Header="List of flights">
-      <local:CtrLogFlightListSimple />
-    </TabItem>
-    <TabItem Header="Selected Flight">
-      <local:CtrLogFlight />
-    </TabItem>
-    <TabItem Header="Stats">
-      <local:CtrLogStats />
-    </TabItem>
-  </TabControl>
+  <DockPanel DataContext="{Binding VM, RelativeSource={RelativeSource AncestorType=UserControl}}">
+    <TabControl>
+      <TabItem Header="List of flights" >
+        <local:CtrLogFlightListSimple />
+      </TabItem>
+      <TabItem Header="Selected Flight">
+        <local:CtrLogFlight />
+      </TabItem>
+      <TabItem Header="Stats">
+        <local:CtrLogStats />
+      </TabItem>
+    </TabControl>
+  </DockPanel>
 </UserControl>

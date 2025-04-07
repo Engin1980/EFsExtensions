@@ -22,14 +22,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
   {
     public static DependencyProperty LogFlightProperty = DependencyProperty.Register(
       nameof(LogFlight),
-      typeof(Eng.EFsExtensions.Modules.FlightLogModule.LogModel.LogFlight),
+      typeof(Eng.EFsExtensions.Modules.FlightLogModule.LogModel.LoggedFlight),
       typeof(CtrLogFlightToolTip),
       new PropertyMetadata(null));
 
 
-    public Eng.EFsExtensions.Modules.FlightLogModule.LogModel.LogFlight? LogFlight
+    public Eng.EFsExtensions.Modules.FlightLogModule.LogModel.LoggedFlight? LogFlight
     {
-      get => GetValue(LogFlightProperty) as Eng.EFsExtensions.Modules.FlightLogModule.LogModel.LogFlight;
+      get => GetValue(LogFlightProperty) as Eng.EFsExtensions.Modules.FlightLogModule.LogModel.LoggedFlight;
       set => SetValue(LogFlightProperty, value);
     }
     public CtrLogFlightToolTip()

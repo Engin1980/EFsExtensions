@@ -2,7 +2,7 @@
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 {
-  public class LogTouchdown
+  public class LoggedFlightTouchdown
   {
     public DateTime TouchDownDateTime { get; set; }
     public GPS TouchDownLocation { get; set; }

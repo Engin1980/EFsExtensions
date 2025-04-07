@@ -1,6 +1,6 @@
 ﻿using Eng.EFsExtensions.Libs.AirportsLib;
-using Eng.EFsExtensions.Modules.FlightLogModule.Models;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 {
-  public class LogFlight
+  public class LoggedFlight
   {
     public int Version { get; set; } = 1;
     public string Callsign { get; set; } = string.Empty;
@@ -39,8 +39,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public int TakeOffFuelWeight { get; set; }
     public DateTime? LandingScheduledDateTime { get; set; }
     public DateTime? ScheduledTime { get; set; }
-    public List<LogTouchdown> Touchdowns { get; set; } = null!;
-    public LogTakeOff TakeOff { get; set; } = null!;
+    public List<LoggedFlightTouchdown> Touchdowns { get; set; } = null!;
+    public LoggedFlightTakeOff TakeOff { get; set; } = null!;
     public int? LandingScheduledFuelWeight { get; set; }
     public int LandingFuelWeight { get; set; }
     public DateTime? ShutDownScheduledDateTime { get; set; }
@@ -78,7 +78,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 
     private void ValidateAllPropertiesByRead()
     {
-      var props = typeof(LogFlight).GetProperties(BindingFlags.Public | BindingFlags.Instance);
+      var props = typeof(LoggedFlight).GetProperties(BindingFlags.Public | BindingFlags.Instance);
       foreach (PropertyInfo prop in props)
       {
         try

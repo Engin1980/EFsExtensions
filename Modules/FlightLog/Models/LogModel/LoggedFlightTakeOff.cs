@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
 {
-  public class LogTakeOff
+  public class LoggedFlightTakeOff
   {
     public DateTime RunStartDateTime { get; set; }
     public GPS RunStartLocation { get; set; }

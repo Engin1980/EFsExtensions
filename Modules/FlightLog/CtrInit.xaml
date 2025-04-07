@@ -3,50 +3,45 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:cvt="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;assembly=EFsExtensionsModuleBase" 
+             xmlns:cvt="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;assembly=EFsExtensionsModuleBase"              
              xmlns:ctr="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Controls;assembly=EFsExtensionsModuleBase"
+             xmlns:localCvt="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
+             xmlns:ctrFlightLog="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
              xmlns:nav="clr-namespace:Eng.EFsExtensions.Libs.AirportsLib;assembly=AirportsLib"
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <cvt:DoubleFormatter x:Key="DoubleFormatter" />
+    <localCvt:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter" />
   </UserControl.Resources>
   <DockPanel>
     <DockPanel DockPanel.Dock="Top">
       <DockPanel DockPanel.Dock="Top">
         <Button x:Name="btnSettings" DockPanel.Dock="Right"
               Margin="8" Padding="8" Width="100" Click="btnSettings_Click">Settings</Button>
-        <Label />
+        <StackPanel Orientation="Horizontal" Margin="8">
+          <Label Grid.Row="0" Grid.Column="0" Content="Profile:" />
+          <ComboBox x:Name="cmbProfiles" Grid.Row="0" Grid.Column="1" SelectedIndex="0" ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}">
+            <ComboBox.ItemTemplate>
+              <DataTemplate>
+                <Label>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Name}" />
+                    <TextBlock Text=" (Files: " />
+                    <TextBlock Text="{Binding XmlFilesCount}" />
+                    <TextBlock Text=")" />
+                  </StackPanel>
+                </Label>
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
+          <Button x:Name="ctrNewProfile" Grid.Row="0" Grid.Column="2" Padding="8 0 8 0" Click="ctrNewProfile_Click">Create new profile</Button>
+        </StackPanel>
       </DockPanel>
-      <TabControl x:Name="tabMain" SelectionChanged="tabMain_SelectionChanged">
-        <TabItem Header="Profiles">
-          <Grid>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="*" />
-              <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-              <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
-            <Label Grid.Row="0" Grid.Column="0" Content="Selected Profile:" />
-            <ComboBox x:Name="cmbProfiles" Grid.Row="0" Grid.Column="1" SelectedIndex="0" ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}">
-              <ComboBox.ItemTemplate>
-                <DataTemplate>
-                  <Label>
-                    <StackPanel Orientation="Horizontal">
-                      <TextBlock Text="{Binding Name}" />
-                      <TextBlock Text=" (Files: " />
-                      <TextBlock Text="{Binding XmlFilesCount}" />
-                      <TextBlock Text=")" />
-                    </StackPanel>
-                  </Label>
-                </DataTemplate>
-              </ComboBox.ItemTemplate>
-            </ComboBox>
-            <Button x:Name="ctrNewProfile" Grid.Row="0" Grid.Column="2" Padding="8 0 8 0" Click="ctrNewProfile_Click">Create new profile</Button>
-          </Grid>
+      <TabControl x:Name="tabMain" SelectionChanged="tabMain_SelectionChanged" Visibility="{Binding SelectedProfile, Converter={StaticResource NotNullToVisibilityConverter}}">
+        <TabItem Header="Flight Log">
+          <ctrFlightLog:CtrLogFlightOverview Flights="{Binding LoggedFlights}"  />
         </TabItem>
         <TabItem>
           <TabItem.Header>

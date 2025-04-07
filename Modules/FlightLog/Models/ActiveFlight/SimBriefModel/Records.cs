@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.SimBriefModel
 {
   public class Fuel
   {

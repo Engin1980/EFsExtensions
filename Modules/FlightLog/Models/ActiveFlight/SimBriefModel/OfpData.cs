@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.SimBriefModel
 {
   [XmlRoot("OFP")]
   public class OfpData

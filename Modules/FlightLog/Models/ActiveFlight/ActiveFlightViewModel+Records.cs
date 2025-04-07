@@ -1,5 +1,5 @@
 ﻿using Eng.EFsExtensions.Libs.AirportsLib;
-using Eng.EFsExtensions.Modules.FlightLogModule.Models;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models.Shared;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
 {
-  public partial class RunViewModel
+  public partial class ActiveFlightViewModel
   {
     public record LandingAttemptData(double Bank, double Pitch, double IAS, double GS, double VS,
       TimeSpan MainGearTime,

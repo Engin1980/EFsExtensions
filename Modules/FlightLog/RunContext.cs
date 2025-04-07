@@ -2,8 +2,6 @@
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
 using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
-using Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel;
-using Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel;
 using ESimConnect;
 using ESystem.Asserting;
 using ESystem.Miscelaneous;
@@ -16,6 +14,10 @@ using System.Windows.Forms;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models;
 using System.Runtime.CompilerServices;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.VatsimModel;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.SimBriefModel;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models.Shared;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -30,7 +32,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     private readonly List<Airport> airports;
     private readonly NewSimObject simObj;
     private readonly Logger logger;
-    private readonly LogFlightsManager flightsManager;
+    private readonly Profile selectedProfile;
 
     public RunContext(InitContext initContext, Settings settings)
     {
@@ -40,59 +42,32 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.logger = Logger.Create(this);
       this.simObj = NewSimObject.GetInstance();
 
-      this.RunVM = new RunViewModel
+      this.RunVM = new ActiveFlightViewModel
       {
         Profile = initContext.SelectedProfile
       };
       this.RunVM.Clear();
       this.settings = settings;
       this.airports = settings.Airports;
+      this.selectedProfile = initContext.SelectedProfile;
 
-      this.flightsManager = LogFlightsManager.Init(initContext.SelectedProfile.Path);
-      this.LogVM = new(this.flightsManager);
+      this.LogVM = new();
 
 
-      // DEBUG STUFF, DELETE LATER
-      //UpdateSimbriefAndVatsimIfRequired();
-      //this.RunVM.StartUpCache = new RunViewModel.RunModelStartUpCache(DateTime.Now.AddMinutes(-70), 49000, 174 * 95, 5500, 32.6979, -16.7745);
-      //this.RunVM.TakeOffCache = new RunViewModel.RunModelTakeOffCache(DateTime.Now.AddMinutes(-60), 5200, 137, -1, -1);
-      //this.RunVM.LandingCache = new RunViewModel.RunModelLandingCache(DateTime.Now.AddMinutes(-10), 2100, 120, -1, -1);
-      //this.RunVM.ShutDownCache = new RunViewModel.RunModelShutDownCache(DateTime.Now, 2000, 33.0734, -16.3498);
-      //this.RunVM.LandingAttempts.Add(
-      //  new RunViewModel.LandingAttemptData(0.2497133, 0.4941731, 150, 143, -304.1031372,
-      //    TimeSpan.FromSeconds(0.4231), null,
-      //    14.10721, DateTime.Now.AddSeconds(-1.242), 33.0769278, 16.3204778, null, null, null));
-      //this.RunVM.LandingAttempts.Add(
-      //  new RunViewModel.LandingAttemptData(0.1497133, 0.1941731, 140, 123, -104.1031372,
-      //    TimeSpan.FromSeconds(0.0123), TimeSpan.FromSeconds(4.2312),
-      //    4.10721, DateTime.Now, 33.0869278, 16.3504778, DateTime.Now.AddSeconds(38.123), 33.0598778, 16.3494139));
-      //this.RunVM.TakeOffAttempt = new RunViewModel.TakeOffAttemptData(
-      //  0.21243, 19.412, 154, 134, 3400.13213,
-      //  new TimeSpan(0, 0, 0, 43, 121), new TimeSpan(0, 0, 0, 48, 313),
-      //  13.1413,
-      //  DateTime.Now.AddMinutes(-180), DateTime.Now.AddMinutes(-180).AddSeconds(49.112),
-      //  32.7062, -16.7652,
-      //   32.6934, -16.7784);
-
-      ////var fl = GenerateLogFlight(this.RunVM);
-      //fl.DepartureICAO = "CYVR";
-      //fl.DestinationICAO = "CYYC";
-      //fl.AlternateICAO = "CYEG";
-      //flightsManager.StoreNewFlight(fl);
 
       this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }
 
-    public RunViewModel RunVM
+    public ActiveFlightViewModel RunVM
     {
-      get { return base.GetProperty<RunViewModel>(nameof(RunVM))!; }
+      get { return base.GetProperty<ActiveFlightViewModel>(nameof(RunVM))!; }
       set { base.UpdateProperty(nameof(RunVM), value); }
     }
 
 
-    public LogViewModel LogVM
+    public object LogVM
     {
-      get => base.GetProperty<LogViewModel>(nameof(LogVM))!;
+      get => base.GetProperty<object>(nameof(LogVM))!;
       set => base.UpdateProperty(nameof(LogVM), value);
     }
 
@@ -101,17 +76,17 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       if (this.simPropValues == null) return; // not initialized yet
       switch (RunVM.State)
       {
-        case RunViewModel.RunModelState.WaitingForStartupAfterShutdown:
-        case RunViewModel.RunModelState.WaitingForStartupForTheFirstTime:
+        case ActiveFlightViewModel.RunModelState.WaitingForStartupAfterShutdown:
+        case ActiveFlightViewModel.RunModelState.WaitingForStartupForTheFirstTime:
           ProcessWaitForOffBlocks();
           break;
-        case RunViewModel.RunModelState.StartedWaitingForTakeOff:
+        case ActiveFlightViewModel.RunModelState.StartedWaitingForTakeOff:
           ProcessWaitForTakeOff();
           break;
-        case RunViewModel.RunModelState.InFlightWaitingForLanding:
+        case ActiveFlightViewModel.RunModelState.InFlightWaitingForLanding:
           ProcessWaitForLanding();
           break;
-        case RunViewModel.RunModelState.LandedWaitingForShutdown:
+        case ActiveFlightViewModel.RunModelState.LandedWaitingForShutdown:
           ProcessLandedWaitingForShutdown();
           break;
         default:
@@ -119,7 +94,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       }
     }
 
-    private LogFlight GenerateLogFlight(RunViewModel runVM)
+    private LoggedFlight GenerateLogFlight(ActiveFlightViewModel runVM)
     {
       EAssert.IsNotNull(runVM.StartUpCache, "StartUpCache not set.");
       EAssert.IsNotNull(runVM.TakeOffCache, "TakeOffCache not set.");
@@ -131,7 +106,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       InvalidateSimBriefOrVatsimIfRequired(runVM);
 
-      List<LogTouchdown> touchdowns = CollectTouchdowns();
+      List<LoggedFlightTouchdown> touchdowns = CollectTouchdowns();
 
       string callsign = runVM.SimBriefCache?.Callsign ?? runVM.VatsimCache?.Callsign ?? this.simPropValues?.AtcId ?? "???";
 
@@ -161,7 +136,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       FlightRules flightRules = runVM.SimBriefCache?.FlightRules ?? runVM.VatsimCache?.FlightType ?? FlightRules.Unknown;
 
-      LogTakeOff takeOff = new()
+      LoggedFlightTakeOff takeOff = new()
       {
         RunStartDateTime = runVM.TakeOffAttempt.RollStartDateTime,
         AirborneDateTime = runVM.TakeOffAttempt.AirborneDateTime,
@@ -177,7 +152,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         AllGearTime = runVM.TakeOffAttempt.RollToAllGearTime
       };
 
-      LogFlight ret = new()
+      LoggedFlight ret = new()
       {
         AircraftModel = aircraftModel,
         AircraftRegistration = aircraftRegistration,
@@ -213,18 +188,18 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       return ret;
     }
 
-    private List<LogTouchdown> CollectTouchdowns()
+    private List<LoggedFlightTouchdown> CollectTouchdowns()
     {
-      List<LogTouchdown> ret = new();
+      List<LoggedFlightTouchdown> ret = new();
 
-      List<List<RunViewModel.LandingAttemptData>> groups = new();
+      List<List<ActiveFlightViewModel.LandingAttemptData>> groups = new();
       DateTime last = DateTime.MinValue;
       for (int i = 0; i < this.RunVM.LandingAttempts.Count; i++)
       {
         var la = this.RunVM.LandingAttempts[i];
         if (i == 0)
         {
-          var tmp = new List<RunViewModel.LandingAttemptData>()
+          var tmp = new List<ActiveFlightViewModel.LandingAttemptData>()
           {
             la
           };
@@ -236,7 +211,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         }
         else
         {
-          var tmp = new List<RunViewModel.LandingAttemptData>
+          var tmp = new List<ActiveFlightViewModel.LandingAttemptData>
           {
             la
           };
@@ -247,9 +222,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       foreach (var group in groups)
       {
-        RunViewModel.LandingAttemptData f = group.First();
-        RunViewModel.LandingAttemptData l = group.Last();
-        LogTouchdown lt = new()
+        ActiveFlightViewModel.LandingAttemptData f = group.First();
+        ActiveFlightViewModel.LandingAttemptData l = group.Last();
+        LoggedFlightTouchdown lt = new()
         {
           TouchDownDateTime = f.TouchDownDateTime,
           TouchDownLocation = new GPS(f.TouchDownLatitude, f.TouchDownLongitude),
@@ -257,7 +232,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           RollOutEndLocation = l.RollOutEndDateTime == null ? null : new GPS(l.RollOutEndLatitude!.Value, l.RollOutEndLongitude!.Value),
           IAS = (int)Math.Round(f.IAS),
           VS = f.VS,
-          GS = (int) Math.Round(f.GS),
+          GS = (int)Math.Round(f.GS),
           Bank = f.Bank,
           Pitch = f.Pitch,
           MaxAccY = group.Max(q => q.MaxAccY),
@@ -269,7 +244,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       return ret;
     }
 
-    private void InvalidateSimBriefOrVatsimIfRequired(RunViewModel runVM)
+    private void InvalidateSimBriefOrVatsimIfRequired(ActiveFlightViewModel runVM)
     {
       EAssert.IsNotNull(runVM.StartUpCache, "StartUpCache not set.");
 
@@ -381,7 +356,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       this.RunVM.LandingCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
-      this.RunVM.State = RunViewModel.RunModelState.LandedWaitingForShutdown;
+      this.RunVM.State = ActiveFlightViewModel.RunModelState.LandedWaitingForShutdown;
     }
 
     private void ProcessWaitForTakeOff()
@@ -392,14 +367,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
       UpdateSimbriefAndVatsimIfRequiredAsync();
 
-      this.RunVM.State = RunViewModel.RunModelState.InFlightWaitingForLanding;
+      this.RunVM.State = ActiveFlightViewModel.RunModelState.InFlightWaitingForLanding;
     }
 
     private void ProcessWaitForOffBlocks()
     {
       if (this.simPropValues.SmartParkingBrakeSet) return;
 
-      if (RunVM.State == RunViewModel.RunModelState.WaitingForStartupAfterShutdown)
+      if (RunVM.State == ActiveFlightViewModel.RunModelState.WaitingForStartupAfterShutdown)
         this.RunVM.Clear();
 
       int emptyWeight = (int)(this.simPropValues.EmptyWeightKg);
@@ -420,7 +395,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         this.takeoffDetector = null;
       };
       this.takeoffDetector.InitAndStart();
-      RunVM.State = RunViewModel.RunModelState.StartedWaitingForTakeOff;
+      RunVM.State = ActiveFlightViewModel.RunModelState.StartedWaitingForTakeOff;
     }
 
     private void ProcessLandedWaitingForShutdown()
@@ -430,7 +405,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       if (this.simPropValues.IsFlying)
       {
         // got airborne after landing
-        this.RunVM.State = RunViewModel.RunModelState.InFlightWaitingForLanding;
+        this.RunVM.State = ActiveFlightViewModel.RunModelState.InFlightWaitingForLanding;
         return;
       }
 
@@ -442,12 +417,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       this.RunVM.ShutDownCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.Latitude, this.simPropValues.Longitude);
-      LogFlight logFlight = GenerateLogFlight(this.RunVM);
+      LoggedFlight logFlight = GenerateLogFlight(this.RunVM);
 
-      this.flightsManager.StoreNewFlight(logFlight);
+      ProfileManager.SaveFlight(logFlight, selectedProfile);
       this.RunVM.Clear();
 
-      this.RunVM.State = RunViewModel.RunModelState.WaitingForStartupForTheFirstTime;
+      this.RunVM.State = ActiveFlightViewModel.RunModelState.WaitingForStartupForTheFirstTime;
     }
 
     private Task UpdateSimbriefAndVatsimIfRequiredAsync()

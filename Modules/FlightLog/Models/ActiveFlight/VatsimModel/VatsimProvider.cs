@@ -1,5 +1,4 @@
-﻿using Eng.EFsExtensions.Modules.FlightLogModule.Models;
-using Eng.EFsExtensions.Modules.FlightLogModule.SimBriefModel;
+﻿using Eng.EFsExtensions.Modules.FlightLogModule.Models.Shared;
 using ESystem.Asserting;
 using ESystem.Exceptions;
 using Newtonsoft.Json;
@@ -12,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.VatsimModel
 {
   class VatsimProvider
   {
@@ -42,12 +41,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
       return JsonConvert.DeserializeObject<List<FlightPlan>>(json) ?? new List<FlightPlan>();
     }
 
-    internal static RunViewModel.RunModelVatsimCache? CreateData(string vatsimId)
+    internal static ActiveFlightViewModel.RunModelVatsimCache? CreateData(string vatsimId)
     {
       var downloadTask = Task.Run(async () => await LoadFromUrlAsync(vatsimId));
       var plans = downloadTask.Result;
       var plan = plans.First();
-      RunViewModel.RunModelVatsimCache ret = new(
+      ActiveFlightViewModel.RunModelVatsimCache ret = new(
         plan.FlightType == "IFR" ? FlightRules.IFR : plan.FlightType == "VFR" ? FlightRules.VFR : throw new ApplicationException("Unexpected VATSIM flight type " + plan.FlightType + ". Expected IFR/VFR."), 
         plan.Callsign, plan.Aircraft.Split("/")[0], plan.GetRegistration(), plan.Dep, plan.Arr, plan.Alt, plan.Route, 
         int.Parse(plan.Altitude), int.Parse(plan.CruiseSpeed),

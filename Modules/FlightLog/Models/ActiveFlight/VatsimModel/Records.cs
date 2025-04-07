@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.VatsimModel
 {
   public record FlightPlan(
     long Id,
@@ -40,7 +40,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.VatsimModel
         string? ret;
         string pattern = @"(?<=\bREG/)[A-Z0-9]+";
 
-        Match match = Regex.Match(this.Rmks, pattern);
+        Match match = Regex.Match(Rmks, pattern);
         if (match.Success)
           ret = match.Value;
         else

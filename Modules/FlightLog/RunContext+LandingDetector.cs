@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Eng.EFsExtensions.Modules.FlightLogModule.Models.RunViewModel;
+using static Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlightViewModel;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -85,7 +85,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       }
 
       private readonly NewSimObject simObj;
-      private readonly RunViewModel runVM;
+      private readonly ActiveFlightViewModel runVM;
       private bool isCompleted = false;
       private RequestId? requestId;
       private bool isDisposed = false;
@@ -93,7 +93,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       public event Action<LandingAttemptData>? AttemptRecorded;
 
-      public LandingDetector(NewSimObject simObj, RunViewModel runVM)
+      public LandingDetector(NewSimObject simObj, ActiveFlightViewModel runVM)
       {
         this.simObj = simObj;
         this.runVM = runVM;
