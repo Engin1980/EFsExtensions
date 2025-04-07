@@ -16,13 +16,17 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public class InitContext : NotifyPropertyChanged
   {
-    private Action onReadySet;
+    private Action<bool> onReadyChange;
     private readonly Settings settings;
 
-    public bool IsReady
+    public bool IsActive
     {
-      get => base.GetProperty<bool>(nameof(IsReady))!;
-      set => base.UpdateProperty(nameof(IsReady), value);
+      get => base.GetProperty<bool>(nameof(IsActive))!;
+      set
+      {
+        base.UpdateProperty(nameof(IsActive), value);
+        UpdateReadyFlag();
+      }
     }
 
     public BindingList<Profile> Profiles
@@ -34,7 +38,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     public Profile? SelectedProfile
     {
       get => base.GetProperty<Profile?>(nameof(SelectedProfile))!;
-      set => base.UpdateProperty(nameof(SelectedProfile), value);
+      set
+      {
+        base.UpdateProperty(nameof(SelectedProfile), value);
+        UpdateReadyFlag();
+      }
     }
 
     public List<LoggedFlight> LoggedFlights
@@ -48,12 +56,17 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       get => this.settings.Airports;
     }
 
-    public InitContext(Settings settings, Action onReadySet)
+    private void UpdateReadyFlag()
     {
-      this.onReadySet = onReadySet;
+      bool ready = this.SelectedProfile != null && this.IsActive;
+      onReadyChange(ready);
+    }
+
+    public InitContext(Settings settings, Action<bool> onReadyChange)
+    {
+      this.onReadyChange = onReadyChange;
       this.settings = settings;
       this.Profiles = new();
-      IsReady = false;
 
       this.Profiles = ProfileManager.GetAvailableProfiles(settings.DataFolder).ToBindingList();
       this.SelectedProfile = Profiles.FirstOrDefault();

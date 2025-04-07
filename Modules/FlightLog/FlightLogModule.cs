@@ -41,7 +41,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public void Init()
     {
-      this.InitContext = new InitContext(this.settings, () => this.IsReady = true);
+      this.InitContext = new InitContext(this.settings, q => this.IsReady = q);
       InitControl = new CtrInit(InitContext);
       this.IsReady = true;
     }

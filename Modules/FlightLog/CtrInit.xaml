@@ -14,14 +14,20 @@
   <UserControl.Resources>
     <cvt:DoubleFormatter x:Key="DoubleFormatter" />
     <localCvt:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter" />
+    <cvt:BoolToSolidBrushConverter x:Key="BoolToSolidBrushConverter" />
   </UserControl.Resources>
   <DockPanel>
     <DockPanel DockPanel.Dock="Top">
       <DockPanel DockPanel.Dock="Top">
+        <DockPanel DockPanel.Dock="Left">
+          <Label Margin="8" Padding="8" Background="{Binding IsActive, Converter={StaticResource BoolToSolidBrushConverter}}">
+            <CheckBox Content="Activate on Run" IsChecked="{Binding IsActive}" />
+          </Label>
+        </DockPanel>
         <Button x:Name="btnSettings" DockPanel.Dock="Right"
               Margin="8" Padding="8" Width="100" Click="btnSettings_Click">Settings</Button>
         <StackPanel Orientation="Horizontal" Margin="8">
-          <Label Grid.Row="0" Grid.Column="0" Content="Profile:" />
+          <Label Grid.Row="0" Grid.Column="0" Margin="0 4 0 0" Content="Profile:" />
           <ComboBox x:Name="cmbProfiles" Grid.Row="0" Grid.Column="1" SelectedIndex="0" ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}">
             <ComboBox.ItemTemplate>
               <DataTemplate>
