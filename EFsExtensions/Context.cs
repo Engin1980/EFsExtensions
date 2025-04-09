@@ -17,7 +17,7 @@ namespace Eng.EFsExtensions.App
 
     public Context()
     {
-      this.logger = Logger.Create(this);
+      this.logger = Logger.Create("EFSE.AppContext");
     }
 
     internal void SetUpModules()
