@@ -16,7 +16,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
 {
   public class ProfileManager
   {
-    private static Logger logger = Logger.Create("ProfileManager");
+    private static Logger logger = Logger.Create("EFSE.Modules.FlightLog.ProfileManager");
 
     public static void SaveFlight(LoggedFlight logFlight, Profile profile)
     {

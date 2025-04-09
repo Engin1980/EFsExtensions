@@ -32,8 +32,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
 
     public InitContext(Action<bool> setIsReadyFlagAction)
     {
-      this.logger = Logger.Create(this);
-      this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+      this.logger = Logger.Create("EFSE.Modules.Failures+Init");
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
       this.FailureDefinitionsFlat = new();
       this.LoadDefaultFailures();

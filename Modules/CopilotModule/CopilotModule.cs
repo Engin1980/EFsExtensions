@@ -34,7 +34,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
     public CopilotModule()
     {
       this.IsReady = false;
-      this.logger = Logger.Create(this);
+      this.logger = Logger.Create("EFSE.Modules.Copilot");
     }
 
     public void Init()

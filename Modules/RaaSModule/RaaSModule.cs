@@ -14,7 +14,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
   public class RaaSModule : NotifyPropertyChanged, IModule
   {
     private readonly Context context;
-    private readonly Logger logger = Logger.Create(nameof(RaaSModule));
+    private readonly Logger logger = Logger.Create("EFSE.Modules.RaaS");
     private CtrInit? ctrInit;
     private CtrRun? ctrRun;
 

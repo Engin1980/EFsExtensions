@@ -4,7 +4,13 @@
     <LogRule Regex=".+" Level="trace"/>
   </LogFileLogRules>
   <WindowLogRules>
-    <LogRule Regex="EFSE.AppContext" Level="warning" />
+    <LogRule Regex="EFSE\.AppContext" Level="warning" />
+    <LogRule Regex="EFSE\.Modules\.Checklist.+" Level="warning" />
+    <LogRule Regex="EFSE\.Modules\.Copilot.+" Level="warning" />
+    <LogRule Regex="EFSE\.Modules\.Failures.+" Level="warning" />
+    <LogRule Regex="EFSE\.Modules\.RaaS.+" Level="warning" />
+    <LogRule Regex="EFSE\.Modules\.FlightLog.+" Level="warning" />
+    <LogRule Regex="EFSE\.AppContext" Level="warning" />
     <LogRule Regex="ObjectElementDeserializer" Level="warning" />
     <LogRule Regex=".+StateCheckEvaluator.+" Level="warning" />
     <LogRule Regex="ESimConnect" Level="warning" />

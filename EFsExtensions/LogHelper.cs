@@ -40,7 +40,7 @@ namespace Eng.EFsExtensions.App
     {
       void txtOutWriter(LogItem li)
       {
-        string s = $"{DateTime.Now:HH:mm:ss.fff}/{li.ThreadInfo.Id:00} {li.Level} :: {li.SenderName} :: {li.Message}\n";
+        string s = $"{DateTime.Now:HH:mm:ss.fff}/{li.ThreadInfo.Id:00} {li.Level.ToString(),-8} :: {li.SenderName,-40} :: {li.Message}\n";
         txt.AppendText(s);
         txt.ScrollToEnd();
       };

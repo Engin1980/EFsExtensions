@@ -38,7 +38,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
     public ChecklistModule()
     {
       this.IsReady = false;
-      this.logger = Logger.Create(this);
+      this.logger = Logger.Create("EFSE.Modules.Checklist");
     }
 
 
