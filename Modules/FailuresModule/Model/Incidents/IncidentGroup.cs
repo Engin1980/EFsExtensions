@@ -10,7 +10,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents
 {
   public class IncidentGroup : Incident
   {
-    public List<Incident> Incidents { get; set; }
+    public List<Incident> Incidents { get; set; } = null!;
 
     public List<IncidentDefinition> GetIncidentDefinitionsRecursively()
     {

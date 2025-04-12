@@ -102,7 +102,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
 
     public void Start()
     {
-      this.eSimObj.StartInBackground(() =>
+      this.eSimObj.ExtOpen.OpenInBackground(() =>
       {
         this.eSimObj.ExtType.Register<FailSimData>();
         this.isRunning = true;

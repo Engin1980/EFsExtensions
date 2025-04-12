@@ -113,7 +113,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
       ConnectKeyHooks();
 
       logger.Log(LogLevel.DEBUG, "Starting simObject connection");
-      this.simObject.StartInBackground();
+      this.simObject.ExtOpen.OpenInBackground();
 
       logger.Log(LogLevel.DEBUG, "Run done");
     }

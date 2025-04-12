@@ -172,7 +172,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     public void Start()
     {
       logger.Log(LogLevel.DEBUG, "Starting simObject connection");
-      this.eSimObj.StartInBackground(() =>
+      this.eSimObj.ExtOpen.OpenInBackground(() =>
       {
         logger.Log(LogLevel.INFO, "Initializing & registering properties");
         eSimObj.ExtType.Register(typeof(SimDataSnapshot));

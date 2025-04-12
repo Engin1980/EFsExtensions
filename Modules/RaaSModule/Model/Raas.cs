@@ -9,8 +9,8 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.Model
 {
   public class Raas
   {
-    public RaasVariables Variables { get; set; }
-    public RaasSpeeches Speeches { get; set; }
+    public RaasVariables Variables { get; set; } = null!;
+    public RaasSpeeches Speeches { get; set; } = null!;
 
     internal void CheckSanity()
     {

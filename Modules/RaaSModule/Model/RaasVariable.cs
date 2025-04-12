@@ -2,7 +2,7 @@
 {
   public class RaasVariable
   {
-    public string Name { get; set; }
+    public string Name { get; set; } = null!;
 
     internal virtual void CheckSanity()
     {

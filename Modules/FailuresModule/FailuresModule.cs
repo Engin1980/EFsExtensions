@@ -28,6 +28,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
     {
       this.IsReady = false;
       this.logger = Logger.Create(this);
+      this.InitContext = new(q => this.IsReady = q);
     }
 
     public Control InitControl => this._InitControl ?? throw new ApplicationException("InitControl is null.");
@@ -52,6 +53,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
 
     public void SetUp(ModuleSetUpInfo setUpInfo)
     {
+      // TODO created twice; should be analysed what is SetUp really useful for
       InitContext = new InitContext(q => this.IsReady = q);
       Logger.RegisterSenderName(InitContext, "FailuresModule.InitContext");
     }

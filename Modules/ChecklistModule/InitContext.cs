@@ -41,7 +41,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
   {
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
-    public string LastLoadedFile { get; private set; }
+    public string? LastLoadedFile { get; private set; } = null!;
 
     public MetaInfo MetaInfo
     {

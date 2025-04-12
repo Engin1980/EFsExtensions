@@ -106,7 +106,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       LandingAttempts = new();
     }
 
-    [Obsolete("Use new instance instead?")]
     internal void Clear()
     {
       VatsimCache = null;

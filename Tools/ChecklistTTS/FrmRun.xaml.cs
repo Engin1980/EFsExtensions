@@ -36,9 +36,9 @@ namespace ChecklistTTS
     private string checklistOutputFile = null!;
     private string checklistInputFile = null!;
     private ITtsProvider ttsProvider = null!;
-    private string checklistStartupSpeech;
-    private string checklistCompletedSpeech;
-    private string checklistPausedAlertSpeech;
+    private string checklistStartupSpeech = string.Empty;
+    private string checklistCompletedSpeech = string.Empty;
+    private string checklistPausedAlertSpeech = string.Empty;
 
     public FrmRun()
     {

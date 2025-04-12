@@ -1,7 +1,6 @@
 ﻿using ESystem.Logging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
@@ -81,7 +80,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
       Log(LogLevel.INFO, "Run");
 
       logger.Log(LogLevel.DEBUG, "Starting simObject connection");
-      this.eSimObj.StartInBackground();
+      this.eSimObj.ExtOpen.OpenInBackground();
     }
 
     internal void Stop()
