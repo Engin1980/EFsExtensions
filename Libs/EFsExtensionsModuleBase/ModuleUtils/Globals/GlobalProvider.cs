@@ -12,7 +12,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals
 {
   public class GlobalProvider
   {
-    private static Lazy<GlobalProvider> _instance = new Lazy<GlobalProvider>(() =>
+    private readonly static Lazy<GlobalProvider> _instance = new Lazy<GlobalProvider>(() =>
     {
       GlobalProvider ret = new();
       ret.Init();
