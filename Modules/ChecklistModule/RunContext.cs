@@ -103,29 +103,29 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
 
     internal void Run(KeyHookWrapper keyHookWrapper)
     {
-      logger?.Invoke(LogLevel.INFO, "Run");
+      logger.Log(LogLevel.INFO, "Run");
 
-      logger?.Invoke(LogLevel.DEBUG, "Resetting playback");
+      logger.Log(LogLevel.DEBUG, "Resetting playback");
       manager.Reset();
 
-      logger?.Invoke(LogLevel.DEBUG, "Adding key hooks");
+      logger.Log(LogLevel.DEBUG, "Adding key hooks");
       this.keyHookWrapper = keyHookWrapper ?? throw new ArgumentNullException(nameof(keyHookWrapper));
       ConnectKeyHooks();
 
-      logger?.Invoke(LogLevel.DEBUG, "Starting simObject connection");
+      logger.Log(LogLevel.DEBUG, "Starting simObject connection");
       this.simObject.StartInBackground();
 
-      logger?.Invoke(LogLevel.DEBUG, "Run done");
+      logger.Log(LogLevel.DEBUG, "Run done");
     }
 
     internal void Stop()
     {
-      logger?.Invoke(LogLevel.INFO, "Stopping");
-      logger?.Invoke(LogLevel.WARNING, "Stop for RunContext of CheckListModule is not implemented.");
+      logger.Log(LogLevel.INFO, "Stopping");
+      logger.Log(LogLevel.WARNING, "Stop for RunContext of CheckListModule is not implemented.");
       this.simObject.Started -= SimObject_Started;
       this.simObject.SimPropertyChanged -= SimObject_SimPropertyChanged;
       this.keyHookWrapper!.UnregisterAllKeyHooks();
-      logger?.Invoke(LogLevel.INFO, "Stopped");
+      logger.Log(LogLevel.INFO, "Stopped");
     }
 
     #endregion Internal Methods
@@ -151,34 +151,34 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
       try
       {
         s = settings.Shortcuts.PlayPause;
-        logger?.Invoke(LogLevel.INFO, "Assigning play-pause keyboard shortcut " + s);
+        logger.Log(LogLevel.INFO, "Assigning play-pause keyboard shortcut " + s);
         this.keyHookPlayPauseId = this.keyHookWrapper.RegisterKeyHook(ConvertShortcutToKeyHookInfo(s));
       }
       catch (Exception ex)
       {
-        logger?.Invoke(LogLevel.ERROR, $"Failed to bind key-hook for shortcut {s}. Reason: {ex.GetFullMessage()}");
+        logger.Log(LogLevel.ERROR, $"Failed to bind key-hook for shortcut {s}. Reason: {ex.GetFullMessage()}");
       }
 
       try
       {
         s = settings.Shortcuts.SkipToNext;
-        logger?.Invoke(LogLevel.INFO, "Assigning skip-to-next keyboard shortcut " + s);
+        logger.Log(LogLevel.INFO, "Assigning skip-to-next keyboard shortcut " + s);
         this.keyHookSkipNextId = this.keyHookWrapper.RegisterKeyHook(ConvertShortcutToKeyHookInfo(s));
       }
       catch (Exception ex)
       {
-        logger?.Invoke(LogLevel.ERROR, $"Failed to bind key-hook for shortcut {s}. Reason: {ex.GetFullMessage()}");
+        logger.Log(LogLevel.ERROR, $"Failed to bind key-hook for shortcut {s}. Reason: {ex.GetFullMessage()}");
       }
 
       try
       {
         s = settings.Shortcuts.SkipToPrevious;
-        logger?.Invoke(LogLevel.INFO, "Assigning skip-to-previous keyboard shortcut " + s);
+        logger.Log(LogLevel.INFO, "Assigning skip-to-previous keyboard shortcut " + s);
         this.keyHookSkipPrevId = this.keyHookWrapper.RegisterKeyHook(ConvertShortcutToKeyHookInfo(s));
       }
       catch (Exception ex)
       {
-        logger?.Invoke(LogLevel.ERROR, $"Failed to bind key-hook for shortcut {s}. Reason: {ex.GetFullMessage()}");
+        logger.Log(LogLevel.ERROR, $"Failed to bind key-hook for shortcut {s}. Reason: {ex.GetFullMessage()}");
       }
 
       this.keyHookWrapper.KeyHookInvoked += keyHookWrapper_KeyHookInvoked;

@@ -171,7 +171,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     public void Start()
     {
-      logger.Invoke(LogLevel.DEBUG, "Starting simObject connection");
+      logger.Log(LogLevel.DEBUG, "Starting simObject connection");
       this.eSimObj.StartInBackground(() =>
       {
         logger.Log(LogLevel.INFO, "Initializing & registering properties");
@@ -201,7 +201,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     {
       try
       {
-        logger.Invoke(LogLevel.INFO, $"Checking file '{xmlFile}'");
+        logger.Log(LogLevel.INFO, $"Checking file '{xmlFile}'");
         try
         {
           XmlUtils.ValidateXmlAgainstXsd(xmlFile, new string[] {
@@ -215,7 +215,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
           throw new ApplicationException($"Failed to validate XML file against XSD. Error: " + ex.Message, ex);
         }
 
-        logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
+        logger.Log(LogLevel.INFO, $"Loading file '{xmlFile}'");
         XDocument doc = Try(() => XDocument.Load(xmlFile, LoadOptions.SetLineInfo),
           ex => throw new ApplicationException($"Unable to load xml file '{xmlFile}'.", ex));
 
@@ -223,7 +223,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
         Raas raas = Try(() => RaasXmlLoader.Load(doc),
           ex => throw new ApplicationException("Unable to read/deserialize copilot-set from '{xmlFile}'. Invalid file content?", ex));
 
-        logger.Invoke(LogLevel.INFO, $"Checking sanity");
+        logger.Log(LogLevel.INFO, $"Checking sanity");
         Try(
           () => raas.CheckSanity(),
           ex => throw new ApplicationException("Error loading failures.", ex));
@@ -233,12 +233,12 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
         this.CheckReadyStatus();
         //this.LastLoadedFile = xmlFile;
-        logger.Invoke(LogLevel.INFO, $"RaaS set file '{xmlFile}' successfully loaded.");
+        logger.Log(LogLevel.INFO, $"RaaS set file '{xmlFile}' successfully loaded.");
       }
       catch (Exception ex)
       {
         this.updateReadyFlag(false);
-        logger.Invoke(LogLevel.ERROR, $"Failed to load failure set from '{xmlFile}'." + ex.GetFullMessage());
+        logger.Log(LogLevel.ERROR, $"Failed to load failure set from '{xmlFile}'." + ex.GetFullMessage());
       }
     }
 

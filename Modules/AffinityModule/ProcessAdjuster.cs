@@ -111,7 +111,7 @@ namespace Eng.EFsExtensions.Modules.AffinityModule
     private void ApplyRules()
     {
       Dictionary<Process, RuleSet> mapping = MapNewProcessesToRules();
-      logger.Invoke(LogLevel.DEBUG, $"Analysis completed, adjusting {mapping.Count} processes.");
+      logger.Log(LogLevel.DEBUG, $"Analysis completed, adjusting {mapping.Count} processes.");
 
       foreach (var item in mapping)
       {
@@ -119,7 +119,7 @@ namespace Eng.EFsExtensions.Modules.AffinityModule
         AffinityRule? affinityRule = item.Value.AffinityRule;
         PriorityRule? priorityRule = item.Value.PriorityRule;
 
-        logger.Invoke(LogLevel.DEBUG, $"Adjusting process {process.Id}/{process.ProcessName}");
+        logger.Log(LogLevel.DEBUG, $"Adjusting process {process.Id}/{process.ProcessName}");
         ProcessAdjustResult pi = new()
         {
           Id = process.Id,
@@ -140,18 +140,18 @@ namespace Eng.EFsExtensions.Modules.AffinityModule
           pi.PrioritySetResult = pi.PriorityGetResult = ProcessAdjustResult.EResult.Unchanged;
 
         if (affinityRule == null && priorityRule == null)
-          logger.Invoke(LogLevel.DEBUG, $"No rule to cover '{pi.Name} ({pi.Id})', skipping.");
+          logger.Log(LogLevel.DEBUG, $"No rule to cover '{pi.Name} ({pi.Id})', skipping.");
 
         this.processAdjusts.Add(pi);
         this.SingleProcessCompleted?.Invoke(pi);
         //Application.Current.Dispatcher.Invoke(() => { this.processAdjusts.Add(pi); });
       }
 
-      logger.Invoke(LogLevel.INFO, $"Affinity adjustment completed, " +
+      logger.Log(LogLevel.INFO, $"Affinity adjustment completed, " +
         $"changed {processAdjusts.Count(q => q.AffinitySetResult == ProcessAdjustResult.EResult.Ok)}, " +
         $"failed {processAdjusts.Count(q => q.AffinitySetResult == ProcessAdjustResult.EResult.Failed)}, " +
         $"skipped {processAdjusts.Count(q => q.AffinitySetResult == ProcessAdjustResult.EResult.Unchanged)}.");
-      logger.Invoke(LogLevel.INFO, $"Priority adjustment completed, " +
+      logger.Log(LogLevel.INFO, $"Priority adjustment completed, " +
         $"changed {processAdjusts.Count(q => q.PrioritySetResult == ProcessAdjustResult.EResult.Ok)}, " +
         $"failed {processAdjusts.Count(q => q.PrioritySetResult == ProcessAdjustResult.EResult.Failed)}, " +
         $"skipped {processAdjusts.Count(q => q.PrioritySetResult == ProcessAdjustResult.EResult.Unchanged)}.");
@@ -160,7 +160,7 @@ namespace Eng.EFsExtensions.Modules.AffinityModule
 
     private void SetPriorityIfRequired(Process process, PriorityRule rule, ProcessAdjustResult pi)
     {
-      logger.Invoke(LogLevel.DEBUG, $"Evaluating priority for '{pi.Name} ({pi.Id})'.");
+      logger.Log(LogLevel.DEBUG, $"Evaluating priority for '{pi.Name} ({pi.Id})'.");
       ProcessPriorityClass targetPriority = rule.Priority;
       ProcessPriorityClass? currentPriority;
       try
@@ -172,7 +172,7 @@ namespace Eng.EFsExtensions.Modules.AffinityModule
       {
         currentPriority = null;
         pi.PriorityGetResult = ProcessAdjustResult.EResult.Failed;
-        logger.Invoke(LogLevel.DEBUG, $"Getting '{pi.Name} ({pi.Id})' priority failed. " +
+        logger.Log(LogLevel.DEBUG, $"Getting '{pi.Name} ({pi.Id})' priority failed. " +
               $"Probably no rights to do this. {ex.Message}");
       }
 
@@ -189,7 +189,7 @@ namespace Eng.EFsExtensions.Modules.AffinityModule
           catch (Exception ex)
           {
             pi.PrioritySetResult = ProcessAdjustResult.EResult.Failed;
-            logger.Invoke(LogLevel.DEBUG, $"Adjusting '{pi.Name} ({pi.Id})' priority failed. " +
+            logger.Log(LogLevel.DEBUG, $"Adjusting '{pi.Name} ({pi.Id})' priority failed. " +
               $"Probably no rights to do this. {ex.Message}");
           }
       }
@@ -197,7 +197,7 @@ namespace Eng.EFsExtensions.Modules.AffinityModule
 
     private void SetAffinityIfRequired(Process process, AffinityRule rule, ProcessAdjustResult pi)
     {
-      logger.Invoke(LogLevel.DEBUG, $"Evaluating affinity for '{pi.Name} ({pi.Id})'.");
+      logger.Log(LogLevel.DEBUG, $"Evaluating affinity for '{pi.Name} ({pi.Id})'.");
       IntPtr targetAffinity = AffinityUtils.ToIntPtr(rule.CoreFlags.ToArray());
       IntPtr? currentAffinity;
       try
@@ -209,7 +209,7 @@ namespace Eng.EFsExtensions.Modules.AffinityModule
       {
         currentAffinity = null;
         pi.AffinityGetResult = ProcessAdjustResult.EResult.Failed;
-        logger.Invoke(LogLevel.DEBUG, $"Getting '{pi.Name} ({pi.Id})' affinity failed. " +
+        logger.Log(LogLevel.DEBUG, $"Getting '{pi.Name} ({pi.Id})' affinity failed. " +
               $"Probably no rights to do this. {ex.Message}");
       }
 
@@ -226,7 +226,7 @@ namespace Eng.EFsExtensions.Modules.AffinityModule
           catch (Exception ex)
           {
             pi.AffinitySetResult = ProcessAdjustResult.EResult.Failed;
-            logger.Invoke(LogLevel.DEBUG, $"Adjusting '{pi.Name} ({pi.Id})' affinity failed. " +
+            logger.Log(LogLevel.DEBUG, $"Adjusting '{pi.Name} ({pi.Id})' affinity failed. " +
               $"Probably no rights to do this. {ex.Message}");
           }
       }

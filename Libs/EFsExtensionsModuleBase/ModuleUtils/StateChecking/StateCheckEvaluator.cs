@@ -67,7 +67,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking
       this.propertyValuesProvider = propertyValuesProvider;
 
       this.logger = Logger.Create(this);
-      this.logger.Invoke(LogLevel.INFO, "Created");
+      this.logger.Log(LogLevel.INFO, "Created");
     }
 
     #endregion Public Constructors
@@ -128,14 +128,14 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking
       EAssert.Argument.IsNotNull(item, nameof(item));
       lock (this)
       {
-        logger.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} started.");
+        logger.Log(LogLevel.INFO, $"Evaluation of {item.DisplayString} started.");
         this.recentResultSet.Clear();
         this.currentPropertyValues = propertyValuesProvider();
         this.currentVariableValues = variableValuesProvider();
         ret = EvaluateItem(item);
         this.currentVariableValues = null;
         this.currentPropertyValues = null;
-        logger.Invoke(LogLevel.INFO, $"Evaluation of {item.DisplayString} resulted in {ret}.");
+        logger.Log(LogLevel.INFO, $"Evaluation of {item.DisplayString} resulted in {ret}.");
       }
       return ret;
     }
@@ -392,7 +392,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking
 
     private void Log(IStateCheckItem property, string msg, bool ret)
     {
-      this.logger.Invoke(LogLevel.INFO, $"EVAL {property.DisplayString} \t {msg} \t {ret}");
+      this.logger.Log(LogLevel.INFO, $"EVAL {property.DisplayString} \t {msg} \t {ret}");
     }
 
     private double ResolveCurrentPropertyValue(StateCheckProperty property)

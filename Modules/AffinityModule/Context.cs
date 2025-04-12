@@ -62,7 +62,7 @@ namespace Eng.EFsExtensions.Modules.AffinityModule
 
       try
       {
-        logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
+        logger.Log(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
           doc = XDocument.Load(xmlFile);
@@ -83,7 +83,7 @@ namespace Eng.EFsExtensions.Modules.AffinityModule
       catch (Exception ex)
       {
         this.setIsReadyFlagAction(false);
-        logger.Invoke(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage("\n\t"));
+        logger.Log(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage("\n\t"));
       }
     }
 

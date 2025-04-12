@@ -47,11 +47,11 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
       try
       {
         settings = Settings.Load();
-        logger.Invoke(LogLevel.INFO, "Settings loaded.");
+        logger.Log(LogLevel.INFO, "Settings loaded.");
       }
       catch (Exception ex)
       {
-        logger.Invoke(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
+        logger.Log(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
         settings = new Settings();
       }
     }
