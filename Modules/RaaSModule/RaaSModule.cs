@@ -38,11 +38,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       this.ctrInit = new(this.context);
       try
       {
-        if (this.context.Settings.AutoLoadedAirportsFile != null)
-        {
-          this.context.LoadAirportsFile(this.context.Settings.AutoLoadedAirportsFile);
-          logger.Invoke(LogLevel.INFO, "Default Airports loaded."); 
-        }
         if (this.context.Settings.AutoLoadedRaasFile != null)
         {
           this.context.LoadRaasFile(this.context.Settings.AutoLoadedRaasFile);
@@ -51,7 +46,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       }
       catch
       {
-        logger.Invoke(LogLevel.ERROR, "Unable to load airports or RaaS file.");
+        logger.Invoke(LogLevel.ERROR, "Unable to load RaaS file.");
       }
     }
 
@@ -68,8 +63,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     public void SetUp(ModuleSetUpInfo setUpInfo)
     {
-      this.context.Airports = new();
-
       try
       {
         this.context.Settings = Settings.Load();

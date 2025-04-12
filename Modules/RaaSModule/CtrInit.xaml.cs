@@ -74,7 +74,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       }
     }
 
-    private string? recentArportsXmlFile;
     private string?  recentRaasXmlFile;
 
     public CtrInit()
@@ -87,28 +86,10 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     internal CtrInit(Context context) : this()
     {
       this.DataContext = this.context = context;
-      this.tabAirports.DataContext = this.filteredAirports = new();
-    }
 
-    private void btnLoadAirports_Click(object sender, RoutedEventArgs e)
-    {
-      var dialog = new CommonOpenFileDialog()
-      {
-        AddToMostRecentlyUsedList = true,
-        EnsureFileExists = true,
-        DefaultFileName = recentArportsXmlFile,
-        Multiselect = false,
-        Title = "Select XML file with airports data..."
-      };
-      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("Airports files", "airports.xml"));
-      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("XML files", "xml"));
-      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("All files", "*"));
-      if (dialog.ShowDialog() != CommonFileDialogResult.Ok || dialog.FileName == null) return;
-
-      recentArportsXmlFile = dialog.FileName;
-      this.context.LoadAirportsFile(recentArportsXmlFile);
-      this.filteredAirports.SetBaseAirports(this.context.Airports);
-      this.txtAirportsCount.Text = $" ({this.context.Airports.Count})";
+      var f = new FilteredAirports();
+      f.SetBaseAirports(this.context.Airports);
+      this.tabAirports.DataContext = this.filteredAirports = f;
     }
 
     private void btnSettings_Click(object sender, RoutedEventArgs e)

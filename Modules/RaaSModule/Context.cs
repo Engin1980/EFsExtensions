@@ -17,6 +17,7 @@ using System.Timers;
 using ESystem.Exceptions;
 using System.Diagnostics;
 using Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
 
 namespace Eng.EFsExtensions.Modules.RaaSModule
 {
@@ -126,7 +127,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     public List<Airport> Airports
     {
       get { return base.GetProperty<List<Airport>>(nameof(Airports))!; }
-      set { base.UpdateProperty(nameof(Airports), value); }
+      private set { base.UpdateProperty(nameof(Airports), value); }
     }
 
     public MetaInfo MetaInfo
@@ -158,6 +159,8 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
         Enabled = false,
       };
       this.timer.Elapsed += timer_Elapsed;
+
+      this.Airports = GlobalProvider.Instance.NavData.Airports.ToList();
 
       this.eSimObj = NewSimObject.GetInstance();
     }
@@ -193,12 +196,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     #endregion Public Methods
 
     #region Internal Methods
-
-    internal void LoadAirportsFile(string recentXmlFile)
-    {
-      this.Airports = Libs.AirportsLib.XmlLoader.Load(recentXmlFile);
-      this.CheckReadyStatus();
-    }
 
     internal void LoadRaasFile(string xmlFile)
     {
@@ -332,7 +329,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
         .OrderBy(q => q.OrthoDistance)
         .ToList();
     }
-
 
     private void EvaluateRaas()
     {

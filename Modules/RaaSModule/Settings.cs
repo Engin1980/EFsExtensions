@@ -212,12 +212,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     public MsSapiSettings Synthetizer { get; set; } = new();
 
-    public string? AutoLoadedAirportsFile
-    {
-      get { return base.GetProperty<string?>(nameof(AutoLoadedAirportsFile))!; }
-      set { base.UpdateProperty(nameof(AutoLoadedAirportsFile), value); }
-    }
-
     public string? AutoLoadedRaasFile
     {
       get { return base.GetProperty<string?>(nameof(AutoLoadedRaasFile))!; }
@@ -250,7 +244,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     public Settings()
     {
-      this.AutoLoadedAirportsFile = null;
       this.AutoLoadedRaasFile = null;
       this.HoldingPointThresholds = new();
       this.LineUpThresholds = new();

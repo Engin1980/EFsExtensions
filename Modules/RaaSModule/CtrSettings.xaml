@@ -29,13 +29,6 @@
           <RowDefinition />
         </Grid.RowDefinitions>
 
-        <Label Content="Default Airports File" Grid.Row="0" Grid.Column="0" />
-        <TextBox Text="{Binding AutoLoadedAirportsFile}" Grid.Row="0" Grid.Column="1"  Padding="0 4 0 0" />
-        <StackPanel Orientation="Horizontal" Grid.Row="0" Grid.Column="2">
-          <Button x:Name="btnAirportsFile" Click="btnAirportsFile_Click">(Browse)</Button>
-          <Button x:Name="btnAirportsFileDelete" Click="btnAirportsFileDelete_Click">(Remove)</Button>
-        </StackPanel>
-
         <Label Content="Default RaaS File" Grid.Row="1" Grid.Column="0" />
         <TextBox Text="{Binding AutoLoadedRaasFile}" Grid.Row="1" Grid.Column="1"  Padding="0 4 0 0" />
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2">

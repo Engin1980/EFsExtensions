@@ -20,6 +20,7 @@ using Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.SimBriefMode
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.Shared;
 using System.ComponentModel;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -50,12 +51,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       };
       this.RunVM.Clear();
       this.settings = settings;
-      this.airports = settings.Airports;
+      this.airports = GlobalProvider.Instance.NavData.Airports.ToList();
       this.selectedProfile = initContext.SelectedProfile;
 
       this.LoggedFlights = ProfileManager.GetProfileFlights(initContext.SelectedProfile);
 
-      //this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
+      this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }
 
     public ActiveFlightViewModel RunVM

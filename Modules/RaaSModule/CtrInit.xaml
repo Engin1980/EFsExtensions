@@ -19,12 +19,10 @@
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*" />
-          <ColumnDefinition Width="*" />
           <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
-        <Button x:Name="btnLoadAirports" Click="btnLoadAirports_Click" Grid.Column="0" Margin="8" Padding="8">Load Airports</Button>
-        <Button x:Name="btnLoadRaas" Click="btnLoadRaas_Click" Grid.Column="1" Margin="8" Padding="8">Load RaaS</Button>
-        <Button x:Name="btnSettings" Grid.Column="2" Margin="8" Padding="8" Click="btnSettings_Click">Settings</Button>
+        <Button x:Name="btnLoadRaas" Click="btnLoadRaas_Click" Grid.Column="0" Margin="8" Padding="8">Load RaaS</Button>
+        <Button x:Name="btnSettings" Grid.Column="1" Margin="8" Padding="8" Click="btnSettings_Click">Settings</Button>
       </Grid>
     </DockPanel>
     <TabControl>
@@ -43,7 +41,7 @@
             <StackPanel>
               <StackPanel Orientation="Horizontal" Margin="8">
                 <TextBlock Text="Filter (regex):" />
-                <TextBox Width="100" Text="{Binding FilterRegex, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Width="100" Text="{Binding FilterRegex, UpdateSourceTrigger=PropertyChanged, Delay=500}" />
               </StackPanel>
             </StackPanel>
           </GroupBox>

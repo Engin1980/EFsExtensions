@@ -33,6 +33,7 @@ using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
 using ESystem.Exceptions;
 using ESystem.Logging;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
 
 namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
@@ -75,7 +76,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
       Settings = settings ?? throw new ArgumentNullException(nameof(settings));
       this.logger = Logger.Create(this, "Checklist.InitContext");
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
-      this.SimPropertyGroup = LoadDefaultSimProperties();
+      this.SimPropertyGroup = GlobalProvider.Instance.SimPropertyGroup;
     }
 
     public void RebuildSoundStreams()
@@ -85,21 +86,6 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
       InitializeSoundStreams(
         tmp,
         System.IO.Path.GetDirectoryName(LastLoadedFile) ?? throw new UnexpectedNullException());
-    }
-
-    private SimPropertyGroup LoadDefaultSimProperties()
-    {
-      SimPropertyGroup ret;
-      try
-      {
-        XDocument doc = XDocument.Load(@"Xmls\SimProperties.xml", LoadOptions.SetLineInfo);
-        ret = SimPropertyGroup.Deserialize(doc.Root!);
-      }
-      catch (Exception ex)
-      {
-        throw new ApplicationException("Failed to load global sim properties.", ex);
-      }
-      return ret;
     }
 
     internal void LoadFile(string xmlFile)
