@@ -62,6 +62,7 @@
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
+          <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto" />
@@ -85,16 +86,24 @@
           <TextBlock Text="{Binding TakeOffDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
         </Label>
 
-        <Label Grid.Row="3" Grid.Column="0" Content="Landing" />
+        <Label Grid.Row="3" Grid.Column="0" Content="Air Time" />
+        <Label Grid.Row="3" Grid.Column="1">
+          <shared:TimeSpanTextBlock Value="{Binding ScheduledAirTime}" StringFormat="h:mm" />
+        </Label>
         <Label Grid.Row="3" Grid.Column="2">
+          <shared:TimeSpanTextBlock Value="{Binding AirTime}" StringFormat="h:mm" />
+        </Label>
+
+        <Label Grid.Row="4" Grid.Column="0" Content="Landing" />
+        <Label Grid.Row="4" Grid.Column="2">
           <TextBlock Text="{Binding LandingDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
         </Label>
 
-        <Label Grid.Row="4" Grid.Column="0" Content="On-block" />
-        <Label Grid.Row="4" Grid.Column="1">
+        <Label Grid.Row="5" Grid.Column="0" Content="On-block" />
+        <Label Grid.Row="5" Grid.Column="1">
           <TextBlock Text="{Binding ShutDownScheduledDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
         </Label>
-        <Label Grid.Row="4" Grid.Column="2">
+        <Label Grid.Row="5" Grid.Column="2">
           <TextBlock Text="{Binding ShutDownDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
         </Label>
 
@@ -103,6 +112,7 @@
     <GroupBox Header="Fuel">
       <Grid>
         <Grid.RowDefinitions>
+          <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
           <RowDefinition Height="Auto" />
@@ -131,16 +141,24 @@
           <TextBlock Text="{Binding TakeOffFuelWeight, StringFormat={}{0:N0} kg}" />
         </Label>
 
-        <Label Grid.Row="3" Grid.Column="0" Content="Landing" />
+        <Label Grid.Row="3" Grid.Column="0" Content="Usage (air)" />
         <Label Grid.Row="3" Grid.Column="1">
-          <TextBlock Text="{Binding LandingScheduledFuelWeight, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding ScheduledAirFuelUsedWeight, StringFormat={}{0:N0} kg}" />
         </Label>
         <Label Grid.Row="3" Grid.Column="2">
+          <TextBlock Text="{Binding AirFuelUsedWeight, StringFormat={}{0:N0} kg}" />
+        </Label>
+
+        <Label Grid.Row="4" Grid.Column="0" Content="Landing" />
+        <Label Grid.Row="4" Grid.Column="1">
+          <TextBlock Text="{Binding LandingScheduledFuelWeight, StringFormat={}{0:N0} kg}" />
+        </Label>
+        <Label Grid.Row="4" Grid.Column="2">
           <TextBlock Text="{Binding LandingFuelWeight, StringFormat={}{0:N0} kg}" />
         </Label>
 
-        <Label Grid.Row="4" Grid.Column="0" Content="On-block" />
-        <Label Grid.Row="4" Grid.Column="2">
+        <Label Grid.Row="5" Grid.Column="0" Content="On-block" />
+        <Label Grid.Row="5" Grid.Column="2">
           <TextBlock Text="{Binding ShutDownFuelWeight, StringFormat={}{0:N0} kg}" />
         </Label>
 
@@ -155,15 +173,15 @@
               <RowDefinition />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-              <ColumnDefinition />
-              <ColumnDefinition />
-              <ColumnDefinition />
-              <ColumnDefinition />
-              <ColumnDefinition />
-              <ColumnDefinition />
-              <ColumnDefinition />
-              <ColumnDefinition />
-              <ColumnDefinition />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
+              <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
             <DataGridColumnHeader  Grid.Row="0" Grid.Column="0" Content="Time" />
@@ -189,7 +207,7 @@
 
             <DataGridColumnHeader  Grid.Row="0" Grid.Column="5" Content="MaxVS" />
             <Label Grid.Row="1" Grid.Column="5">
-              <TextBlock Text="{Binding MaxVS, StringFormat={}{0:N0} ft/min}" />
+              <TextBlock Text="{Binding MaxVS, StringFormat={}{0:N2} ft/min}" />
             </Label>
 
             <DataGridColumnHeader  Grid.Row="0" Grid.Column="6" Content="MaxAccY" />

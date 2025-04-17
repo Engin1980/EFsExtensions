@@ -55,7 +55,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       this.LoggedFlights = ProfileManager.GetProfileFlights(initContext.SelectedProfile);
 
-      //this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
+      this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
     }
 
     public ActiveFlightViewModel RunVM
@@ -418,7 +418,16 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         this.simPropValues.Latitude, this.simPropValues.Longitude);
       LoggedFlight logFlight = GenerateLogFlight(this.RunVM);
 
-      ProfileManager.SaveFlight(logFlight, selectedProfile);
+      try
+      {
+        ProfileManager.SaveFlight(logFlight, selectedProfile);
+        logger.Log(LogLevel.INFO, $"Flight {logFlight.DepartureICAO}-{logFlight.DestinationICAO} saved.");
+      }
+      catch (Exception ex)
+      {
+        logger.Log(LogLevel.ERROR, "Failed to save flight. " + ex.Message);
+      }
+
       this.LoggedFlights = ProfileManager.GetProfileFlights(this.selectedProfile);
       this.RunVM.Clear();
 

@@ -55,6 +55,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public TimeSpan ArrivalTaxiTime => this.ShutDownDateTime - this.LandingDateTime;
     public TimeSpan TaxiTime => this.DepartureTaxiTime + this.ArrivalTaxiTime;
     public TimeSpan AirTime => this.LandingDateTime - this.TakeOffDateTime;
+    public TimeSpan? ScheduledAirTime => this.LandingScheduledDateTime != null && this.TakeOffScheduledDateTime != null ? this.LandingScheduledDateTime.Value - this.TakeOffScheduledDateTime.Value : null;
     public DateTime Time => Touchdowns.Last().TouchDownDateTime;
     public TimeSpan BlockTime => this.ShutDownDateTime - this.StartUpDateTime;
     public int TakeOffIAS => TakeOff.IAS;
@@ -62,6 +63,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public DateTime LandingDateTime => Touchdowns.Last().TouchDownDateTime;
     public TimeSpan FlightDuration => LandingDateTime - TakeOffDateTime;
     public TimeSpan TotalDuration => ShutDownDateTime - StartUpDateTime;
+    public int? ScheduledAirFuelUsedWeight => LandingScheduledFuelWeight != null && TakeOffScheduledFuelWeight != null ? TakeOffScheduledFuelWeight.Value - LandingScheduledFuelWeight.Value : null;
+    public int AirFuelUsedWeight => TakeOffFuelWeight - LandingFuelWeight;
 
     public void CheckValidity(out bool resaveNeeded)
     {

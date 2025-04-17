@@ -64,6 +64,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
       if (e.Property.Name == nameof(Flights) && d is CtrLogFlightOverview control)
       {
         var flights = (List<LoggedFlight>)e.NewValue;
+        flights = flights.OrderByDescending(q => q.StartUpDateTime).ToList();
         control.VM.Flights = flights;
         control.VM.SelectedFlight = flights.FirstOrDefault();
         control.VM.Stats = ProfileManager.GetFlightsStatsData(flights);

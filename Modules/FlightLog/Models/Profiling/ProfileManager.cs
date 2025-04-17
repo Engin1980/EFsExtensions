@@ -22,7 +22,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
     {
       string fileName = System.IO.Path.Combine(
         profile.Path,
-        $"{logFlight.StartUpDateTime:yyyy-mm-dd-hh-mm-ss}_{logFlight.DepartureICAO}_{logFlight.DestinationICAO}.xml");
+        $"{logFlight.StartUpDateTime:yyyy-MM-dd-hh-mm-ss}_{logFlight.DepartureICAO}_{logFlight.DestinationICAO}.xml");
       XmlSerializer ser = new(typeof(LoggedFlight));
       try
       {
@@ -57,9 +57,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
       foreach (var file in files)
       {
         XmlSerializer serializer = new(typeof(LoggedFlight));
-        using System.IO.FileStream fileStream = new(file, System.IO.FileMode.Open);
         try
         {
+          using System.IO.FileStream fileStream = new(file, System.IO.FileMode.Open);
           LoggedFlight? flight = (LoggedFlight?)(serializer.Deserialize(fileStream));
           EAssert.IsNotNull(flight);
           ret.Add(flight);
