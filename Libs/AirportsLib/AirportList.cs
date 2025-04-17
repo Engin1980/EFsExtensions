@@ -85,7 +85,7 @@ namespace Eng.EFsExtensions.Libs.AirportsLib
       EAssert.IsNotNull(tmpAD, "tmpAD");
       EAssert.IsNotNull(tmpAD.Airport, "tmpAD.Airport");
 
-      Airport? ret = tmpAD.Distance < opts.MaxDistanceInKm ? tmpAD.Airport : null;
+      Airport? ret = tmpAD.Distance < (opts.MaxDistanceInKm * 1000) ? tmpAD.Airport : null;
       return ret;
     }
   }

@@ -17,5 +17,10 @@ namespace Eng.EFsExtensions.Libs.AirportsLib
     public GPS Coordinate { get; set; }
     public double Declination { get; set; }
     public List<Runway> Runways { get; set; } = new();
+
+    public override string ToString()
+    {
+      return $"Airport({ICAO})";
+    }
   }
 }

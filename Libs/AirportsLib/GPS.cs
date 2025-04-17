@@ -24,5 +24,10 @@ namespace Eng.EFsExtensions.Libs.AirportsLib
       Latitude = double.NaN;
       Longitude = double.NaN;
     }
+
+    public override string ToString()
+    {
+      return $"GPS({Latitude:N5} {Longitude:N5})";
+    }
   }
 }

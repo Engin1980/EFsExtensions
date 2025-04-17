@@ -10,7 +10,8 @@
     <DataGrid.Columns>
       <DataGridTextColumn Header="Date &amp; Time" Binding="{Binding StartUpDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
       <DataGridTextColumn Header="From" Binding="{Binding DepartureICAO}" />
-      <DataGridTextColumn Header="To" Binding="{Binding DestinationICAO}" />
+      <DataGridTextColumn Header="To" Binding="{Binding LandedICAO}" />
+      <DataGridTextColumn Header="Plan" Binding="{Binding DestinationICAO}" />
       <DataGridTextColumn Header="Div" Binding="{Binding AlternateICAO}" />
       <DataGridTextColumn Header="Callsign" Binding="{Binding Callsign}" />
       <DataGridTextColumn Header="Aircraft" Binding="{Binding AircraftType}" />
