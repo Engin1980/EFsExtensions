@@ -124,9 +124,9 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     #region Public Properties
 
-    public List<Airport> Airports
+    public AirportList Airports
     {
-      get { return base.GetProperty<List<Airport>>(nameof(Airports))!; }
+      get { return base.GetProperty<AirportList>(nameof(Airports))!; }
       private set { base.UpdateProperty(nameof(Airports), value); }
     }
 
@@ -160,7 +160,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       };
       this.timer.Elapsed += timer_Elapsed;
 
-      this.Airports = GlobalProvider.Instance.NavData.Airports.ToList();
+      this.Airports = GlobalProvider.Instance.NavData.Airports;
 
       this.eSimObj = NewSimObject.GetInstance();
     }
@@ -262,45 +262,10 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       }
       if (tmpA == null)
       {
-        var closeAirports = Airports
-          .Where(q => q.Coordinate.Latitude > simData.Latitude - 1)
-          .Where(q => q.Coordinate.Latitude < simData.Latitude + 1)
-          .Where(q => q.Coordinate.Longitude > simData.Longitude - 1)
-          .Where(q => q.Coordinate.Longitude < simData.Longitude + 1);
-
-        if (!closeAirports.Any())
-        {
-          closeAirports = Airports.Where(q => q.Coordinate.Latitude > simData.Latitude - 5)
-            .Where(q => q.Coordinate.Latitude < simData.Latitude + 5)
-            .Where(q => q.Coordinate.Longitude > simData.Longitude - 5)
-            .Where(q => q.Coordinate.Longitude < simData.Longitude + 5);
-
-          if (!closeAirports.Any())
-          {
-            closeAirports = Airports.Where(q => q.Coordinate.Latitude > simData.Latitude - 20)
-             .Where(q => q.Coordinate.Latitude < simData.Latitude + 20)
-             .Where(q => q.Coordinate.Longitude > simData.Longitude - 20)
-             .Where(q => q.Coordinate.Longitude < simData.Longitude + 20);
-
-            if (!closeAirports.Any())
-            {
-              closeAirports = Airports;
-            }
-          }
-        }
-
-        var tmpAD = closeAirports
-          .Select(q => new
-          {
-            Airport = q,
-            Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, simData.Latitude, simData.Longitude)
-          })
-          .MinBy(q => q.Distance)
-          ?? throw new UnexpectedNullException();
-        tmpA = tmpAD.Airport;
-        tmpD = tmpAD.Distance;
+        tmpA = Airports.GetNearestAirport(simData.Latitude, simData.Longitude);
+        tmpD = GpsCalculator.GetDistance(tmpA.Coordinate.Latitude, tmpA.Coordinate.Longitude, simData.Latitude, simData.Longitude);
       }
-
+      
       Debug.Assert(tmpA != null && tmpD != null);
       var rwys = tmpA.Runways
         .Select(q => new RunwayWithOrthoDistance(q, GpsCalculator.GetDistanceFromLine(

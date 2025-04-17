@@ -45,7 +45,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals
 
       this.NavData = new NavData()
       {
-        Airports = airports,
+        Airports = new AirportList(airports),
       };
     }
 

@@ -8,6 +8,6 @@ namespace Eng.EFsExtensions.Libs.AirportsLib
 {
   public class NavData
   {
-    public IReadOnlyList<Airport> Airports { get; set; } = null!;
+    public AirportList Airports { get; set; } = null!;
   }
 }

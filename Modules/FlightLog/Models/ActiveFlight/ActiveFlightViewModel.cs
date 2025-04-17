@@ -100,9 +100,17 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       set => UpdateProperty(nameof(LastLoggedFlight), value);
     }
 
+
+    public int NumberOfGoArounds
+    {
+      get => base.GetProperty<int>(nameof(NumberOfGoArounds))!;
+      set => base.UpdateProperty(nameof(NumberOfGoArounds), value);
+    }
+
     public ActiveFlightViewModel()
     {
       State = RunModelState.WaitingForStartupForTheFirstTime;
+      NumberOfGoArounds = 0;
       LandingAttempts = new();
     }
 
@@ -115,6 +123,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       ShutDownCache = null;
       TakeOffCache = null;
       TakeOffAttempt = null;
+      NumberOfGoArounds = 0;
       LandingAttempts.Clear();
       State = RunModelState.WaitingForStartupForTheFirstTime;
     }
