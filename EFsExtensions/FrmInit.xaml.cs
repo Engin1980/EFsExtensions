@@ -29,6 +29,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 using ModuleRestoreDict = System.Collections.Generic.Dictionary<string, string>;
 using ModulesRestoreData = System.Collections.Generic.Dictionary<string, System.Collections.Generic.Dictionary<string, string>>;
+using ESystem.Exceptions;
 
 namespace Eng.EFsExtensions.App
 {
@@ -38,7 +39,7 @@ namespace Eng.EFsExtensions.App
   public partial class FrmInit : Window
   {
     private readonly Context context = new Context();
-    private Settings appSettings;
+    private Settings? appSettings;
     private static ModulesRestoreData lastRunModuleRestoreData = new ModulesRestoreData();
 
     public FrmInit()
@@ -57,7 +58,7 @@ namespace Eng.EFsExtensions.App
 
       SaveModulesResetData();
 
-      FrmRun frmRun = new(this.context, appSettings);
+      FrmRun frmRun = new(this.context, appSettings ?? throw new UnexpectedNullException());
       Logger.UnregisterLogAction(this);
       this.Close();
       frmRun.Show();
@@ -91,7 +92,7 @@ namespace Eng.EFsExtensions.App
 
     private void RegisterLogListeners()
     {
-
+      EAssert.IsNotNull(this.appSettings, "Cannot register log listeners - app settings not loaded.");
       LogHelper.RegisterGlobalLogListener(this.appSettings.LogFileLogRules);
       LogHelper.RegisterWindowLogListener(this.appSettings.WindowLogRules, this, this.txtConsole);
     }

@@ -22,6 +22,7 @@ using ESystem.Miscelaneous;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs;
 using ESystem.Logging;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
 
 namespace Eng.EFsExtensions.Modules.CopilotModule
 {
@@ -73,7 +74,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
       Settings = settings ?? throw new ArgumentNullException(nameof(settings));
       this.logger = Logger.Create(this, "Copilot.InitContext");
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
-      this.SimPropertyGroup = LoadDefaultSimProperties();
+      this.SimPropertyGroup = GlobalProvider.Instance.SimPropertyGroup;
     }
 
     #endregion Constructors
@@ -88,7 +89,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
 
       try
       {
-        logger.Invoke(LogLevel.INFO, $"Checking file '{xmlFile}'");
+        logger.Log(LogLevel.INFO, $"Checking file '{xmlFile}'");
         try
         {
           XmlUtils.ValidateXmlAgainstXsd(xmlFile, new string[] { @".\xmls\xsds\Global.xsd", @".\xmls\xsds\CopilotSchema.xsd" }, out List<string> errors);
@@ -100,7 +101,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
           throw new ApplicationException($"Failed to validate XMl file against XSD. Error: " + ex.Message, ex);
         }
 
-        logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
+        logger.Log(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
           XDocument doc = XDocument.Load(xmlFile, LoadOptions.SetLineInfo);
@@ -115,7 +116,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
           throw new ApplicationException("Unable to read/deserialize copilot-set from '{xmlFile}'. Invalid file content?", ex);
         }
 
-        logger.Invoke(LogLevel.INFO, $"Checking sanity");
+        logger.Log(LogLevel.INFO, $"Checking sanity");
         var props = tmpSpg == null
           ? this.SimPropertyGroup.GetAllSimPropertiesRecursively()
           : tmpSpg.GetAllSimPropertiesRecursively().Union(this.SimPropertyGroup.GetAllSimPropertiesRecursively()).ToList();
@@ -140,22 +141,22 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
           })
           .ToBindingList();
 
-        logger.Invoke(LogLevel.INFO, $"Loading/generating sounds");
+        logger.Log(LogLevel.INFO, $"Loading/generating sounds");
         Try(() => InitializeSoundStreams(this.SpeechDefinitionVMs, System.IO.Path.GetDirectoryName(xmlFile)!),
           ex => new ApplicationException("Error creating sound streams.", ex));
 
-        logger.Invoke(LogLevel.INFO, "Binding property changed events");
+        logger.Log(LogLevel.INFO, "Binding property changed events");
         BindPropertyChangedEvents();
 
         UpdateReadyFlag();
         this.LastLoadedFile = xmlFile;
-        logger.Invoke(LogLevel.INFO, $"Copilot set file '{xmlFile}' successfully loaded.");
+        logger.Log(LogLevel.INFO, $"Copilot set file '{xmlFile}' successfully loaded.");
 
       }
       catch (Exception ex)
       {
         this.setIsReadyFlagAction(false);
-        logger.Invoke(LogLevel.ERROR, $"Failed to load copilot set from '{xmlFile}'." + ex.GetFullMessage());
+        logger.Log(LogLevel.ERROR, $"Failed to load copilot set from '{xmlFile}'." + ex.GetFullMessage());
       }
     }
 
@@ -293,21 +294,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
         BuildSpeech(sd, generatedSounds, synthetizer, relativePath);
       }
     }
-
-    private SimPropertyGroup LoadDefaultSimProperties()
-    {
-      SimPropertyGroup ret;
-      try
-      {
-        XDocument doc = XDocument.Load(@"Xmls\SimProperties.xml", LoadOptions.SetLineInfo);
-        ret = SimPropertyGroup.Deserialize(doc.Root!);
-      }
-      catch (Exception ex)
-      {
-        throw new ApplicationException("Failed to load global sim properties.", ex);
-      }
-      return ret;
-    }
+    
     private void UpdateReadyFlag()
     {
       bool ready = this.SpeechDefinitionVMs != null && this.SpeechDefinitionVMs.SelectMany(q => q.Variables).All(q => !double.IsNaN(q.Value));

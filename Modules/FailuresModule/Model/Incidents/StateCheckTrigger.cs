@@ -6,7 +6,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents
 {
   public class CheckStateTrigger : Trigger, IXmlObjectPostDeserialize
   {
-    public IStateCheckItem Condition { get; set; }
+    public IStateCheckItem Condition { get; set; } = null!;
 
     public void PostDeserialize()
     {

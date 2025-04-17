@@ -3,7 +3,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.Model
 {
   public class RaasSpeech
   {
-    public string Speech { get; set; }
+    public string Speech { get; set; } = null!;
 
     internal virtual void CheckSanity()
     {

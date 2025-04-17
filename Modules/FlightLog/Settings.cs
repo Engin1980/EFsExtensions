@@ -31,42 +31,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       set => base.UpdateProperty(nameof(DataFolder), value);
     }
 
-    public string AirportsXmlFile
-    {
-      get => base.GetProperty<string>(nameof(AirportsXmlFile))!;
-      set
-      {
-        base.UpdateProperty(nameof(AirportsXmlFile), value);
-        if (value == null || System.IO.File.Exists(value) == false)
-          Airports = new();
-        else
-          //TODO do in better way
-          try
-          {
-            Airports = XmlLoader.Load(value, true).OrderBy(q => q.ICAO).ToList();
-          }
-          catch (Exception ex)
-          {
-            throw new Exception($"Error loading airports from '{value}'", ex);
-          }
-      }
-    }
-
-    public List<Airport> Airports
-    {
-      get => base.GetProperty<List<Airport>>(nameof(Airports)) ?? throw new UnexpectedNullException();
-      set => base.UpdateProperty(nameof(Airports), value);
-    }
-
     public Settings()
     {
-      this.Airports = new();
       this.DataFolder = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "EFsExtensions");
       if (System.IO.Directory.Exists(this.DataFolder) == false)
         System.IO.Directory.CreateDirectory(this.DataFolder);
 
       //todo remove
-      this.AirportsXmlFile = ".\\xmls\\airports.xml";
       this.SimBriefId = "475902";
       this.VatsimId = "964586";
     }

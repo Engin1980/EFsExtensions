@@ -53,6 +53,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       public int ZFW => EmptyWeight + PayloadAndCargoKg;
     }
     public record RunModelShutDownCache(DateTime Time, int FuelKg, double Latitude, double Longitude);
-    public record RunModelLandingCache(DateTime Time, int FuelKg, double IAS, double Latitude, double Longitude);
+    public record RunModelLandingCache(DateTime Time, int FuelKg, double IAS, double Latitude, double Longitude, int numberOfGoArounds);
   }
 }

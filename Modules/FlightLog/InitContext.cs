@@ -1,4 +1,5 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
 using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
@@ -53,7 +54,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public List<Airport> Airports
     {
-      get => this.settings.Airports;
+      get => base.GetProperty<List<Airport>>(nameof(Airports))!;
+      set => base.UpdateProperty(nameof(Airports), value);
     }
 
     private void UpdateReadyFlag()
@@ -67,6 +69,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.onReadyChange = onReadyChange;
       this.settings = settings;
       this.Profiles = new();
+
+      this.Airports = GlobalProvider.Instance.NavData.Airports.ToList();
 
       this.Profiles = ProfileManager.GetAvailableProfiles(settings.DataFolder).ToBindingList();
       this.SelectedProfile = Profiles.FirstOrDefault();

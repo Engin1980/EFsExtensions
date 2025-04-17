@@ -34,7 +34,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
     public CopilotModule()
     {
       this.IsReady = false;
-      this.logger = Logger.Create(this);
+      this.logger = Logger.Create("EFSE.Modules.Copilot");
     }
 
     public void Init()
@@ -58,12 +58,12 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
       try
       {
         settings = Settings.Load();
-        logger.Invoke(LogLevel.INFO, "Settings loaded.");
+        logger.Log(LogLevel.INFO, "Settings loaded.");
       }
       catch (Exception ex)
       {
-        logger.Invoke(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
-        logger.Invoke(LogLevel.INFO, "Default settings used.");
+        logger.Log(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
+        logger.Log(LogLevel.INFO, "Default settings used.");
         settings = new Settings();
       }
     }

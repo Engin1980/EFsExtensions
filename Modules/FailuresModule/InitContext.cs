@@ -32,8 +32,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
 
     public InitContext(Action<bool> setIsReadyFlagAction)
     {
-      this.logger = Logger.Create(this);
-      this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
+      this.logger = Logger.Create("EFSE.Modules.Failures+Init");
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
       this.FailureDefinitionsFlat = new();
       this.LoadDefaultFailures();
@@ -89,7 +88,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
     {
       try
       {
-        logger.Invoke(LogLevel.INFO, $"Checking file '{xmlFile}'");
+        logger.Log(LogLevel.INFO, $"Checking file '{xmlFile}'");
         try
         {
           XmlUtils.ValidateXmlAgainstXsd(xmlFile, new string[] {
@@ -104,7 +103,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
           throw new ApplicationException($"Failed to validate XML file against XSD. Error: " + ex.Message, ex);
         }
 
-        logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
+        logger.Log(LogLevel.INFO, $"Loading file '{xmlFile}'");
         XDocument doc = Try(() => XDocument.Load(xmlFile, LoadOptions.SetLineInfo),
           ex => throw new ApplicationException($"Unable to load xml file '{xmlFile}'.", ex));
 
@@ -112,7 +111,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
         IncidentGroup tmpData = Try(() => Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents.Xml.Deserialization.Deserialize(doc.Root!, this.FailureDefinitionsFlat),
           ex => throw new ApplicationException("Unable to read/deserialize copilot-set from '{xmlFile}'. Invalid file content?", ex));
 
-        logger.Invoke(LogLevel.INFO, $"Aplying file-defined failure definitions");
+        logger.Log(LogLevel.INFO, $"Aplying file-defined failure definitions");
         if (doc.Root!.LElementOrNull("definitions") is XElement elm) //non-null check
           Try(() =>
           {
@@ -122,7 +121,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
           },
           ex => throw new ApplicationException("Failed to analyse or apply file-defined failures.", ex));
 
-        logger.Invoke(LogLevel.INFO, $"Checking sanity");
+        logger.Log(LogLevel.INFO, $"Checking sanity");
         Try(
           () => SanityChecker.CheckSanity(tmpData, this.FailureDefinitionsFlat),
           ex => throw new ApplicationException("Error loading failures.", ex));
@@ -139,13 +138,13 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
         this.MetaInfo = tmpMeta;
         UpdateReadyFlag();
         this.LastLoadedFile = xmlFile;
-        logger.Invoke(LogLevel.INFO, $"Failure set file '{xmlFile}' successfully loaded.");
+        logger.Log(LogLevel.INFO, $"Failure set file '{xmlFile}' successfully loaded.");
         this.setIsReadyFlagAction(true);
       }
       catch (Exception ex)
       {
         this.setIsReadyFlagAction(false);
-        logger.Invoke(LogLevel.ERROR, $"Failed to load failure set from '{xmlFile}'." + ex.GetFullMessage());
+        logger.Log(LogLevel.ERROR, $"Failed to load failure set from '{xmlFile}'." + ex.GetFullMessage());
       }
     }
 
@@ -175,7 +174,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
 
     private void UpdateReadyFlag()
     {
-      logger.Invoke(LogLevel.WARNING, "UpdateReadyFlag() NotImplemented");
+      logger.Log(LogLevel.WARNING, "UpdateReadyFlag() NotImplemented");
     }
   }
 }

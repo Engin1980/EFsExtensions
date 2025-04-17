@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Eng.EFsExtensions.Modules.SimVarTestModule.Model
 {
   public interface IStringGroupItem { }
-  public class StringGroupValue    : IStringGroupItem
+  public class StringGroupValue : IStringGroupItem
   {
     public StringGroupValue(string value)
     {
@@ -19,7 +19,7 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule.Model
 
   public class StringGroupList : IStringGroupItem
   {
-    public string Title { get; set; }
+    public string Title { get; set; } = string.Empty;
     public List<IStringGroupItem> Items { get; set; } = new();
   }
 }

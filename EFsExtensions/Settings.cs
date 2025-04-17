@@ -19,7 +19,7 @@ namespace Eng.EFsExtensions.App
       [XmlAttribute]
       public string Regex { get; set; } = "";
       [XmlAttribute]
-      public string Level { get; set; }
+      public string Level { get; set; } = "trace";
 
       internal ESystem.Logging.LogRule ToELogRule()
       {

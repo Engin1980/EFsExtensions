@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents
 {
-    public abstract class Incident
+  public abstract class Incident
+  {
+    [EXmlNonemptyString]
+    public string Title { get; set; } = string.Empty;
+    public override string ToString()
     {
-        [EXmlNonemptyString]
-        public string Title { get; set; }
-        public override string ToString()
-        {
-            return $"{Title} ({GetType().Name})";
-        }
+      return $"{Title} ({GetType().Name})";
     }
+  }
 }

@@ -1,8 +1,11 @@
-﻿using Eng.EFsExtensions.Libs.AirportsLib;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
+using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.Shared;
+using ESystem.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -13,12 +16,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 {
   public class LoggedFlight
   {
-    public int Version { get; set; } = 1;
+    public int Version { get; set; } = 2;
     public string Callsign { get; set; } = string.Empty;
     public FlightRules FlightRules { get; set; } = FlightRules.Unknown;
     public string? DepartureICAO { get; set; } = string.Empty;
     public string? DestinationICAO { get; set; } = string.Empty;
     public string? AlternateICAO { get; set; } = string.Empty;
+    public string LandedICAO { get; set; } = string.Empty;
     public int CruizeAltitude { get; set; }
     public double Distance { get; set; }
     public DivertReason? DivertReason { get; set; } = null!;
@@ -31,6 +35,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public string? AircraftType { get; set; }
     public string? AircraftRegistration { get; set; }
     public string? AircraftModel { get; set; }
+
+    public int NumberOfGoArounds { get; set; } = 0;
     public DateTime? StartUpScheduledDateTime { get; set; }
     public DateTime StartUpDateTime { get; set; }
     public DateTime? TakeOffScheduledDateTime { get; set; }
@@ -97,9 +103,21 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 
     private void AdjustVersion(out bool resaveNeeded)
     {
-      // do necessary changes to file be valid for newer versions
       resaveNeeded = false;
+
+      if (Version == 1)
+      {
+        this.LandedICAO = GetLandedAirportICAO();
+        Version = 2;
+        resaveNeeded = true;
+      }
+    }
+
+    private string GetLandedAirportICAO()
+    {
+      GPS gps = this.Touchdowns.Last().TouchDownLocation;
+      var ret = GlobalProvider.Instance.NavData.Airports.TryGetNearestAirport(gps);
+      return ret?.ICAO ?? string.Empty;
     }
   }
-
 }

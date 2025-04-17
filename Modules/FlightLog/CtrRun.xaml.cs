@@ -24,7 +24,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
   /// </summary>
   public partial class CtrRun : UserControl
   {
-    private readonly NewSimObject simObject = null!;
     private readonly RunContext context = null!;
 
     public CtrRun()
@@ -35,7 +34,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     public CtrRun(RunContext runContext) : this()
     {
       EAssert.Argument.IsNotNull(runContext, nameof(runContext));
-      
+
       this.DataContext = this.context = runContext;
     }
   }

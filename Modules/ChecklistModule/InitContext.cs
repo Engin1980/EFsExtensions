@@ -33,6 +33,7 @@ using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.TTSs.MsSapi;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
 using ESystem.Exceptions;
 using ESystem.Logging;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
 
 namespace Eng.EFsExtensions.Modules.ChecklistModule
 {
@@ -40,7 +41,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
   {
     private readonly Logger logger;
     private readonly Action<bool> setIsReadyFlagAction;
-    public string LastLoadedFile { get; private set; }
+    public string? LastLoadedFile { get; private set; } = null!;
 
     public MetaInfo MetaInfo
     {
@@ -75,7 +76,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
       Settings = settings ?? throw new ArgumentNullException(nameof(settings));
       this.logger = Logger.Create(this, "Checklist.InitContext");
       this.setIsReadyFlagAction = setIsReadyFlagAction ?? throw new ArgumentNullException(nameof(setIsReadyFlagAction));
-      this.SimPropertyGroup = LoadDefaultSimProperties();
+      this.SimPropertyGroup = GlobalProvider.Instance.SimPropertyGroup;
     }
 
     public void RebuildSoundStreams()
@@ -87,21 +88,6 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
         System.IO.Path.GetDirectoryName(LastLoadedFile) ?? throw new UnexpectedNullException());
     }
 
-    private SimPropertyGroup LoadDefaultSimProperties()
-    {
-      SimPropertyGroup ret;
-      try
-      {
-        XDocument doc = XDocument.Load(@"Xmls\SimProperties.xml", LoadOptions.SetLineInfo);
-        ret = SimPropertyGroup.Deserialize(doc.Root!);
-      }
-      catch (Exception ex)
-      {
-        throw new ApplicationException("Failed to load global sim properties.", ex);
-      }
-      return ret;
-    }
-
     internal void LoadFile(string xmlFile)
     {
       CheckSet tmp;
@@ -110,7 +96,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
 
       try
       {
-        logger.Invoke(LogLevel.INFO, $"Checking file '{xmlFile}'");
+        logger.Log(LogLevel.INFO, $"Checking file '{xmlFile}'");
         try
         {
           XmlUtils.ValidateXmlAgainstXsd(xmlFile, new string[] { @".\xmls\xsds\Global.xsd", @".\xmls\xsds\ChecklistSchema.xsd" }, out List<string> errors);
@@ -122,7 +108,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
           throw new ApplicationException($"Failed to validate XMl file against XSD. Error: " + ex.Message, ex);
         }
 
-        logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
+        logger.Log(LogLevel.INFO, $"Loading file '{xmlFile}'");
         try
         {
           XDocument doc = XDocument.Load(xmlFile);
@@ -140,7 +126,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
         // check duplicit property declarations
         if (tmpSpg != null)
         {
-          logger.Invoke(LogLevel.INFO, "Checking property definition duplicity");
+          logger.Log(LogLevel.INFO, "Checking property definition duplicity");
           var a = this.SimPropertyGroup.GetAllSimPropertiesRecursively();
           var b = tmpSpg.GetAllSimPropertiesRecursively();
           var duplicits = a.Select(q => q.Name).Intersect(b.Select(q => q.Name));
@@ -149,18 +135,18 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
         }
 
         // check checkset sanity
-        logger.Invoke(LogLevel.INFO, $"Checking sanity");
+        logger.Log(LogLevel.INFO, $"Checking sanity");
         var props = tmpSpg == null
           ? this.SimPropertyGroup.GetAllSimPropertiesRecursively()
           : tmpSpg.GetAllSimPropertiesRecursively().Union(this.SimPropertyGroup.GetAllSimPropertiesRecursively()).ToList();
         Try(() => CheckSanity(tmp, props), ex => new ApplicationException("Error loading checklist.", ex));
 
         // bind next-checklist references
-        logger.Invoke(LogLevel.INFO, $"Binding checklist references");
+        logger.Log(LogLevel.INFO, $"Binding checklist references");
         Try(() => BindNextChecklists(tmp), ex => new ApplicationException("Error binding checklist references.", ex));
 
         // initialize sound streams
-        logger.Invoke(LogLevel.INFO, $"Loading/generating sounds");
+        logger.Log(LogLevel.INFO, $"Loading/generating sounds");
         Try(() => InitializeSoundStreams(tmp.Checklists, System.IO.Path.GetDirectoryName(xmlFile)!),
           ex => new ApplicationException("Error creating sound streams for checklist.", ex));
 
@@ -188,12 +174,12 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
 
         this.setIsReadyFlagAction(true);
         this.LastLoadedFile = xmlFile;
-        logger.Invoke(LogLevel.INFO, $"Checklist file '{xmlFile}' successfully loaded.");
+        logger.Log(LogLevel.INFO, $"Checklist file '{xmlFile}' successfully loaded.");
       }
       catch (Exception ex)
       {
         this.setIsReadyFlagAction(false);
-        logger.Invoke(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage("\n\t"));
+        logger.Log(LogLevel.ERROR, $"Failed to load checklist from '{xmlFile}'." + ex.GetFullMessage("\n\t"));
       }
     }
 

@@ -72,29 +72,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.CopilotModule
       this.settings.Save();
     }
 
-    private void btnAirportsFile_Click(object sender, RoutedEventArgs e)
-    {
-      var dialog = new CommonOpenFileDialog()
-      {
-        AddToMostRecentlyUsedList = true,
-        EnsureFileExists = true,
-        Multiselect = false,
-        Title = "Select XML file with airports data..."
-      };
-      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("Airports files", "airports.xml"));
-      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("XML files", "xml"));
-      dialog.Filters.Add(StorableUtils.CreateCommonFileDialogFilter("All files", "*"));
-      if (dialog.ShowDialog() != CommonFileDialogResult.Ok || dialog.FileName == null) return;
-
-      settings.AutoLoadedAirportsFile = dialog.FileName;
-      this.Focus();
-    }
-
-    private void btnAirportsFileDelete_Click(object sender, RoutedEventArgs e)
-    {
-      settings.AutoLoadedAirportsFile = null;
-    }
-
     private void btnRaasFile_Click(object sender, RoutedEventArgs e)
     {
       var dialog = new CommonOpenFileDialog()

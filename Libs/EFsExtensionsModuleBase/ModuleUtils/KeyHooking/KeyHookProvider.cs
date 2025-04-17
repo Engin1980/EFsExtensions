@@ -74,7 +74,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.KeyHooking
 
     public void UnregisterKeyHook(int id)
     {
-      this.logger.Invoke(LogLevel.INFO, $"UNRegistering keyhook id={id}.");
+      this.logger.Log(LogLevel.INFO, $"UNRegistering keyhook id={id}.");
       UnregisterHotKey(this.windowHandle, id);
       this.registeredHooks.Remove(id);
     }

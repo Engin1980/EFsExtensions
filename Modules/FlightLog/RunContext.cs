@@ -20,6 +20,7 @@ using Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.SimBriefMode
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.Shared;
 using System.ComponentModel;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -50,7 +51,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       };
       this.RunVM.Clear();
       this.settings = settings;
-      this.airports = settings.Airports;
+      this.airports = GlobalProvider.Instance.NavData.Airports.ToList();
       this.selectedProfile = initContext.SelectedProfile;
 
       this.LoggedFlights = ProfileManager.GetProfileFlights(initContext.SelectedProfile);
@@ -182,7 +183,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         TakeOffScheduledFuelWeight = runVM.SimBriefCache?.EstimatedTakeOffFuelKg,
         TakeOffScheduledDateTime = runVM.SimBriefCache?.TakeOffPlannedTime,
         Touchdowns = touchdowns,
-        ZFW = zfw
+        ZFW = zfw,
+        NumberOfGoArounds = runVM.NumberOfGoArounds
       };
       return ret;
     }
@@ -339,22 +341,23 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     {
       if (this.simPropValues.IsFlying)
       {
-        if (this.landingDetector == null && this.simPropValues.Height < 125) //TODO remove magic numbers
+        if (this.landingDetector == null && this.simPropValues.Height < 400) //TODO remove magic numbers
         {
           this.landingDetector = new(this.simObj, this.RunVM);
           this.landingDetector.AttemptRecorded += r => this.RunVM.LandingAttempts.Add(r);
           this.landingDetector.InitAndStart();
         }
-        else if (this.landingDetector != null && this.simPropValues.Height > 175)
+        else if (this.landingDetector != null && this.simPropValues.Height > 500)
         {
           this.landingDetector.Stop();
           this.landingDetector = null;
+          this.RunVM.NumberOfGoArounds++;
         }
         return;
       }
 
       this.RunVM.LandingCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
-        this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
+        this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude, this.RunVM.NumberOfGoArounds);
       this.RunVM.State = ActiveFlightViewModel.RunModelState.LandedWaitingForShutdown;
     }
 

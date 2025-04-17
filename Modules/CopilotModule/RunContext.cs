@@ -1,7 +1,6 @@
 ﻿using ESystem.Logging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
@@ -80,8 +79,8 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
     {
       Log(LogLevel.INFO, "Run");
 
-      logger?.Invoke(LogLevel.DEBUG, "Starting simObject connection");
-      this.eSimObj.StartInBackground();
+      logger.Log(LogLevel.DEBUG, "Starting simObject connection");
+      this.eSimObj.ExtOpen.OpenInBackground();
     }
 
     internal void Stop()
@@ -102,7 +101,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
         player.PlayAsync();
 
         activated.RunTime.IsReadyToBeSpoken = false;
-        this.logger.Invoke(LogLevel.DEBUG,
+        this.logger.Log(LogLevel.DEBUG,
           $"Activated speech {activated.SpeechDefinition.Title}");
       }
     }
@@ -110,11 +109,11 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
     private void EvaluateForSpeeches()
     {
       var readys = this.SpeechDefinitionVMs.Where(q => q.RunTime.IsReadyToBeSpoken);
-      this.logger.Invoke(LogLevel.DEBUG, $"Evaluating {readys.Count()} readys");
+      this.logger.Log(LogLevel.DEBUG, $"Evaluating {readys.Count()} readys");
       EvaluateActives(readys);
 
       var waits = this.SpeechDefinitionVMs.Where(q => !q.RunTime.IsReadyToBeSpoken);
-      this.logger.Invoke(LogLevel.DEBUG, $"Evaluating {waits.Count()} waits");
+      this.logger.Log(LogLevel.DEBUG, $"Evaluating {waits.Count()} waits");
       EvaluateInactives(waits);
     }
 
@@ -126,14 +125,14 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
         .ForEach(q =>
         {
           q.RunTime.IsReadyToBeSpoken = true;
-          this.logger.Invoke(LogLevel.DEBUG,
+          this.logger.Log(LogLevel.DEBUG,
           $"Reactivated speech {q.SpeechDefinition.Title}");
         });
     }
 
     private void Log(LogLevel level, string message)
     {
-      logger.Invoke(level, "[RunContext] :: " + message);
+      logger.Log(level, "[RunContext] :: " + message);
     }
 
     private void SimObject_SimPropertyChanged(SimProperty property, double value)
@@ -143,11 +142,11 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
     private void SimObject_SimSecondElapsed()
     {
       if (this.eSimObj.IsSimPaused) return;
-      this.logger.Invoke(LogLevel.DEBUG, "SimSecondElapsed (non-paused)");
+      this.logger.Log(LogLevel.DEBUG, "SimSecondElapsed (non-paused)");
 
       if (Monitor.TryEnter(this) == false)
       {
-        this.logger.Invoke(LogLevel.WARNING, "SimSecondElapsed() method calculation took longer than sim-second time interval! Performance issue?");
+        this.logger.Log(LogLevel.WARNING, "SimSecondElapsed() method calculation took longer than sim-second time interval! Performance issue?");
         return;
       }
 

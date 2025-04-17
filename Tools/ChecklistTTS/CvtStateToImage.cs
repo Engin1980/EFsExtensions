@@ -1,5 +1,6 @@
 ﻿using ChecklistTTS.Model;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;
+using ESystem.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -24,7 +25,7 @@ namespace ChecklistTTS
         _ => ""
       };
       ret = System.IO.Path.Combine(
-        System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+        System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? throw new UnexpectedNullException(),
         ret);
       return ret;
     }

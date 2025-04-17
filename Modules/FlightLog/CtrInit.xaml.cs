@@ -28,13 +28,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
   public partial class CtrInit : UserControl
   {
     private readonly InitContext Context = null!;
-    private bool isInitializing = false;
 
     public CtrInit()
     {
-      isInitializing = true;
       InitializeComponent();
-      isInitializing = false;
     }
 
     public CtrInit(InitContext context) : this()

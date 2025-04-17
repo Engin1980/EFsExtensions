@@ -17,6 +17,7 @@ using System.Timers;
 using ESystem.Exceptions;
 using System.Diagnostics;
 using Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
 
 namespace Eng.EFsExtensions.Modules.RaaSModule
 {
@@ -123,10 +124,10 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     #region Public Properties
 
-    public List<Airport> Airports
+    public AirportList Airports
     {
-      get { return base.GetProperty<List<Airport>>(nameof(Airports))!; }
-      set { base.UpdateProperty(nameof(Airports), value); }
+      get { return base.GetProperty<AirportList>(nameof(Airports))!; }
+      private set { base.UpdateProperty(nameof(Airports), value); }
     }
 
     public MetaInfo MetaInfo
@@ -159,6 +160,8 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       };
       this.timer.Elapsed += timer_Elapsed;
 
+      this.Airports = GlobalProvider.Instance.NavData.Airports;
+
       this.eSimObj = NewSimObject.GetInstance();
     }
 
@@ -168,8 +171,8 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     public void Start()
     {
-      logger.Invoke(LogLevel.DEBUG, "Starting simObject connection");
-      this.eSimObj.StartInBackground(() =>
+      logger.Log(LogLevel.DEBUG, "Starting simObject connection");
+      this.eSimObj.ExtOpen.OpenInBackground(() =>
       {
         logger.Log(LogLevel.INFO, "Initializing & registering properties");
         eSimObj.ExtType.Register(typeof(SimDataSnapshot));
@@ -194,17 +197,11 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     #region Internal Methods
 
-    internal void LoadAirportsFile(string recentXmlFile)
-    {
-      this.Airports = Libs.AirportsLib.XmlLoader.Load(recentXmlFile);
-      this.CheckReadyStatus();
-    }
-
     internal void LoadRaasFile(string xmlFile)
     {
       try
       {
-        logger.Invoke(LogLevel.INFO, $"Checking file '{xmlFile}'");
+        logger.Log(LogLevel.INFO, $"Checking file '{xmlFile}'");
         try
         {
           XmlUtils.ValidateXmlAgainstXsd(xmlFile, new string[] {
@@ -218,7 +215,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
           throw new ApplicationException($"Failed to validate XML file against XSD. Error: " + ex.Message, ex);
         }
 
-        logger.Invoke(LogLevel.INFO, $"Loading file '{xmlFile}'");
+        logger.Log(LogLevel.INFO, $"Loading file '{xmlFile}'");
         XDocument doc = Try(() => XDocument.Load(xmlFile, LoadOptions.SetLineInfo),
           ex => throw new ApplicationException($"Unable to load xml file '{xmlFile}'.", ex));
 
@@ -226,7 +223,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
         Raas raas = Try(() => RaasXmlLoader.Load(doc),
           ex => throw new ApplicationException("Unable to read/deserialize copilot-set from '{xmlFile}'. Invalid file content?", ex));
 
-        logger.Invoke(LogLevel.INFO, $"Checking sanity");
+        logger.Log(LogLevel.INFO, $"Checking sanity");
         Try(
           () => raas.CheckSanity(),
           ex => throw new ApplicationException("Error loading failures.", ex));
@@ -236,12 +233,12 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
         this.CheckReadyStatus();
         //this.LastLoadedFile = xmlFile;
-        logger.Invoke(LogLevel.INFO, $"RaaS set file '{xmlFile}' successfully loaded.");
+        logger.Log(LogLevel.INFO, $"RaaS set file '{xmlFile}' successfully loaded.");
       }
       catch (Exception ex)
       {
         this.updateReadyFlag(false);
-        logger.Invoke(LogLevel.ERROR, $"Failed to load failure set from '{xmlFile}'." + ex.GetFullMessage());
+        logger.Log(LogLevel.ERROR, $"Failed to load failure set from '{xmlFile}'." + ex.GetFullMessage());
       }
     }
 
@@ -265,45 +262,10 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       }
       if (tmpA == null)
       {
-        var closeAirports = Airports
-          .Where(q => q.Coordinate.Latitude > simData.Latitude - 1)
-          .Where(q => q.Coordinate.Latitude < simData.Latitude + 1)
-          .Where(q => q.Coordinate.Longitude > simData.Longitude - 1)
-          .Where(q => q.Coordinate.Longitude < simData.Longitude + 1);
-
-        if (!closeAirports.Any())
-        {
-          closeAirports = Airports.Where(q => q.Coordinate.Latitude > simData.Latitude - 5)
-            .Where(q => q.Coordinate.Latitude < simData.Latitude + 5)
-            .Where(q => q.Coordinate.Longitude > simData.Longitude - 5)
-            .Where(q => q.Coordinate.Longitude < simData.Longitude + 5);
-
-          if (!closeAirports.Any())
-          {
-            closeAirports = Airports.Where(q => q.Coordinate.Latitude > simData.Latitude - 20)
-             .Where(q => q.Coordinate.Latitude < simData.Latitude + 20)
-             .Where(q => q.Coordinate.Longitude > simData.Longitude - 20)
-             .Where(q => q.Coordinate.Longitude < simData.Longitude + 20);
-
-            if (!closeAirports.Any())
-            {
-              closeAirports = Airports;
-            }
-          }
-        }
-
-        var tmpAD = closeAirports
-          .Select(q => new
-          {
-            Airport = q,
-            Distance = GpsCalculator.GetDistance(q.Coordinate.Latitude, q.Coordinate.Longitude, simData.Latitude, simData.Longitude)
-          })
-          .MinBy(q => q.Distance)
-          ?? throw new UnexpectedNullException();
-        tmpA = tmpAD.Airport;
-        tmpD = tmpAD.Distance;
+        tmpA = Airports.GetNearestAirport(simData.Latitude, simData.Longitude);
+        tmpD = GpsCalculator.GetDistance(tmpA.Coordinate.Latitude, tmpA.Coordinate.Longitude, simData.Latitude, simData.Longitude);
       }
-
+      
       Debug.Assert(tmpA != null && tmpD != null);
       var rwys = tmpA.Runways
         .Select(q => new RunwayWithOrthoDistance(q, GpsCalculator.GetDistanceFromLine(
@@ -332,7 +294,6 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
         .OrderBy(q => q.OrthoDistance)
         .ToList();
     }
-
 
     private void EvaluateRaas()
     {

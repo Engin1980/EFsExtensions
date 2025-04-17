@@ -25,6 +25,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
     public CtrRun()
     {
       InitializeComponent();
+      this.context = null!;
     }
 
     internal CtrRun(Context context) : this()

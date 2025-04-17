@@ -10,7 +10,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Failures
   {
     public int From { get; set; }
     public int To { get; set; }
-    public string VarRef { get; set; }
-        public List<FailureDefinitionBase> Items { get; set; }
-    }
+    public string VarRef { get; set; } = null!;
+    public List<FailureDefinitionBase> Items { get; set; } = null!;
+  }
 }

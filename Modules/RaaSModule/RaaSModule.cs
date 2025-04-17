@@ -14,7 +14,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
   public class RaaSModule : NotifyPropertyChanged, IModule
   {
     private readonly Context context;
-    private readonly Logger logger = Logger.Create(nameof(RaaSModule));
+    private readonly Logger logger = Logger.Create("EFSE.Modules.RaaS");
     private CtrInit? ctrInit;
     private CtrRun? ctrRun;
 
@@ -38,20 +38,15 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
       this.ctrInit = new(this.context);
       try
       {
-        if (this.context.Settings.AutoLoadedAirportsFile != null)
-        {
-          this.context.LoadAirportsFile(this.context.Settings.AutoLoadedAirportsFile);
-          logger.Invoke(LogLevel.INFO, "Default Airports loaded."); 
-        }
         if (this.context.Settings.AutoLoadedRaasFile != null)
         {
           this.context.LoadRaasFile(this.context.Settings.AutoLoadedRaasFile);
-          logger.Invoke(LogLevel.INFO, "Default RaaS loaded.");
+          logger.Log(LogLevel.INFO, "Default RaaS loaded.");
         }
       }
       catch
       {
-        logger.Invoke(LogLevel.ERROR, "Unable to load airports or RaaS file.");
+        logger.Log(LogLevel.ERROR, "Unable to load RaaS file.");
       }
     }
 
@@ -68,17 +63,15 @@ namespace Eng.EFsExtensions.Modules.RaaSModule
 
     public void SetUp(ModuleSetUpInfo setUpInfo)
     {
-      this.context.Airports = new();
-
       try
       {
         this.context.Settings = Settings.Load();
-        logger.Invoke(LogLevel.INFO, "Settings loaded.");
+        logger.Log(LogLevel.INFO, "Settings loaded.");
       }
       catch (Exception ex)
       {
-        logger.Invoke(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
-        logger.Invoke(LogLevel.INFO, "Default settings used.");
+        logger.Log(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
+        logger.Log(LogLevel.INFO, "Default settings used.");
       }
 
     }

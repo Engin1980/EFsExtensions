@@ -62,7 +62,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Failures.Xml
                new("toggleOnVarMismatch", typeof(ToggleOnVarMismatchFailureDefinition)),
                new("toggle", typeof(ToggleFailureDefinition))
             }))
-        .WithPostAction(q => ExpandSequencies(q as FailureDefinitionGroup));
+        .WithPostAction(q => ExpandSequencies((FailureDefinitionGroup)q));
       ret.Context.ElementDeserializers.Insert(index++, oed);
 
       oed = new ObjectElementDeserializer()
