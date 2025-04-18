@@ -3,6 +3,7 @@ using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.Shared;
 using ESystem.Exceptions;
+using ESystem.Structs;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -16,7 +17,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 {
   public class LoggedFlight
   {
-    public int Version { get; set; } = 2;
+    public int Version { get; set; } = 3;
     public string Callsign { get; set; } = string.Empty;
     public FlightRules FlightRules { get; set; } = FlightRules.Unknown;
     public string? DepartureICAO { get; set; } = string.Empty;
@@ -24,14 +25,14 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public string? AlternateICAO { get; set; } = string.Empty;
     public string LandedICAO { get; set; } = string.Empty;
     public int CruizeAltitude { get; set; }
-    public double Distance { get; set; }
+    public Distance Distance { get; set; }
     public DivertReason? DivertReason { get; set; } = null!;
     public GPS StartupLocation { get; set; }
-    public double ZFW { get; set; }
+    public Weight ZFW { get; set; }
     public int? PassengerCount { get; set; }
-    public int? CargoWeight { get; set; }
-    public int StartUpFuelWeight { get; set; }
-    public int? ScheduledTakeOffFuelWeight { get; set; }
+    public Weight? CargoWeight { get; set; }
+    public Weight StartUpFuelWeight { get; set; }
+    public Weight? ScheduledTakeOffFuelWeight { get; set; }
     public string? AircraftType { get; set; }
     public string? AircraftRegistration { get; set; }
     public string? AircraftModel { get; set; }
@@ -41,21 +42,21 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public DateTime StartUpDateTime { get; set; }
     public DateTime? TakeOffScheduledDateTime { get; set; }
     public DateTime TakeOffDateTime => TakeOff.RunStartDateTime;
-    public int? TakeOffScheduledFuelWeight { get; set; }
-    public int TakeOffFuelWeight { get; set; }
+    public Weight? TakeOffScheduledFuelWeight { get; set; }
+    public Weight TakeOffFuelWeight { get; set; }
     public DateTime? LandingScheduledDateTime { get; set; }
     public DateTime? ScheduledTime { get; set; }
     public List<LoggedFlightTouchdown> Touchdowns { get; set; } = null!;
     public LoggedFlightTakeOff TakeOff { get; set; } = null!;
-    public int? LandingScheduledFuelWeight { get; set; }
-    public int LandingFuelWeight { get; set; }
+    public Weight? LandingScheduledFuelWeight { get; set; }
+    public Weight LandingFuelWeight { get; set; }
     public DateTime? ShutDownScheduledDateTime { get; set; }
     public DateTime ShutDownDateTime { get; set; }
-    public int ShutDownFuelWeight { get; set; }
+    public Weight ShutDownFuelWeight { get; set; }
     public GPS ShutDownLocation { get; set; }
     public GPS TakeOffLocation => TakeOff.RunStartLocation;
     public TimeSpan DepartureTaxiTime => this.TakeOffDateTime - this.StartUpDateTime;
-    public int LandingIAS => Touchdowns.Last().IAS;
+    public Speed LandingIAS => Touchdowns.Last().IAS;
     public double LandingBank => Touchdowns.Last().Bank;
     public double LandingPitch => Touchdowns.Last().Pitch;
     public TimeSpan ArrivalTaxiTime => this.ShutDownDateTime - this.LandingDateTime;
@@ -64,13 +65,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public TimeSpan? ScheduledAirTime => this.LandingScheduledDateTime != null && this.TakeOffScheduledDateTime != null ? this.LandingScheduledDateTime.Value - this.TakeOffScheduledDateTime.Value : null;
     public DateTime Time => Touchdowns.Last().TouchDownDateTime;
     public TimeSpan BlockTime => this.ShutDownDateTime - this.StartUpDateTime;
-    public int TakeOffIAS => TakeOff.IAS;
+    public Speed TakeOffIAS => TakeOff.IAS;
     public GPS LandingLocation => Touchdowns.Last().TouchDownLocation;
     public DateTime LandingDateTime => Touchdowns.Last().TouchDownDateTime;
     public TimeSpan FlightDuration => LandingDateTime - TakeOffDateTime;
     public TimeSpan TotalDuration => ShutDownDateTime - StartUpDateTime;
-    public int? ScheduledAirFuelUsedWeight => LandingScheduledFuelWeight != null && TakeOffScheduledFuelWeight != null ? TakeOffScheduledFuelWeight.Value - LandingScheduledFuelWeight.Value : null;
-    public int AirFuelUsedWeight => TakeOffFuelWeight - LandingFuelWeight;
+    public Weight? ScheduledAirFuelUsedWeight => LandingScheduledFuelWeight != null && TakeOffScheduledFuelWeight != null ? TakeOffScheduledFuelWeight.Value - LandingScheduledFuelWeight.Value : null;
+    public Weight AirFuelUsedWeight => TakeOffFuelWeight - LandingFuelWeight;
 
     public void CheckValidity(out bool resaveNeeded)
     {
@@ -109,6 +110,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
       {
         this.LandedICAO = GetLandedAirportICAO();
         Version = 2;
+        resaveNeeded = true;
+      }
+      if (Version == 2)
+      {
+        this.Distance = Distance.Of(this.Distance.Value, DistanceUnit.Kilometers);
+        Version = 3;
         resaveNeeded = true;
       }
     }

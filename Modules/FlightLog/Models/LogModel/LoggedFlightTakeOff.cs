@@ -1,4 +1,5 @@
 ﻿using Eng.EFsExtensions.Libs.AirportsLib;
+using ESystem.Structs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,13 +15,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
     public DateTime AirborneDateTime { get; set; }
     public GPS AirborneLocation { get; set; }
     public double MaxVS { get; set; }
-    public int IAS { get; set; }
-    public int GS { get; set; }
+    public Speed IAS { get; set; }
+    public Speed GS { get; set; }
     public double MaxBank { get; set; }
     public double MaxPitch { get; set; }
     public double MaxAccY { get; set; }
     public TimeSpan FrontGearTime { get; set; }
     public TimeSpan AllGearTime { get; set; }
-    public double Length => GpsCalculator.GetDistance(RunStartLocation, AirborneLocation);
+    public Distance Length => Distance.Of(GpsCalculator.GetDistance(RunStartLocation, AirborneLocation), DistanceUnit.Meters);
   }
 }

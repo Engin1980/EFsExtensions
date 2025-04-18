@@ -21,6 +21,8 @@ using Eng.EFsExtensions.Modules.FlightLogModule.Models.Shared;
 using System.ComponentModel;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
+using ESystem.Structs;
+using System.Windows.Controls;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -143,8 +145,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         RunStartLocation = new GPS(runVM.TakeOffAttempt.RollStartLatitude, runVM.TakeOffAttempt.RollStartLongitude),
         AirborneLocation = new GPS(runVM.TakeOffAttempt.TakeOffLatitude, runVM.TakeOffAttempt.TakeOffLongitude),
         MaxVS = runVM.TakeOffAttempt.MaxVS,
-        IAS = (int)runVM.TakeOffAttempt.IAS,
-        GS = (int)runVM.TakeOffAttempt.GS,
+        IAS = Speed.Of(runVM.TakeOffAttempt.IAS, SpeedUnit.KTS),
+        GS = Speed.Of(runVM.TakeOffAttempt.GS, SpeedUnit.KTS),
         MaxBank = runVM.TakeOffAttempt.MaxBank,
         MaxPitch = runVM.TakeOffAttempt.MaxPitch,
         MaxAccY = runVM.TakeOffAttempt.MaxAccY,
@@ -157,8 +159,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         AircraftModel = aircraftModel,
         AircraftRegistration = aircraftRegistration,
         AircraftType = aircraftType,
-        Distance = distance,
-        CargoWeight = cargoWeight,
+        Distance = Distance.Of(distance, DistanceUnit.NauticalMiles),
+        CargoWeight = Weight.Of(cargoWeight, WeightUnit.Kilograms),
         Callsign = callsign,
         CruizeAltitude = cruizeAltitude,
         DestinationICAO = destinationICAO,
@@ -166,24 +168,24 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         AlternateICAO = alternateICAO,
         DivertReason = divertReason,
         FlightRules = flightRules,
-        LandingFuelWeight = runVM.LandingCache!.FuelKg,
-        LandingScheduledFuelWeight = runVM.SimBriefCache?.EstimatedLandingFuelKg,
+        LandingFuelWeight = Weight.Of(runVM.LandingCache!.FuelKg, WeightUnit.Kilograms),
+        LandingScheduledFuelWeight = Weight.Of(runVM.SimBriefCache?.EstimatedLandingFuelKg, WeightUnit.Kilograms),
         LandingScheduledDateTime = runVM.SimBriefCache?.LandingPlannedTime,
         PassengerCount = passengerCount,
         ShutDownScheduledDateTime = runVM.SimBriefCache?.OnBlockPlannedTime,
-        ShutDownFuelWeight = runVM.ShutDownCache!.FuelKg,
+        ShutDownFuelWeight = Weight.Of(runVM.ShutDownCache!.FuelKg, WeightUnit.Kilograms),
         ShutDownLocation = new GPS(runVM.ShutDownCache!.Latitude, runVM.ShutDownCache!.Longitude),
         ShutDownDateTime = runVM.ShutDownCache.Time,
         StartupLocation = new GPS(runVM.StartUpCache.Latitude, runVM.StartUpCache.Longitude),
         StartUpDateTime = runVM.StartUpCache.Time,
         StartUpScheduledDateTime = runVM.SimBriefCache?.OffBlockPlannedTime ?? runVM.VatsimCache?.PlannedDepartureTime,
-        StartUpFuelWeight = runVM.StartUpCache.FuelKg,
-        TakeOffFuelWeight = runVM.TakeOffCache.FuelKg,
+        StartUpFuelWeight = Weight.Of(runVM.StartUpCache.FuelKg, WeightUnit.Kilograms),
+        TakeOffFuelWeight = Weight.Of(runVM.TakeOffCache.FuelKg, WeightUnit.Kilograms),
         TakeOff = takeOff,
-        TakeOffScheduledFuelWeight = runVM.SimBriefCache?.EstimatedTakeOffFuelKg,
+        TakeOffScheduledFuelWeight = Weight.Of(runVM.SimBriefCache?.EstimatedTakeOffFuelKg, WeightUnit.Kilograms),
         TakeOffScheduledDateTime = runVM.SimBriefCache?.TakeOffPlannedTime,
         Touchdowns = touchdowns,
-        ZFW = zfw,
+        ZFW = Weight.Of(zfw, WeightUnit.Kilograms),
         NumberOfGoArounds = runVM.NumberOfGoArounds
       };
       return ret;
@@ -231,9 +233,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           TouchDownLocation = new GPS(f.TouchDownLatitude, f.TouchDownLongitude),
           RollOutEndDateTime = l.RollOutEndDateTime,
           RollOutEndLocation = l.RollOutEndDateTime == null ? null : new GPS(l.RollOutEndLatitude!.Value, l.RollOutEndLongitude!.Value),
-          IAS = (int)Math.Round(f.IAS),
+          IAS = Speed.Of(Math.Round(f.IAS), SpeedUnit.KTS),
           VS = f.VS,
-          GS = (int)Math.Round(f.GS),
+          GS = Speed.Of(Math.Round(f.GS), SpeedUnit.KTS),
           Bank = f.Bank,
           Pitch = f.Pitch,
           MaxAccY = group.Max(q => q.MaxAccY),

@@ -8,7 +8,7 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
-    <local:DistanceUnitConverter x:Key="DistanceUnitConverter" />
+    <local:DistanceConverter x:Key="DistanceConverter" />
   </UserControl.Resources>
   <DockPanel DataContext="{Binding SelectedFlight}">
     <GroupBox DockPanel.Dock="Top" Header="Overview">
@@ -47,9 +47,9 @@
           <Label Content=" / " />
           <Label>
             <StackPanel Orientation="Horizontal">
-              <TextBlock Text="{Binding Distance, StringFormat={}{0:N0} km, Converter={StaticResource DistanceUnitConverter}, ConverterParameter=km2km }" />
+              <TextBlock Text="{Binding Distance, StringFormat={}{0:N0} km, Converter={StaticResource DistanceConverter}, ConverterParameter=N0;km }" />
               <TextBlock Text=" ("/>
-              <TextBlock Text="{Binding Distance, StringFormat={}{0:N0} NM, Converter={StaticResource DistanceUnitConverter}, ConverterParameter=km2NM }" />
+              <TextBlock Text="{Binding Distance, StringFormat={}{0:N0} NM, Converter={StaticResource DistanceConverter}, ConverterParameter=N0;NM }" />
               <TextBlock Text=")"/>
             </StackPanel>
           </Label>
