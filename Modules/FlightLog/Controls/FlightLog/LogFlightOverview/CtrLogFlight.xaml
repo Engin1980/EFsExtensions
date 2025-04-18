@@ -8,7 +8,10 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
-    <local:DistanceConverter x:Key="DistanceConverter" />
+    <local:LongDistanceConverter x:Key="LongDistanceConverter" />
+    <local:ShortDistanceConverter x:Key="ShortDistanceConverter" />
+    <local:SpeedConverter x:Key="SpeedConverter" />
+    <local:WeightConverter x:Key="WeightConverter" />
   </UserControl.Resources>
   <DockPanel DataContext="{Binding SelectedFlight}">
     <GroupBox DockPanel.Dock="Top" Header="Overview">
@@ -46,14 +49,9 @@
           <shared:TimeSpanLabel Value="{Binding FlightDuration}" StringFormat="h:mm" />
           <Label Content=" / " />
           <Label>
-            <StackPanel Orientation="Horizontal">
-              <TextBlock Text="{Binding Distance, StringFormat={}{0:N0} km, Converter={StaticResource DistanceConverter}, ConverterParameter=km }" />
-              <TextBlock Text=" ("/>
-              <TextBlock Text="{Binding Distance, StringFormat={}{0:N0} NM, Converter={StaticResource DistanceConverter}, ConverterParameter=NM }" />
-              <TextBlock Text=")"/>
-            </StackPanel>
-          </Label>
-        </StackPanel>
+            <TextBlock Text="{Binding Distance, Converter={StaticResource LongDistanceConverter}, ConverterParameter=N0}" />
+        </Label>
+      </StackPanel>
       </StackPanel>
     </GroupBox>
     <GroupBox Header="Dates">
@@ -132,36 +130,36 @@
 
         <Label Grid.Row="1" Grid.Column="0" Content="Off-block" />
         <Label Grid.Row="1" Grid.Column="2">
-          <TextBlock Text="{Binding StartUpFuelWeight, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding StartUpFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
         </Label>
 
         <Label Grid.Row="2" Grid.Column="0" Content="Take-off" />
         <Label Grid.Row="2" Grid.Column="1">
-          <TextBlock Text="{Binding TakeOffScheduledFuelWeight, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding TakeOffScheduledFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
         </Label>
         <Label Grid.Row="2" Grid.Column="2">
-          <TextBlock Text="{Binding TakeOffFuelWeight, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding TakeOffFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
         </Label>
 
         <Label Grid.Row="3" Grid.Column="0" Content="Usage (air)" />
         <Label Grid.Row="3" Grid.Column="1">
-          <TextBlock Text="{Binding ScheduledAirFuelUsedWeight, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding ScheduledAirFuelUsedWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
         </Label>
         <Label Grid.Row="3" Grid.Column="2">
-          <TextBlock Text="{Binding AirFuelUsedWeight, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding AirFuelUsedWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
         </Label>
 
         <Label Grid.Row="4" Grid.Column="0" Content="Landing" />
         <Label Grid.Row="4" Grid.Column="1">
-          <TextBlock Text="{Binding LandingScheduledFuelWeight, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding LandingScheduledFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
         </Label>
         <Label Grid.Row="4" Grid.Column="2">
-          <TextBlock Text="{Binding LandingFuelWeight, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding LandingFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
         </Label>
 
         <Label Grid.Row="5" Grid.Column="0" Content="On-block" />
         <Label Grid.Row="5" Grid.Column="2">
-          <TextBlock Text="{Binding ShutDownFuelWeight, StringFormat={}{0:N0} kg}" />
+          <TextBlock Text="{Binding ShutDownFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
         </Label>
 
       </Grid>
@@ -193,7 +191,7 @@
 
             <DataGridColumnHeader  Grid.Row="0" Grid.Column="1" Content="Length" />
             <Label Grid.Row="1" Grid.Column="1">
-              <TextBlock Text="{Binding Length, StringFormat={}{0:N0} m}" />
+              <TextBlock Text="{Binding Length, Converter={StaticResource ShortDistanceConverter}, ConverterParameter=N0}" />
             </Label>
 
             <DataGridColumnHeader  Grid.Row="0" Grid.Column="2" Content="Front Gear" />
@@ -204,7 +202,7 @@
 
             <DataGridColumnHeader  Grid.Row="0" Grid.Column="4" Content="IAS" />
             <Label Grid.Row="1" Grid.Column="4">
-              <TextBlock Text="{Binding IAS, StringFormat={}{0:N0} kt}" />
+              <TextBlock Text="{Binding IAS, Converter={StaticResource SpeedConverter}, ConverterParameter=N0}" />
             </Label>
 
             <DataGridColumnHeader  Grid.Row="0" Grid.Column="5" Content="MaxVS" />
@@ -234,7 +232,7 @@
           <DataGrid ItemsSource="{Binding Touchdowns}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False">
             <DataGrid.Columns>
               <DataGridTextColumn Header="Time" Binding="{Binding TouchDownDateTime, StringFormat={}{0:HH:mm:ss}}" />
-              <DataGridTextColumn Header="Length" Binding="{Binding RollOutLength, StringFormat={}{0:N0} m}" />
+              <DataGridTextColumn Header="Length" Binding="{Binding RollOutLength, Converter={StaticResource ShortDistanceConverter}, ConverterParameter=N0}" />
               <DataGridTemplateColumn Header="L/R Gear">
                 <DataGridTemplateColumn.CellTemplate>
                   <DataTemplate>
@@ -249,7 +247,7 @@
                   </DataTemplate>
                 </DataGridTemplateColumn.CellTemplate>
               </DataGridTemplateColumn>
-              <DataGridTextColumn Header="IAS" Binding="{Binding IAS, StringFormat={}{0:N0} kt}" />
+              <DataGridTextColumn Header="IAS" Binding="{Binding IAS, Converter={StaticResource SpeedConverter}, ConverterParameter=N0}" />
               <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" />
               <DataGridTextColumn Header="Acc-Y" Binding="{Binding MaxAccY, StringFormat={}{0:N3}}" />
               <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch, StringFormat={}{0:N3}°}" />

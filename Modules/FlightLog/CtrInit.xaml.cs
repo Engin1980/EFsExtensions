@@ -28,15 +28,17 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
   public partial class CtrInit : UserControl
   {
     private readonly InitContext Context = null!;
+    private readonly Settings settings = null!;
 
     public CtrInit()
     {
       InitializeComponent();
     }
 
-    public CtrInit(InitContext context) : this()
+    public CtrInit(InitContext context, Settings settings) : this()
     {
       this.DataContext = this.Context = context;
+      this.settings = settings;
     }
 
     private void tabMain_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -47,7 +49,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     private void btnSettings_Click(object sender, RoutedEventArgs e)
     {
-      new CtrSettings().ShowDialog();
+      new CtrSettings(this.settings).ShowDialog();
     }
 
     private void ctrNewProfile_Click(object sender, RoutedEventArgs e)

@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <PlatformTarget>x64</PlatformTarget>
-    <AssemblyVersion>1.4.0.154</AssemblyVersion>
-    <FileVersion>1.4.0.143</FileVersion>
+    <AssemblyVersion>1.4.1.160</AssemblyVersion>
+    <FileVersion>1.4.1.149</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>

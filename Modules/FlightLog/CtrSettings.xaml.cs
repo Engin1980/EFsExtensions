@@ -26,9 +26,20 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.DataContext = this.settings = new Settings();
     }
 
+    public CtrSettings(Settings settings)
+    {
+      InitializeComponent();
+      this.DataContext = this.settings = settings;
+    }
+
     private void btnBrowse_Click(object sender, RoutedEventArgs e)
     {
+      //TODO implement
+    }
 
+    private void Window_Closed(object sender, EventArgs e)
+    {
+      this.settings.Save();
     }
   }
 }

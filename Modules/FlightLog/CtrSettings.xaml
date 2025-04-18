@@ -4,28 +4,49 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule"
+        xmlns:cvt="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
+        xmlns:structs="clr-namespace:ESystem.Structs;assembly=ESystem"
         mc:Ignorable="d"
-        Title="FlightLog Module Settings" Height="450" Width="800" SizeToContent="WidthAndHeight" >
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        <Label Grid.Row="0" Grid.Column="0">SimBrief ID:</Label>
-        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SimBriefId}" />
+        Title="FlightLog Module Settings" Height="450" Width="800" SizeToContent="WidthAndHeight" Closed="Window_Closed" >
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="Auto" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    
+    <Label Grid.Row="0" Grid.Column="0">SimBrief ID:</Label>
+    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SimBriefId}" />
 
-        <Label Grid.Row="1" Grid.Column="0">VATSIM ID:</Label>
-        <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding VatsimId}" />
+    <Label Grid.Row="1" Grid.Column="0">VATSIM ID:</Label>
+    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding VatsimId}" />
 
-        <Label Grid.Column="0" Grid.Row="2">Data Folder:</Label>
-        <DockPanel Grid.Column="1" Grid.Row="2">
-            <Button x:Name="btnBrowse" DockPanel.Dock="Right" Content=" (...) " Click="btnBrowse_Click" />
-            <TextBox Text="{Binding DataFolder}" />
-        </DockPanel>
-    </Grid>
+    <Label Grid.Column="0" Grid.Row="2">Data Folder:</Label>
+    <DockPanel Grid.Column="1" Grid.Row="2">
+      <Button x:Name="btnBrowse" DockPanel.Dock="Right" Content=" (...) " Click="btnBrowse_Click" />
+      <TextBox Text="{Binding DataFolder}" />
+    </DockPanel>
+
+    <Label Grid.Row="3" Grid.Column="0">Long distance unit:</Label>
+    <local:EnumComboBox Grid.Row="3" Grid.Column="1" SelectedItem="{Binding LongDistanceUnit}" EnumType="{x:Type structs:DistanceUnit}" />
+
+    <Label Grid.Row="4" Grid.Column="0">Short distance unit:</Label>
+    <local:EnumComboBox Grid.Row="4" Grid.Column="1" SelectedItem="{Binding ShortDistanceUnit}" EnumType="{x:Type structs:DistanceUnit}" />
+
+
+    <Label Grid.Row="5" Grid.Column="0">Speed unit:</Label>
+    <local:EnumComboBox Grid.Row="5" Grid.Column="1" SelectedItem="{Binding SpeedUnit}" EnumType="{x:Type structs:SpeedUnit}" />
+
+    <Label Grid.Row="6" Grid.Column="0">Weight unit:</Label>
+    <local:EnumComboBox Grid.Row="6" Grid.Column="1" SelectedItem="{Binding WeightUnit}" EnumType="{x:Type structs:WeightUnit}" />
+
+  </Grid>
 </Window>

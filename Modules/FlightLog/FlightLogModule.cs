@@ -8,12 +8,17 @@ using System.Windows.Controls;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
+using Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog;
+using ESystem.Logging;
+using ESystem;
+using System.Windows;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
   public class FlightLogModule : NotifyPropertyChanged, IModule
   {
-    private readonly Settings settings = new();
+    private Settings settings = new();
+    private Logger logger = Logger.Create("EFSE.Modules.FlightLog");
 
     public bool IsReady
     {
@@ -42,7 +47,47 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     public void Init()
     {
       this.InitContext = new InitContext(this.settings, q => this.IsReady = q);
-      InitControl = new CtrInit(InitContext);
+      InitControl = new CtrInit(InitContext, this.settings);
+
+      // map Settings changes to converters
+      MapSettingsToConverters();
+    }
+
+    private void MapSettingsToConverters()
+    {
+      this.settings.PropertyChanged += (s, e) =>
+      {
+        bool refreshNeeded = false;
+        if (e.PropertyName == nameof(Settings.LongDistanceUnit))
+        {
+          LongDistanceConverter.DefaultUnit = settings.LongDistanceUnit;
+          refreshNeeded = true;
+        }
+        if (e.PropertyName == nameof(Settings.ShortDistanceUnit))
+        {
+          ShortDistanceConverter.DefaultUnit = settings.ShortDistanceUnit;
+          refreshNeeded = true;
+        }
+        if (e.PropertyName == nameof(Settings.WeightUnit))
+        {
+          WeightConverter.DefaultUnit = settings.WeightUnit;
+          refreshNeeded = true;
+        }
+        if (e.PropertyName == nameof(Settings.SpeedUnit))
+        {
+          SpeedConverter.DefaultUnit = settings.SpeedUnit;
+          refreshNeeded = true;
+        }
+
+        if (refreshNeeded)
+          this.UpdateBindings();
+      };
+    }
+
+    private void UpdateBindings()
+    {
+      this.InitControl?.RefreshBindings();
+      this.RunControl?.RefreshBindings();
     }
 
     public void Restore(Dictionary<string, string> restoreData)
@@ -60,7 +105,17 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public void SetUp(ModuleSetUpInfo setUpInfo)
     {
-      //throw new NotImplementedException();
+      try
+      {
+        settings = Settings.Load();
+        logger.Log(LogLevel.INFO, "Settings loaded.");
+      }
+      catch (Exception ex)
+      {
+        logger.Log(LogLevel.ERROR, "Unable to load settings. " + ex.GetFullMessage());
+        logger.Log(LogLevel.INFO, "Default settings used.");
+        settings = new Settings();
+      }
     }
 
     public void Stop()

@@ -40,7 +40,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
         set => base.UpdateProperty(nameof(SelectedFlight), value);
       }
 
-
       public StatsData Stats
       {
         get => base.GetProperty<StatsData>(nameof(Stats))!;
@@ -57,9 +56,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
     }
 
     private static readonly DependencyProperty FlightsProperty =
-      DependencyProperty.Register(nameof(Flights), typeof(List<LoggedFlight>), typeof(CtrLogFlightOverview), new PropertyMetadata(null, OnFLighsPropertyChanged));
+      DependencyProperty.Register(nameof(Flights), typeof(List<LoggedFlight>), typeof(CtrLogFlightOverview), new PropertyMetadata(null, OnFlighsPropertyChanged));
 
-    private static void OnFLighsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    private static void OnFlighsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
       if (e.Property.Name == nameof(Flights) && d is CtrLogFlightOverview control)
       {
@@ -76,7 +75,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
       get => (List<LoggedFlight>)GetValue(FlightsProperty);
       set => SetValue(FlightsProperty, value);
     }
-
 
     public CtrLogFlightOverview()
     {
