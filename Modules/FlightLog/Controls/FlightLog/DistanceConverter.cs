@@ -14,38 +14,30 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
   {
     protected override double Convert(Distance value, object parameter, CultureInfo culture)
     {
-      string numberFormat;
-      DistanceUnit unit;
-      (numberFormat, unit) = Decode(parameter);
+      DistanceUnit unit = Decode(parameter);
       double ret = value.To(unit).Value;
       return ret;
     }
 
-    private static (string, DistanceUnit) Decode(object parameter)
+    private static DistanceUnit Decode(object parameter)
     {
-      string retStringFormat = "F0";
-      DistanceUnit retDistanceUnit;
-      if (parameter is string s && s.Count(q => q == ';') < 2)
+      DistanceUnit ret;
+      try
       {
-        string[] pts = s.Split(";");
-        if (pts.Length == 2)
-        {
-          retStringFormat = pts[0];
-          retDistanceUnit = ESystem.Enums.FromDisplayName<DistanceUnit>(pts[1]) ?? throw new ApplicationException($"Unknown distance unit '{parameter}'.");
-        }
-        else
-          retDistanceUnit = ESystem.Enums.FromDisplayName<DistanceUnit>(s) ?? throw new ApplicationException($"Unknown distance unit '{parameter}'.");
+        ret = ESystem.Enums.FromDisplayName<DistanceUnit>((string)parameter)
+          ?? throw new ApplicationException($"Unknown distance unit '{parameter}'.");
       }
-      else
-        throw new ApplicationException($"Unexpected ConverterParameter '{parameter}'.");
-      return (retStringFormat, retDistanceUnit);
+      catch (Exception ex)
+      {
+        throw new ApplicationException($"Unexpected or invalid ConverterParameter '{parameter}'.", ex);
+      }
+
+      return ret;
     }
 
     protected override Distance ConvertBack(double value, object parameter, CultureInfo culture)
     {
-      string _;
-      DistanceUnit unit;
-      (_, unit) = Decode(parameter);
+      DistanceUnit unit = Decode(parameter);
       Distance ret = Distance.Of(value, unit);
       return ret;
     }
