@@ -29,7 +29,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
       XmlSerializer ser = new(typeof(LoggedFlight));
       try
       {
-        using(FileStream fs = new System.IO.FileStream(tmpFileName, FileMode.Create))
+        using (FileStream fs = new System.IO.FileStream(tmpFileName, FileMode.Create))
         {
           ser.Serialize(fs, logFlight);
         }
@@ -38,8 +38,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
       }
       catch (Exception ex)
       {
-        // TODO handle better using logger
-        throw new ApplicationException("Failed to save flight to log.", ex);
+        logger.Log(LogLevel.ERROR, $"Failed to store flight {logFlight.StartUpDateTime}:{logFlight.DepartureICAO}-{logFlight.LandedICAO}.");
+        logger.LogException(ex);
       }
     }
 
