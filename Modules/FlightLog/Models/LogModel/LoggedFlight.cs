@@ -1,4 +1,5 @@
-﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
 using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.Shared;
@@ -17,7 +18,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 {
   public class LoggedFlight
   {
-    public int Version { get; set; } = 3;
+    public int Version { get; set; } = 4;
     public string Callsign { get; set; } = string.Empty;
     public FlightRules FlightRules { get; set; } = FlightRules.Unknown;
     public string? DepartureICAO { get; set; } = string.Empty;
@@ -122,6 +123,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
       {
         this.Distance = Distance.Of(this.Distance.Value, DistanceUnit.Kilometers);
         Version = 3;
+        resaveNeeded = true;
+      }
+      if (Version == 3)
+      {
+        this.Touchdowns.ForEach(q => q.Bank = Math.Abs(q.Bank));
+        Version = 4;
         resaveNeeded = true;
       }
     }

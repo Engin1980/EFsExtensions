@@ -33,7 +33,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
         {
           ser.Serialize(fs, logFlight);
         }
-        System.IO.File.Copy(tmpFileName, fileName);
+        System.IO.File.Copy(tmpFileName, fileName, true);
         System.IO.File.Delete(tmpFileName);
       }
       catch (Exception ex)

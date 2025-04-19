@@ -182,7 +182,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           * (1 / 50d);
 
         LandingAttemptData item = new(
-          this.current.bank,
+          Math.Abs(this.current.bank),
           this.current.pitch,
           this.current.ias,
           this.current.gs,
