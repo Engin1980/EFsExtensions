@@ -106,6 +106,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     {
       resaveNeeded = false;
 
+      if (this.LandedICAO == null || this.LandedICAO == string.Empty)
+      {
+        this.LandedICAO = GetLandedAirportICAO();
+        resaveNeeded = this.LandedICAO != null;
+      }
+
       if (Version == 1)
       {
         this.LandedICAO = GetLandedAirportICAO();

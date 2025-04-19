@@ -5,6 +5,7 @@ using ESystem.Asserting;
 using ESystem.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Text;
@@ -20,13 +21,20 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
 
     public static void SaveFlight(LoggedFlight logFlight, Profile profile)
     {
+      string tmpFileName = System.IO.Path.GetTempFileName();
+
       string fileName = System.IO.Path.Combine(
         profile.Path,
-        $"{logFlight.StartUpDateTime:yyyy-MM-dd-hh-mm-ss}_{logFlight.DepartureICAO}_{logFlight.DestinationICAO}.xml");
+        $"{logFlight.StartUpDateTime:yyyy-MM-dd-HH-mm-ss}_{logFlight.DepartureICAO}_{logFlight.DestinationICAO}.xml");
       XmlSerializer ser = new(typeof(LoggedFlight));
       try
       {
-        ser.Serialize(System.IO.File.Create(fileName), logFlight);
+        using(FileStream fs = new System.IO.FileStream(tmpFileName, FileMode.Create))
+        {
+          ser.Serialize(fs, logFlight);
+        }
+        System.IO.File.Copy(tmpFileName, fileName);
+        System.IO.File.Delete(tmpFileName);
       }
       catch (Exception ex)
       {
