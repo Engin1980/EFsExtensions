@@ -50,6 +50,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       InitControl = new CtrInit(InitContext, this.settings);
 
       // map Settings changes to converters
+      LongDistanceConverter.DefaultUnit = this.settings.LongDistanceUnit;
+      ShortDistanceConverter.DefaultUnit = this.settings.ShortDistanceUnit;
+      WeightConverter.DefaultUnit = this.settings.WeightUnit;
+      SpeedConverter.DefaultUnit = this.settings. SpeedUnit;
       MapSettingsToConverters();
     }
 
