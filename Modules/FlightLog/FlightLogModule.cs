@@ -18,7 +18,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
   public class FlightLogModule : NotifyPropertyChanged, IModule
   {
     private Settings settings = new();
-    private Logger logger = Logger.Create("EFSE.Modules.FlightLog");
+    private readonly Logger logger = Logger.Create("EFSE.Modules.FlightLog");
 
     public bool IsReady
     {
