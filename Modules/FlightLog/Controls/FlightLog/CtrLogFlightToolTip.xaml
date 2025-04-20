@@ -19,7 +19,7 @@
       <TextBlock Text="{Binding DestinationICAO}" />
     </StackPanel>
     <StackPanel Orientation="Horizontal" Margin="16 0 0 0">
-      <TextBlock Text="{Binding StartUp.RealTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+      <TextBlock Text="{Binding StartUpDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
     </StackPanel>
   </StackPanel>
 </UserControl>

@@ -8,8 +8,8 @@
     <PlatformTarget>x64</PlatformTarget>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
-    <AssemblyVersion>1.4.1.442</AssemblyVersion>
-    <FileVersion>1.4.1.406</FileVersion>
+    <AssemblyVersion>1.4.1.452</AssemblyVersion>
+    <FileVersion>1.4.1.416</FileVersion>
     <Authors>Marek Vajgl</Authors>
     <Description>Extensions for MSFS</Description>
     <ApplicationIcon>Imgs\efsextensions.ico</ApplicationIcon>

@@ -1,12 +1,15 @@
-﻿using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
+﻿using Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog;
+using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
 using ESystem;
 using ESystem.Miscelaneous;
+using ESystem.Structs;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Forms;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
@@ -21,21 +24,39 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
     {
       DescriptiveLogStats.Add(new("Flight Time", q => q.AirTime.Ticks, ValueStringFormatter: q => new TimeSpan((long)q).ToString(@"h\:mm\:ss")));
       DescriptiveLogStats.Add(new("Block Time", q => q.BlockTime.Ticks, ValueStringFormatter: q => new TimeSpan((long)q).ToString(@"h\:mm\:ss")));
-      DescriptiveLogStats.Add(new("Air Time Ratio", q => q.AirTime.TotalSeconds * 100 / q.BlockTime.TotalSeconds, "{0:N1} %"));
+      DescriptiveLogStats.Add(new("Air Time Ratio", q => q.AirTime.TotalSeconds / q.BlockTime.TotalSeconds, "{0:P1}"));
 
-      DescriptiveLogStats.Add(new("Distance", q => q.Distance, "{0:N0} NM"));
-      DescriptiveLogStats.Add(new("Fuel Used", q => q.StartUpFuelWeight - q.ShutDownFuelWeight, "{0:N0} kg"));
-      DescriptiveLogStats.Add(new("Landing Fuel", q => q.LandingFuelWeight, "{0:N0} kg"));
+      DescriptiveLogStats.Add(new("Distance",
+        q => q.Distance.To(DistanceUnit.Meters),
+        ValueConverter: new LongDistanceConverter(),
+        ValueStringFormat: "N0"));
+      DescriptiveLogStats.Add(new("Fuel Used",
+        q => (q.StartUpFuelWeight - q.ShutDownFuelWeight).To(WeightUnit.Kilograms),
+        ValueConverter: new WeightConverter(),
+        ValueStringFormat: "N0"));
+      DescriptiveLogStats.Add(new("Landing Fuel",
+        q => q.LandingFuelWeight.To(WeightUnit.Kilograms),
+        ValueConverter: new WeightConverter(),
+        ValueStringFormat: "N0"));
 
-      DescriptiveLogStats.Add(new("Takeoff IAS", q => q.TakeOff.IAS, "{0:N0} kt"));
+      DescriptiveLogStats.Add(new("Takeoff IAS",
+        static q => q.TakeOff.IAS.To(targetUnit: SpeedUnit.KTS),
+        ValueConverter: new SpeedConverter(),
+        ValueStringFormat: "N0"));
       DescriptiveLogStats.Add(new("Takeoff VS", q => q.TakeOff.MaxVS, "{0:N0} ft/min"));
-      DescriptiveLogStats.Add(new("Takeoff Bank", q => q.TakeOff.MaxBank, "{0:N0}°"));
-      DescriptiveLogStats.Add(new("Takeoff Pitch", q => q.TakeOff.MaxPitch, "{0:N0}°"));
-      DescriptiveLogStats.Add(new("Takeoff MaxAccY", q => q.TakeOff.MaxAccY, "{0:N0}"));
-      DescriptiveLogStats.Add(new("Takeoff Run", q => q.TakeOff.Length, "{0:N3} NM"));
+      DescriptiveLogStats.Add(new("Takeoff Bank", q => q.TakeOff.MaxBank, "{0:N3}°"));
+      DescriptiveLogStats.Add(new("Takeoff Pitch", q => q.TakeOff.MaxPitch, "{0:N3}°"));
+      DescriptiveLogStats.Add(new("Takeoff MaxAccY", q => q.TakeOff.MaxAccY, "{0:N3}"));
+      DescriptiveLogStats.Add(new("Takeoff Run",
+        q => q.TakeOff.Length.To(DistanceUnit.Meters),
+        ValueConverter: new ShortDistanceConverter(),
+        ValueStringFormat: "N0"));
 
       DescriptiveLogStats.Add(new("Landing VS", q => q.Touchdowns.Last().VS, "{0:N3} ft/min"));
-      DescriptiveLogStats.Add(new("Landing IAS", q => q.Touchdowns.Last().IAS, "{0:N0} kt"));
+      DescriptiveLogStats.Add(new("Landing IAS",
+        q => q.Touchdowns.Last().IAS.To(SpeedUnit.KTS),
+        ValueConverter: new SpeedConverter(),
+        ValueStringFormat: "N0"));
       DescriptiveLogStats.Add(new("Landing Bank", q => q.Touchdowns.Last().Bank, "{0:N3}°"));
       DescriptiveLogStats.Add(new("Landing Pitch", q => q.Touchdowns.Last().Pitch, "{0:N3}°"));
       DescriptiveLogStats.Add(new("Landing MaxAccY", q => q.Touchdowns.Last().MaxAccY, "{0:N3}"));
@@ -91,7 +112,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
         .OrderByDescending(q => q.Count)
         .ToList();
 
-      GroupingLogStatView view = new GroupingLogStatView(stat, records, uniqueCount);
+      GroupingLogStatView view = new(stat, records, uniqueCount);
 
       return view;
     }
@@ -109,7 +130,18 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
 
       string formatByStats(double value, DescriptiveLogStatItem stat)
       {
-        if (stat.ValueStringFormat is not null)
+        if (stat.ValueConverter is not null)
+        {
+          object input = stat.ValueConverter is LongDistanceConverter || stat.ValueConverter is ShortDistanceConverter
+            ? new Distance(value, DistanceUnit.Meters)
+            : stat.ValueConverter is WeightConverter
+            ? new Weight(value, WeightUnit.Kilograms)
+            : stat.ValueConverter is SpeedConverter
+            ? new Speed(value, SpeedUnit.KTS)
+            : throw new ApplicationException($"Unexepected converter type '{stat.ValueConverter.GetType()}'");
+          return (string)stat.ValueConverter.Convert(input, typeof(string), stat.ValueStringFormat, System.Globalization.CultureInfo.DefaultThreadCurrentUICulture);
+        }
+        else if (stat.ValueStringFormat is not null)
           return string.Format(stat.ValueStringFormat, value);
         else if (stat.ValueStringFormatter is not null)
           return stat.ValueStringFormatter(value);
@@ -147,13 +179,15 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
     int UniqueCount)
   {
     public GroupingLogStatRecord First => Records.First();
-    public GroupingLogStatRecord? Second => Records.Count() > 1 ? Records.Skip(1).First() : null;
-    public GroupingLogStatRecord? Third => Records.Count() > 2 ? Records.Skip(2).First() : null;
-    public GroupingLogStatRecord? Last => Records.Count() > 3 ? Records.Last() : null;
+    public GroupingLogStatRecord? Second => Records.Count > 1 ? Records.Skip(1).First() : null;
+    public GroupingLogStatRecord? Third => Records.Count > 2 ? Records.Skip(2).First() : null;
+    public GroupingLogStatRecord? Last => Records.Count > 3 ? Records.Last() : null;
   }
 
   public record DescriptiveLogStatItem(string Title, Func<LoggedFlight, double?> ValueSelector,
-    string? ValueStringFormat = null, Func<double, string>? ValueStringFormatter = null);
+    string? ValueStringFormat = null,
+    Func<double, string>? ValueStringFormatter = null,
+    IValueConverter? ValueConverter = null);
   public record DescriptiveLogStatRecord(double Value, string DisplayValue, LoggedFlight Flight);
   public record DescriptiveLogStatView(
     DescriptiveLogStatItem Stat,

@@ -12,6 +12,10 @@
     <Style x:Key="TextRight" TargetType="{x:Type TextBlock}">
       <Setter Property="TextAlignment" Value="Right" />
     </Style>
+    <local:LongDistanceConverter x:Key="LongDistanceConverter" />
+    <local:ShortDistanceConverter x:Key="ShortDistanceConverter" />
+    <local:SpeedConverter x:Key="SpeedConverter" />
+    <local:WeightConverter x:Key="WeightConverter" />
   </UserControl.Resources>
   <TabControl DataContext="{Binding Stats}">
     <TabItem Header="Overall">
@@ -44,7 +48,7 @@
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Label>
-                  <TextBlock Text="{Binding Min.DisplayValue}" TextAlignment="Right" Width="75"/>
+                  <TextBlock Text="{Binding Min.DisplayValue}" TextAlignment="Right" Width="100"/>
                   <Label.ToolTip>
                     <local:CtrLogFlightToolTip LogFlight="{Binding Min.Flight}" />
                   </Label.ToolTip>
@@ -56,7 +60,7 @@
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Label >
-                  <TextBlock Text="{Binding Max.DisplayValue}" TextAlignment="Right" Width="75"/>
+                  <TextBlock Text="{Binding Max.DisplayValue}" TextAlignment="Right" Width="100"/>
                   <Label.ToolTip>
                     <local:CtrLogFlightToolTip LogFlight="{Binding Max.Flight}" />
                   </Label.ToolTip>
@@ -68,7 +72,7 @@
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
                 <Label>
-                  <TextBlock Text="{Binding Avg}" TextAlignment="Right" Width="75" />
+                  <TextBlock Text="{Binding Avg}" TextAlignment="Right" Width="100" />
                 </Label>
               </DataTemplate>
             </DataGridTemplateColumn.CellTemplate>
