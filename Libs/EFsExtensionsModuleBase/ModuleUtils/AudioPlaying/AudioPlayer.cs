@@ -46,8 +46,8 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying
 
     private static MemoryStream ConvertMp3ToWav(byte[] mp3Bytes)
     {
-      MemoryStream mp3Stream = new MemoryStream(mp3Bytes);
-      MemoryStream wavStream = new MemoryStream();
+      MemoryStream mp3Stream = new(mp3Bytes);
+      MemoryStream wavStream = new();
 
       using (var mp3Reader = new Mp3FileReader(mp3Stream))
       using (var pcmStream = WaveFormatConversionStream.CreatePcmStream(mp3Reader))
@@ -85,6 +85,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying
 
     public void Play()
     {
+      this.PlayRequested?.Invoke(this);
       if (this.audioFormat == AudioFormat.Mp3)
         PlayMp3(audioData);
       else if (this.audioFormat == AudioFormat.Wav)

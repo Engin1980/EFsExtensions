@@ -17,7 +17,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Types
   internal class SanityChecker
   {
     private readonly Stack<string> context = new();
-    private List<FailureDefinition> failureDefinitions;
+    private List<FailureDefinition> failureDefinitions = null!;
 
     internal static void CheckSanity(IncidentGroup tmp, List<FailureDefinition> failureDefinitions)
     {

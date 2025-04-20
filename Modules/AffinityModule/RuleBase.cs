@@ -1,7 +1,6 @@
 ﻿using Eng.EFsExtensions.Modules.AffinityModule;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Storable;
-using Eng.EFsExtensions.Modules.AffinityModule;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

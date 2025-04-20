@@ -38,9 +38,9 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
       this.LoadDefaultFailures();
     }
 
-    public List<FailureDefinition> FailureDefinitionsFlat { get; set; }
+    public List<FailureDefinition> FailureDefinitionsFlat { get; set; } = null!;
 
-    public List<FailureDefinitionBase> FailureDefinitions { get; set; }
+    public List<FailureDefinitionBase> FailureDefinitions { get; set; } = null!;
 
 
     public string? LastLoadedFile { get; private set; }

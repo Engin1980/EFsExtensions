@@ -1,6 +1,4 @@
-﻿using ESystem.Logging;
-using Eng.EFsExtensions.EFsExtensionsModuleBase;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.Failures;
@@ -8,12 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.VMs;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers;
 using ESystem.Miscelaneous;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
-using Eng.Chloat.Modules.FailuresModule.Model;
+using Eng.EFsExtensions.Modules.FailuresModule.Model;
 
 namespace Eng.EFsExtensions.Modules.FailuresModule
 {
@@ -52,10 +49,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
     {
       get
       {
-        if (_IncidentDefinitions == null)
-        {
-          _IncidentDefinitions = FlattenIncidentDefinitions(IncidentVMs);
-        }
+        _IncidentDefinitions ??= FlattenIncidentDefinitions(IncidentVMs);
         return _IncidentDefinitions;
       }
     }
@@ -77,7 +71,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
     {
       // preparation
       List<FailureDefinition> failureDefinitions = initContext.FailureDefinitionsFlat;
-      IncidentGroup rootIncidentGroup = new IncidentGroup()
+      IncidentGroup rootIncidentGroup = new()
       {
         Incidents = initContext.FailureSet.Incidents
       };
@@ -253,8 +247,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
           break;
         }
       }
-      if (ret == null)
-        ret = items.Last();
+      ret ??= items.Last();
 
       return ret;
     }

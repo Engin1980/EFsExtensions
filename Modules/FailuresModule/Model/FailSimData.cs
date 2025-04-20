@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ESimConnect.Definitions;
 
-namespace Eng.Chloat.Modules.FailuresModule.Model
+namespace Eng.EFsExtensions.Modules.FailuresModule.Model
 {
   public class FailSimData : NotifyPropertyChanged
   {
