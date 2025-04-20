@@ -7,6 +7,7 @@
              xmlns:types="clr-namespace:Eng.EFsExtensions.Modules.CopilotModule.Types"
              xmlns:vars="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;assembly=EFsExtensionsModuleBase"
              xmlns:converters="clr-namespace:Eng.EFsExtensions.Modules.CopilotModule.Converters"
+             xmlns:gcvt="clr-namespace:ESystem.WPF.Converters;assembly=ESystem.WPF"
              xmlns:sct ="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.StateModel;assembly=EFsExtensionsModuleBase" 
              xmlns:gctr="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF;assembly=EFsExtensionsModuleBase"
              xmlns:smo="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;assembly=EFsExtensionsModuleBase"
@@ -18,7 +19,7 @@
     <converters:Int2VisibilityConverter x:Key="Int2VisibilityConverter" />
     <converters:VariableValueConverter x:Key="VariableValueConverter" />
     <converters:TextBoxTextIsDoubleToSolidBrushConverter x:Key="TextBoxTextIsDoubleToSolidBrushConverter" />
-    <gConverters:DoubleFormatter x:Key="DoubleFormatter" />
+    <gcvt:DoubleFormatter x:Key="DoubleFormatter" />
     <HierarchicalDataTemplate DataType="{x:Type sct:StateCheckDelay}" ItemsSource="{Binding Item}">
       <TextBlock Text="{Binding DisplayString}" />
     </HierarchicalDataTemplate>

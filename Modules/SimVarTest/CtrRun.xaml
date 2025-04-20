@@ -6,11 +6,11 @@
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.SimVarTestModule"
              xmlns:controls="clr-namespace:Eng.EFsExtensions.Modules.SimVarTestModule.Controls"
              xmlns:localModel="clr-namespace:Eng.EFsExtensions.Modules.SimVarTestModule.Model"
-             xmlns:globalConverters="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;assembly=EFsExtensionsModuleBase"
+             xmlns:gcvt="clr-namespace:ESystem.WPF.Converters;assembly=ESystem.WPF"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
-    <globalConverters:DoubleFormatter x:Key="DoubleFormatter" />
+    <gcvt:DoubleFormatter x:Key="DoubleFormatter" />
   </UserControl.Resources>
   <TabControl x:Name="tab">
     <TabItem Header="Watches" x:Name="tabRegistered" >

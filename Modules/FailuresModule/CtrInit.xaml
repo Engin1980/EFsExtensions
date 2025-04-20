@@ -9,7 +9,7 @@
              xmlns:modelSim="clr-namespace:Eng.EFsExtensions.Modules.FailuresModule.Model.Failures"
              xmlns:modelVar="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;assembly=EFsExtensionsModuleBase"
              xmlns:converters="clr-namespace:Eng.EFsExtensions.Modules.FailuresModule.Converters"
-             xmlns:globalConverters ="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;assembly=EFsExtensionsModuleBase"
+             xmlns:gcvt="clr-namespace:ESystem.WPF.Converters;assembly=ESystem.WPF"
              xmlns:gWpf="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF;assembly=EFsExtensionsModuleBase"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
@@ -20,8 +20,8 @@
     </CollectionViewSource>
     <converters:PercentageToIntConverter x:Key="PercentageToIntConverter" />
     <converters:PercentageFormatter x:Key="PercentageFormatter" />
-    <globalConverters:DoubleFormatter x:Key="DoubleFormatter" />
-    <globalConverters:TypeNameToVisibilityConverter x:Key="TypeNameToVisibilityConverter" />
+    <gcvt:DoubleFormatter x:Key="DoubleFormatter" />
+    <gcvt:TypeNameToVisibilityHiddenConverter x:Key="TypeNameToVisibilityConverter" />
 
     <DataTemplate x:Key="StateCheckTriggerTemplate">
       <StackPanel Orientation="Horizontal" DataContext="{Binding}" >

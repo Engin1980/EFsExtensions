@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:cvt="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;assembly=EFsExtensionsModuleBase"              
+             xmlns:gcvt="clr-namespace:ESystem.WPF.Converters;assembly=ESystem.WPF"
              xmlns:ctr="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Controls;assembly=EFsExtensionsModuleBase"
              xmlns:localCvt="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
              xmlns:ctrFlightLog="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
@@ -12,9 +12,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
-    <cvt:DoubleFormatter x:Key="DoubleFormatter" />
+    <gcvt:DoubleFormatter x:Key="DoubleFormatter" />
     <localCvt:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter" />
-    <cvt:BoolToSolidBrushConverter x:Key="BoolToSolidBrushConverter" />
+    <gcvt:BoolToSolidBrushConverter x:Key="BoolToSolidBrushConverter" />
   </UserControl.Resources>
   <DockPanel>
     <DockPanel DockPanel.Dock="Top">

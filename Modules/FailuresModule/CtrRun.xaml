@@ -11,13 +11,13 @@
              xmlns:modelSus ="clr-namespace:Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers"
              xmlns:modelVars="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;assembly=EFsExtensionsModuleBase"
              xmlns:converters="clr-namespace:Eng.EFsExtensions.Modules.FailuresModule.Converters"             
-             xmlns:globalConverters="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;assembly=EFsExtensionsModuleBase"             
+             xmlns:gcvt="clr-namespace:ESystem.WPF.Converters;assembly=ESystem.WPF"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <converters:FailureDefinitionActiveToBoolConverter x:Key="FailureDefinitionActiveToBoolConverter" />
-    <globalConverters:DoubleFormatter x:Key="DoubleToStringConverter" />
-    <globalConverters:BoolToCustomSolidBrushConverter x:Key="BoolToCustomSolidBrushConverter" />
+    <gcvt:DoubleFormatter x:Key="DoubleToStringConverter" />
+    <gcvt:BoolToCustomSolidBrushConverter x:Key="BoolToCustomSolidBrushConverter" />
   </UserControl.Resources>
   <DockPanel>
     <DockPanel DockPanel.Dock="Bottom">

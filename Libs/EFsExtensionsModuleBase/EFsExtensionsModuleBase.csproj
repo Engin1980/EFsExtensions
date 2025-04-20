@@ -6,8 +6,8 @@
     <UseWPF>true</UseWPF>
     <PlatformTarget>x64</PlatformTarget>
     <RootNamespace>Eng.EFsExtensions.EFsExtensionsModuleBase</RootNamespace>
-    <AssemblyVersion>1.4.1.156</AssemblyVersion>
-    <FileVersion>1.4.1.147</FileVersion>
+    <AssemblyVersion>1.4.1.159</AssemblyVersion>
+    <FileVersion>1.4.1.150</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
