@@ -1,6 +1,7 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;
 using ESystem.Exceptions;
 using ESystem.Structs;
+using ESystem.WPF;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

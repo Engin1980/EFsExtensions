@@ -1,4 +1,5 @@
 ﻿using ESystem.Asserting;
+using ESystem.WPF;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

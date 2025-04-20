@@ -1,6 +1,7 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Converters;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents;
 using ESystem.Miscelaneous;
+using ESystem.WPF;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
