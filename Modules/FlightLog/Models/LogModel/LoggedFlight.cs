@@ -13,12 +13,15 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 {
   public class LoggedFlight
   {
     public int Version { get; set; } = 4;
+    [XmlIgnore]
+    public string? FileName { get; set; } = null;
     public string Callsign { get; set; } = string.Empty;
     public FlightRules FlightRules { get; set; } = FlightRules.Unknown;
     public string? DepartureICAO { get; set; } = string.Empty;

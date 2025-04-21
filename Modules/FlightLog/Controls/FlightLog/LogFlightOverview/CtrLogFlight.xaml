@@ -23,6 +23,7 @@
           <Label Content="{Binding AircraftType}" />
           <Label Content=" / " />
           <Label Content="{Binding AircraftRegistration}" />
+          <Button Content="..." Padding="8 0 8 0" x:Name="btnChangeRegistration" Click="btnChangeRegistration_Click" />
           <Label Content=" / " />
           <Label Content="{Binding AircraftModel}" />
           <Label Content=" / " />

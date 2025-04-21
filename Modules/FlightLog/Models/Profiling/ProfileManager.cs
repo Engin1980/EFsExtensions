@@ -19,26 +19,42 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
   {
     private readonly static Logger logger = Logger.Create("EFSE.Modules.FlightLog.ProfileManager");
 
-    public static void SaveFlight(LoggedFlight logFlight, Profile profile)
+    public static void CreateFlight(LoggedFlight loggedFlight, Profile profile)
     {
-      string tmpFileName = System.IO.Path.GetTempFileName();
+      EAssert.IsTrue(loggedFlight.FileName == null, "FileName property of the new logged-flight must be null.");
 
       string fileName = System.IO.Path.Combine(
         profile.Path,
-        $"{logFlight.StartUpDateTime:yyyy-MM-dd-HH-mm-ss}_{logFlight.DepartureICAO}_{logFlight.DestinationICAO}.xml");
+        $"{loggedFlight.StartUpDateTime:yyyy-MM-dd-HH-mm-ss}_{loggedFlight.DepartureICAO}_{loggedFlight.DestinationICAO}.xml");
+
+      SaveFlight(loggedFlight, fileName);
+    }
+
+    public static void UpdateFlight(LoggedFlight loggedFlight)
+    {
+      EAssert.IsTrue(loggedFlight.FileName is not null, "FileName property of updated logged-flight cannot be null.");
+
+      SaveFlight(loggedFlight, loggedFlight.FileName!);
+    }
+
+    private static void SaveFlight(LoggedFlight loggedFlight, string fileName)
+    {
+      string tmpFileName = System.IO.Path.GetTempFileName();
+
       XmlSerializer ser = new(typeof(LoggedFlight));
       try
       {
-        using (FileStream fs = new System.IO.FileStream(tmpFileName, FileMode.Create))
+        using (FileStream fs = new(tmpFileName, FileMode.Create))
         {
-          ser.Serialize(fs, logFlight);
+          ser.Serialize(fs, loggedFlight);
         }
         System.IO.File.Copy(tmpFileName, fileName, true);
         System.IO.File.Delete(tmpFileName);
+        loggedFlight.FileName = fileName;
       }
       catch (Exception ex)
       {
-        logger.Log(LogLevel.ERROR, $"Failed to store flight {logFlight.StartUpDateTime}:{logFlight.DepartureICAO}-{logFlight.LandedICAO}.");
+        logger.Log(LogLevel.ERROR, $"Failed to store flight {loggedFlight.StartUpDateTime}:{loggedFlight.DepartureICAO}-{loggedFlight.LandedICAO}.");
         logger.LogException(ex);
       }
     }
@@ -70,6 +86,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
           using System.IO.FileStream fileStream = new(file, System.IO.FileMode.Open);
           LoggedFlight? flight = (LoggedFlight?)(serializer.Deserialize(fileStream));
           EAssert.IsNotNull(flight);
+          flight.FileName = file;
           ret.Add(flight);
         }
         catch (Exception ex)
@@ -86,7 +103,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
         {
           flight.CheckValidity(out bool resaveNeeded);
           if (resaveNeeded)
-            SaveFlight(flight, profile);
+            CreateFlight(flight, profile);
         }
         catch (Exception ex)
         {

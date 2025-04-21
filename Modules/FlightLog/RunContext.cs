@@ -425,7 +425,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       try
       {
-        ProfileManager.SaveFlight(logFlight, selectedProfile);
+        ProfileManager.CreateFlight(logFlight, selectedProfile);
         logger.Log(LogLevel.INFO, $"Flight {logFlight.DepartureICAO}-{logFlight.DestinationICAO} saved.");
       }
       catch (Exception ex)
