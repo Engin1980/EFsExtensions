@@ -51,5 +51,27 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
         vm.Flights[i] = lf;
       }
     }
+
+    private void btnChangeDivertReason_Click(object sender, RoutedEventArgs e)
+    {
+      if (this.DataContext is not CtrLogFlightOverview.LogViewModel vm) return;
+      if (vm.SelectedFlight == null) return;
+      LoggedFlight lf = vm.SelectedFlight;
+
+      var inputBox = new EnumInputBox("Select divert reason:", "Change Divert Reason...",
+        typeof(DivertReason), lf.DivertReason,
+        EnumInputBox.DisplayStringSelectors.DisplayAttributeSelector);
+      inputBox.ShowDialog();
+      if (inputBox.ShowDialog() == true)
+      {
+        lf.DivertReason = (DivertReason)inputBox.Input!;
+        ProfileManager.UpdateFlight(lf);
+        vm.SelectedFlight = null;
+        vm.SelectedFlight = lf;
+
+        int i = vm.Flights.IndexOf(lf);
+        vm.Flights[i] = lf;
+      }
+    }
   }
 }

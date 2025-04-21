@@ -38,6 +38,9 @@
           <Label Content="{Binding AlternateICAO}" />
           <Label Content=" / " />
           <Label Content="{Binding LandedICAO}" />
+          <Label Content=" // " />
+          <Label Content="{Binding DivertReason}" />
+          <Button Content="..." Padding="8 0 8 0" x:Name="btnChangeDivertReason" Click="btnChangeDivertReason_Click" />
         </StackPanel>
         <StackPanel Orientation="Horizontal">
           <Label Content="Date &amp; Time / Duration-All / Duration-Flight / Distance ::" />
