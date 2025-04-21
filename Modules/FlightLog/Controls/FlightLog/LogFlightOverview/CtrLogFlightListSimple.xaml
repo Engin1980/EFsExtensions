@@ -4,9 +4,24 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
+             xmlns:lcvt="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
+  <UserControl.Resources>
+    <lcvt:LoggedFlightToSolidBrushConverter x:Key="LoggedFlightToSolidBrushConverter" />
+  </UserControl.Resources>
   <DataGrid ItemsSource="{Binding Flights}" SelectedItem="{Binding SelectedFlight}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" >
+    <DataGrid.RowStyle>
+      <Style TargetType="DataGridRow">
+        <Setter Property="Foreground" Value="{Binding ., Converter={StaticResource LoggedFlightToSolidBrushConverter}}"/>
+        <Style.Triggers>
+          <Trigger Property="IsSelected" Value="True">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Background" Value="DarkGray"/>
+          </Trigger>
+        </Style.Triggers>
+      </Style>
+    </DataGrid.RowStyle>
     <DataGrid.Columns>
       <DataGridTextColumn Header="Date &amp; Time" Binding="{Binding StartUpDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
       <DataGridTextColumn Header="From" Binding="{Binding DepartureICAO}" />
