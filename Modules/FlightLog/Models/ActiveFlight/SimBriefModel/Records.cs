@@ -282,16 +282,19 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.SimBrief
     public string Metar { get; set; } = null!;
 
     [XmlElement("metar_time")]
-    public DateTime MetarTime { get; set; }
+    public string? MetarTimeString { get; set; }
+    public DateTime? MetarTime => MetarTimeString != null ? DateTime.Parse(MetarTimeString) : null!;
 
     [XmlElement("metar_category")]
-    public string MetarCategory { get; set; } = null!;
+    public string? MetarCategory { get; set; }
 
     [XmlElement("metar_visibility")]
-    public int MetarVisibility { get; set; }
+    public string? MetarVisibilityString { get; set; }
+    public int? MetarVisibility => MetarVisibilityString != null ? int.Parse(MetarVisibilityString) : null;
 
     [XmlElement("metar_ceiling")]
-    public int MetarCeiling { get; set; }
+    public string? MetarCeilingString { get; set; }
+    public int? MetarCeiling => MetarCeilingString != null ? int.Parse(MetarCeilingString) : null;
 
     [XmlElement("taf")]
     public string Taf { get; set; } = null!;

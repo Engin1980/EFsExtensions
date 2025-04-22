@@ -2,6 +2,7 @@
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
 using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
+using Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.SimBriefModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling;
 using ESystem.Miscelaneous;
