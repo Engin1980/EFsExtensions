@@ -50,7 +50,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
     protected override Brush Convert(LoggedFlight value, object parameter, CultureInfo culture)
     {
       string s = value.AircraftRegistration ?? string.Empty;
-      int i = s.GetHashCode();
+      int i = s.Sum(q => q);
       i = Math.Abs(i % predefinedBrushes.Length);
       return predefinedBrushes[i];
     }
