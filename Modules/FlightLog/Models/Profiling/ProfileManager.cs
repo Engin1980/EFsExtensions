@@ -21,6 +21,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
 
     public static void CreateFlight(LoggedFlight loggedFlight, Profile profile)
     {
+      logger.Log(LogLevel.DEBUG, $"Creating flight {loggedFlight} into profile '{profile.Name}'");
       EAssert.IsTrue(loggedFlight.FileName == null, "FileName property of the new logged-flight must be null.");
 
       string fileName = System.IO.Path.Combine(
@@ -32,6 +33,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
 
     public static void UpdateFlight(LoggedFlight loggedFlight)
     {
+      logger.Log(LogLevel.DEBUG, $"Updating flight {loggedFlight} with fileName '{loggedFlight.FileName}'");
       EAssert.IsTrue(loggedFlight.FileName is not null, "FileName property of updated logged-flight cannot be null.");
 
       SaveFlight(loggedFlight, loggedFlight.FileName!);
@@ -39,6 +41,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
 
     private static void SaveFlight(LoggedFlight loggedFlight, string fileName)
     {
+      logger.Log(LogLevel.DEBUG, $"Saving flight {loggedFlight} into file '{fileName}'");
       string tmpFileName = System.IO.Path.GetTempFileName();
 
       XmlSerializer ser = new(typeof(LoggedFlight));
@@ -54,7 +57,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
       }
       catch (Exception ex)
       {
-        logger.Log(LogLevel.ERROR, $"Failed to store flight {loggedFlight.StartUpDateTime}:{loggedFlight.DepartureICAO}-{loggedFlight.LandedICAO}.");
+        logger.Log(LogLevel.ERROR, $"Failed to store flight {loggedFlight} into tmp={tmpFileName}, final={fileName}.");
         logger.LogException(ex);
       }
     }
@@ -102,8 +105,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
         try
         {
           flight.CheckValidity(out bool resaveNeeded);
-          if (resaveNeeded)
-            CreateFlight(flight, profile);
+          if (resaveNeeded){
+            logger.Log(LogLevel.WARNING, $"Flight {flight} found as obsolete, resave needed (will follow).");
+            UpdateFlight(flight);
+          }
         }
         catch (Exception ex)
         {

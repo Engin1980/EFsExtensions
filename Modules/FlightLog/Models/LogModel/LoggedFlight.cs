@@ -142,5 +142,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
       var ret = GlobalProvider.Instance.NavData.Airports.TryGetNearestAirport(gps);
       return ret?.ICAO ?? string.Empty;
     }
+
+    public override string ToString() => $"{this.Callsign} ({this.DepartureICAO}-{this.LandedICAO ?? this.DestinationICAO}, {this.StartUpDateTime})";
   }
 }
