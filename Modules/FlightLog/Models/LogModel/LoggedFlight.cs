@@ -19,7 +19,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
 {
   public class LoggedFlight
   {
-    public int Version { get; set; } = 4;
+    public int Version { get; set; } = 5;
     [XmlIgnore]
     public string? FileName { get; set; } = null;
     public string Callsign { get; set; } = string.Empty;
@@ -132,6 +132,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
       {
         this.Touchdowns.ForEach(q => q.Bank = Math.Abs(q.Bank));
         Version = 4;
+        resaveNeeded = true;
+      }
+      if (Version == 4)
+      {
+        this.Touchdowns.ForEach(q => q.SmartVS = Math.Abs(q.VS));
+        this.Version = 5;
         resaveNeeded = true;
       }
     }

@@ -11,6 +11,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
   public partial class ActiveFlightViewModel
   {
     public record LandingAttemptData(double Bank, double Pitch, double IAS, double GS, double VS,
+      double SmartVS,
       TimeSpan MainGearTime,
       TimeSpan? AllGearTime,
       double MaxAccY,

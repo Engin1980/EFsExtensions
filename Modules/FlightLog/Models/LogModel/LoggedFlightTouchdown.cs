@@ -10,6 +10,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public DateTime? RollOutEndDateTime { get; set; }
     public GPS? RollOutEndLocation { get; set; }
     public double VS { get; set; }
+    public double SmartVS { get; set; } = double.NaN;
     public Speed IAS { get; set; }
     public Speed GS { get; set; }
     public double Bank { get; set; }

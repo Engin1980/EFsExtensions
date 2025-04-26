@@ -2,6 +2,7 @@
 using Eng.EFsExtensions.Modules.FlightLogModule.Models;
 using ESimConnect;
 using ESimConnect.Definitions;
+using ESystem.Asserting;
 using NAudio.Midi;
 using System;
 using System.Collections.Generic;
@@ -35,6 +36,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE, SimUnits.Length.FOOT)]
       public double altitude;
 
+      [DataDefinition(SimVars.Miscellaneous.GROUND_ALTITUDE, SimUnits.Length.FOOT)]
+      public double groundAltitude;
+
       [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_PITCH_DEGREES, SimUnits.Angle.DEGREE)]
       public double pitch;
 
@@ -60,6 +64,59 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       public double longitude;
     }
 
+    private const int BUFFER_SIZE = 20;
+    public class CircularBuffer
+    {
+      private readonly double[] _buffer;
+      private int _head;
+      private int _count;
+      private int? _storePoint = null;
+      private readonly List<double> stores = new();
+
+      public int Count => _count;
+      public int Capacity => _buffer.Length;
+
+      public CircularBuffer(int capacity)
+      {
+        _buffer = new T[capacity];
+        _head = 0;
+        _count = 0;
+      }
+
+      public void Add(double item)
+      {
+        _buffer[_head] = item;
+        _head = (_head + 1) % _buffer.Length;
+        if (_count < _buffer.Length)
+          _count++;
+        if (_head == _storePoint)
+          InvokeStore();
+      }
+
+      public IEnumerable<double> GetItems()
+      {
+        for (int i = 0; i < _count; i++)
+        {
+          int index = (_head + i) % _buffer.Length;
+          yield return _buffer[index];
+        }
+      }
+
+      public List<double> GetStorePoints() => this.stores.ToList();
+
+      private void InvokeStore()
+      {
+        double mean = GetItems().Average();
+        stores.Add(mean);
+        _storePoint = null;
+      }
+
+      public void InvokeStorePoint()
+      {
+        this._storePoint = (this._head + _count) % _buffer.Length;
+      }
+    }
+
     private class LandingDetector : IDisposable
     {
       private const int GEAR_IN_AIR = 0;
@@ -82,6 +139,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         public DateTime? rollOutEndDateTime;
         public double rollOutEndLatitude;
         public double rollOutEndLongitude;
+        public readonly CircularBuffer groundAltitude = new(BUFFER_SIZE);
+        public readonly CircularBuffer planeAltitude = new(BUFFER_SIZE);
       }
 
       private readonly NewSimObject simObj;
@@ -119,6 +178,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       {
         if (isCompleted) return;
 
+        current.planeAltitude.Add(data.altitude);
+        current.groundAltitude.Add(data.groundAltitude);
+
         if (data.gear0 + data.gear1 + data.gear2 == GEAR_IN_AIR)
         {
           // is flying
@@ -144,6 +206,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           if (current.notGroundCount > 50) // was not on ground in prevous 1 second
           {
             // first time on ground
+            current.groundAltitude.InvokeStorePoint();
+            current.planeAltitude.InvokeStorePoint();
+
             current.bank = data.bank;
             current.pitch = data.pitch;
             current.ias = data.ias;
@@ -181,12 +246,16 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           - Math.Min(this.current.gear1Count, Math.Min(this.current.gear2Count, this.current.gear0Count)))
           * (1 / 50d);
 
+        EAssert.IsTrue(this.current.groundAltitude.GetStorePoints().Count == 1);
+        EAssert.IsTrue(this.current.planeAltitude.GetStorePoints().Count == 1);
+
         LandingAttemptData item = new(
           Math.Abs(this.current.bank),
           this.current.pitch,
           this.current.ias,
           this.current.gs,
           this.current.vs,
+          this.current.planeAltitude.GetStorePoints().First() - this.current.groundAltitude.GetStorePoints().First(),
           TimeSpan.FromSeconds(mainGearTime),
           TimeSpan.FromSeconds(allGearTime),
           this.current.maxAccY,

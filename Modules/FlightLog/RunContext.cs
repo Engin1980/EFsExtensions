@@ -235,6 +235,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           RollOutEndLocation = l.RollOutEndDateTime == null ? null : new GPS(l.RollOutEndLatitude!.Value, l.RollOutEndLongitude!.Value),
           IAS = Speed.Of(Math.Round(f.IAS), SpeedUnit.KTS),
           VS = f.VS,
+          SmartVS = f.SmartVS,
           GS = Speed.Of(Math.Round(f.GS), SpeedUnit.KTS),
           Bank = f.Bank,
           Pitch = f.Pitch,
