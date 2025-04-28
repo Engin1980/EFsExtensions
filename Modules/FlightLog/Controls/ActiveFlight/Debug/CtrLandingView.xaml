@@ -51,6 +51,7 @@
           <DataGridTextColumn Header="Date/Time" Binding="{Binding TouchDownDateTime, StringFormat={}{0:HH:mm:ss}}" />
           <DataGridTextColumn Header="IAS" Binding="{Binding IAS, StringFormat={}{0:N0} kts}" ElementStyle="{StaticResource TextRight}" />
           <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" ElementStyle="{StaticResource TextRight}" />
+          <DataGridTextColumn Header="SmartVS" Binding="{Binding SmartVS, StringFormat={}{0:N2} ft/min}" ElementStyle="{StaticResource TextRight}" />
           <DataGridTextColumn Header="Bank" Binding="{Binding Bank, StringFormat={}{0:N2}°}" ElementStyle="{StaticResource TextRight}" />
           <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch, StringFormat={}{0:N2}°}" ElementStyle="{StaticResource TextRight}" />
           <DataGridTextColumn Header="Max-Acc-Y" Binding="{Binding MaxAccY, StringFormat={}{0:N3}}" ElementStyle="{StaticResource TextRight}" />
