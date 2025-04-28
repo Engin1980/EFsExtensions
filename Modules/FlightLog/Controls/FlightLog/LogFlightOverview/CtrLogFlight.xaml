@@ -253,6 +253,7 @@
               </DataGridTemplateColumn>
               <DataGridTextColumn Header="IAS" Binding="{Binding IAS, Converter={StaticResource SpeedConverter}, ConverterParameter=N0}" />
               <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" />
+              <DataGridTextColumn Header="SmartVS" Binding="{Binding SmartVS, StringFormat={}{0:N2} ft/min}" />
               <DataGridTextColumn Header="Acc-Y" Binding="{Binding MaxAccY, StringFormat={}{0:N3}}" />
               <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch, StringFormat={}{0:N3}°}" />
               <DataGridTextColumn Header="Bank" Binding="{Binding Bank, StringFormat={}{0:N3}°}" />
