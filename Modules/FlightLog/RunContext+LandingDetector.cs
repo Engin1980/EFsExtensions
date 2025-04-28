@@ -241,7 +241,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       public void Dispose()
       {
-        if (!isDisposed) Stop();
+        if (!isDisposed)
+        {
+          Stop();
+          this.vse.Dispose();
+        }
       }
     }
   }
