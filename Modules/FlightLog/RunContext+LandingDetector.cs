@@ -135,7 +135,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           // is flying
           current.notGroundCount++;
 
-          // is flying long (over 50*20ms) and was on ground
+          // is flying long (over 50*20ms = TYPICAL_ONE_SECOND_FRAMES_COUNT*20ms) and was on ground
           if (current.notGroundCount > TYPICAL_ONE_SECOND_FRAMES_COUNT && current.gear0Count + current.gear1Count + current.gear2Count > GEAR_IN_AIR)
           {
             CloseCurrentAttempt();
@@ -225,8 +225,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
         this.AttemptRecorded?.Invoke(item);
       }
-
-
+      
       internal void Stop()
       {
         var simCon = this.simObj.ESimCon;

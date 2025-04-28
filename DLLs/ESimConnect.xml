@@ -466,6 +466,14 @@
             <param name="typeId">TypeId defining the required SimVar.</param>
             <returns>Current value of SimVars</returns>
         </member>
+        <member name="F:ESimConnect.Extenders.VerticalSpeedExtender.DEFAULT_BUFFER_SIZE">
+            <summary>
+            Default buffer size for the data buffer.
+            </summary>
+            <remarks>
+            Greater value (20) caused that irrelevant border values were taken into account.
+            </remarks>
+        </member>
         <member name="F:ESimConnect.Types.WinHandleManager.WM_USER_SIMCONNECT">
             <summary>
             Predefined windows handler id to recognize requests from Simconnect. For more see API docs.
