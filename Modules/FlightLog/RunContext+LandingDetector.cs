@@ -36,9 +36,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_ALTITUDE, SimUnits.Length.FOOT)]
       public double altitude;
 
-      [DataDefinition(SimVars.Miscellaneous.GROUND_ALTITUDE, SimUnits.Length.FOOT)]
-      public double groundAltitude;
-
       [DataDefinition(SimVars.Aircraft.Miscelaneous.PLANE_PITCH_DEGREES, SimUnits.Angle.DEGREE)]
       public double pitch;
 
@@ -64,62 +61,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       public double longitude;
     }
 
-    private const int BUFFER_SIZE = 20;
-    public class CircularBuffer
-    {
-      private readonly double[] _buffer;
-      private int _head;
-      private int _count;
-      private int? _storePoint = null;
-      private readonly List<double> stores = new();
-
-      public int Count => _count;
-      public int Capacity => _buffer.Length;
-
-      public CircularBuffer(int capacity)
-      {
-        _buffer = new T[capacity];
-        _head = 0;
-        _count = 0;
-      }
-
-      public void Add(double item)
-      {
-        _buffer[_head] = item;
-        _head = (_head + 1) % _buffer.Length;
-        if (_count < _buffer.Length)
-          _count++;
-        if (_head == _storePoint)
-          InvokeStore();
-      }
-
-      public IEnumerable<double> GetItems()
-      {
-        for (int i = 0; i < _count; i++)
-        {
-          int index = (_head + i) % _buffer.Length;
-          yield return _buffer[index];
-        }
-      }
-
-      public List<double> GetStorePoints() => this.stores.ToList();
-
-      private void InvokeStore()
-      {
-        double mean = GetItems().Average();
-        stores.Add(mean);
-        _storePoint = null;
-      }
-
-      public void InvokeStorePoint()
-      {
-        this._storePoint = (this._head + _count) % _buffer.Length;
-      }
-    }
-
     private class LandingDetector : IDisposable
     {
       private const int GEAR_IN_AIR = 0;
+      private const int TYPICAL_ONE_SECOND_FRAMES_COUNT = 50; // depending internally on FS, can be lower (up to 20 I have seen)
 
       private class RecordingData
       {
@@ -139,8 +84,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         public DateTime? rollOutEndDateTime;
         public double rollOutEndLatitude;
         public double rollOutEndLongitude;
-        public readonly CircularBuffer groundAltitude = new(BUFFER_SIZE);
-        public readonly CircularBuffer planeAltitude = new(BUFFER_SIZE);
       }
 
       private readonly NewSimObject simObj;
@@ -149,12 +92,18 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       private RequestId? requestId;
       private bool isDisposed = false;
       private readonly RecordingData current = new();
+      private readonly ESimConnect.Extenders.VerticalSpeedExtender vse;
 
       public event Action<LandingAttemptData>? AttemptRecorded;
 
       public LandingDetector(NewSimObject simObj, ActiveFlightViewModel runVM)
       {
         this.simObj = simObj;
+        this.vse = new ESimConnect.Extenders.VerticalSpeedExtender(simObj.ESimCon, o =>
+        {
+          o.AutoStartOnCreation = false;
+          o.BufferSize = 20;
+        });
         this.runVM = runVM;
       }
 
@@ -164,6 +113,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         var typeId = simCon.Structs.Register<LandingStruct>();
         requestId = simCon.Structs.RequestRepeatedly<LandingStruct>(SimConnectPeriod.SIM_FRAME, true);
         simCon.DataReceived += SimCon_DataReceived;
+
+        this.vse.ClearEvaluatedTouchdowns();
+        this.vse.Start();
       }
 
       private void SimCon_DataReceived(ESimConnect.ESimConnect sender, ESimConnect.ESimConnect.ESimConnectDataReceivedEventArgs e)
@@ -178,16 +130,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       {
         if (isCompleted) return;
 
-        current.planeAltitude.Add(data.altitude);
-        current.groundAltitude.Add(data.groundAltitude);
-
         if (data.gear0 + data.gear1 + data.gear2 == GEAR_IN_AIR)
         {
           // is flying
           current.notGroundCount++;
 
           // is flying long (over 50*20ms) and was on ground
-          if (current.notGroundCount > 50 && current.gear0Count + current.gear1Count + current.gear2Count > GEAR_IN_AIR)
+          if (current.notGroundCount > TYPICAL_ONE_SECOND_FRAMES_COUNT && current.gear0Count + current.gear1Count + current.gear2Count > GEAR_IN_AIR)
           {
             CloseCurrentAttempt();
           }
@@ -200,15 +149,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           current.gear2Count += (int)data.gear2;
 
           // adjust acc-Y only if within 1 sec after touchdown
-          if (Math.Min(current.gear1Count, current.gear2Count) < 50)
+          if (Math.Min(current.gear1Count, current.gear2Count) < TYPICAL_ONE_SECOND_FRAMES_COUNT)
             current.maxAccY = Math.Max(current.maxAccY, data.accelerationY);
 
-          if (current.notGroundCount > 50) // was not on ground in prevous 1 second
+          if (current.notGroundCount > TYPICAL_ONE_SECOND_FRAMES_COUNT) // was not on ground in prevous 1 second
           {
-            // first time on ground
-            current.groundAltitude.InvokeStorePoint();
-            current.planeAltitude.InvokeStorePoint();
-
             current.bank = data.bank;
             current.pitch = data.pitch;
             current.ias = data.ias;
@@ -240,14 +185,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         if (this.current.touchDownDateTime == null)
           return;
 
-        double mainGearTime = Math.Abs(this.current.gear1Count - this.current.gear2Count) * (1 / 50d);
+        double mainGearTime = Math.Abs(this.current.gear1Count - this.current.gear2Count) * (1 / (double)TYPICAL_ONE_SECOND_FRAMES_COUNT);
         double allGearTime =
           (Math.Max(this.current.gear1Count, Math.Max(this.current.gear2Count, this.current.gear0Count))
           - Math.Min(this.current.gear1Count, Math.Min(this.current.gear2Count, this.current.gear0Count)))
-          * (1 / 50d);
-
-        EAssert.IsTrue(this.current.groundAltitude.GetStorePoints().Count == 1);
-        EAssert.IsTrue(this.current.planeAltitude.GetStorePoints().Count == 1);
+          * (1 / (double)TYPICAL_ONE_SECOND_FRAMES_COUNT);
+        double smartVs = this.vse.GetEvaluatedTouchdowns().First();
 
         LandingAttemptData item = new(
           Math.Abs(this.current.bank),
@@ -255,7 +198,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
           this.current.ias,
           this.current.gs,
           this.current.vs,
-          this.current.planeAltitude.GetStorePoints().First() - this.current.groundAltitude.GetStorePoints().First(),
+          smartVs,
           TimeSpan.FromSeconds(mainGearTime),
           TimeSpan.FromSeconds(allGearTime),
           this.current.maxAccY,
@@ -275,9 +218,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         current.gear2Count = 0;
         current.gear0Count = 0;
         current.maxAccY = 0;
-        current.notGroundCount = 51; // to behave like not on ground for more than second
+        current.notGroundCount = TYPICAL_ONE_SECOND_FRAMES_COUNT + 1; // to behave like not on ground for more than second
         current.touchDownDateTime = null;
         current.rollOutEndDateTime = null;
+        this.vse.ClearEvaluatedTouchdowns();
 
         this.AttemptRecorded?.Invoke(item);
       }
@@ -288,6 +232,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         var simCon = this.simObj.ESimCon;
         simCon.Structs.Unregister<LandingStruct>();
         this.simObj.ESimCon.DataReceived -= SimCon_DataReceived;
+        this.vse.Stop();
         this.isDisposed = true;
 
         if (!isCompleted)

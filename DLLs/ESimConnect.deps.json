@@ -8,18 +8,18 @@
     ".NETCoreApp,Version=v6.0": {
       "ESimConnect/1.0.0": {
         "dependencies": {
-          "ESystem": "1.6.0.0",
+          "ESystem": "1.8.3.9",
           "Microsoft.FlightSimulator.SimConnect": "11.0.62651.3"
         },
         "runtime": {
           "ESimConnect.dll": {}
         }
       },
-      "ESystem/1.6.0.0": {
+      "ESystem/1.8.3.9": {
         "runtime": {
           "ESystem.dll": {
-            "assemblyVersion": "1.6.0.0",
-            "fileVersion": "1.6.0.0"
+            "assemblyVersion": "1.8.3.9",
+            "fileVersion": "1.8.3.9"
           }
         }
       },
@@ -39,7 +39,7 @@
       "serviceable": false,
       "sha512": ""
     },
-    "ESystem/1.6.0.0": {
+    "ESystem/1.8.3.9": {
       "type": "reference",
       "serviceable": false,
       "sha512": ""
