@@ -14,6 +14,7 @@
     <LogRule Regex="ObjectElementDeserializer" Level="warning" />
     <LogRule Regex=".+StateCheckEvaluator.+" Level="warning" />
     <LogRule Regex="ESimConnect" Level="warning" />
+		<LogRule Regex=".*WinHandle.*" Level="warning" />
     <LogRule Regex=".+" Level="trace" />
   </WindowLogRules>
   <ModuleRules />

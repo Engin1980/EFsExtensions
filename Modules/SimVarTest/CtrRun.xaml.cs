@@ -85,5 +85,12 @@ namespace Eng.EFsExtensions.Modules.SimVarTestModule
       this.context.SendEvent(txt);
       this.context.AppliedSimEvents.Add(txt);
     }
+
+    internal void NewValue_NewValueRequested(NewValue sender, double newValue)
+    {
+      // used in XAML
+      SimVarCase simVarCase = (SimVarCase)sender.Tag;
+      this.context.SetValue(simVarCase, newValue);
+    }
   }
 }
