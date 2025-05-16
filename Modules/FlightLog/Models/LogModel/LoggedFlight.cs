@@ -36,7 +36,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public int? PassengerCount { get; set; }
     public Weight? CargoWeight { get; set; }
     public Weight StartUpFuelWeight { get; set; }
-    public Weight? ScheduledTakeOffFuelWeight { get; set; }
     public string? AircraftType { get; set; }
     public string? AircraftRegistration { get; set; }
     public string? AircraftModel { get; set; }
@@ -67,15 +66,24 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public TimeSpan TaxiTime => this.DepartureTaxiTime + this.ArrivalTaxiTime;
     public TimeSpan AirTime => this.LandingDateTime - this.TakeOffDateTime;
     public TimeSpan? ScheduledAirTime => this.LandingScheduledDateTime != null && this.TakeOffScheduledDateTime != null ? this.LandingScheduledDateTime.Value - this.TakeOffScheduledDateTime.Value : null;
-    public DateTime Time => Touchdowns.Last().TouchDownDateTime;
     public TimeSpan BlockTime => this.ShutDownDateTime - this.StartUpDateTime;
+    public TimeSpan? ScheduledBlockTime => this.ShutDownScheduledDateTime - this.StartUpScheduledDateTime;
     public Speed TakeOffIAS => TakeOff.IAS;
     public GPS LandingLocation => Touchdowns.Last().TouchDownLocation;
     public DateTime LandingDateTime => Touchdowns.Last().TouchDownDateTime;
-    public TimeSpan FlightDuration => LandingDateTime - TakeOffDateTime;
-    public TimeSpan TotalDuration => ShutDownDateTime - StartUpDateTime;
-    public Weight? ScheduledAirFuelUsedWeight => LandingScheduledFuelWeight != null && TakeOffScheduledFuelWeight != null ? TakeOffScheduledFuelWeight.Value - LandingScheduledFuelWeight.Value : null;
+    public Weight? AirScheduledFuelUsedWeight => LandingScheduledFuelWeight != null && TakeOffScheduledFuelWeight != null ? TakeOffScheduledFuelWeight.Value - LandingScheduledFuelWeight.Value : null;
     public Weight AirFuelUsedWeight => TakeOffFuelWeight - LandingFuelWeight;
+
+    public TimeSpan? StartUpDateTimeDelta => this.StartUpDateTime - this.StartUpScheduledDateTime;
+    public TimeSpan? TakeOffDateTimeDelta => this.TakeOffDateTime - this.TakeOffScheduledDateTime;
+    public TimeSpan? LandingDateTimeDelta => this.LandingDateTime - this.LandingScheduledDateTime;
+    public TimeSpan? ShutDownDateTimeDelta => this.ShutDownDateTime - this.ShutDownScheduledDateTime;
+    public TimeSpan? AirTimeDelta => this.AirTime - this.ScheduledAirTime;
+    public TimeSpan? BlockTimeDelta => this.BlockTime - this.ScheduledBlockTime;
+
+    public Weight? TakeOffFuelWeightDelta => this.TakeOffFuelWeight - this.TakeOffScheduledFuelWeight;
+    public Weight? LandingFuelWeightDelta => this.LandingFuelWeight - this.LandingScheduledFuelWeight;
+    public Weight? AirFuelUsedWeightDelta => this.AirFuelUsedWeight - this.AirScheduledFuelUsedWeight;
 
     public void CheckValidity(out bool resaveNeeded)
     {

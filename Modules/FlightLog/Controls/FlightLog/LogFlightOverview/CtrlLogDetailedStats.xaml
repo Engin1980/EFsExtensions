@@ -1,0 +1,127 @@
+﻿<UserControl x:Class="Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.CtrlLogDetailedStats"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
+             xmlns:lcvt="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+  <UserControl.Resources>
+    <lcvt:LoggedFlightToSolidBrushConverter x:Key="LoggedFlightToSolidBrushConverter" />
+  </UserControl.Resources>
+  <DockPanel x:Name="pnlContent">
+    <DockPanel DockPanel.Dock="Top" >
+      <StackPanel Orientation="Horizontal" >
+        <Label Content="Types" />
+        <ComboBox ItemsSource="{Binding AirplaneTypes}" SelectedItem="{Binding SelectedAirplaneType}" Width="200" Margin="5,0,0,0"/>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal" >
+        <Label Content="Registrations" />
+        <ComboBox ItemsSource="{Binding AirplaneRegistrations}" SelectedItem="{Binding SelectedAirplaneRegistration}" Width="200" Margin="5,0,0,0"/>
+      </StackPanel>
+    </DockPanel>
+    <DockPanel DockPanel.Dock="Bottom">
+      <StackPanel DockPanel.Dock="Right">
+        <Button x:Name="btnColumns" Click="btnColumns_Click">Columns</Button>
+      </StackPanel>
+      <StackPanel Orientation="Horizontal">
+        <Label>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="All flights: "/>
+            <TextBlock Text="{Binding Flights.Count}" />
+          </StackPanel>
+        </Label>
+        <Label>
+          <StackPanel Orientation="Horizontal">
+            <TextBlock Text="Visible flights: "/>
+            <TextBlock Text="{Binding VisibleFlights.Count}" />
+          </StackPanel>
+        </Label>
+      </StackPanel>
+    </DockPanel>
+    <DataGrid x:Name="grdVisibleFlights" ItemsSource="{Binding VisibleFlights}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+      <DataGrid.RowStyle>
+        <Style TargetType="DataGridRow">
+          <Setter Property="Foreground" Value="{Binding ., Converter={StaticResource LoggedFlightToSolidBrushConverter}}"/>
+          <Style.Triggers>
+            <Trigger Property="IsSelected" Value="True">
+              <Setter Property="Foreground" Value="White"/>
+              <Setter Property="Background" Value="DarkGray"/>
+            </Trigger>
+          </Style.Triggers>
+        </Style>
+      </DataGrid.RowStyle>
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Date &amp; Time" Binding="{Binding StartUpDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+        <DataGridTextColumn Header="From" Binding="{Binding DepartureICAO}" />
+        <DataGridTextColumn Header="To" Binding="{Binding LandedICAO}" />
+        <DataGridTextColumn Header="Plan" Binding="{Binding DestinationICAO}" />
+        <DataGridTextColumn Header="Div" Binding="{Binding AlternateICAO}" />
+        <DataGridTextColumn Header="Callsign" Binding="{Binding Callsign}" />
+        <DataGridTextColumn Header="Aircraft" Binding="{Binding AircraftType}" />
+        <DataGridTextColumn Header="Model" Binding="{Binding AircraftModel}" />
+        <DataGridTextColumn Header="Reg" Binding="{Binding AircraftRegistration}" />
+        <DataGridTextColumn Header="VFR/IFR" Binding="{Binding FlightRules}" />
+
+        <DataGridTextColumn Header="Cruize Alt" Binding="{Binding CruizeAltitude}" />
+        <DataGridTextColumn Header="Distance" Binding="{Binding Distance}" />
+        <DataGridTextColumn Header="Divert" Binding="{Binding DivertReason}" />
+        <DataGridTextColumn Header="# GA" Binding="{Binding NumberOfGoArounds}">
+          <DataGridTextColumn.HeaderStyle>
+            <Style TargetType="DataGridColumnHeader">
+              <Setter Property="Background" Value="LightGreen"/>
+            </Style>
+          </DataGridTextColumn.HeaderStyle>
+        </DataGridTextColumn>
+        <DataGridTextColumn Header="# T/D" Binding="{Binding Touchdowns.Count}" />
+        
+        <DataGridTextColumn Header="ZFW" Binding="{Binding ZFW}" />
+        <DataGridTextColumn Header="# Passengers" Binding="{Binding PassengerCount}" />
+        <DataGridTextColumn Header="Cargo W" Binding="{Binding CargoWeight}" />
+
+        <DataGridTextColumn Header="Start up FW" Binding="{Binding StartUpFuelWeight}" />
+        <DataGridTextColumn Header="TO FW (sched)" Binding="{Binding TakeOffScheduledFuelWeight}" />
+        <DataGridTextColumn Header="TO FW" Binding="{Binding TakeOffFuelWeight}" />
+        <DataGridTextColumn Header="TO FW D" Binding="{Binding TakeOffFuelWeightDelta}" />
+        <DataGridTextColumn Header="Air FW (sched)" Binding="{Binding AirScheduledFuelUsedWeight}" />
+        <DataGridTextColumn Header="Air FW" Binding="{Binding AirFuelUsedWeight}" />
+        <DataGridTextColumn Header="Air FW D" Binding="{Binding AirFuelUsedWeightDelta}" />
+        <DataGridTextColumn Header="L FW (sched)" Binding="{Binding LandingScheduledFuelWeight}" />
+        <DataGridTextColumn Header="L FW" Binding="{Binding LandingFuelWeight}" />
+        <DataGridTextColumn Header="L FW D" Binding="{Binding LandingFuelWeightDelta}" />
+        <DataGridTextColumn Header="Shut Down FW" Binding="{Binding ShutDownFuelWeight}" />
+        
+        
+        <DataGridTextColumn Header="Start up (sched)" Binding="{Binding StartUpScheduledDateTime}" />
+        <DataGridTextColumn Header="Start up" Binding="{Binding StartUpDateTime}" />
+        <DataGridTextColumn Header="Start up D" Binding="{Binding StartUpDateTimeDelta}" />
+        <DataGridTextColumn Header="TO (sched)" Binding="{Binding TakeOffScheduledDateTime}" />
+        <DataGridTextColumn Header="TO" Binding="{Binding TakeOffDateTime}" />
+        <DataGridTextColumn Header="TO D" Binding="{Binding TakeOffDateTimeDelta}" />
+        <DataGridTextColumn Header="Landed (sched)" Binding="{Binding LandingScheduledDateTime}" />
+        <DataGridTextColumn Header="Landed" Binding="{Binding LandingDateTime}" />
+        <DataGridTextColumn Header="Landed D" Binding="{Binding LandingDateTimeDelta}" />
+        <DataGridTextColumn Header="Shut down (sched)" Binding="{Binding ShutDownScheduledDateTime}" />
+        <DataGridTextColumn Header="Shut down" Binding="{Binding ShutDownDateTime}" />
+        <DataGridTextColumn Header="Shut down D" Binding="{Binding ShutDownDateTimeDelta}" />
+        
+        <DataGridTextColumn Header="Dep Taxi Time" Binding="{Binding DepartureTaxiTime}" />
+        <DataGridTextColumn Header="Arrival Taxi Time" Binding="{Binding ArrivalTaxiTime}" />
+        <DataGridTextColumn Header="Total Taxi Time" Binding="{Binding TaxiTime}" />
+        <DataGridTextColumn Header="Air Time (sched)" Binding="{Binding ScheduledAirTime}" />
+        <DataGridTextColumn Header="Air Time" Binding="{Binding AirTime}" />
+        <DataGridTextColumn Header="Air Time D" Binding="{Binding AirTimeDelta}" />
+        <DataGridTextColumn Header="Block Time (sched)" Binding="{Binding ScheduledBlockTime}" />
+        <DataGridTextColumn Header="Block Time" Binding="{Binding BlockTime}" />
+        <DataGridTextColumn Header="Block Time (D)" Binding="{Binding BlockTimeDelta}" />
+
+        <DataGridTextColumn Header="L IAS" Binding="{Binding LandingIAS}" />
+        <DataGridTextColumn Header="L Bank" Binding="{Binding LandingBank}" />
+        <DataGridTextColumn Header="L Pitch" Binding="{Binding LandingPitch}" />
+        <DataGridTextColumn Header="TO IAS" Binding="{Binding TakeOffIAS}" />
+
+      </DataGrid.Columns>
+    </DataGrid>
+  </DockPanel>
+</UserControl>

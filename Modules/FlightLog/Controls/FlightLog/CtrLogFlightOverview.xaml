@@ -17,6 +17,9 @@
       <TabItem Header="Stats">
         <local:CtrLogStats />
       </TabItem>
+      <TabItem Header="Detailed List">
+        <local:CtrlLogDetailedStats Flights="{Binding Flights}" />
+      </TabItem>
     </TabControl>
   </DockPanel>
 </UserControl>

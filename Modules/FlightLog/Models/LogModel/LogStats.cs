@@ -53,6 +53,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
         ValueStringFormat: "N0"));
 
       DescriptiveLogStats.Add(new("Landing VS", q => q.Touchdowns.Last().VS, "{0:N3} ft/min"));
+      DescriptiveLogStats.Add(new("Landing Smart-VS", q => q.Touchdowns.Last().SmartVS, "{0:N3} ft/min"));
       DescriptiveLogStats.Add(new("Landing IAS",
         q => q.Touchdowns.Last().IAS.To(SpeedUnit.KTS),
         ValueConverter: new SpeedConverter(),

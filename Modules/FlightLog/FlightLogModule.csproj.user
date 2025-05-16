@@ -26,6 +26,9 @@
     <Compile Update="Controls\Externals\CtrVatsimView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\FlightLog\LogFlightOverview\CtrlLogDetailedStats.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Controls\FlightLog\LogFlightOverview\CtrLogFlight.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -39,6 +42,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Controls\FlightLog\LogFlightOverview\CtrLogStats.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FlightLog\LogFlightOverview\FrmVisibleColumns.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Controls\Shared\GpsLabel.xaml.cs">

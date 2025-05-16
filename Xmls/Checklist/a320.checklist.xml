@@ -143,6 +143,10 @@
         <confirmation type="speech" value="Off"/>
       </item>
       <item>
+        <call type="speech" value="Engine mode"/>
+        <confirmation type="speech" value="As required"/>
+      </item>
+      <item>
         <call type="speech" value="Transponder"/>
         <confirmation type="speech" value="Charlie"/>
       </item>
@@ -200,6 +204,10 @@
         <call type="speech" value="Packs" />
         <confirmation type="speech" value="On" />
       </item>
+      <item>
+        <call type="speech" value="Engine mode"/>
+        <confirmation type="speech" value="Normal"/>
+      </item>
     </items>
     <trigger>
       <g:property name="ias" direction="above" expression="205"/>
@@ -253,9 +261,13 @@
         <confirmation type="speech" value="Armed" />
       </item>
       <item>
+        <call type="speech" value="Engine mode"/>
+        <confirmation type="speech" value="As required"/>
+      </item>
+      <item>
         <call type="speech" value="Terrain" />
         <confirmation type="speech" value="On" />
-      </item>
+      </item>      
     </items>
     <trigger>
       <g:and>
@@ -333,6 +345,10 @@
       <item>
         <call type="speech" value="Windshear prediction" />
         <confirmation type="speech" value="Off" />
+      </item>
+      <item>
+        <call type="speech" value="Engine mode"/>
+        <confirmation type="speech" value="Normal"/>
       </item>
       <item>
         <call type="speech" value="A P U" />

@@ -22,7 +22,8 @@
       <Grid DataContext="{Binding OverallStats}">
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="Auto" />
-          <ColumnDefinition />
+          <ColumnDefinition Width="69*" />
+          <ColumnDefinition Width="265*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
           <RowDefinition Height="Auto" />
@@ -31,19 +32,27 @@
         </Grid.RowDefinitions>
 
         <Label Grid.Row="0" Grid.Column="0" Content="Total flights:" />
-        <Label Grid.Row="0" Grid.Column="1" Content="{Binding TotalFlights}" />
+        <Label Grid.Row="0" Content="{Binding TotalFlights}" Grid.ColumnSpan="3" Margin="125,0,0,0" />
 
-        <Label Grid.Row="1" Grid.Column="0" Content="Total block time:" />
-        <ctr:TimeSpanLabel Grid.Row="1" Grid.Column="1" Value="{Binding TotalBlockDuration}" StringFormat="d. h:mm:ss" />
+        <Label Grid.Column="0" Content="Total block time:" Margin="0,29,0,0" Grid.RowSpan="2" />
+        <ctr:TimeSpanLabel Value="{Binding TotalBlockDuration}" StringFormat="d. h:mm:ss" Grid.ColumnSpan="3" Margin="125,29,0,0" Grid.RowSpan="2" />
 
-        <Label Grid.Row="2" Grid.Column="0" Content="Total air time:" />
-        <ctr:TimeSpanLabel Grid.Row="2" Grid.Column="1" Value="{Binding TotalAirDuration}" StringFormat="d. h:mm:ss" />
+        <Label Grid.Row="1" Grid.Column="0" Content="Total air time:" Margin="0,29,0,0" Grid.RowSpan="2" />
+        <ctr:TimeSpanLabel Grid.Row="1" Value="{Binding TotalAirDuration}" StringFormat="d. h:mm:ss" Grid.ColumnSpan="3" Margin="125,29,0,0" Grid.RowSpan="2" />
       </Grid>
     </TabItem>
     <TabItem Header="Descriptive">
       <DataGrid ItemsSource="{Binding DescriptiveStats}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
         <DataGrid.Columns>
-          <DataGridTextColumn Header="Title" Binding="{Binding Stat.Title}" />
+
+          <DataGridTemplateColumn Header="Title">
+            <DataGridTemplateColumn.CellTemplate>
+              <DataTemplate>
+                <Label Content="{Binding Stat.Title}" />
+              </DataTemplate>
+            </DataGridTemplateColumn.CellTemplate>
+          </DataGridTemplateColumn>
+
           <DataGridTemplateColumn Header="Min">
             <DataGridTemplateColumn.CellTemplate>
               <DataTemplate>
