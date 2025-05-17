@@ -16,7 +16,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
       DHMS,
       HM,
       MS,
-      HMS
+      HMS,
+      SF
     }
 
     public static DisplayFormat DefaultFormat { get; set; } = DisplayFormat.DHMS;
@@ -39,12 +40,15 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
         DisplayFormat.HM => ToHM(value.Value),
         DisplayFormat.MS => ToMS(value.Value),
         DisplayFormat.HMS => ToHMS(value.Value),
+        DisplayFormat.SF => ToSF(value.Value),
         _ => throw new ESystem.Exceptions.UnexpectedEnumValueException(df),
       };
       if (isNeg)
         ret = "-" + ret;
       return ret;
     }
+
+    public static string ToSF(TimeSpan value) => value.TotalSeconds.ToString("N3");
 
     private static string ToHMS(TimeSpan value) => $"{value.Hours}:{value.Minutes:D2}:{value.Seconds:D2}";
 

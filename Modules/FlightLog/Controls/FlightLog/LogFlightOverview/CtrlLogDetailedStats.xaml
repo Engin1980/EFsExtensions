@@ -46,7 +46,24 @@
         </Label>
       </StackPanel>
     </DockPanel>
-    <DataGrid x:Name="grdVisibleFlights" ItemsSource="{Binding VisibleFlights}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+    <DataGrid x:Name="grdVisibleFlights" ItemsSource="{Binding VisibleFlights}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
+      <DataGrid.Resources>
+        <Style x:Key="TextRight" TargetType="{x:Type TextBlock}">
+          <Setter Property="TextAlignment" Value="Right" />
+        </Style>
+        <Style x:Key="HeaderWeight" TargetType="{x:Type DataGridColumnHeader}">
+          <Setter Property="Background" Value="LightSteelBlue" />
+        </Style>
+        <Style x:Key="HeaderTime" TargetType="{x:Type DataGridColumnHeader}">
+          <Setter Property="Background" Value="LightYellow" />
+        </Style>
+        <Style x:Key="HeaderTakeOff" TargetType="{x:Type DataGridColumnHeader}">
+          <Setter Property="Background" Value="LightCyan" />
+        </Style>
+        <Style x:Key="HeaderLanding" TargetType="{x:Type DataGridColumnHeader}">
+          <Setter Property="Background" Value="LightGreen" />
+        </Style>
+      </DataGrid.Resources>
       <DataGrid.RowStyle>
         <Style TargetType="DataGridRow">
           <Setter Property="Foreground" Value="{Binding ., Converter={StaticResource LoggedFlightToSolidBrushConverter}}"/>
@@ -70,62 +87,73 @@
         <DataGridTextColumn Header="Reg" Binding="{Binding AircraftRegistration}" />
         <DataGridTextColumn Header="VFR/IFR" Binding="{Binding FlightRules}" />
 
-        <DataGridTextColumn Header="Cruize Alt" Binding="{Binding CruizeAltitude}" />
-        <DataGridTextColumn Header="Distance" Binding="{Binding Distance, Converter={StaticResource LongDistanceConverter}}" />
+        <DataGridTextColumn Header="Cruize Alt" Binding="{Binding CruizeAltitude, StringFormat={}{0:N0} ft}"  ElementStyle="{StaticResource TextRight}"/>
+        <DataGridTextColumn Header="Distance" Binding="{Binding Distance, Converter={StaticResource LongDistanceConverter}}"  ElementStyle="{StaticResource TextRight}"/>
         <DataGridTextColumn Header="Divert" Binding="{Binding DivertReason}" />
-        <DataGridTextColumn Header="# GA" Binding="{Binding NumberOfGoArounds}">
-          <DataGridTextColumn.HeaderStyle>
-            <Style TargetType="DataGridColumnHeader">
-              <Setter Property="Background" Value="LightGreen"/>
-            </Style>
-          </DataGridTextColumn.HeaderStyle>
-        </DataGridTextColumn>
-        <DataGridTextColumn Header="# T/D" Binding="{Binding Touchdowns.Count}" />
 
-        <DataGridTextColumn Header="ZFW" Binding="{Binding ZFW, Converter={StaticResource WeightConverter}}" />
-        <DataGridTextColumn Header="# Passengers" Binding="{Binding PassengerCount}" />
-        <DataGridTextColumn Header="Cargo W" Binding="{Binding CargoWeight, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="ZFW" Binding="{Binding ZFW, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
+        <DataGridTextColumn Header="# Passengers" Binding="{Binding PassengerCount}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
+        <DataGridTextColumn Header="Cargo W" Binding="{Binding CargoWeight, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
 
-        <DataGridTextColumn Header="Start up FW" Binding="{Binding StartUpFuelWeight, Converter={StaticResource WeightConverter}}" />
-        <DataGridTextColumn Header="TO FW (sched)" Binding="{Binding TakeOffScheduledFuelWeight, Converter={StaticResource WeightConverter}}" />
-        <DataGridTextColumn Header="TO FW" Binding="{Binding TakeOffFuelWeight, Converter={StaticResource WeightConverter}}" />
-        <DataGridTextColumn Header="TO FW D" Binding="{Binding TakeOffFuelWeightDelta, Converter={StaticResource WeightConverter}}" />
-        <DataGridTextColumn Header="Air FW (sched)" Binding="{Binding AirScheduledFuelUsedWeight, Converter={StaticResource WeightConverter}}" />
-        <DataGridTextColumn Header="Air FW" Binding="{Binding AirFuelUsedWeight, Converter={StaticResource WeightConverter}}" />
-        <DataGridTextColumn Header="Air FW D" Binding="{Binding AirFuelUsedWeightDelta, Converter={StaticResource WeightConverter}}" />
-        <DataGridTextColumn Header="L FW (sched)" Binding="{Binding LandingScheduledFuelWeight, Converter={StaticResource WeightConverter}}" />
-        <DataGridTextColumn Header="L FW" Binding="{Binding LandingFuelWeight, Converter={StaticResource WeightConverter}}" />
-        <DataGridTextColumn Header="L FW D" Binding="{Binding LandingFuelWeightDelta, Converter={StaticResource WeightConverter}}" />
-        <DataGridTextColumn Header="Shut Down FW" Binding="{Binding ShutDownFuelWeight, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="Start up FW" Binding="{Binding StartUpFuelWeight, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
+        <DataGridTextColumn Header="TO FW (sched)" Binding="{Binding TakeOffScheduledFuelWeight, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
+        <DataGridTextColumn Header="TO FW" Binding="{Binding TakeOffFuelWeight, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
+        <DataGridTextColumn Header="TO FW Δ" Binding="{Binding TakeOffFuelWeightDelta, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
+        <DataGridTextColumn Header="Air FW (sched)" Binding="{Binding AirScheduledFuelUsedWeight, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
+        <DataGridTextColumn Header="Air FW" Binding="{Binding AirFuelUsedWeight, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
+        <DataGridTextColumn Header="Air FW Δ" Binding="{Binding AirFuelUsedWeightDelta, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
+        <DataGridTextColumn Header="L FW (sched)" Binding="{Binding LandingScheduledFuelWeight, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
+        <DataGridTextColumn Header="L FW" Binding="{Binding LandingFuelWeight, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
+        <DataGridTextColumn Header="L FW Δ" Binding="{Binding LandingFuelWeightDelta, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
+        <DataGridTextColumn Header="Shut Down FW" Binding="{Binding ShutDownFuelWeight, Converter={StaticResource WeightConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderWeight}" />
 
+        <DataGridTextColumn Header="Start up (sched)" Binding="{Binding StartUpScheduledDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Start up" Binding="{Binding StartUpDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Start up Δ" Binding="{Binding StartUpDateTimeDelta, Converter={StaticResource TimeSpanConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="TO (sched)" Binding="{Binding TakeOffScheduledDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="TO" Binding="{Binding TakeOffDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="TO Δ" Binding="{Binding TakeOffDateTimeDelta, Converter={StaticResource TimeSpanConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Landed (sched)" Binding="{Binding LandingScheduledDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Landed" Binding="{Binding LandingDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Landed Δ" Binding="{Binding LandingDateTimeDelta, Converter={StaticResource TimeSpanConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Shut down (sched)" Binding="{Binding ShutDownScheduledDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Shut down" Binding="{Binding ShutDownDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Shut down Δ" Binding="{Binding ShutDownDateTimeDelta, Converter={StaticResource TimeSpanConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
 
-        <DataGridTextColumn Header="Start up (sched)" Binding="{Binding StartUpScheduledDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
-        <DataGridTextColumn Header="Start up" Binding="{Binding StartUpDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
-        <DataGridTextColumn Header="Start up D" Binding="{Binding StartUpDateTimeDelta, Converter={StaticResource TimeSpanConverter}}" />
-        <DataGridTextColumn Header="TO (sched)" Binding="{Binding TakeOffScheduledDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
-        <DataGridTextColumn Header="TO" Binding="{Binding TakeOffDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
-        <DataGridTextColumn Header="TO D" Binding="{Binding TakeOffDateTimeDelta, Converter={StaticResource TimeSpanConverter}}" />
-        <DataGridTextColumn Header="Landed (sched)" Binding="{Binding LandingScheduledDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
-        <DataGridTextColumn Header="Landed" Binding="{Binding LandingDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
-        <DataGridTextColumn Header="Landed D" Binding="{Binding LandingDateTimeDelta, Converter={StaticResource TimeSpanConverter}}" />
-        <DataGridTextColumn Header="Shut down (sched)" Binding="{Binding ShutDownScheduledDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
-        <DataGridTextColumn Header="Shut down" Binding="{Binding ShutDownDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
-        <DataGridTextColumn Header="Shut down D" Binding="{Binding ShutDownDateTimeDelta, Converter={StaticResource TimeSpanConverter}}" />
+        <DataGridTextColumn Header="Dep Taxi Time" Binding="{Binding DepartureTaxiTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=MS}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Arrival Taxi Time" Binding="{Binding ArrivalTaxiTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=MS}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Total Taxi Time" Binding="{Binding TaxiTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=MS}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Air Time (sched)" Binding="{Binding ScheduledAirTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Air Time" Binding="{Binding AirTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Air Time Δ" Binding="{Binding AirTimeDelta, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Block Time (sched)" Binding="{Binding ScheduledBlockTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Block Time" Binding="{Binding BlockTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
+        <DataGridTextColumn Header="Block Time Δ" Binding="{Binding BlockTimeDelta, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTime}" />
 
-        <DataGridTextColumn Header="Dep Taxi Time" Binding="{Binding DepartureTaxiTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=MS}" />
-        <DataGridTextColumn Header="Arrival Taxi Time" Binding="{Binding ArrivalTaxiTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=MS}" />
-        <DataGridTextColumn Header="Total Taxi Time" Binding="{Binding TaxiTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=MS}" />
-        <DataGridTextColumn Header="Air Time (sched)" Binding="{Binding ScheduledAirTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}" />
-        <DataGridTextColumn Header="Air Time" Binding="{Binding AirTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}" />
-        <DataGridTextColumn Header="Air Time D" Binding="{Binding AirTimeDelta, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}" />
-        <DataGridTextColumn Header="Block Time (sched)" Binding="{Binding ScheduledBlockTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}" />
-        <DataGridTextColumn Header="Block Time" Binding="{Binding BlockTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}" />
-        <DataGridTextColumn Header="Block Time (D)" Binding="{Binding BlockTimeDelta, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}" />
+        <DataGridTextColumn Header="TO IAS" Binding="{Binding TakeOffIAS, Converter={StaticResource SpeedConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTakeOff}" />
+        <DataGridTextColumn Header="TO Max VS" Binding="{Binding TakeOff.MaxVS, StringFormat={}{0:N0} ft/min}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTakeOff}" />
+        <DataGridTextColumn Header="TO GS" Binding="{Binding TakeOff.GS, Converter={StaticResource SpeedConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTakeOff}" />
+        <DataGridTextColumn Header="TO Bank" Binding="{Binding TakeOff.MaxBank, StringFormat={}{0:N1}°}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTakeOff}" />
+        <DataGridTextColumn Header="TO Pitch" Binding="{Binding TakeOff.MaxPitch, StringFormat={}{0:N1}°}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTakeOff}" />
+        <DataGridTextColumn Header="TO AccY" Binding="{Binding TakeOff.MaxAccY, StringFormat=N3}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTakeOff}" />
+        <DataGridTextColumn Header="TO FrontGear" Binding="{Binding TakeOff.FrontGearTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=SF}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTakeOff}" />
+        <DataGridTextColumn Header="TO All Gear/Run Length" Binding="{Binding TakeOff.AllGearTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=SF}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTakeOff}" />
+        <DataGridTextColumn Header="TO Run Length" Binding="{Binding TakeOff.Length, Converter={StaticResource ShortDistanceConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderTakeOff}" />
 
-        <DataGridTextColumn Header="L IAS" Binding="{Binding LandingIAS}" />
-        <DataGridTextColumn Header="L Bank" Binding="{Binding LandingBank}" />
-        <DataGridTextColumn Header="L Pitch" Binding="{Binding LandingPitch}" />
-        <DataGridTextColumn Header="TO IAS" Binding="{Binding TakeOffIAS}" />
+        <DataGridTextColumn Header="# GA" Binding="{Binding NumberOfGoArounds}"  ElementStyle="{StaticResource TextRight}"  HeaderStyle="{StaticResource HeaderLanding}" />
+        <DataGridTextColumn Header="# T/D" Binding="{Binding Touchdowns.Count}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderLanding}" />
+        <DataGridTextColumn Header="L IAS" Binding="{Binding LastTouchdown.IAS, Converter={StaticResource SpeedConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderLanding}" />
+        <DataGridTextColumn Header="L GS" Binding="{Binding LastTouchdown.GS, Converter={StaticResource SpeedConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderLanding}" />
+        <DataGridTextColumn Header="L VS" Binding="{Binding LastTouchdown.VS, StringFormat={}{0:N3} ft/min}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderLanding}" />
+        <DataGridTextColumn Header="L SmartVS" Binding="{Binding LastTouchdown.SmartVS, StringFormat={}{0:N3} ft/min}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderLanding}" />
+        <DataGridTextColumn Header="L MaxAccY" Binding="{Binding LastTouchdown.MaxAccY, StringFormat=N3}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderLanding}" />
+        <DataGridTextColumn Header="L Bank" Binding="{Binding LastTouchdown.Bank, StringFormat={}{0:N1}°}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderLanding}" />
+        <DataGridTextColumn Header="L Pitch" Binding="{Binding LastTouchdown.Pitch, StringFormat={}{0:N1}°}" ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderLanding}" />
+        <DataGridTextColumn Header="L Main Gear" Binding="{Binding LastTouchdown.MainGearTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=SF}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderLanding}" />
+        <DataGridTextColumn Header="L All Gear" Binding="{Binding LastTouchdown.AllGearTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=SF}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderLanding}" />
+        <DataGridTextColumn Header="L RollOut" Binding="{Binding LastTouchdown.RollOutLength, Converter={StaticResource ShortDistanceConverter}}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderLanding}" />
+        <DataGridTextColumn Header="L RollOut" Binding="{Binding LastTouchdown.RollOutDuration, Converter={StaticResource TimeSpanConverter}, ConverterParameter=MS}"  ElementStyle="{StaticResource TextRight}" HeaderStyle="{StaticResource HeaderLanding}" />
+
 
       </DataGrid.Columns>
     </DataGrid>

@@ -50,6 +50,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public DateTime? LandingScheduledDateTime { get; set; }
     public DateTime? ScheduledTime { get; set; }
     public List<LoggedFlightTouchdown> Touchdowns { get; set; } = null!;
+    public LoggedFlightTouchdown LastTouchdown => Touchdowns.Last();
+
     public LoggedFlightTakeOff TakeOff { get; set; } = null!;
     public Weight? LandingScheduledFuelWeight { get; set; }
     public Weight LandingFuelWeight { get; set; }
@@ -59,9 +61,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public GPS ShutDownLocation { get; set; }
     public GPS TakeOffLocation => TakeOff.RunStartLocation;
     public TimeSpan DepartureTaxiTime => this.TakeOffDateTime - this.StartUpDateTime;
-    public Speed LandingIAS => Touchdowns.Last().IAS;
-    public double LandingBank => Touchdowns.Last().Bank;
-    public double LandingPitch => Touchdowns.Last().Pitch;
+    public Speed LandingIAS => LastTouchdown.IAS;
+    public double LandingBank => LastTouchdown.Bank;
+    public double LandingPitch => LastTouchdown.Pitch;
     public TimeSpan ArrivalTaxiTime => this.ShutDownDateTime - this.LandingDateTime;
     public TimeSpan TaxiTime => this.DepartureTaxiTime + this.ArrivalTaxiTime;
     public TimeSpan AirTime => this.LandingDateTime - this.TakeOffDateTime;
@@ -69,8 +71,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.LogModel
     public TimeSpan BlockTime => this.ShutDownDateTime - this.StartUpDateTime;
     public TimeSpan? ScheduledBlockTime => this.ShutDownScheduledDateTime - this.StartUpScheduledDateTime;
     public Speed TakeOffIAS => TakeOff.IAS;
-    public GPS LandingLocation => Touchdowns.Last().TouchDownLocation;
-    public DateTime LandingDateTime => Touchdowns.Last().TouchDownDateTime;
+    public GPS LandingLocation => LastTouchdown.TouchDownLocation;
+    public DateTime LandingDateTime => LastTouchdown.TouchDownDateTime;
     public Weight? AirScheduledFuelUsedWeight => LandingScheduledFuelWeight != null && TakeOffScheduledFuelWeight != null ? TakeOffScheduledFuelWeight.Value - LandingScheduledFuelWeight.Value : null;
     public Weight AirFuelUsedWeight => TakeOffFuelWeight - LandingFuelWeight;
 
