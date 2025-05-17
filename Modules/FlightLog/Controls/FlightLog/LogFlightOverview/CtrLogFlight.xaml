@@ -48,14 +48,14 @@
             <TextBlock Text="{Binding StartUpDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
           </Label>
           <Label Content=" / " />
-          <shared:TimeSpanLabel Value="{Binding TotalDuration}" StringFormat="h:mm" />
+          <shared:TimeSpanLabel Value="{Binding BlockTime}" StringFormat="h:mm" />
           <Label Content=" / " />
-          <shared:TimeSpanLabel Value="{Binding FlightDuration}" StringFormat="h:mm" />
+          <shared:TimeSpanLabel Value="{Binding AirTime}" StringFormat="h:mm" />
           <Label Content=" / " />
           <Label>
             <TextBlock Text="{Binding Distance, Converter={StaticResource LongDistanceConverter}, ConverterParameter=N0}" />
-        </Label>
-      </StackPanel>
+          </Label>
+        </StackPanel>
       </StackPanel>
     </GroupBox>
     <GroupBox Header="Dates">
@@ -147,7 +147,7 @@
 
         <Label Grid.Row="3" Grid.Column="0" Content="Usage (air)" />
         <Label Grid.Row="3" Grid.Column="1">
-          <TextBlock Text="{Binding ScheduledAirFuelUsedWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
+          <TextBlock Text="{Binding AirScheduledFuelUsedWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
         </Label>
         <Label Grid.Row="3" Grid.Column="2">
           <TextBlock Text="{Binding AirFuelUsedWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />

@@ -9,6 +9,12 @@
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <lcvt:LoggedFlightToSolidBrushConverter x:Key="LoggedFlightToSolidBrushConverter" />
+    <lcvt:LongDistanceConverter x:Key="LongDistanceConverter" />
+    <lcvt:ShortDistanceConverter x:Key="ShortDistanceConverter" />
+    <lcvt:WeightConverter x:Key="WeightConverter" />
+    <lcvt:SpeedConverter x:Key="SpeedConverter" />
+    <lcvt:TimeSpanConverter x:Key="TimeSpanConverter" />
+    <lcvt:DateTimeConverter x:Key="DateTimeConverter" />
   </UserControl.Resources>
   <DockPanel x:Name="pnlContent">
     <DockPanel DockPanel.Dock="Top" >
@@ -65,7 +71,7 @@
         <DataGridTextColumn Header="VFR/IFR" Binding="{Binding FlightRules}" />
 
         <DataGridTextColumn Header="Cruize Alt" Binding="{Binding CruizeAltitude}" />
-        <DataGridTextColumn Header="Distance" Binding="{Binding Distance}" />
+        <DataGridTextColumn Header="Distance" Binding="{Binding Distance, Converter={StaticResource LongDistanceConverter}}" />
         <DataGridTextColumn Header="Divert" Binding="{Binding DivertReason}" />
         <DataGridTextColumn Header="# GA" Binding="{Binding NumberOfGoArounds}">
           <DataGridTextColumn.HeaderStyle>
@@ -75,46 +81,46 @@
           </DataGridTextColumn.HeaderStyle>
         </DataGridTextColumn>
         <DataGridTextColumn Header="# T/D" Binding="{Binding Touchdowns.Count}" />
-        
-        <DataGridTextColumn Header="ZFW" Binding="{Binding ZFW}" />
-        <DataGridTextColumn Header="# Passengers" Binding="{Binding PassengerCount}" />
-        <DataGridTextColumn Header="Cargo W" Binding="{Binding CargoWeight}" />
 
-        <DataGridTextColumn Header="Start up FW" Binding="{Binding StartUpFuelWeight}" />
-        <DataGridTextColumn Header="TO FW (sched)" Binding="{Binding TakeOffScheduledFuelWeight}" />
-        <DataGridTextColumn Header="TO FW" Binding="{Binding TakeOffFuelWeight}" />
-        <DataGridTextColumn Header="TO FW D" Binding="{Binding TakeOffFuelWeightDelta}" />
-        <DataGridTextColumn Header="Air FW (sched)" Binding="{Binding AirScheduledFuelUsedWeight}" />
-        <DataGridTextColumn Header="Air FW" Binding="{Binding AirFuelUsedWeight}" />
-        <DataGridTextColumn Header="Air FW D" Binding="{Binding AirFuelUsedWeightDelta}" />
-        <DataGridTextColumn Header="L FW (sched)" Binding="{Binding LandingScheduledFuelWeight}" />
-        <DataGridTextColumn Header="L FW" Binding="{Binding LandingFuelWeight}" />
-        <DataGridTextColumn Header="L FW D" Binding="{Binding LandingFuelWeightDelta}" />
-        <DataGridTextColumn Header="Shut Down FW" Binding="{Binding ShutDownFuelWeight}" />
-        
-        
-        <DataGridTextColumn Header="Start up (sched)" Binding="{Binding StartUpScheduledDateTime}" />
-        <DataGridTextColumn Header="Start up" Binding="{Binding StartUpDateTime}" />
-        <DataGridTextColumn Header="Start up D" Binding="{Binding StartUpDateTimeDelta}" />
-        <DataGridTextColumn Header="TO (sched)" Binding="{Binding TakeOffScheduledDateTime}" />
-        <DataGridTextColumn Header="TO" Binding="{Binding TakeOffDateTime}" />
-        <DataGridTextColumn Header="TO D" Binding="{Binding TakeOffDateTimeDelta}" />
-        <DataGridTextColumn Header="Landed (sched)" Binding="{Binding LandingScheduledDateTime}" />
-        <DataGridTextColumn Header="Landed" Binding="{Binding LandingDateTime}" />
-        <DataGridTextColumn Header="Landed D" Binding="{Binding LandingDateTimeDelta}" />
-        <DataGridTextColumn Header="Shut down (sched)" Binding="{Binding ShutDownScheduledDateTime}" />
-        <DataGridTextColumn Header="Shut down" Binding="{Binding ShutDownDateTime}" />
-        <DataGridTextColumn Header="Shut down D" Binding="{Binding ShutDownDateTimeDelta}" />
-        
-        <DataGridTextColumn Header="Dep Taxi Time" Binding="{Binding DepartureTaxiTime}" />
-        <DataGridTextColumn Header="Arrival Taxi Time" Binding="{Binding ArrivalTaxiTime}" />
-        <DataGridTextColumn Header="Total Taxi Time" Binding="{Binding TaxiTime}" />
-        <DataGridTextColumn Header="Air Time (sched)" Binding="{Binding ScheduledAirTime}" />
-        <DataGridTextColumn Header="Air Time" Binding="{Binding AirTime}" />
-        <DataGridTextColumn Header="Air Time D" Binding="{Binding AirTimeDelta}" />
-        <DataGridTextColumn Header="Block Time (sched)" Binding="{Binding ScheduledBlockTime}" />
-        <DataGridTextColumn Header="Block Time" Binding="{Binding BlockTime}" />
-        <DataGridTextColumn Header="Block Time (D)" Binding="{Binding BlockTimeDelta}" />
+        <DataGridTextColumn Header="ZFW" Binding="{Binding ZFW, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="# Passengers" Binding="{Binding PassengerCount}" />
+        <DataGridTextColumn Header="Cargo W" Binding="{Binding CargoWeight, Converter={StaticResource WeightConverter}}" />
+
+        <DataGridTextColumn Header="Start up FW" Binding="{Binding StartUpFuelWeight, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="TO FW (sched)" Binding="{Binding TakeOffScheduledFuelWeight, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="TO FW" Binding="{Binding TakeOffFuelWeight, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="TO FW D" Binding="{Binding TakeOffFuelWeightDelta, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="Air FW (sched)" Binding="{Binding AirScheduledFuelUsedWeight, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="Air FW" Binding="{Binding AirFuelUsedWeight, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="Air FW D" Binding="{Binding AirFuelUsedWeightDelta, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="L FW (sched)" Binding="{Binding LandingScheduledFuelWeight, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="L FW" Binding="{Binding LandingFuelWeight, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="L FW D" Binding="{Binding LandingFuelWeightDelta, Converter={StaticResource WeightConverter}}" />
+        <DataGridTextColumn Header="Shut Down FW" Binding="{Binding ShutDownFuelWeight, Converter={StaticResource WeightConverter}}" />
+
+
+        <DataGridTextColumn Header="Start up (sched)" Binding="{Binding StartUpScheduledDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
+        <DataGridTextColumn Header="Start up" Binding="{Binding StartUpDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
+        <DataGridTextColumn Header="Start up D" Binding="{Binding StartUpDateTimeDelta, Converter={StaticResource TimeSpanConverter}}" />
+        <DataGridTextColumn Header="TO (sched)" Binding="{Binding TakeOffScheduledDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
+        <DataGridTextColumn Header="TO" Binding="{Binding TakeOffDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
+        <DataGridTextColumn Header="TO D" Binding="{Binding TakeOffDateTimeDelta, Converter={StaticResource TimeSpanConverter}}" />
+        <DataGridTextColumn Header="Landed (sched)" Binding="{Binding LandingScheduledDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
+        <DataGridTextColumn Header="Landed" Binding="{Binding LandingDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
+        <DataGridTextColumn Header="Landed D" Binding="{Binding LandingDateTimeDelta, Converter={StaticResource TimeSpanConverter}}" />
+        <DataGridTextColumn Header="Shut down (sched)" Binding="{Binding ShutDownScheduledDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
+        <DataGridTextColumn Header="Shut down" Binding="{Binding ShutDownDateTime, Converter={StaticResource DateTimeConverter}, ConverterParameter=HH:mm}" />
+        <DataGridTextColumn Header="Shut down D" Binding="{Binding ShutDownDateTimeDelta, Converter={StaticResource TimeSpanConverter}}" />
+
+        <DataGridTextColumn Header="Dep Taxi Time" Binding="{Binding DepartureTaxiTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=MS}" />
+        <DataGridTextColumn Header="Arrival Taxi Time" Binding="{Binding ArrivalTaxiTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=MS}" />
+        <DataGridTextColumn Header="Total Taxi Time" Binding="{Binding TaxiTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=MS}" />
+        <DataGridTextColumn Header="Air Time (sched)" Binding="{Binding ScheduledAirTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}" />
+        <DataGridTextColumn Header="Air Time" Binding="{Binding AirTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}" />
+        <DataGridTextColumn Header="Air Time D" Binding="{Binding AirTimeDelta, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}" />
+        <DataGridTextColumn Header="Block Time (sched)" Binding="{Binding ScheduledBlockTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}" />
+        <DataGridTextColumn Header="Block Time" Binding="{Binding BlockTime, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}" />
+        <DataGridTextColumn Header="Block Time (D)" Binding="{Binding BlockTimeDelta, Converter={StaticResource TimeSpanConverter}, ConverterParameter=HM}" />
 
         <DataGridTextColumn Header="L IAS" Binding="{Binding LandingIAS}" />
         <DataGridTextColumn Header="L Bank" Binding="{Binding LandingBank}" />

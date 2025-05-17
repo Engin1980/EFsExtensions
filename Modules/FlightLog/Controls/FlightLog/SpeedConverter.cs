@@ -18,7 +18,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
     {
       if (value == null) return string.Empty;
 
-      string numberFormat = (string)parameter ?? "N3";
+      string numberFormat = (string)parameter ?? "N0";
       string ret = value.Value.To(DefaultUnit).Value.ToString(numberFormat) + " " + DefaultUnit.GetDisplayString();
       return ret;
     }
