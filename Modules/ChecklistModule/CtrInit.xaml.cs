@@ -43,7 +43,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
 
     public CtrInit(InitContext context) : this()
     {
-      this.autoPlaybackManager = new();
+      this.autoPlaybackManager = AudioPlayManagerProvider.Instance;
       this.context = context;
       this.DataContext = context;
     }

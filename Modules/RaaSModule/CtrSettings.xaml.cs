@@ -29,7 +29,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.CopilotModule
   {
     private const string AUDIO_CHANNEL_NAME = AudioPlayManager.CHANNEL_AIRPLANE;
     private readonly Settings settings;
-    private readonly AudioPlayManager autoPlaybackManager = new AudioPlayManager();
+    private readonly AudioPlayManager autoPlaybackManager = AudioPlayManagerProvider.Instance;
 
     public CtrSettings()
     {

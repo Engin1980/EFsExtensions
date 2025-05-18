@@ -28,7 +28,7 @@ namespace Eng.EFsExtensions.Modules.ChecklistModule
     {
       private readonly PlaybackManagerSettings sett;
       private readonly PlaybackManagerState state = new();
-      private readonly EFsExtensionsModuleBase.ModuleUtils.AudioPlaying.AudioPlayManager apm = new();
+      private readonly AudioPlayManager apm = AudioPlayManagerProvider.Instance;
       private Timer? pendingChecklistTimer = null;
 
       public event Action? ChecklistPlayingCompleted;

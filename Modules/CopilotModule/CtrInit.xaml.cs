@@ -30,7 +30,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
     private const string AUDIO_CHANNEL_NAME = AudioPlayManager.CHANNEL_COPILOT;
     private readonly InitContext context;
     private string recentXmlFile = "";
-    private readonly AudioPlayManager autoPlaybackManager = new();
+    private readonly AudioPlayManager autoPlaybackManager = AudioPlayManagerProvider.Instance;
 
     public CtrInit()
     {
