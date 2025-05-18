@@ -22,6 +22,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
     protected readonly Raas raas;
     protected readonly Settings settings;
     private readonly ITtsProvider? synthetizer;
+    private readonly AudioPlayManager audioPlayManager = AudioPlayManagerProvider.Instance;
 
     protected ContextHandler(ContextHandlerArgs args)
     {
@@ -45,8 +46,8 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
 
       Debug.Assert(synthetizer != null);
       var bytes = synthetizer!.Convert(s);
-      AudioPlayer player = new(bytes);
-      player.PlayAsync();
+
+      audioPlayManager.Enqueue(bytes, AudioPlayManager.CHANNEL_AIRPLANE);
     }
 
     protected void Say(RaasSpeech speech, RaasDistance candidateDistance)
@@ -62,8 +63,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
       });
 
       var bytes = synthetizer!.Convert(s);
-      AudioPlayer player = new(bytes);
-      player.PlayAsync();
+      audioPlayManager.Enqueue(bytes, AudioPlayManager.CHANNEL_AIRPLANE);
     }
   }
 }

@@ -1,13 +1,8 @@
 ﻿using ESystem.Logging;
 using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.AudioPlaying;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimConWrapping.PrdefinedTypes;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking;
-using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking.VariableModel;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
-using Eng.EFsExtensions.Modules.CopilotModule.Types;
 using Eng.EFsExtensions.Modules.CopilotModule.Types.VMs;
 using ESystem.Asserting;
 using ESystem.Miscelaneous;
@@ -15,18 +10,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Security.Policy;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Eng.EFsExtensions.Modules.CopilotModule
 {
   internal class RunContext : NotifyPropertyChanged
   {
+    private readonly AudioPlayManager audioPlayManager = AudioPlayManagerProvider.Instance;
 
     #region Fields
 
@@ -97,8 +87,7 @@ namespace Eng.EFsExtensions.Modules.CopilotModule
 
       if (activated != null)
       {
-        AudioPlayer player = new(activated.SpeechDefinition.Speech.Bytes);
-        player.PlayAsync();
+        audioPlayManager.Enqueue(activated.SpeechDefinition.Speech.Bytes, AudioPlayManager.CHANNEL_COPILOT);
 
         activated.RunTime.IsReadyToBeSpoken = false;
         this.logger.Log(LogLevel.DEBUG,
