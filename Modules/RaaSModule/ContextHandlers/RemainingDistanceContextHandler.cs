@@ -82,7 +82,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
             ds.Add(
               $"{airport.ICAO}/{candidateRwy.Runway.Designator} no threshold within " +
               $"{sett.MaxHeadingDiff} degrees bearing-delta: " +
-              $"{string.Join(",", tmps.Select(q => $"{q.Threshold.Designator}={q.DeltaBearing}"))}.");
+              $"{string.Join(",", tmps.Select(q => $"RWY {q.Threshold.Designator}={q.DeltaBearing}"))}.");
           }
           else
           {
