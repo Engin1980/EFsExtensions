@@ -52,7 +52,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
       else
       {
         var airport = data.NearestAirport.Airport;
-        ds.Add("Current airport: " + airport.ICAO);
+        ds.Add($"Current airport: {airport.ICAO} (declination = {airport.Declination})");
 
         var candidateRwy = data.NearestRunways.First();
         ds.Add($"Closest runway: {airport.ICAO}/{candidateRwy.Runway.Designator}");
@@ -82,7 +82,7 @@ namespace Eng.EFsExtensions.Modules.RaaSModule.ContextHandlers
             ds.Add(
               $"{airport.ICAO}/{candidateRwy.Runway.Designator} no threshold within " +
               $"{sett.MaxHeadingDiff} degrees bearing-delta: " +
-              $"{string.Join(",", tmps.Select(q => $"{q.Threshold}={q.DeltaBearing}"))}.");
+              $"{string.Join(",", tmps.Select(q => $"{q.Threshold.Designator}={q.DeltaBearing}"))}.");
           }
           else
           {
