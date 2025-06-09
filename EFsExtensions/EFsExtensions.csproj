@@ -8,8 +8,8 @@
     <PlatformTarget>x64</PlatformTarget>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
-    <AssemblyVersion>1.6.0.0</AssemblyVersion>
-    <FileVersion>1.6.0.0</FileVersion>
+    <AssemblyVersion>1.6.0.2</AssemblyVersion>
+    <FileVersion>1.6.0.2</FileVersion>
     <Authors>Marek Vajgl</Authors>
     <Description>Extensions for MSFS</Description>
     <ApplicationIcon>Imgs\efsextensions.ico</ApplicationIcon>

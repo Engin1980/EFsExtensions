@@ -11,6 +11,7 @@ using Eng.EFsExtensions.Modules.FailuresModule.Model.Sustainers;
 using ESystem.Miscelaneous;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects;
 using Eng.EFsExtensions.Modules.FailuresModule.Model;
+using ESystem.Logging;
 
 namespace Eng.EFsExtensions.Modules.FailuresModule
 {
@@ -23,6 +24,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
     private List<IncidentDefinitionVM>? _IncidentDefinitions = null;
     private bool isRunning = false;
     private readonly Dictionary<string, double> propertyValues = new();
+    private readonly Logger logger = Logger.Create("EFSE.Modules.Failures+RunContext");
 
     #endregion Fields
 
@@ -31,7 +33,6 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
     public List<FailureDefinition> FailureDefinitions { get; }
     public List<IncidentVM> IncidentVMs { get; }
     public BindingList<FailureSustainer> Sustainers { get; }
-
 
     public bool IsSupressed
     {
@@ -54,14 +55,11 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
       }
     }
 
-
     public FailSimData SimData
     {
       get { return base.GetProperty<FailSimData>(nameof(SimData))!; }
       set { base.UpdateProperty(nameof(SimData), value); }
     }
-
-
 
     #endregion Properties
 
@@ -125,8 +123,10 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
 
     private void EvaluateAndFireFailures()
     {
+      logger.Log(LogLevel.DEBUG, "Evaluating and firing failures...");
       foreach (var runIncidentDefinition in this.IncidentDefinitions)
       {
+        logger.Log(LogLevel.TRACE, $"Evaluating failure definition {runIncidentDefinition.IncidentDefinition.Title}");
         EvaluateIncidentDefinition(runIncidentDefinition, out bool isActivated);
         if (!isActivated) continue;
 
@@ -134,6 +134,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
         List<FailureDefinition> failDefs = failItems.Select(q => this.FailureDefinitions.First(p => q.Id == p.Id)).ToList();
         StartFailures(failDefs);
       }
+      logger.Log(LogLevel.DEBUG, "Evaluating and firing failures completed");
     }
 
     private void EvaluateIncidentDefinition(IncidentDefinitionVM incident, out bool isActivated)
@@ -145,14 +146,18 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
       }
 
       bool isConditionTrue = incident.Trigger.Evaluate();
+      logger.Log(LogLevel.TRACE, $"Condition for incident '{incident.IncidentDefinition.Title}' is {(isConditionTrue ? "true" : "false")}");
 
       if (isConditionTrue)
       {
         if (incident.Trigger.Trigger.Repetitive == false)
           incident.IsOneShotTriggerInvoked = true;
 
-        double prob = random.NextDouble();
+        double prob = random.NextDouble();        
         isActivated = prob <= incident.Trigger.Trigger.Probability;
+        logger.Log(LogLevel.DEBUG, 
+          $"Incident '{incident.IncidentDefinition.Title}' is {(isActivated ? "activated" : "not activated")}, " +
+          $"random value is {prob}, required probability is {incident.Trigger.Trigger.Probability}");
       }
       else
         isActivated = false;
@@ -206,7 +211,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
 
     private List<FailId> PickFailItems(FailGroup root)
     {
-      //TOTO this is not correct as multiple nested gorups with combination of all/one will not be selected correctly
+      //TOTO this is not correct as multiple nested grups with combination of all/one will not be selected correctly
       List<FailId> ret;
       switch (root.Selection)
       {
