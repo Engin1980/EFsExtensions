@@ -7,7 +7,7 @@
     <LogRule Regex="EFSE\.AppContext" Level="warning" />
     <LogRule Regex="EFSE\.Modules\.Checklist.+" Level="warning" />
     <LogRule Regex="EFSE\.Modules\.Copilot.+" Level="warning" />
-    <LogRule Regex="EFSE\.Modules\.Failures.+" Level="warning" />
+    <LogRule Regex="EFSE\.Modules\.Failures.+" Level="info" />
     <LogRule Regex="EFSE\.Modules\.RaaS.+" Level="warning" />
     <LogRule Regex="EFSE\.Modules\.FlightLog.+" Level="warning" />
     <LogRule Regex="EFSE\.AppContext" Level="warning" />

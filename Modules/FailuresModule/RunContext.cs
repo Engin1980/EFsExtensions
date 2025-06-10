@@ -153,10 +153,11 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
         if (incident.Trigger.Trigger.Repetitive == false)
           incident.IsOneShotTriggerInvoked = true;
 
-        double prob = random.NextDouble();        
+        double probValue = random.NextDouble();
+        Percentage prob = Percentage.Of(probValue);
         isActivated = prob <= incident.Trigger.Trigger.Probability;
-        logger.Log(LogLevel.DEBUG, 
-          $"Incident '{incident.IncidentDefinition.Title}' is {(isActivated ? "activated" : "not activated")}, " +
+        logger.Log(LogLevel.INFO, 
+          $"Incident '{incident.IncidentDefinition.Title}' is evaluated by trigger as {(isActivated ? "activated" : "not activated")}, " +
           $"random value is {prob}, required probability is {incident.Trigger.Trigger.Probability}");
       }
       else
