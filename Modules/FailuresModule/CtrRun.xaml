@@ -64,18 +64,10 @@
             </HierarchicalDataTemplate>
             <HierarchicalDataTemplate DataType="{x:Type vmg:VariableVM}">
               <StackPanel Orientation="Horizontal">
-                <TextBlock Text="I am not implemented yet" ></TextBlock>
+                <TextBlock Text="{Binding}" ></TextBlock>
               </StackPanel>
             </HierarchicalDataTemplate>
 
-            <!--<HierarchicalDataTemplate DataType="{x:Type vm:TriggerVMS}" ItemsSource="{Binding}">
-              <StackPanel Orientation="Horizontal">
-                <TextBlock Text="Triggers" />
-                <TextBlock Text=" (" Foreground="Gray" />
-                <TextBlock Text="{Binding Count}" Foreground="Gray" />
-                <TextBlock Text=")" Foreground="Gray" />
-              </StackPanel>
-            </HierarchicalDataTemplate>-->
             <HierarchicalDataTemplate DataType="{x:Type vm:TriggerVM}" ItemsSource="{Binding Evaluations}">
               <StackPanel Orientation="Horizontal" >
                 <TextBlock Text="Trigger" />
@@ -136,6 +128,12 @@
                         ConverterParameter='Active|Inactive',
                         Mode=OneWay}"  FontSize="12"/>
                       <TextBlock Text=")"  FontSize="12"/>
+                    </StackPanel>
+                  </Label>
+                  <Label>
+                    <StackPanel Orientation="Horizontal">
+                      <CheckBox IsChecked="{Binding IsArmed}" />
+                      <TextBlock Text=" Armed " />
                     </StackPanel>
                   </Label>
                   <Button Tag="{Binding}" x:Name="btnToggleSustainerActive" Click="btnToggleSustainerActive_Click" Content="Toggle" />

@@ -16,7 +16,30 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking
 {
   public class StateCheckEvaluator
   {
-    public record RecentResult(IStateCheckItem StateCheckItem, bool Result, string Note);
+    public record RecentResult(IStateCheckItem StateCheckItem, bool Result, string Note)
+    {
+      public override string ToString()
+      {
+        return $"{StateCheckItem} evaluated as {Result} with note {Note}";
+      }
+    }
+    public class RecentResultList : List<RecentResult>
+    {
+      public static RecentResultList From(IEnumerable<RecentResult> items)
+      {
+        RecentResultList ret = new();
+        foreach (var item in items)
+        {
+          ret.Add(item);
+        }
+        return ret;
+      }
+
+      public override string ToString()
+      {
+        return string.Join("; ", this);
+      }
+    }
     private record VariablePropertyInfo(string VariableName, double PreviousVariableOriginalValue, double RandomizedValue);
 
     #region Private Enums
@@ -73,12 +96,12 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking
     #endregion Public Constructors
 
     #region Public Methods
-    public List<RecentResult> GetRecentResultSet()
+    public RecentResultList GetRecentResultSet()
     {
-      List<RecentResult> ret;
+      RecentResultList ret;
       lock (this)
       {
-        ret = recentResultSet.ToList();
+        ret = RecentResultList.From(recentResultSet);
       }
       return ret;
     }
@@ -358,7 +381,7 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.StateChecking
       double ret;
       ret = this.cachedNonVariablePropertyValues.GetOrAdd(
         property,
-        () => property.GetExpressionAsDouble().Select(q =>  applyRandomness ? ApplyPropertyRandomness(property, q) : q));
+        () => property.GetExpressionAsDouble().Select(q => applyRandomness ? ApplyPropertyRandomness(property, q) : q));
       return ret;
     }
 

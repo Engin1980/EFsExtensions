@@ -153,7 +153,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
         if (incident.Trigger.Trigger.Repetitive == false)
           incident.IsOneShotTriggerInvoked = true;
 
-        double probValue = random.NextDouble();
+        double probValue = incident.IsArmed ? 0 : random.NextDouble();
         Percentage prob = Percentage.Of(probValue);
         isActivated = prob <= incident.Trigger.Trigger.Probability;
         logger.Log(LogLevel.INFO, 

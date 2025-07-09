@@ -1,9 +1,11 @@
 ﻿using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.VMs;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents;
 using Eng.EFsExtensions.Modules.FailuresModule.Model.VMs;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.RightsManagement;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +17,12 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.VMs
     {
       get => base.GetProperty<VariableVMS>(nameof(Variables))!;
       set => base.UpdateProperty(nameof(Variables), value);
+    }
+
+    public bool IsArmed
+    {
+      get => base.GetProperty<bool>(nameof(IsArmed))!;
+      set => base.UpdateProperty(nameof(IsArmed), value);
     }
 
     public TriggerVM Trigger
@@ -32,6 +40,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.VMs
     public IncidentDefinitionVM(IncidentDefinition incidentDefinition, Func<Dictionary<string, double>> propertyValuesProvider)
     {
       IncidentDefinition = incidentDefinition;
+      this.IsArmed = false;
       this.Variables = VariableVMS.Create(this.IncidentDefinition.Variables);
       this.Trigger = new TriggerVM(incidentDefinition.Trigger, this.Variables.GetAsDict, propertyValuesProvider);
 

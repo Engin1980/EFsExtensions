@@ -52,6 +52,9 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.VMs
       {
         this.InfoString = $"{tt.Interval}, MTBF={tt.MtbfHours}";
       }
+      else
+        throw new ApplicationException($"Unsupported type of trigger: {trigger.GetType().Name}.");
+
       this.Evaluations = new();
     }
 
