@@ -49,6 +49,10 @@
                   <TextBlock Text=" (" Foreground="Gray" />
                   <TextBlock Text="Inactive" Foreground="Gray" />
                   <TextBlock Text=") " Foreground="Gray" />
+                  <StackPanel Orientation="Horizontal">
+                    <CheckBox IsChecked="{Binding IsArmed}" Margin="0 4 0 0" />
+                    <TextBlock Text=" Armed, or " />
+                  </StackPanel>
                   <Button x:Name="btnFireIncident" Content="Fire" Tag="{Binding}" Click="btnFireIncident_Click" />
                 </StackPanel>
               </StackPanel>
@@ -128,12 +132,6 @@
                         ConverterParameter='Active|Inactive',
                         Mode=OneWay}"  FontSize="12"/>
                       <TextBlock Text=")"  FontSize="12"/>
-                    </StackPanel>
-                  </Label>
-                  <Label>
-                    <StackPanel Orientation="Horizontal">
-                      <CheckBox IsChecked="{Binding IsArmed}" />
-                      <TextBlock Text=" Armed " />
                     </StackPanel>
                   </Label>
                   <Button Tag="{Binding}" x:Name="btnToggleSustainerActive" Click="btnToggleSustainerActive_Click" Content="Toggle" />
