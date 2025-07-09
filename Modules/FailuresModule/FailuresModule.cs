@@ -60,7 +60,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
 
     public void Stop()
     {
-      throw new NotImplementedException();
+      this.logger.Log(LogLevel.INFO, "Failure Module 'Stop()' not implemented yet.");      
     }
 
     public Dictionary<string, string>? TryGetRestoreData()

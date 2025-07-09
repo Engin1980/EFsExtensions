@@ -40,6 +40,10 @@
         <call type="speech" value="Departure in M C D U"/>
         <confirmation type="speech" value="Set"/>
       </item>
+			<item>
+				<call type="speech" value="Fuel Amount"/>
+				<confirmation type="speech" value="Checked"/>
+			</item>
       <item>
         <call type="speech" value="Squawk Code"/>
         <confirmation type="speech" value="Set"/>
@@ -55,10 +59,6 @@
       <item>
         <call type="speech" value="Doors"/>
         <confirmation type="speech" value="Closed"/>
-      </item>
-      <item>
-        <call type="speech" value="Packs"/>
-        <confirmation type="speech" value="Off"/>
       </item>
       <item>
         <call type="speech" value="Throttles"/>
