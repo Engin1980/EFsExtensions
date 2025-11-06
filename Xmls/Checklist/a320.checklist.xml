@@ -68,6 +68,10 @@
         <call type="speech" value="Beacon light"/>
         <confirmation type="speech" value="On"/>
       </item>
+			<item>
+				<call type="speech" value="Transponder"/>
+				<confirmation type="speech" value="On"/>
+			</item>
     </items>
     <trigger>
       <g:and>
@@ -234,7 +238,7 @@
     <trigger>
       <g:and>
         <g:property name="alt" direction="below" expression="{alt}"/>
-        <g:property name="vs" direction="below" expression="900"/>
+        <g:property name="vs" direction="below" expression="-900"/>
       </g:and>
     </trigger>
   </checklist>
@@ -356,4 +360,27 @@
       </item>
     </items>
   </checklist>
+	<checklist id="shutDown" callSpeech="At the gate">
+		<items>
+			<item>
+				<call type="speech" value="Transponder" />
+				<confirmation type="speech" value="Stand by" />
+			</item>
+			<item>
+				<call type="speech" value="Beacon light"/>
+				<confirmation type="speech" value="On"/>
+			</item>
+		</items>
+		<trigger>
+			<g:for seconds="{shutdownDelay}">
+				<g:and>
+					<g:property name="engine1Running" direction="above" expression="0" />
+					<g:property name="engine2Running" direction="above" expression="0" />
+				</g:and>
+			</g:for>
+		</trigger>
+		<variables>
+			<g:randomVariable name="shutdownDelay" minimum="3" maximum="10" />
+		</variables>
+	</checklist>
 </checklistSet>
