@@ -38,6 +38,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Checklist", "Checklist", "{449B60D4-B914-4D79-A613-532AFFF4AA5A}"
 	ProjectSection(SolutionItems) = preProject
 		Xmls\Checklist\a320.checklist.xml = Xmls\Checklist\a320.checklist.xml
+		Xmls\Checklist\a380.checklist.xml = Xmls\Checklist\a380.checklist.xml
 		Xmls\Checklist\baron.checklist.xml = Xmls\Checklist\baron.checklist.xml
 		Xmls\Checklist\cessna172.checklist.xml = Xmls\Checklist\cessna172.checklist.xml
 		Xmls\Checklist\cj4.checklist.xml = Xmls\Checklist\cj4.checklist.xml
