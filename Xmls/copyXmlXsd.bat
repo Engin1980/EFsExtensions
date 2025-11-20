@@ -1,13 +1,16 @@
 cd ..\Xmls
 cd
 
-if not exist "..\EFsExtensions\bin\debug\net6.0-windows\Xmls" mkdir "..\EFsExtensions\bin\debug\net6.0-windows\Xmls"
-copy .\Global\*.xml ..\EFsExtensions\bin\debug\net6.0-windows\Xmls
-copy .\Copilot\*.xml ..\EFsExtensions\bin\debug\net6.0-windows\Xmls
-copy .\Failures\*.xml ..\EFsExtensions\bin\debug\net6.0-windows\Xmls
-copy .\Checklist\*.xml ..\EFsExtensions\bin\debug\net6.0-windows\Xmls
-copy .\Affinity\*.xml ..\EFsExtensions\bin\debug\net6.0-windows\Xmls
-copy .\RaaS\*.xml ..\EFsExtensions\bin\debug\net6.0-windows\Xmls
+set "OUT_DIR=..\EFsExtensions\bin\debug\net8.0-windows7.0\Xmls"
+set "OUT_DIR_XSD=%OUTDIR%\Xsds"
 
-if not exist "..\EFsExtensions\bin\debug\net6.0-windows\Xmls\Xsds" mkdir "..\EFsExtensions\bin\debug\net6.0-windows\Xmls\Xsds"
-copy .\Xsds\*.xsd ..\EFsExtensions\bin\debug\net6.0-windows\Xmls\Xsds
+if not exist %OUT_DIR% mkdir %OUT_DIR%
+copy .\Global\*.xml %OUT_DIR%
+copy .\Copilot\*.xml %OUT_DIR%
+copy .\Failures\*.xml %OUT_DIR%
+copy .\Checklist\*.xml %OUT_DIR%
+copy .\Affinity\*.xml %OUT_DIR%
+copy .\RaaS\*.xml %OUT_DIR%
+
+if not exist %OUT_DIR%\Xsds mkdir %OUT_DIR%\Xsds
+copy .\Xsds\*.xsd %OUT_DIR%\Xsds

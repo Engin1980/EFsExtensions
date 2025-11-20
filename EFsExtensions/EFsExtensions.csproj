@@ -65,7 +65,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="call ..\Xmls\copyXmlXsd.bat" />
+    <Exec Command="call ..\Xmls\copyXmlXsd.bat&#xD;&#xA;call ..\DLLs\copySimconnect.bat" />
     <Exec Command="call copyConnectDll.bat" />
     <Exec Command="call copyData.bat" />
   </Target>

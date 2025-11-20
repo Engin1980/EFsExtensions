@@ -9,6 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{5047
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DLLs", "DLLs", "{6DE45974-2B03-4253-A45A-26097E955597}"
 	ProjectSection(SolutionItems) = preProject
+		DLLs\copySimConnect.bat = DLLs\copySimConnect.bat
 		DLLs\Microsoft.FlightSimulator.SimConnect.dll = DLLs\Microsoft.FlightSimulator.SimConnect.dll
 		DLLs\NAudioCore.deps.json = DLLs\NAudioCore.deps.json
 		DLLs\NAudioCore.dll = DLLs\NAudioCore.dll
@@ -38,7 +39,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Checklist", "Checklist", "{449B60D4-B914-4D79-A613-532AFFF4AA5A}"
 	ProjectSection(SolutionItems) = preProject
 		Xmls\Checklist\a320.checklist.xml = Xmls\Checklist\a320.checklist.xml
-		Xmls\Checklist\a380.checklist.xml = Xmls\Checklist\a380.checklist.xml
 		Xmls\Checklist\baron.checklist.xml = Xmls\Checklist\baron.checklist.xml
 		Xmls\Checklist\cessna172.checklist.xml = Xmls\Checklist\cessna172.checklist.xml
 		Xmls\Checklist\cj4.checklist.xml = Xmls\Checklist\cj4.checklist.xml
