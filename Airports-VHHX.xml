@@ -1,0 +1,25 @@
+﻿<Airport ICAO="VHHX">
+	<Name>Kai Tak International Airport</Name>
+	<CountryCode>HK</CountryCode>
+	<City>Hong Kong (Kowloon)</City>
+	<Coordinate Latitude="22.320304" Longitude="114.198074" />
+	<Declination>-3.393</Declination>
+	<Runways>
+		<Runway Designator="13-31" LengthInM="3390">
+			<Thresholds>
+				<RunwayThreshold Designator="13">
+					<Coordinate Latitude="22.3216667" Longitude="114.1966667" />
+					<Elevation>5</Elevation>
+					<Heading>134.4</Heading>
+					<DisplacedThresholdFt>1808</DisplacedThresholdFt>
+				</RunwayThreshold>
+				<RunwayThreshold Designator="31">
+					<Coordinate Latitude="22.3050000" Longitude="114.2150000" />
+					<Elevation>5</Elevation>
+					<Heading>314.4</Heading>
+					<DisplacedThresholdFt>702</DisplacedThresholdFt>
+				</RunwayThreshold>
+			</Thresholds>
+		</Runway>
+	</Runways>
+</Airport>

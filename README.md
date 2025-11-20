@@ -1,9 +1,8 @@
 # EFsExtensions
 
-*A set of tools for Microsoft Flight Simulator (MSFS)*
+*A set of tools for Microsoft Flight Simulator (MSFS) 2020*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Build Status](#)](#) (add CI/CD badge if applicable)
 
 ## 🔧 What is EFsExtensions?
 

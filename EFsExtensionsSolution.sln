@@ -93,6 +93,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimVarTestModule", "Modules
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{8D41DB2D-C963-4C4F-8904-A38AC779E0CD}"
 	ProjectSection(SolutionItems) = preProject
+		Airports-VHHX.xml = Airports-VHHX.xml
 		Xmls\Global\Airports.xml = Xmls\Global\Airports.xml
 		Xmls\Global\FailureDefinitions.xml = Xmls\Global\FailureDefinitions.xml
 		Xmls\Global\SimProperties.xml = Xmls\Global\SimProperties.xml
