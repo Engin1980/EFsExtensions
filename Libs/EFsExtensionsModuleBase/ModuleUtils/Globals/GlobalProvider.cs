@@ -30,16 +30,14 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals
       InitNavData();
     }
 
-    private const string AIRPORTS_FILE_NAME = @"Xmls\Airports.xml";
-    private const string ADDITIONAL_AIRPORTS_FILE_NAME_PATTERN = @"Airports-*.xml";
     private void InitNavData()
     {
+      const string AIRPORTS_FILE_NAME = @"Xmls\Airports.xml";
+
       List<Airport> airports;
       try
       {
-        airports = XmlLoader.Load(AIRPORTS_FILE_NAME, true).ToList();
-        ExtendNavaidData(airports);
-        airports = airports.OrderBy(q => q.ICAO).ToList();
+        airports = XmlLoader.Load(AIRPORTS_FILE_NAME, true).OrderBy(q => q.ICAO).ToList();
       }
       catch (Exception ex)
       {
@@ -50,25 +48,6 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals
       {
         Airports = new AirportList(airports),
       };
-    }
-    private void ExtendNavaidData(List<Airport> airports)
-    {
-      var tmp = System.IO.Path.GetFullPath(AIRPORTS_FILE_NAME);
-      tmp = System.IO.Path.GetDirectoryName(tmp)!;
-      var files = System.IO.Directory.GetFiles(tmp, ADDITIONAL_AIRPORTS_FILE_NAME_PATTERN);
-      foreach (var file in files)
-      {
-        List<Airport> addAirports;
-        try
-        {
-          addAirports = XmlLoader.Load(file, true).ToList();
-        }
-        catch (Exception ex)
-        {
-          throw new Exception($"Error loading additional airports from '{file}'", ex);
-        }
-        airports.AddRange(addAirports);
-      }
     }
 
     private void InitSimPropertyGroup()
