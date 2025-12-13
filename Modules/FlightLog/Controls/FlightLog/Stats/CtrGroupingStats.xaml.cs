@@ -13,16 +13,26 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.Stats
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.Stats;
+
+/// <summary>
+/// Interaction logic for CtrGroupingStats.xaml
+/// </summary>
+public partial class CtrGroupingStats : UserControl
 {
-    /// <summary>
-    /// Interaction logic for CtrGroupingStats.xaml
-    /// </summary>
-    public partial class CtrGroupingStats : UserControl
-    {
-        public CtrGroupingStats()
-        {
-            InitializeComponent();
-        }
-    }
+  public CtrGroupingStats()
+  {
+    InitializeComponent();
+  }
+
+  private void btnDetails_Click(object sender, RoutedEventArgs e)
+  {
+    Button btn = (Button)sender;
+    var stat = (Models.LogModel.GroupingLogStatView)btn.Tag;
+
+    Dictionary<object, int> dct = stat.Records.ToDictionary(r => r.Key, r => r.Count);
+    FrmStatsDictView frm = new FrmStatsDictView();
+    frm.SetUp($"Details of '{stat.Stat.Title}'", dct);
+    frm.Show();
+  }
 }

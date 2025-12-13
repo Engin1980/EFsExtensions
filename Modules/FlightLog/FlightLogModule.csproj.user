@@ -35,6 +35,9 @@
     <Compile Update="Controls\FlightLog\Stats\CtrGroupingStats.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\FlightLog\Stats\FrmStatsDictView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Controls\Shared\CtrFlightLogFilter.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
