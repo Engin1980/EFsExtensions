@@ -1,0 +1,28 @@
+﻿<UserControl x:Class="Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared.FlightLogFilter"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared"
+             mc:Ignorable="d" 
+             d:DesignHeight="32" d:DesignWidth="4200">
+  <Grid x:Name="plnMain">
+    <GroupBox Header="Filter:">
+      <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal">
+        <Label Content="Type:" Margin="2" />
+        <ComboBox ItemsSource="{Binding Models}" SelectedItem="{Binding Model}" MinWidth="75" Margin="2" />
+        <Label Content="Registration:" Margin="2" />
+        <ComboBox ItemsSource="{Binding Registrations}" SelectedItem="{Binding Registration}" MinWidth="100" Margin="2" />
+        <Label Content="Departure ICAO:" Margin="2" />
+        <TextBox Width="100" Text="{Binding DepartureICAO}" Margin="2" />
+        <Label Content="Destination ICAO:" Margin="2" />
+        <TextBox Width="100" Margin="2" />
+        <Label Content="From Date:" Margin="2" />
+        <DatePicker Width="100" Margin="2" />
+        <Label Content="To Date:" Margin="2" />
+        <DatePicker Width="100" Margin="2" />
+        <Button x:Name="btnApply" Content="Apply" Padding="8 0 8 0" Margin="2" Click="btnApply_Click" />
+      </WrapPanel>
+    </GroupBox>
+  </Grid>
+</UserControl>

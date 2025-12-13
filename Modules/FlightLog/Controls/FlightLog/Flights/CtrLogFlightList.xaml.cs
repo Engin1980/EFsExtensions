@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.Flights
 {
     /// <summary>
     /// Interaction logic for LogFlightListSimple.xaml
     /// </summary>
-    public partial class CtrLogFlightListSimple : UserControl
+    public partial class CtrLogFlightList : UserControl
     {
-        public CtrLogFlightListSimple()
+        public CtrLogFlightList()
         {
             InitializeComponent();
         }

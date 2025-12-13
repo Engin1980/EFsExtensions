@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Converters
 {
   public class TimeSpanConverter : TypedConverter<TimeSpan?, string>
   {

@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Serialization;
+using static Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.CtrPlanesOverview;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
 {
@@ -105,7 +106,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
         try
         {
           flight.CheckValidity(out bool resaveNeeded);
-          if (resaveNeeded){
+          if (resaveNeeded)
+          {
             logger.Log(LogLevel.WARNING, $"Flight {flight} found as obsolete, resave needed (will follow).");
             UpdateFlight(flight);
           }
@@ -122,11 +124,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
       return ret;
     }
 
-    public static StatsData GetFlightsStatsData(List<LoggedFlight> flights)
-    {
-      StatsData ret = LogStats.Calculate(flights);
-      return ret;
-    }
+    //public static StatsData GetFlightsStatsData(List<LoggedFlight> flights)
+    //{
+    //  StatsData ret = LogStats.Calculate(flights);
+    //  return ret;
+    //}
 
     public static Profile CreateProfile(string dataPath, string profileName)
     {
@@ -138,6 +140,31 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
 
       System.IO.Directory.CreateDirectory(fullProfilePath);
       var ret = new Profile(profileName, fullProfilePath, 0);
+      return ret;
+    }
+
+    internal static FleetStats GetFleetStats(List<LoggedFlight> flights)
+    {
+      var planes = flights
+          .GroupBy(q => q.AircraftRegistration ?? "(unreg)")
+          .ToDictionary(q => q.Key, q => q.ToList());
+
+      var fleetStats = planes
+        .Select(q =>
+        {
+          var lastFlight = q.Value.OrderByDescending(f => f.StartUpDateTime).First();
+          FleetAirplaneStats fas = new FleetAirplaneStats(
+            q.Key,
+            q.Value.Count,
+            new TimeSpan(q.Value.Sum(p => p.BlockTime.Ticks)),
+            lastFlight.DestinationICAO ?? "(unknown)",
+            lastFlight.TakeOffDateTime);
+          return fas;
+        })
+        .OrderByDescending(q => q.Registration)
+        .ToList();
+
+      FleetStats ret = new(fleetStats);
       return ret;
     }
   }

@@ -16,21 +16,21 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.Flights
 {
   /// <summary>
   /// Interaction logic for LogFlight.xaml
   /// </summary>
-  public partial class CtrLogFlight : UserControl
+  public partial class CtrLogFlightDetail : UserControl
   {
-    public CtrLogFlight()
+    public CtrLogFlightDetail()
     {
       InitializeComponent();
     }
 
     private void btnChangeRegistration_Click(object sender, RoutedEventArgs e)
     {
-      if (this.DataContext is not CtrLogFlightOverview.LogViewModel vm) return;
+      if (this.DataContext is not CtrLogFlightMain.LogViewModel vm) return;
       if (vm.SelectedFlight == null) return;
       LoggedFlight lf = vm.SelectedFlight;
 
@@ -54,7 +54,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
 
     private void btnChangeDivertReason_Click(object sender, RoutedEventArgs e)
     {
-      if (this.DataContext is not CtrLogFlightOverview.LogViewModel vm) return;
+      if (this.DataContext is not CtrLogFlightMain.LogViewModel vm) return;
       if (vm.SelectedFlight == null) return;
       LoggedFlight lf = vm.SelectedFlight;
 

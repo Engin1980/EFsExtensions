@@ -1,4 +1,5 @@
 ﻿using Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog;
+using Eng.EFsExtensions.Modules.FlightLogModule.Converters;
 using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
 using ESystem;
 using ESystem.Miscelaneous;
@@ -14,7 +15,7 @@ using System.Windows.Forms;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
 {
-  internal class LogStats
+  public static class LogStats
   {
     #region static
     public static List<DescriptiveLogStatItem> DescriptiveLogStats { get; set; } = new List<DescriptiveLogStatItem>();
@@ -71,104 +72,12 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
       GroupingLogStats.Add(new("Aircraft Type", q => q.AircraftType));
       GroupingLogStats.Add(new("Cruise Altitudes", q => q.CruizeAltitude));
     }
-
-    public static StatsData Calculate(List<LoggedFlight> flights)
-    {
-      OverallStats all = new(flights.Count, TimeSpan.FromTicks(flights.Sum(q => q.BlockTime.Ticks)), TimeSpan.FromTicks(flights.Sum(q => q.AirTime.Ticks)));
-      List<DescriptiveLogStatView> des = new();
-      List<GroupingLogStatView> grp = new();
-
-      foreach (DescriptiveLogStatItem stat in DescriptiveLogStats)
-      {
-        var tmp = CalculateStat(stat, flights);
-        if (tmp is not null)
-          des.Add(tmp);
-      }
-
-      foreach (GroupingLogStatItem stat in GroupingLogStats)
-      {
-        var tmp = CalculateStat(stat, flights);
-        if (tmp is not null)
-          grp.Add(tmp);
-      }
-
-      StatsData ret = new(all, des, grp);
-
-      return ret;
-    }
-
-    private static GroupingLogStatView? CalculateStat(GroupingLogStatItem stat, List<LoggedFlight> flights)
-    {
-      var tmp = flights
-        .Where(q => stat.GroupSelector(q) != null);
-
-      if (!tmp.Any()) return null;
-
-      int uniqueCount = -1;
-
-      List<GroupingLogStatRecord> records = tmp
-        .GroupBy(stat.GroupSelector)
-        .Tap(q => uniqueCount = q.Count())
-        .Select(q => new GroupingLogStatRecord(q.Count(), q.Key!, q.ToList()))
-        .OrderByDescending(q => q.Count)
-        .ToList();
-
-      GroupingLogStatView view = new(stat, records, uniqueCount);
-
-      return view;
-    }
-
-    private static DescriptiveLogStatView? CalculateStat(DescriptiveLogStatItem stat, List<LoggedFlight> flights)
-    {
-      var tmp = flights.Select(q => new { Value = stat.ValueSelector(q), Flight = q });
-      tmp = tmp.Where(q => q.Value.HasValue);
-
-      if (!tmp.Any()) return null;
-
-      var min = tmp.MinBy(q => q.Value!.Value);
-      var max = tmp.MaxBy(q => q.Value!.Value);
-      var avg = tmp.Average(q => q.Value!.Value);
-
-      string formatByStats(double value, DescriptiveLogStatItem stat)
-      {
-        if (stat.ValueConverter is not null)
-        {
-          object input = stat.ValueConverter is LongDistanceConverter || stat.ValueConverter is ShortDistanceConverter
-            ? new Distance(value, DistanceUnit.Meters)
-            : stat.ValueConverter is WeightConverter
-            ? new Weight(value, WeightUnit.Kilograms)
-            : stat.ValueConverter is SpeedConverter
-            ? new Speed(value, SpeedUnit.KTS)
-            : throw new ApplicationException($"Unexepected converter type '{stat.ValueConverter.GetType()}'");
-          return (string)stat.ValueConverter.Convert(input, typeof(string), stat.ValueStringFormat, System.Globalization.CultureInfo.DefaultThreadCurrentUICulture);
-        }
-        else if (stat.ValueStringFormat is not null)
-          return string.Format(stat.ValueStringFormat, value);
-        else if (stat.ValueStringFormatter is not null)
-          return stat.ValueStringFormatter(value);
-        else
-          return value.ToString();
-      }
-
-      DescriptiveLogStatRecord createStats(double value, LoggedFlight flight)
-      {
-        return new(value, formatByStats(value, stat), flight);
-      }
-
-      DescriptiveLogStatView view = new(
-        stat,
-        createStats(min!.Value!.Value, min.Flight),
-        createStats(max!.Value!.Value, max.Flight),
-        formatByStats(avg, stat));
-
-      return view;
-    }
     #endregion static
-
-    private LogStats() { }
   }
 
-  public record StatsData(OverallStats OverallStats, List<DescriptiveLogStatView> DescriptiveStats, List<GroupingLogStatView> GroupingStats);
+  public record FleetAirplaneStats(string Registration, int TotalFlights, TimeSpan TotalTime, string LastLocationICAO, DateTime LastFlightDate);
+
+  public record FleetStats(List<FleetAirplaneStats> Airplanes);
 
   public record OverallStats(int TotalFlights, TimeSpan TotalBlockDuration, TimeSpan TotalAirDuration);
 

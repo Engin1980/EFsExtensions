@@ -24,7 +24,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
   /// <summary>
   /// Interaction logic for LogFlightOverview.xaml
   /// </summary>
-  public partial class CtrLogFlightOverview : UserControl
+  public partial class CtrLogFlightMain : UserControl
   {
     internal class LogViewModel : NotifyPropertyChanged
     {
@@ -40,33 +40,38 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
         set => base.UpdateProperty(nameof(SelectedFlight), value);
       }
 
-      public StatsData Stats
+      public FleetStats Fleet
       {
-        get => base.GetProperty<StatsData>(nameof(Stats))!;
-        set => base.UpdateProperty(nameof(Stats), value);
+        get => base.GetProperty<FleetStats>(nameof(Fleet))!;
+        set => base.UpdateProperty(nameof(Fleet), value);
       }
     }
 
-    private static readonly DependencyProperty VMProperty =
-      DependencyProperty.Register(nameof(VM), typeof(LogViewModel), typeof(CtrLogFlightOverview));
+    private static readonly DependencyProperty VMProperty = DependencyProperty.Register(
+      nameof(VM), 
+      typeof(LogViewModel), 
+      typeof(CtrLogFlightMain));
     internal LogViewModel VM
     {
       get => (LogViewModel)GetValue(VMProperty);
       private set => SetValue(VMProperty, value);
     }
 
-    private static readonly DependencyProperty FlightsProperty =
-      DependencyProperty.Register(nameof(Flights), typeof(List<LoggedFlight>), typeof(CtrLogFlightOverview), new PropertyMetadata(null, OnFlighsPropertyChanged));
+    private static readonly DependencyProperty FlightsProperty = DependencyProperty.Register(
+      nameof(Flights), 
+      typeof(List<LoggedFlight>), 
+      typeof(CtrLogFlightMain), 
+      new PropertyMetadata(null, OnFlighsPropertyChanged));
 
     private static void OnFlighsPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
     {
-      if (e.Property.Name == nameof(Flights) && d is CtrLogFlightOverview control)
+      if (e.Property.Name == nameof(Flights) && d is CtrLogFlightMain control)
       {
         var flights = (List<LoggedFlight>)e.NewValue;
         flights = flights.OrderByDescending(q => q.StartUpDateTime).ToList();
         control.VM.Flights = flights;
         control.VM.SelectedFlight = flights.FirstOrDefault();
-        control.VM.Stats = ProfileManager.GetFlightsStatsData(flights);
+        control.VM.Fleet = ProfileManager.GetFleetStats(flights);
       }
     }
 
@@ -76,7 +81,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
       set => SetValue(FlightsProperty, value);
     }
 
-    public CtrLogFlightOverview()
+    public CtrLogFlightMain()
     {
       InitializeComponent();
       this.VM = new LogViewModel();

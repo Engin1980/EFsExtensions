@@ -26,25 +26,40 @@
     <Compile Update="Controls\Externals\CtrVatsimView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\FlightLog\LogFlightOverview\CtrlLogDetailedStats.xaml.cs">
+    <Compile Update="Controls\FlightLog\CtrLogFlights.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\FlightLog\LogFlightOverview\CtrLogFlight.xaml.cs">
+    <Compile Update="Controls\FlightLog\Stats\CtrDescriptiveStats.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\FlightLog\LogFlightOverview\CtrLogFlightListSimple.xaml.cs">
+    <Compile Update="Controls\FlightLog\Stats\CtrGroupingStats.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\FlightLog\CtrLogFlightOverview.xaml.cs">
+    <Compile Update="Controls\Shared\CtrFlightLogFilter.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\FlightLog\CtrLogFlightToolTip.xaml.cs">
+    <Compile Update="Controls\FlightLog\Stats\CtrDetailedStats.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\FlightLog\LogFlightOverview\CtrLogStats.xaml.cs">
+    <Compile Update="Controls\FlightLog\Flights\CtrLogFlightDetail.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Controls\FlightLog\LogFlightOverview\FrmVisibleColumns.xaml.cs">
+    <Compile Update="Controls\FlightLog\Flights\CtrLogFlightList.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FlightLog\CtrLogFlightMain.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\Shared\CtrLogFlightToolTip.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FlightLog\CtrLogStats.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FlightLog\CtrPlanesOverview.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Controls\FlightLog\FrmVisibleColumns.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Controls\Shared\GpsLabel.xaml.cs">

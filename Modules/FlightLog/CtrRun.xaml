@@ -32,7 +32,7 @@
       </TabControl>
     </TabItem>
     <TabItem Header="Flight Log">
-      <ctrFlightLog:CtrLogFlightOverview Flights="{Binding LoggedFlights}" />
+      <ctrFlightLog:CtrLogFlightMain Flights="{Binding LoggedFlights}" />
     </TabItem>
   </TabControl>
 </UserControl>

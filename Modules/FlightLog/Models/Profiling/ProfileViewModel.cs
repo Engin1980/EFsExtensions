@@ -30,10 +30,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
       set => UpdateProperty(nameof(SelectedProfileFlights), value);
     }
 
-    public StatsData SelectedProfileStats
-    {
-      get => GetProperty<StatsData>(nameof(SelectedProfileStats))!;
-      set => UpdateProperty(nameof(SelectedProfileStats), value);
-    }
+    //public StatsData SelectedProfileStats
+    //{
+    //  get => GetProperty<StatsData>(nameof(SelectedProfileStats))!;
+    //  set => UpdateProperty(nameof(SelectedProfileStats), value);
+    //}
   }
 }

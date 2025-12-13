@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.LogFlightOverview
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
 {
   /// <summary>
   /// Interaction logic for FrmVisibleColumns.xaml

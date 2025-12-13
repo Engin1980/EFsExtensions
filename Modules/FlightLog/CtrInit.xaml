@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:gcvt="clr-namespace:ESystem.WPF.Converters;assembly=ESystem.WPF"
              xmlns:ctr="clr-namespace:Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.WPF.Controls;assembly=EFsExtensionsModuleBase"
-             xmlns:localCvt="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
+             xmlns:cvts="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Converters"
              xmlns:ctrFlightLog="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog"
              xmlns:nav="clr-namespace:Eng.EFsExtensions.Libs.AirportsLib;assembly=AirportsLib"
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule"
@@ -13,7 +13,7 @@
              d:DesignHeight="450" d:DesignWidth="800">
   <UserControl.Resources>
     <gcvt:DoubleFormatter x:Key="DoubleFormatter" />
-    <localCvt:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter" />
+    <cvts:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter" />
     <gcvt:BoolToSolidBrushConverter x:Key="BoolToSolidBrushConverter" />
   </UserControl.Resources>
   <DockPanel>
@@ -47,7 +47,7 @@
       </DockPanel>
       <TabControl x:Name="tabMain" SelectionChanged="tabMain_SelectionChanged" Visibility="{Binding SelectedProfile, Converter={StaticResource NotNullToVisibilityConverter}}">
         <TabItem Header="Flight Log">
-          <ctrFlightLog:CtrLogFlightOverview Flights="{Binding LoggedFlights}"  />
+          <ctrFlightLog:CtrLogFlightMain Flights="{Binding LoggedFlights}"  />
         </TabItem>
         <TabItem>
           <TabItem.Header>

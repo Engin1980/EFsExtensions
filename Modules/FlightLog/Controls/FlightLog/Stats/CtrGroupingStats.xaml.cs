@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.Stats
 {
     /// <summary>
-    /// Interaction logic for LogStats.xaml
+    /// Interaction logic for CtrGroupingStats.xaml
     /// </summary>
-    public partial class CtrLogStats : UserControl
+    public partial class CtrGroupingStats : UserControl
     {
-        public CtrLogStats()
+        public CtrGroupingStats()
         {
             InitializeComponent();
         }
