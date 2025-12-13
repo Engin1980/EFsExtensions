@@ -14,7 +14,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Converters
   {
     protected override Visibility Convert(object? value, object parameter, CultureInfo culture)
     {
-      return value != null ? Visibility.Visible : Visibility.Hidden;
+      return value != null ? Visibility.Visible : Visibility.Collapsed;
     }
 
     protected override object? ConvertBack(Visibility value, object parameter, CultureInfo culture)

@@ -7,13 +7,35 @@
              xmlns:base="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared"
              xmlns:ctrIn="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.Flights"
              xmlns:cvts="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Converters"
+             xmlns:ctr="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
   <base:FlightsBasedUserControl.Resources>
     <cvts:NotNullToVisibilityConverter x:Key="NotNullToVisibilityConverter" />
   </base:FlightsBasedUserControl.Resources>
   <DockPanel x:Name="pnlMain">
-    <ctrIn:CtrLogFlightDetail DockPanel.Dock="Bottom" Visibility="{Binding SelectedFlight, Converter={StaticResource NotNullToVisibilityConverter}}"  />
-    <ctrIn:CtrLogFlightList />
+    <Grid DockPanel.Dock="Bottom" Visibility="{Binding SelectedFlight, Converter={StaticResource NotNullToVisibilityConverter}}">
+      <Button
+      x:Name="btnCloseSelectedFlight"
+      Content="X"
+      HorizontalAlignment="Right"
+      VerticalAlignment="Top"
+      Panel.ZIndex="10"
+      Margin="0" 
+      Padding="8"
+        Click="btnCloseSelectedFlight_Click"
+      />
+      <ctrIn:CtrLogFlightDetail />
+    </Grid>
+    <ctr:FlightLogFilter x:Name="ctrFilter" DockPanel.Dock="Top" />
+    <DockPanel>
+      <StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
+        <TextBlock Text="Visible flights: " Margin="8 0 0 0" />
+        <TextBlock Text="{Binding FilteredFlights.Count}" />
+        <TextBlock Text="Total flights: " Margin="8 0 0 0" />
+        <TextBlock Text="{Binding Flights.Count}" />
+      </StackPanel>
+      <ctrIn:CtrLogFlightList />
+    </DockPanel>
   </DockPanel>
 </base:FlightsBasedUserControl>

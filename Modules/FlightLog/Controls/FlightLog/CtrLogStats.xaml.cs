@@ -36,6 +36,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
         ReevalStats();
       };
       this.ctrFilter.FilterChanged += ReevalStats;
+      this.pnlMain.DataContext = null; // force to ignore DataContext set by parent
     }
 
     private void ReevalStats()

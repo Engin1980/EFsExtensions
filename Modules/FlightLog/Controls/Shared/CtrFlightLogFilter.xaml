@@ -4,23 +4,48 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared"
+             xmlns:cvt="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Converters"
              mc:Ignorable="d" 
-             d:DesignHeight="32" d:DesignWidth="4200">
+             d:DesignHeight="64" d:DesignWidth="1200">
+  <UserControl.Resources>
+    <cvt:BoolToSolidBrushConverter x:Key="BoolToSolidBrushConverter" TrueColor="FD0" FalseColor="FFF" />
+  </UserControl.Resources>
   <Grid x:Name="plnMain">
     <GroupBox Header="Filter:">
       <WrapPanel DockPanel.Dock="Top" Orientation="Horizontal">
         <Label Content="Type:" Margin="2" />
-        <ComboBox ItemsSource="{Binding Models}" SelectedItem="{Binding Model}" MinWidth="75" Margin="2" />
-        <Label Content="Registration:" Margin="2" />
-        <ComboBox ItemsSource="{Binding Registrations}" SelectedItem="{Binding Registration}" MinWidth="100" Margin="2" />
-        <Label Content="Departure ICAO:" Margin="2" />
-        <TextBox Width="100" Text="{Binding DepartureICAO}" Margin="2" />
-        <Label Content="Destination ICAO:" Margin="2" />
-        <TextBox Width="100" Margin="2" />
+        <Grid  Background="{Binding ModelChanged, Converter={StaticResource BoolToSolidBrushConverter}}" >
+          <ComboBox ItemsSource="{Binding Models}" Margin="2"
+          SelectedItem="{Binding Model, UpdateSourceTrigger=PropertyChanged}" 
+          MinWidth="75" />
+        </Grid>
+        <Label Content="Registration:" Margin="2"/>
+        <Grid Background="{Binding RegistrationChanged, Converter={StaticResource BoolToSolidBrushConverter}}" >
+          <ComboBox ItemsSource="{Binding Registrations}" 
+                  SelectedItem="{Binding Registration, UpdateSourceTrigger=PropertyChanged}"
+                  MinWidth="100" Margin="2" />
+        </Grid>
+        <Label Content="Departure ICAO:" Margin="2"/>
+        <Grid Background="{Binding DepartureICAOChanged, Converter={StaticResource BoolToSolidBrushConverter}}" >
+          <TextBox Width="100" Text="{Binding DepartureICAO, UpdateSourceTrigger=PropertyChanged}" 
+                 Margin="2" />
+        </Grid>
+        <Label Content="Destination ICAO:" Margin="2"  />
+        <Grid Background="{Binding DestinationICAOChanged, Converter={StaticResource BoolToSolidBrushConverter}}" >
+          <TextBox Width="100" Text="{Binding DestinationICAO, UpdateSourceTrigger=PropertyChanged}"  
+                 Margin="2"/>
+        </Grid>
         <Label Content="From Date:" Margin="2" />
-        <DatePicker Width="100" Margin="2" />
+        <Grid Background="{Binding FromDateChanged, Converter={StaticResource BoolToSolidBrushConverter}}" >
+          <DatePicker Width="116" SelectedDate="{Binding FromDate, UpdateSourceTrigger=PropertyChanged}" 
+                    Margin="2" />
+        </Grid>
         <Label Content="To Date:" Margin="2" />
-        <DatePicker Width="100" Margin="2" />
+        <Grid>
+          <DatePicker Width="116" SelectedDate="{Binding ToDate, UpdateSourceTrigger=PropertyChanged}" 
+                    Background="{Binding ToDateChanged, Converter={StaticResource BoolToSolidBrushConverter}}"
+                    Margin="2" />
+        </Grid>
         <Button x:Name="btnApply" Content="Apply" Padding="8 0 8 0" Margin="2" Click="btnApply_Click" />
       </WrapPanel>
     </GroupBox>

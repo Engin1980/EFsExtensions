@@ -14,254 +14,256 @@
     <cvts:SpeedConverter x:Key="SpeedConverter" />
     <cvts:WeightConverter x:Key="WeightConverter" />
   </UserControl.Resources>
-  <DockPanel DataContext="{Binding SelectedFlight}">
-    <GroupBox DockPanel.Dock="Top" Header="Overview">
-      <StackPanel>
-        <StackPanel Orientation="Horizontal">
-          <Label Content="Callsign / Type / Registration / Model / Rule ::" />
-          <Label Content="{Binding Callsign}" />
-          <Label Content=" / " />
-          <Label Content="{Binding AircraftType}" />
-          <Label Content=" / " />
-          <Label Content="{Binding AircraftRegistration}" />
-          <Button Content="..." Padding="8 0 8 0" x:Name="btnChangeRegistration" Click="btnChangeRegistration_Click" />
-          <Label Content=" / " />
-          <Label Content="{Binding AircraftModel}" />
-          <Label Content=" / " />
-          <Label Content="{Binding FlightRules}" />
+  <Grid>
+    <DockPanel DataContext="{Binding SelectedFlight}">
+      <GroupBox DockPanel.Dock="Top" Header="Overview">
+        <StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <Label Content="Callsign / Type / Registration / Model / Rule ::" />
+            <Label Content="{Binding Callsign}" />
+            <Label Content=" / " />
+            <Label Content="{Binding AircraftType}" />
+            <Label Content=" / " />
+            <Label Content="{Binding AircraftRegistration}" />
+            <Button Content="..." Padding="8 0 8 0" x:Name="btnChangeRegistration" Click="btnChangeRegistration_Click" />
+            <Label Content=" / " />
+            <Label Content="{Binding AircraftModel}" />
+            <Label Content=" / " />
+            <Label Content="{Binding FlightRules}" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <Label Content="Departure / Destination / Alternate / Real ::" />
+            <Label Content="{Binding DepartureICAO}" />
+            <Label Content=" / " />
+            <Label Content="{Binding DestinationICAO}" />
+            <Label Content=" / " />
+            <Label Content="{Binding AlternateICAO}" />
+            <Label Content=" / " />
+            <Label Content="{Binding LandedICAO}" />
+            <Label Content=" // " />
+            <Label Content="{Binding DivertReason}" />
+            <Button Content="..." Padding="8 0 8 0" x:Name="btnChangeDivertReason" Click="btnChangeDivertReason_Click" />
+          </StackPanel>
+          <StackPanel Orientation="Horizontal">
+            <Label Content="Date &amp; Time / Duration-All / Duration-Flight / Distance ::" />
+            <Label>
+              <TextBlock Text="{Binding StartUpDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+            </Label>
+            <Label Content=" / " />
+            <shared:TimeSpanLabel Value="{Binding BlockTime}" StringFormat="h:mm" />
+            <Label Content=" / " />
+            <shared:TimeSpanLabel Value="{Binding AirTime}" StringFormat="h:mm" />
+            <Label Content=" / " />
+            <Label>
+              <TextBlock Text="{Binding Distance, Converter={StaticResource LongDistanceConverter}, ConverterParameter=N0}" />
+            </Label>
+          </StackPanel>
         </StackPanel>
-        <StackPanel Orientation="Horizontal">
-          <Label Content="Departure / Destination / Alternate / Real ::" />
-          <Label Content="{Binding DepartureICAO}" />
-          <Label Content=" / " />
-          <Label Content="{Binding DestinationICAO}" />
-          <Label Content=" / " />
-          <Label Content="{Binding AlternateICAO}" />
-          <Label Content=" / " />
-          <Label Content="{Binding LandedICAO}" />
-          <Label Content=" // " />
-          <Label Content="{Binding DivertReason}" />
-          <Button Content="..." Padding="8 0 8 0" x:Name="btnChangeDivertReason" Click="btnChangeDivertReason_Click" />
-        </StackPanel>
-        <StackPanel Orientation="Horizontal">
-          <Label Content="Date &amp; Time / Duration-All / Duration-Flight / Distance ::" />
-          <Label>
+      </GroupBox>
+      <GroupBox Header="Dates">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+
+          <Label Grid.Row="0" Grid.Column="1" Content="Scheduled" />
+          <Label Grid.Row="0" Grid.Column="2" Content="Real" />
+
+          <Label Grid.Row="1" Grid.Column="0" Content="Off-block" />
+          <Label Grid.Row="1" Grid.Column="1">
+            <TextBlock Text="{Binding StartUpScheduledDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          </Label>
+          <Label Grid.Row="1" Grid.Column="2">
             <TextBlock Text="{Binding StartUpDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
           </Label>
-          <Label Content=" / " />
-          <shared:TimeSpanLabel Value="{Binding BlockTime}" StringFormat="h:mm" />
-          <Label Content=" / " />
-          <shared:TimeSpanLabel Value="{Binding AirTime}" StringFormat="h:mm" />
-          <Label Content=" / " />
-          <Label>
-            <TextBlock Text="{Binding Distance, Converter={StaticResource LongDistanceConverter}, ConverterParameter=N0}" />
+
+          <Label Grid.Row="2" Grid.Column="0" Content="Take-off" />
+          <Label Grid.Row="2" Grid.Column="2">
+            <TextBlock Text="{Binding TakeOffDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
           </Label>
-        </StackPanel>
+
+          <Label Grid.Row="3" Grid.Column="0" Content="Air Time" />
+          <Label Grid.Row="3" Grid.Column="1">
+            <shared:TimeSpanTextBlock Value="{Binding ScheduledAirTime}" StringFormat="h:mm" />
+          </Label>
+          <Label Grid.Row="3" Grid.Column="2">
+            <shared:TimeSpanTextBlock Value="{Binding AirTime}" StringFormat="h:mm" />
+          </Label>
+
+          <Label Grid.Row="4" Grid.Column="0" Content="Landing" />
+          <Label Grid.Row="4" Grid.Column="2">
+            <TextBlock Text="{Binding LandingDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          </Label>
+
+          <Label Grid.Row="5" Grid.Column="0" Content="On-block" />
+          <Label Grid.Row="5" Grid.Column="1">
+            <TextBlock Text="{Binding ShutDownScheduledDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          </Label>
+          <Label Grid.Row="5" Grid.Column="2">
+            <TextBlock Text="{Binding ShutDownDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
+          </Label>
+
+        </Grid>
+      </GroupBox>
+      <GroupBox Header="Fuel">
+        <Grid>
+          <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition Width="Auto" />
+          </Grid.ColumnDefinitions>
+
+          <Label Grid.Row="0" Grid.Column="1" Content="Scheduled" />
+          <Label Grid.Row="0" Grid.Column="2" Content="Real" />
+
+          <Label Grid.Row="1" Grid.Column="0" Content="Off-block" />
+          <Label Grid.Row="1" Grid.Column="2">
+            <TextBlock Text="{Binding StartUpFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
+          </Label>
+
+          <Label Grid.Row="2" Grid.Column="0" Content="Take-off" />
+          <Label Grid.Row="2" Grid.Column="1">
+            <TextBlock Text="{Binding TakeOffScheduledFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
+          </Label>
+          <Label Grid.Row="2" Grid.Column="2">
+            <TextBlock Text="{Binding TakeOffFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
+          </Label>
+
+          <Label Grid.Row="3" Grid.Column="0" Content="Usage (air)" />
+          <Label Grid.Row="3" Grid.Column="1">
+            <TextBlock Text="{Binding AirScheduledFuelUsedWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
+          </Label>
+          <Label Grid.Row="3" Grid.Column="2">
+            <TextBlock Text="{Binding AirFuelUsedWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
+          </Label>
+
+          <Label Grid.Row="4" Grid.Column="0" Content="Landing" />
+          <Label Grid.Row="4" Grid.Column="1">
+            <TextBlock Text="{Binding LandingScheduledFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
+          </Label>
+          <Label Grid.Row="4" Grid.Column="2">
+            <TextBlock Text="{Binding LandingFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
+          </Label>
+
+          <Label Grid.Row="5" Grid.Column="0" Content="On-block" />
+          <Label Grid.Row="5" Grid.Column="2">
+            <TextBlock Text="{Binding ShutDownFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
+          </Label>
+
+        </Grid>
+      </GroupBox>
+      <StackPanel>
+        <GroupBox Header="Take-Off">
+          <ScrollViewer HorizontalScrollBarVisibility="Auto">
+            <Grid DataContext="{Binding TakeOff}">
+              <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition />
+              </Grid.RowDefinitions>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+              </Grid.ColumnDefinitions>
+
+              <DataGridColumnHeader  Grid.Row="0" Grid.Column="0" Content="Time" />
+              <Label Grid.Row="1" Grid.Column="0">
+                <TextBlock Text="{Binding RunStartDateTime, StringFormat={}{0:H:MM:ss}}" />
+              </Label>
+
+              <DataGridColumnHeader  Grid.Row="0" Grid.Column="1" Content="Length" />
+              <Label Grid.Row="1" Grid.Column="1">
+                <TextBlock Text="{Binding Length, Converter={StaticResource ShortDistanceConverter}, ConverterParameter=N0}" />
+              </Label>
+
+              <DataGridColumnHeader  Grid.Row="0" Grid.Column="2" Content="Front Gear" />
+              <shared:TimeSpanLabel Grid.Row="1" Grid.Column="2" Value="{Binding FrontGearTime}" StringFormat="s.fff" />
+
+              <DataGridColumnHeader  Grid.Row="0" Grid.Column="3" Content="All Gear" />
+              <shared:TimeSpanLabel Grid.Row="1" Grid.Column="3" Value="{Binding AllGearTime}" StringFormat="s.fff" />
+
+              <DataGridColumnHeader  Grid.Row="0" Grid.Column="4" Content="IAS" />
+              <Label Grid.Row="1" Grid.Column="4">
+                <TextBlock Text="{Binding IAS, Converter={StaticResource SpeedConverter}, ConverterParameter=N0}" />
+              </Label>
+
+              <DataGridColumnHeader  Grid.Row="0" Grid.Column="5" Content="MaxVS" />
+              <Label Grid.Row="1" Grid.Column="5">
+                <TextBlock Text="{Binding MaxVS, StringFormat={}{0:N2} ft/min}" />
+              </Label>
+
+              <DataGridColumnHeader  Grid.Row="0" Grid.Column="6" Content="MaxAccY" />
+              <Label Grid.Row="1" Grid.Column="6">
+                <TextBlock Text="{Binding MaxAccY, StringFormat={}{0:N3}}" />
+              </Label>
+
+              <DataGridColumnHeader  Grid.Row="0" Grid.Column="7" Content="MaxPitch" />
+              <Label Grid.Row="1" Grid.Column="7">
+                <TextBlock Text="{Binding MaxPitch, StringFormat={}{0:N2}°}" />
+              </Label>
+
+              <DataGridColumnHeader  Grid.Row="0" Grid.Column="8" Content="MaxBank" />
+              <Label Grid.Row="1" Grid.Column="8">
+                <TextBlock Text="{Binding MaxBank, StringFormat={}{0:N2}°}" />
+              </Label>
+            </Grid>
+          </ScrollViewer>
+        </GroupBox>
+        <GroupBox Header="Landings">
+          <StackPanel>
+            <DataGrid ItemsSource="{Binding Touchdowns}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False">
+              <DataGrid.Columns>
+                <DataGridTextColumn Header="Time" Binding="{Binding TouchDownDateTime, StringFormat={}{0:HH:mm:ss}}" />
+                <DataGridTextColumn Header="Length" Binding="{Binding RollOutLength, Converter={StaticResource ShortDistanceConverter}, ConverterParameter=N0}" />
+                <DataGridTemplateColumn Header="L/R Gear">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <shared:TimeSpanTextBlock Value="{Binding MainGearTime}" StringFormat="s.fff" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="All Gear">
+                  <DataGridTemplateColumn.CellTemplate>
+                    <DataTemplate>
+                      <shared:TimeSpanTextBlock Value="{Binding AllGearTime}" StringFormat="s.fff" />
+                    </DataTemplate>
+                  </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="IAS" Binding="{Binding IAS, Converter={StaticResource SpeedConverter}, ConverterParameter=N0}" />
+                <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" />
+                <DataGridTextColumn Header="SmartVS" Binding="{Binding SmartVS, StringFormat={}{0:N2} ft/min}" />
+                <DataGridTextColumn Header="Acc-Y" Binding="{Binding MaxAccY, StringFormat={}{0:N3}}" />
+                <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch, StringFormat={}{0:N3}°}" />
+                <DataGridTextColumn Header="Bank" Binding="{Binding Bank, StringFormat={}{0:N3}°}" />
+              </DataGrid.Columns>
+            </DataGrid>
+          </StackPanel>
+        </GroupBox>
       </StackPanel>
-    </GroupBox>
-    <GroupBox Header="Dates">
-      <Grid>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-
-        <Label Grid.Row="0" Grid.Column="1" Content="Scheduled" />
-        <Label Grid.Row="0" Grid.Column="2" Content="Real" />
-
-        <Label Grid.Row="1" Grid.Column="0" Content="Off-block" />
-        <Label Grid.Row="1" Grid.Column="1">
-          <TextBlock Text="{Binding StartUpScheduledDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-        </Label>
-        <Label Grid.Row="1" Grid.Column="2">
-          <TextBlock Text="{Binding StartUpDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-        </Label>
-
-        <Label Grid.Row="2" Grid.Column="0" Content="Take-off" />
-        <Label Grid.Row="2" Grid.Column="2">
-          <TextBlock Text="{Binding TakeOffDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-        </Label>
-
-        <Label Grid.Row="3" Grid.Column="0" Content="Air Time" />
-        <Label Grid.Row="3" Grid.Column="1">
-          <shared:TimeSpanTextBlock Value="{Binding ScheduledAirTime}" StringFormat="h:mm" />
-        </Label>
-        <Label Grid.Row="3" Grid.Column="2">
-          <shared:TimeSpanTextBlock Value="{Binding AirTime}" StringFormat="h:mm" />
-        </Label>
-
-        <Label Grid.Row="4" Grid.Column="0" Content="Landing" />
-        <Label Grid.Row="4" Grid.Column="2">
-          <TextBlock Text="{Binding LandingDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-        </Label>
-
-        <Label Grid.Row="5" Grid.Column="0" Content="On-block" />
-        <Label Grid.Row="5" Grid.Column="1">
-          <TextBlock Text="{Binding ShutDownScheduledDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-        </Label>
-        <Label Grid.Row="5" Grid.Column="2">
-          <TextBlock Text="{Binding ShutDownDateTime, StringFormat={}{0:yyyy-MM-dd HH:mm}}" />
-        </Label>
-
-      </Grid>
-    </GroupBox>
-    <GroupBox Header="Fuel">
-      <Grid>
-        <Grid.RowDefinitions>
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-          <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="Auto" />
-          <ColumnDefinition Width="Auto" />
-        </Grid.ColumnDefinitions>
-
-        <Label Grid.Row="0" Grid.Column="1" Content="Scheduled" />
-        <Label Grid.Row="0" Grid.Column="2" Content="Real" />
-
-        <Label Grid.Row="1" Grid.Column="0" Content="Off-block" />
-        <Label Grid.Row="1" Grid.Column="2">
-          <TextBlock Text="{Binding StartUpFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
-        </Label>
-
-        <Label Grid.Row="2" Grid.Column="0" Content="Take-off" />
-        <Label Grid.Row="2" Grid.Column="1">
-          <TextBlock Text="{Binding TakeOffScheduledFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
-        </Label>
-        <Label Grid.Row="2" Grid.Column="2">
-          <TextBlock Text="{Binding TakeOffFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
-        </Label>
-
-        <Label Grid.Row="3" Grid.Column="0" Content="Usage (air)" />
-        <Label Grid.Row="3" Grid.Column="1">
-          <TextBlock Text="{Binding AirScheduledFuelUsedWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
-        </Label>
-        <Label Grid.Row="3" Grid.Column="2">
-          <TextBlock Text="{Binding AirFuelUsedWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
-        </Label>
-
-        <Label Grid.Row="4" Grid.Column="0" Content="Landing" />
-        <Label Grid.Row="4" Grid.Column="1">
-          <TextBlock Text="{Binding LandingScheduledFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
-        </Label>
-        <Label Grid.Row="4" Grid.Column="2">
-          <TextBlock Text="{Binding LandingFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
-        </Label>
-
-        <Label Grid.Row="5" Grid.Column="0" Content="On-block" />
-        <Label Grid.Row="5" Grid.Column="2">
-          <TextBlock Text="{Binding ShutDownFuelWeight, Converter={StaticResource WeightConverter}, ConverterParameter=N0}" />
-        </Label>
-
-      </Grid>
-    </GroupBox>
-    <StackPanel>
-      <GroupBox Header="Take-Off">
-        <ScrollViewer HorizontalScrollBarVisibility="Auto">
-          <Grid DataContext="{Binding TakeOff}">
-            <Grid.RowDefinitions>
-              <RowDefinition />
-              <RowDefinition />
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
-              <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="0" Content="Time" />
-            <Label Grid.Row="1" Grid.Column="0">
-              <TextBlock Text="{Binding RunStartDateTime, StringFormat={}{0:H:MM:ss}}" />
-            </Label>
-
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="1" Content="Length" />
-            <Label Grid.Row="1" Grid.Column="1">
-              <TextBlock Text="{Binding Length, Converter={StaticResource ShortDistanceConverter}, ConverterParameter=N0}" />
-            </Label>
-
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="2" Content="Front Gear" />
-            <shared:TimeSpanLabel Grid.Row="1" Grid.Column="2" Value="{Binding FrontGearTime}" StringFormat="s.fff" />
-
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="3" Content="All Gear" />
-            <shared:TimeSpanLabel Grid.Row="1" Grid.Column="3" Value="{Binding AllGearTime}" StringFormat="s.fff" />
-
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="4" Content="IAS" />
-            <Label Grid.Row="1" Grid.Column="4">
-              <TextBlock Text="{Binding IAS, Converter={StaticResource SpeedConverter}, ConverterParameter=N0}" />
-            </Label>
-
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="5" Content="MaxVS" />
-            <Label Grid.Row="1" Grid.Column="5">
-              <TextBlock Text="{Binding MaxVS, StringFormat={}{0:N2} ft/min}" />
-            </Label>
-
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="6" Content="MaxAccY" />
-            <Label Grid.Row="1" Grid.Column="6">
-              <TextBlock Text="{Binding MaxAccY, StringFormat={}{0:N3}}" />
-            </Label>
-
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="7" Content="MaxPitch" />
-            <Label Grid.Row="1" Grid.Column="7">
-              <TextBlock Text="{Binding MaxPitch, StringFormat={}{0:N2}°}" />
-            </Label>
-
-            <DataGridColumnHeader  Grid.Row="0" Grid.Column="8" Content="MaxBank" />
-            <Label Grid.Row="1" Grid.Column="8">
-              <TextBlock Text="{Binding MaxBank, StringFormat={}{0:N2}°}" />
-            </Label>
-          </Grid>
-        </ScrollViewer>
-      </GroupBox>
-      <GroupBox Header="Landings">
-        <StackPanel>
-          <DataGrid ItemsSource="{Binding Touchdowns}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False">
-            <DataGrid.Columns>
-              <DataGridTextColumn Header="Time" Binding="{Binding TouchDownDateTime, StringFormat={}{0:HH:mm:ss}}" />
-              <DataGridTextColumn Header="Length" Binding="{Binding RollOutLength, Converter={StaticResource ShortDistanceConverter}, ConverterParameter=N0}" />
-              <DataGridTemplateColumn Header="L/R Gear">
-                <DataGridTemplateColumn.CellTemplate>
-                  <DataTemplate>
-                    <shared:TimeSpanTextBlock Value="{Binding MainGearTime}" StringFormat="s.fff" />
-                  </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-              </DataGridTemplateColumn>
-              <DataGridTemplateColumn Header="All Gear">
-                <DataGridTemplateColumn.CellTemplate>
-                  <DataTemplate>
-                    <shared:TimeSpanTextBlock Value="{Binding AllGearTime}" StringFormat="s.fff" />
-                  </DataTemplate>
-                </DataGridTemplateColumn.CellTemplate>
-              </DataGridTemplateColumn>
-              <DataGridTextColumn Header="IAS" Binding="{Binding IAS, Converter={StaticResource SpeedConverter}, ConverterParameter=N0}" />
-              <DataGridTextColumn Header="VS" Binding="{Binding VS, StringFormat={}{0:N2} ft/min}" />
-              <DataGridTextColumn Header="SmartVS" Binding="{Binding SmartVS, StringFormat={}{0:N2} ft/min}" />
-              <DataGridTextColumn Header="Acc-Y" Binding="{Binding MaxAccY, StringFormat={}{0:N3}}" />
-              <DataGridTextColumn Header="Pitch" Binding="{Binding Pitch, StringFormat={}{0:N3}°}" />
-              <DataGridTextColumn Header="Bank" Binding="{Binding Bank, StringFormat={}{0:N3}°}" />
-            </DataGrid.Columns>
-          </DataGrid>
-        </StackPanel>
-      </GroupBox>
-    </StackPanel>
-  </DockPanel>
+    </DockPanel>
+  </Grid>
 </UserControl>

@@ -30,6 +30,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
         get => base.GetProperty<List<LoggedFlight>?>(nameof(Flights)) ?? [];
         set => base.UpdateProperty<List<LoggedFlight>>(nameof(Flights), value);
       }
+
+      public List<LoggedFlight> FilteredFlights
+      {
+        get => base.GetProperty<List<LoggedFlight>?>(nameof(FilteredFlights)) ?? [];
+        set => base.UpdateProperty<List<LoggedFlight>>(nameof(FilteredFlights), value);
+      }
+
       public LoggedFlight? SelectedFlight
       {
         get => base.GetProperty<LoggedFlight?>(nameof(SelectedFlight));
@@ -41,7 +48,25 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
     {
       InitializeComponent();
       this.pnlMain.DataContext = vm = new() { Flights = this.Flights };
-      this.FlightsChanged += () => this.vm.Flights = this.Flights;
+      this.FlightsChanged += () =>
+      {
+        this.vm.Flights = this.Flights;
+        ctrFilter.SetUpFilter(this.Flights);
+        UpdateFilteredFlights();
+      };
+      this.ctrFilter.FilterChanged += UpdateFilteredFlights;
+      UpdateFilteredFlights();
+    }
+
+    private void UpdateFilteredFlights()
+    {
+      var flights = ctrFilter.ApplyFilter(this.vm.Flights);
+      this.vm.FilteredFlights = flights;
+    }
+
+    private void btnCloseSelectedFlight_Click(object sender, RoutedEventArgs e)
+    {
+      this.vm.SelectedFlight = null;
     }
   }
 }

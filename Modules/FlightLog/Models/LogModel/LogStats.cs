@@ -71,6 +71,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
       GroupingLogStats.Add(new("Registration", q => q.AircraftRegistration));
       GroupingLogStats.Add(new("Aircraft Type", q => q.AircraftType));
       GroupingLogStats.Add(new("Cruise Altitudes", q => q.CruizeAltitude));
+      GroupingLogStats.Add(new("Flights/Month", q => q.StartUpScheduledDateTime?.ToString("yyyy-MM")));
+      GroupingLogStats.Add(new("Flights/Year", q => q.StartUpScheduledDateTime?.ToString("yyyy")));
     }
     #endregion static
   }

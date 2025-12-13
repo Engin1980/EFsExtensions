@@ -10,7 +10,7 @@
   <UserControl.Resources>
     <cvts:LoggedFlightToSolidBrushConverter x:Key="LoggedFlightToSolidBrushConverter" />
   </UserControl.Resources>
-  <DataGrid ItemsSource="{Binding Flights}" SelectedItem="{Binding SelectedFlight}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" >
+  <DataGrid ItemsSource="{Binding FilteredFlights}" SelectedItem="{Binding SelectedFlight}" CanUserAddRows="False" CanUserDeleteRows="False" AutoGenerateColumns="False" IsReadOnly="True" >
     <DataGrid.RowStyle>
       <Style TargetType="DataGridRow">
         <Setter Property="Foreground" Value="{Binding ., Converter={StaticResource LoggedFlightToSolidBrushConverter}}"/>

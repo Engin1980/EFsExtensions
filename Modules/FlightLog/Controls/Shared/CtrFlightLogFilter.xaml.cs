@@ -1,4 +1,5 @@
-﻿using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
+﻿using Eng.EFsExtensions.EFsExtensionsModuleBase;
+using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
 using ESystem;
 using ESystem.Miscelaneous;
@@ -26,47 +27,113 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared
   {
     public class FlightLogFilterViewModel : NotifyPropertyChanged
     {
+      private void UpdatePropertyAndChangedFlag<T>(string propertyName, T value)
+      {
+        base.UpdateProperty<T>(propertyName, value);
+        base.UpdateProperty<bool>(propertyName + "Changed", true);
+      }
+
       public List<string> Models
       {
         get => base.GetProperty<List<string>>(nameof(Models)) ?? [];
-        set => base.UpdateProperty<List<string>>(nameof(Models), value);
+        set => this.UpdatePropertyAndChangedFlag<List<string>>(nameof(Models), value);
+      }
+
+      public bool ModelsChanged
+      {
+        get => base.GetProperty<bool?>(nameof(ModelsChanged)) ?? false;
       }
 
       public List<string> Registrations
       {
         get => base.GetProperty<List<string>>(nameof(Registrations)) ?? [];
-        set => base.UpdateProperty<List<string>>(nameof(Registrations), value);
+        set => this.UpdatePropertyAndChangedFlag<List<string>>(nameof(Registrations), value);
+      }
+
+      public bool RegistrationsChanged
+      {
+        get => base.GetProperty<bool?>(nameof(RegistrationsChanged)) ?? false;
       }
 
       public string? Model
       {
         get => base.GetProperty<string>(nameof(Model));
-        set => base.UpdateProperty<string>(nameof(Model), value);
+        set => this.UpdatePropertyAndChangedFlag<string?>(nameof(Model), value);
       }
+
+      public bool ModelChanged
+      {
+        get => base.GetProperty<bool?>(nameof(ModelChanged)) ?? false;
+      }
+
       public string? Registration
       {
         get => base.GetProperty<string?>(nameof(Registration));
-        set => base.UpdateProperty<string?>(nameof(Registration), value);
+        set => this.UpdatePropertyAndChangedFlag<string?>(nameof(Registration), value);
       }
+
+      public bool RegistrationChanged
+      {
+        get => base.GetProperty<bool?>(nameof(RegistrationChanged)) ?? false;
+      }
+
       public string? DepartureICAO
       {
         get => base.GetProperty<string?>(nameof(DepartureICAO));
-        set => base.UpdateProperty<string?>(nameof(DepartureICAO), value);
+        set => this.UpdatePropertyAndChangedFlag<string?>(nameof(DepartureICAO), value);
       }
-      public string? ArrivalICAO
+
+      public bool DepartureICAOChanged
       {
-        get => base.GetProperty<string?>(nameof(ArrivalICAO));
-        set => base.UpdateProperty<string?>(nameof(ArrivalICAO), value);
+        get => base.GetProperty<bool?>(nameof(DepartureICAOChanged)) ?? false;
       }
+
+      public string? DestinationICAO
+      {
+        get => base.GetProperty<string?>(nameof(DestinationICAO));
+        set => this.UpdatePropertyAndChangedFlag<string?>(nameof(DestinationICAO), value);
+      }
+
+      public bool DestinationICAOChanged
+      {
+        get => base.GetProperty<bool?>(nameof(DestinationICAOChanged)) ?? false;
+      }
+
       public DateTime? FromDate
       {
         get => base.GetProperty<DateTime?>(nameof(FromDate));
-        set => base.UpdateProperty<DateTime?>(nameof(FromDate), value);
+        set => this.UpdatePropertyAndChangedFlag<DateTime?>(nameof(FromDate), value);
       }
+
+      public bool FromDateChanged
+      {
+        get => base.GetProperty<bool?>(nameof(FromDateChanged)) ?? false;
+      }
+
       public DateTime? ToDate
       {
         get => base.GetProperty<DateTime?>(nameof(ToDate));
-        set => base.UpdateProperty<DateTime?>(nameof(ToDate), value);
+        set => this.UpdatePropertyAndChangedFlag<DateTime?>(nameof(ToDate), value);
+      }
+
+      public bool ToDateChanged
+      {
+        get => base.GetProperty<bool?>(nameof(ToDateChanged)) ?? false;
+      }
+
+      public void ResetChangedFlags()
+      {
+        try
+        {
+          this.GetType()
+            .GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance)
+            .Where(q => q.Name.EndsWith("Changed"))
+            .ForEach(q => base.UpdateProperty<bool>(q.Name, false));
+        }
+        catch (Exception ex)
+        {
+          throw new ApplicationException("Error resetting changed flags in FlightLogFilterViewModel.", ex);
+        }
       }
     }
 
@@ -112,9 +179,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared
       {
         query = query.Where(f => f.DepartureICAO != null && f.DepartureICAO.Contains(this.vm.DepartureICAO!));
       }
-      if (!string.IsNullOrWhiteSpace(this.vm.ArrivalICAO))
+      if (!string.IsNullOrWhiteSpace(this.vm.DestinationICAO))
       {
-        query = query.Where(f => f.DestinationICAO != null && f.DestinationICAO.Contains(this.vm.ArrivalICAO!));
+        query = query.Where(f => f.DestinationICAO != null && f.DestinationICAO.Contains(this.vm.DestinationICAO!));
       }
       if (this.vm.FromDate.HasValue)
       {
@@ -129,6 +196,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.Shared
 
     private void btnApply_Click(object sender, RoutedEventArgs e)
     {
+      this.vm.ResetChangedFlags();
       this.FilterChanged?.Invoke();
     }
   }

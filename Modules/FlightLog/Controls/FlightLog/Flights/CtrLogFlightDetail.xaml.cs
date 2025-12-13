@@ -16,62 +16,61 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.Flights
+namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.Flights;
+
+/// <summary>
+/// Interaction logic for LogFlight.xaml
+/// </summary>
+public partial class CtrLogFlightDetail : UserControl
 {
-  /// <summary>
-  /// Interaction logic for LogFlight.xaml
-  /// </summary>
-  public partial class CtrLogFlightDetail : UserControl
+  public CtrLogFlightDetail()
   {
-    public CtrLogFlightDetail()
+    InitializeComponent();
+  }
+
+  private void btnChangeRegistration_Click(object sender, RoutedEventArgs e)
+  {
+    if (this.DataContext is not CtrLogFlightMain.LogViewModel vm) return;
+    if (vm.SelectedFlight == null) return;
+    LoggedFlight lf = vm.SelectedFlight;
+
+    var inputBox = new InputBox(
+      "Enter new registration:",
+      "Change registration...",
+      lf.AircraftRegistration,
+      validator: q => q.Trim().Length > 0,
+      validationErrorMessage: "Registration must be non-empty.");
+    if (inputBox.ShowDialog() == true)
     {
-      InitializeComponent();
+      lf.AircraftRegistration = inputBox.Input!.ToUpper();
+      ProfileManager.UpdateFlight(lf);
+      vm.SelectedFlight = null;
+      vm.SelectedFlight = lf;
+
+      int i = vm.Flights.IndexOf(lf);
+      vm.Flights[i] = lf;
     }
+  }
 
-    private void btnChangeRegistration_Click(object sender, RoutedEventArgs e)
+  private void btnChangeDivertReason_Click(object sender, RoutedEventArgs e)
+  {
+    if (this.DataContext is not CtrLogFlightMain.LogViewModel vm) return;
+    if (vm.SelectedFlight == null) return;
+    LoggedFlight lf = vm.SelectedFlight;
+
+    var inputBox = new EnumInputBox("Select divert reason:", "Change Divert Reason...",
+      typeof(DivertReason), lf.DivertReason,
+      EnumInputBox.DisplayStringSelectors.DisplayAttributeSelector);
+    inputBox.ShowDialog();
+    if (inputBox.ShowDialog() == true)
     {
-      if (this.DataContext is not CtrLogFlightMain.LogViewModel vm) return;
-      if (vm.SelectedFlight == null) return;
-      LoggedFlight lf = vm.SelectedFlight;
+      lf.DivertReason = (DivertReason)inputBox.Input!;
+      ProfileManager.UpdateFlight(lf);
+      vm.SelectedFlight = null;
+      vm.SelectedFlight = lf;
 
-      var inputBox = new InputBox(
-        "Enter new registration:",
-        "Change registration...",
-        lf.AircraftRegistration,
-        validator: q => q.Trim().Length > 0,
-        validationErrorMessage: "Registration must be non-empty.");
-      if (inputBox.ShowDialog() == true)
-      {
-        lf.AircraftRegistration = inputBox.Input!.ToUpper();
-        ProfileManager.UpdateFlight(lf);
-        vm.SelectedFlight = null;
-        vm.SelectedFlight = lf;
-
-        int i = vm.Flights.IndexOf(lf);
-        vm.Flights[i] = lf;
-      }
-    }
-
-    private void btnChangeDivertReason_Click(object sender, RoutedEventArgs e)
-    {
-      if (this.DataContext is not CtrLogFlightMain.LogViewModel vm) return;
-      if (vm.SelectedFlight == null) return;
-      LoggedFlight lf = vm.SelectedFlight;
-
-      var inputBox = new EnumInputBox("Select divert reason:", "Change Divert Reason...",
-        typeof(DivertReason), lf.DivertReason,
-        EnumInputBox.DisplayStringSelectors.DisplayAttributeSelector);
-      inputBox.ShowDialog();
-      if (inputBox.ShowDialog() == true)
-      {
-        lf.DivertReason = (DivertReason)inputBox.Input!;
-        ProfileManager.UpdateFlight(lf);
-        vm.SelectedFlight = null;
-        vm.SelectedFlight = lf;
-
-        int i = vm.Flights.IndexOf(lf);
-        vm.Flights[i] = lf;
-      }
+      int i = vm.Flights.IndexOf(lf);
+      vm.Flights[i] = lf;
     }
   }
 }
