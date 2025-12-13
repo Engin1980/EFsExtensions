@@ -1,28 +1,25 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyVersion>1.6.1.0</AssemblyVersion>
-    <FileVersion>1.6.1.0</FileVersion>
+    <AssemblyVersion>1.7.0.0</AssemblyVersion>
+    <FileVersion>1.7.0.0</FileVersion>
     <RootNamespace>Eng.EFsExtensions.Modules.FlightLogModule</RootNamespace>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Model\**" />
     <EmbeddedResource Remove="Model\**" />
     <None Remove="Model\**" />
     <Page Remove="Model\**" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\Libs\AirportsLib\AirportsLib.csproj" />
     <ProjectReference Include="..\..\Libs\EFsExtensionsModuleBase\EFsExtensionsModuleBase.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="ESimConnect">
       <HintPath>..\..\DLLs\ESimConnect.dll</HintPath>
@@ -34,5 +31,4 @@
       <HintPath>..\..\DLLs\ESystem.WPF.dll</HintPath>
     </Reference>
   </ItemGroup>
-
 </Project>

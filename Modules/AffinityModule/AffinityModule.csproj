@@ -1,30 +1,26 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWPF>true</UseWPF>
     <PlatformTarget>x64</PlatformTarget>
-    <AssemblyVersion>1.6.1.0</AssemblyVersion>
-    <FileVersion>1.6.1.0</FileVersion>
+    <AssemblyVersion>1.7.0.0</AssemblyVersion>
+    <FileVersion>1.7.0.0</FileVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="Xmls\**" />
     <EmbeddedResource Remove="Xmls\**" />
     <None Remove="Xmls\**" />
     <Page Remove="Xmls\**" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="System.Management" Version="7.0.0" />
     <PackageReference Include="WindowsAPICodePack" Version="7.0.4" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\Libs\EFSExtensionsModuleBase\EFsExtensionsModuleBase.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="ESystem">
       <HintPath>..\..\DLLs\ESystem.dll</HintPath>
@@ -33,5 +29,4 @@
       <HintPath>..\..\DLLs\EXmlLib.dll</HintPath>
     </Reference>
   </ItemGroup>
-
 </Project>

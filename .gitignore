@@ -4,3 +4,5 @@ obj
 _Release
 TestResults
 /DLLs/ELogging.deps.json
+
+*.versions.bak

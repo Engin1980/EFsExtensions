@@ -1,5 +1,5 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows7.0</TargetFramework>
@@ -8,37 +8,35 @@
     <PlatformTarget>x64</PlatformTarget>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
-    <AssemblyVersion>1.6.1.0</AssemblyVersion>
-    <FileVersion>1.6.1.0</FileVersion>
+    <AssemblyVersion>1.7.0.0</AssemblyVersion>
+    <FileVersion>1.7.0.0</FileVersion>
     <Authors>Marek Vajgl</Authors>
     <Description>Extensions for MSFS</Description>
     <ApplicationIcon>Imgs\efsextensions.ico</ApplicationIcon>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <Optimize>False</Optimize>
+    <AssemblyVersion>1.7.0.0</AssemblyVersion>
+    <FileVersion>1.7.0.0</FileVersion>
   </PropertyGroup>
-
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <Optimize>True</Optimize>
+    <AssemblyVersion>1.7.0.0</AssemblyVersion>
+    <FileVersion>1.7.0.0</FileVersion>
   </PropertyGroup>
-
   <ItemGroup>
     <Compile Remove="ModulesManagement\**" />
     <EmbeddedResource Remove="ModulesManagement\**" />
     <None Remove="ModulesManagement\**" />
     <Page Remove="ModulesManagement\**" />
   </ItemGroup>
-
   <ItemGroup>
     <None Remove="Imgs\efsextensions.png" />
   </ItemGroup>
-
   <ItemGroup>
     <Resource Include="Imgs\efsextensions.ico" />
     <Resource Include="Imgs\efsextensions.png" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Modules\AffinityModule\AffinityModule.csproj" />
     <ProjectReference Include="..\Modules\ChecklistModule\ChecklistModule.csproj" />
@@ -48,7 +46,6 @@
     <ProjectReference Include="..\Modules\RaaSModule\RaaSModule.csproj" />
     <ProjectReference Include="..\Modules\SimVarTest\SimVarTestModule.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="ESimConnect">
       <HintPath>..\DLLs\ESimConnect.dll</HintPath>
@@ -57,17 +54,14 @@
       <HintPath>..\DLLs\ESystem.dll</HintPath>
     </Reference>
   </ItemGroup>
-
   <ItemGroup>
     <None Update="appConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="call ..\Xmls\copyXmlXsd.bat&#xD;&#xA;call ..\DLLs\copySimconnect.bat" />
     <Exec Command="call copyConnectDll.bat" />
     <Exec Command="call copyData.bat" />
   </Target>
-
 </Project>

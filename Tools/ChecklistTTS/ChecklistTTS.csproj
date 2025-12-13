@@ -1,25 +1,22 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows7.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <AssemblyVersion>1.6.1.0</AssemblyVersion>
-    <FileVersion>1.6.1.0</FileVersion>
+    <AssemblyVersion>1.7.0.0</AssemblyVersion>
+    <FileVersion>1.7.0.0</FileVersion>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="WindowsAPICodePack" Version="7.0.4" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\Libs\EFSExtensionsModuleBase\EFsExtensionsModuleBase.csproj" />
     <ProjectReference Include="..\..\Modules\ChecklistModule\ChecklistModule.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="ESystem">
       <HintPath>..\..\DLLs\ESystem.dll</HintPath>
@@ -28,7 +25,6 @@
       <HintPath>..\..\DLLs\ESystem.WPF.dll</HintPath>
     </Reference>
   </ItemGroup>
-
   <ItemGroup>
     <Compile Update="Properties\Settings.Designer.cs">
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -36,7 +32,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
   </ItemGroup>
-
   <ItemGroup>
     <None Update="Imgs\active.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -52,9 +47,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
   </ItemGroup>
-
   <ItemGroup>
     <Folder Include="Imgs\" />
   </ItemGroup>
-
 </Project>
