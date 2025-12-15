@@ -1,7 +1,7 @@
 cd ..\Xmls
 cd
 
-set "OUT_DIR=..\EFsExtensions\bin\debug\net8.0-windows7.0\Xmls"
+set "OUT_DIR=..\EFsExtensions\bin\debug\net8.0-windows10.0.19041.0\Xmls"
 set "OUT_DIR_XSD=%OUTDIR%\Xsds"
 
 if not exist %OUT_DIR% mkdir %OUT_DIR%

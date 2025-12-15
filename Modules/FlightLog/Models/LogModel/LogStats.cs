@@ -77,7 +77,10 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
     #endregion static
   }
 
-  public record FleetAirplaneStats(string Registration, int TotalFlights, TimeSpan TotalTime, string LastLocationICAO, DateTime LastFlightDate);
+  public record FleetAirplaneStats(
+    string Registration, int TotalFlights, TimeSpan TotalTime, 
+    string LastLocationICAO, DateTime LastFlightDate,
+    List<Tuple<string, string>> FlightConnections);
 
   public record FleetStats(List<FleetAirplaneStats> Airplanes);
 

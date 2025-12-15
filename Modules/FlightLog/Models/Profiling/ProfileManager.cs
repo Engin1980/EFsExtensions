@@ -158,7 +158,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling
             q.Value.Count,
             new TimeSpan(q.Value.Sum(p => p.BlockTime.Ticks)),
             lastFlight.DestinationICAO ?? "(unknown)",
-            lastFlight.TakeOffDateTime);
+            lastFlight.TakeOffDateTime, []);
           return fas;
         })
         .OrderByDescending(q => q.Registration)
