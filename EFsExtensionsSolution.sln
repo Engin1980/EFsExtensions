@@ -39,6 +39,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Checklist", "Checklist", "{449B60D4-B914-4D79-A613-532AFFF4AA5A}"
 	ProjectSection(SolutionItems) = preProject
 		Xmls\Checklist\a320.checklist.xml = Xmls\Checklist\a320.checklist.xml
+		Xmls\Checklist\a380.checklist.xml = Xmls\Checklist\a380.checklist.xml
 		Xmls\Checklist\baron.checklist.xml = Xmls\Checklist\baron.checklist.xml
 		Xmls\Checklist\cessna172.checklist.xml = Xmls\Checklist\cessna172.checklist.xml
 		Xmls\Checklist\cj4.checklist.xml = Xmls\Checklist\cj4.checklist.xml
@@ -93,8 +94,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SimVarTestModule", "Modules
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Global", "Global", "{8D41DB2D-C963-4C4F-8904-A38AC779E0CD}"
 	ProjectSection(SolutionItems) = preProject
-		Xmls\Global\Airports.xml = Xmls\Global\Airports.xml
 		Xmls\Global\Airports-handmade.xml = Xmls\Global\Airports-handmade.xml
+		Xmls\Global\Airports.xml = Xmls\Global\Airports.xml
 		Xmls\Global\FailureDefinitions.xml = Xmls\Global\FailureDefinitions.xml
 		Xmls\Global\SimProperties.xml = Xmls\Global\SimProperties.xml
 	EndProjectSection
