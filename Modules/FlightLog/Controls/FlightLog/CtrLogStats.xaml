@@ -55,6 +55,9 @@
       <TabItem Header="Detailed">
         <ctrIn:CtrDetailedStats />
       </TabItem>
+      <TabItem Header="Map">
+        <ctrIn:CtrMap />
+      </TabItem>
     </TabControl>
   </DockPanel>
 </base:FlightsBasedUserControl>
