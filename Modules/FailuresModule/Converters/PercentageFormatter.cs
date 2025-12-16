@@ -15,9 +15,9 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Converters
   {
     protected override string Convert(Percentage value, object parameter, CultureInfo culture)
     {
-      double d = value * 100;
+      double d = value.ToDouble() * 100d;
       string par = (string)parameter;
-      string ret = d.ToString(par) + "%";
+      string ret = d.ToString(par) + " %";
       return ret;
     }
 
