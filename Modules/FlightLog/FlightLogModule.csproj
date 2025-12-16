@@ -18,6 +18,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Mapsui" Version="5.0.2" />
+    <PackageReference Include="Mapsui.Nts" Version="5.0.2" />
     <PackageReference Include="Mapsui.Wpf" Version="5.0.2" />
   </ItemGroup>
   <ItemGroup>
