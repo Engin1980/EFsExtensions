@@ -1,4 +1,5 @@
-﻿using Eng.EFsExtensions.Libs.AirportsLib;
+﻿using BruTile.Wms;
+using Eng.EFsExtensions.Libs.AirportsLib;
 using Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.Stats;
 using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
 using Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel;
@@ -38,6 +39,7 @@ public partial class CtrPlanesOverview : UserControl
   {
     InitializeComponent();
   }
+
 
   private void UserControl_Loaded(object sender, RoutedEventArgs e)
   {
@@ -96,33 +98,37 @@ public partial class CtrPlanesOverview : UserControl
 
       return (r, g, b);
     }
-    Mapsui.Styles.Color getColorFromIndex(int index)
+    Mapsui.Styles.Color getColorByRegistration(string registration)
     {
-      double h = (index * goldenAngle % 360);
+      int colorIndex = registration.GetHashCode() % 512;
+      const byte a = 255;
+      byte r = 255, g = 255, b = 255;
+      double h = colorIndex * goldenAngle % 360;
       double s = 0.8;
       double v = 0.8;
-
-      byte r, g, b;
       (r, g, b) = convertHsvToRgb(h, s, v);
-      const byte a = 255;
       Mapsui.Styles.Color ret = Mapsui.Styles.Color.FromArgb(a, r, g, b);
       return ret;
     }
 
     var registrationLineStyles = registrations
-      .Select((reg, index) => new
+      .Select((reg, index) =>
       {
-        Registration = reg,
-        Style = new VectorStyle
+        var color = getColorByRegistration(reg);
+        return new
         {
-          Line = new Mapsui.Styles.Pen
+          Registration = reg,
+          Style = new VectorStyle
           {
-            Color = getColorFromIndex(index),
-            Width = 0.5
-          },
-          Fill = new Mapsui.Styles.Brush(getColorFromIndex(index)),
-          Outline = null
-        }
+            Line = new Mapsui.Styles.Pen
+            {
+              Color = color,
+              Width = 0.5
+            },
+            Fill = new Mapsui.Styles.Brush(color),
+            Outline = null
+          }
+        };
       })
       .ToDictionary(q => q.Registration, q => q.Style);
 
@@ -139,8 +145,6 @@ public partial class CtrPlanesOverview : UserControl
       .SelectMany(q => new[] { q.A, q.B })
       .Distinct()
       .ToList();
-
-
 
     var gpsLocations = new Dictionary<string, GPS>();
     foreach (var icao in icaos)
@@ -177,48 +181,12 @@ public partial class CtrPlanesOverview : UserControl
     trackLayer.Features = features;
     map.Layers.Add(trackLayer);
 
-
-
-    //if (stats.FlightConnections.Count > 0)
-    //{
-    //  var firstIcao = stats.FlightConnections[0].Item1;
-    //  var firstLocation = AirportInfoProvider.Instance.GetAirportInfo(firstIcao)?.Location;
-    //  if (firstLocation != null)
-    //  {
-    //    var firstPoint = new Mapsui.Geometries.Point(firstLocation.Value.Longitude, firstLocation.Value.Latitude);
-    //    var firstSphericalMercator = Mapsui.Projections.SphericalMercator.FromLonLat(firstPoint.X, firstPoint.Y);
-    //    map.Home = n => n.NavigateTo(firstSphericalMercator, map.Resolutions[12]);
-    //  }
-    //  var lineString = new Mapsui.Geometries.LineString();
-    //  foreach (var connection in stats.FlightConnections)
-    //  {
-    //    var fromIcao = connection.Item1;
-    //    var toIcao = connection.Item2;
-    //    var fromLocation = AirportInfoProvider.Instance.GetAirportInfo(fromIcao)?.Location;
-    //    var toLocation = AirportInfoProvider.Instance.GetAirportInfo(toIcao)?.Location;
-    //    if (fromLocation != null && toLocation != null)
-    //    {
-    //      var fromPoint = new Mapsui.Geometries.Point(fromLocation.Value.Longitude, fromLocation.Value.Latitude);
-    //      var toPoint = new Mapsui.Geometries.Point(toLocation.Value.Longitude, toLocation.Value.Latitude);
-    //      var fromSphericalMercator = Mapsui.Projections.SphericalMercator.FromLonLat(fromPoint.X, fromPoint.Y);
-    //      var toSphericalMercator = Mapsui.Projections.SphericalMercator.FromLonLat(toPoint.X, toPoint.Y);
-    //      lineString.Vertices.Add(fromSphericalMercator);
-    //      lineString.Vertices.Add(toSphericalMercator);
-    //    }
-    //  }
-    //  var lineFeature = new Mapsui.Features.Feature { Geometry = lineString };
-    //  var lineStyle = new Mapsui.Styles.VectorStyle
-    //  {
-    //    Line = new Mapsui.Styles.Pen(Mapsui.Styles.Color.Red, 2)
-    //  };
-    //  lineFeature.Styles.Add(lineStyle);
-    //  var layer = new Mapsui.Layers.MemoryLayer
-    //  {
-    //    Name = "Flight Connections",
-    //    Features = new Mapsui.Collections.Features { lineFeature },
-    //    Style = null
-    //  };
-    //  map.Layers.Add(layer);
-    //}
+    const double VIEW_BORDER = 2000000;
+    var minX = mapsuiLocations.Min(q => q.Value.x) - VIEW_BORDER;
+    var maxX = mapsuiLocations.Max(q => q.Value.x) + VIEW_BORDER;
+    var minY = mapsuiLocations.Min(q => q.Value.y) - VIEW_BORDER;
+    var maxY = mapsuiLocations.Max(q => q.Value.y) + VIEW_BORDER;
+    Mapsui.MRect mrect = new(minX, minY, maxX, maxY);
+    map.Navigator.ZoomToBox(mrect);
   }
 }
