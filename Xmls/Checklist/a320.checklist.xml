@@ -368,14 +368,14 @@
 			</item>
 			<item>
 				<call type="speech" value="Beacon light"/>
-				<confirmation type="speech" value="On"/>
+				<confirmation type="speech" value="Off"/>
 			</item>
 		</items>
 		<trigger>
 			<g:for seconds="{shutdownDelay}">
 				<g:and>
-					<g:property name="engine1Running" direction="above" expression="0" />
-					<g:property name="engine2Running" direction="above" expression="0" />
+					<g:property name="engine1Running" direction="below" expression="1" />
+					<g:property name="engine2Running" direction="below" expression="1" />
 				</g:and>
 			</g:for>
 		</trigger>
