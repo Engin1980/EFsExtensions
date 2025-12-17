@@ -26,6 +26,9 @@
     <Compile Update="Controls\Externals\CtrVatsimView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Controls\FlightLog\CtrAirportStats.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Controls\FlightLog\CtrLogFlights.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
