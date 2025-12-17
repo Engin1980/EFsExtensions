@@ -68,7 +68,8 @@
             <TextBlock Text="Estimated probability per flight: " />
             <TextBlock Text="{Binding EstimatedProbabilityPerFlight, Converter={StaticResource PercentageFormatter}, ConverterParameter=N2}" />
             <TextBlock Text=" Estimated flighs till failure: " />
-            <TextBlock Text="{Binding EstimatedFlighstPerFailure, Converter={StaticResource DoubleFormatter}, ConverterParameter=N5}" />
+            <TextBlock Text="{Binding EstimatedFlighstPerFailure, Converter={StaticResource DoubleFormatter}, ConverterParameter=N1}" />
+            <TextBlock Text=" (very rough aproximation)" />
           </StackPanel>
           <TreeView ItemsSource="{Binding FailureSet.Incidents}">
             <TreeView.Resources>

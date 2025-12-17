@@ -1,4 +1,5 @@
-﻿using ESystem.Miscelaneous;
+﻿using ESystem.Asserting;
+using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -65,12 +66,39 @@ namespace Eng.EFsExtensions.Modules.FailuresModule.Model.Incidents
     {
       this.Probability = this.Interval switch
       {
-        TimeTriggerInterval.OncePerTenSeconds => Percentage.Of((double)1 / this.MtbfHours / 360),
-        TimeTriggerInterval.OncePerMinute => Percentage.Of((double)1 / this.MtbfHours / 60),
-        TimeTriggerInterval.OncePerTenMinutes => Percentage.Of((double)1 / this.MtbfHours / 6),
-        TimeTriggerInterval.OncePerHour => Percentage.Of((double)1 / this.MtbfHours),
+        TimeTriggerInterval.OncePerTenSeconds => CalculateProbabilityByMTBF(this.MtbfHours, 10),
+        TimeTriggerInterval.OncePerMinute => CalculateProbabilityByMTBF(this.MtbfHours, 60),
+        TimeTriggerInterval.OncePerTenMinutes => CalculateProbabilityByMTBF(this.MtbfHours, 600),
+        TimeTriggerInterval.OncePerHour => CalculateProbabilityByMTBF(this.MtbfHours, 60 * 60),
         _ => throw new NotImplementedException()
       };
+
+      // TODO old implementation, remove if not needed
+      //this.Probability = this.Interval switch
+      //{
+      //  TimeTriggerInterval.OncePerTenSeconds => Percentage.Of((double)1 / this.MtbfHours / 360),
+      //  TimeTriggerInterval.OncePerMinute => Percentage.Of((double)1 / this.MtbfHours / 60),
+      //  TimeTriggerInterval.OncePerTenMinutes => Percentage.Of((double)1 / this.MtbfHours / 6),
+      //  TimeTriggerInterval.OncePerHour => Percentage.Of((double)1 / this.MtbfHours),
+      //  _ => throw new NotImplementedException()
+      //};
+    }
+
+    /// <summary>
+    /// Calculates probability of event during the period w.r.t. MTBF
+    /// </summary>
+    /// <param name="mtbfHours">MTBF in hours</param>
+    /// <param name="seconds">Number of seconds</param>
+    /// <returns>Event probability (0..1)</returns>
+    public static Percentage CalculateProbabilityByMTBF(double mtbfHours, double seconds)
+    {
+      EAssert.Argument.IsTrue(mtbfHours > 0, "MTBF must be positive.", nameof(mtbfHours));
+      EAssert.Argument.IsTrue(seconds >= 0, "Number of seconds must be positive.", nameof(seconds));
+
+      double mtbfSeconds = mtbfHours * 3600.0;
+      double probability = 1.0 - Math.Exp(-seconds / mtbfSeconds);
+      Percentage ret = Percentage.Of(probability);
+      return ret;
     }
 
     public TimeTrigger()

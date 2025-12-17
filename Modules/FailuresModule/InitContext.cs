@@ -160,7 +160,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
         if (id.Trigger is CheckStateTrigger cst)
           p = (1 - cst.Probability);
         else if (id.Trigger is TimeTrigger tt)
-          p = (1 - (estimatedFlightLengthInHours / tt.MtbfHours));
+          p = (1 - TimeTrigger.CalculateProbabilityByMTBF(tt.MtbfHours, estimatedFlightLengthInHours * 60 * 60));
         else
           throw new NotImplementedException();
         for (int i = 0; i < estimatedOnceEventRepetitionsPerFlight; i++)
