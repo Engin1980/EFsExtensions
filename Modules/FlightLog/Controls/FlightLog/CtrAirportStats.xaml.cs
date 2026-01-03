@@ -3,9 +3,11 @@ using Eng.EFsExtensions.Modules.FlightLogModule.LogModel;
 using ESystem.Miscelaneous;
 using Mapsui;
 using Mapsui.Layers;
+using Mapsui.Nts;
 using Mapsui.Projections;
 using Mapsui.Styles;
 using Mapsui.Tiling;
+using NetTopologySuite.Geometries;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -45,7 +47,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
         set => base.UpdateProperty(nameof(SelectedICAO), value);
       }
 
-      public Dictionary<string, List<LoggedFlight>> IcaoFlights { get; set; } = [];
+      public Dictionary<string, List<LoggedFlight>> IcaoArrivalFlights { get; set; } = [];
+      public Dictionary<string, List<LoggedFlight>> IcaoDepartureFlights { get; set; } = [];
     }
     private readonly CtrAirportStatsViewModel vm;
     public CtrAirportStats()
@@ -76,8 +79,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
       List<LoggedFlight> flights = this.Flights;
       var icaoFlights = flights.GroupBy(q => q.DestinationICAO ?? "UNKNOWN")
         .ToDictionary(q => q.Key, q => q.ToList());
-      vm.IcaoFlights = icaoFlights;
-      vm.ICAOs = icaoFlights.Keys.OrderBy(q => q).ToList();
+      vm.IcaoArrivalFlights = icaoFlights;
+      icaoFlights = flights.GroupBy(q => q.DepartureICAO ?? "UNKNOWN")
+        .ToDictionary(q => q.Key, q => q.ToList());
+      vm.IcaoDepartureFlights = icaoFlights;
+      vm.ICAOs = vm.IcaoDepartureFlights.Keys.Union(vm.IcaoArrivalFlights.Keys).OrderBy(q => q).ToList();
 
       RedrawMap();
     }
@@ -95,28 +101,82 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog
       //  ctrMap.Map.Layers.Remove(ctrMap.Map.Layers[1]);
 
       var tmp = this.vm.SelectedICAO ?? "";
-      if (this.vm.IcaoFlights.ContainsKey(tmp) == false) return;
-      var flights = this.vm.IcaoFlights[tmp];
+      if (this.vm.IcaoArrivalFlights.ContainsKey(tmp) == false) return;
+      var arrivalFlights = this.vm.IcaoArrivalFlights.ContainsKey(tmp) ? this.vm.IcaoArrivalFlights[tmp] : [];
+      var departureFlights = this.vm.IcaoDepartureFlights.ContainsKey(tmp) ? this.vm.IcaoDepartureFlights[tmp] : [];
 
-      var features = flights.Select(q => CreatePinForFlight(q));
+      var featuresLanding = arrivalFlights.Select(q => CreatePinForFlightLanding(q));
+      var featuresLandingLines = arrivalFlights
+        .Where(q => q.LastTouchdown.RollOutEndLocation != null)
+        .Select(q => CreateLineForFlightLanding(q));
+
+      var featuresTakeOff = departureFlights.Select(q => CreatePinForFlightTakeOff(q));
+      var featuresTakeOffLines = departureFlights
+        .Where(q => q.LastTouchdown.RollOutEndLocation != null)
+        .Select(q => CreateLineForFlightTakeOff(q));
 
       var layer = new MemoryLayer
       {
         Name = "Landing Pins",
-        Features = [.. features],
+        Features = [.. featuresLanding, .. featuresLandingLines, .. featuresTakeOff, .. featuresTakeOffLines],
         Style = null // Styl máme definovaný přímo u feature
       };
       ctrMap.Map.Layers.Add(layer);
     }
 
-    private IFeature CreatePinForFlight(LoggedFlight flight)
+    private IFeature CreateLineForFlightLanding(LoggedFlight flight)
+    {
+      var ltd = flight.LastTouchdown;
+      var pointFrom = SphericalMercator.FromLonLat(ltd.TouchDownLocation.Longitude, ltd.TouchDownLocation.Latitude);
+      var pointTo = SphericalMercator.FromLonLat(ltd.RollOutEndLocation!.Value.Longitude, ltd.RollOutEndLocation!.Value.Latitude);
+
+      var lineString = new LineString([pointFrom, pointTo]);
+
+      var feature = new GeometryFeature() { Geometry = lineString };
+      feature.Styles.Add(new VectorStyle
+      {
+        Line = new Mapsui.Styles.Pen(Mapsui.Styles.Color.Blue, width: 0.5)
+      });
+      return feature;
+    }
+
+    private IFeature CreateLineForFlightTakeOff(LoggedFlight flight)
+    {
+      var tko = flight.TakeOff;
+      var pointFrom = SphericalMercator.FromLonLat(tko.RunStartLocation.Longitude, tko.RunStartLocation.Latitude);
+      var pointTo = SphericalMercator.FromLonLat(tko.AirborneLocation.Longitude, tko.AirborneLocation.Latitude);
+
+      var lineString = new LineString([pointFrom, pointTo]);
+
+      var feature = new GeometryFeature() { Geometry = lineString };
+      feature.Styles.Add(new VectorStyle
+      {
+        Line = new Mapsui.Styles.Pen(Mapsui.Styles.Color.Green, width: 0.5)
+      });
+      return feature;
+    }
+
+    private IFeature CreatePinForFlightLanding(LoggedFlight flight)
     {
       var point = SphericalMercator.FromLonLat(flight.LandingLocation.Longitude, flight.LandingLocation.Latitude);
       var feature = new PointFeature(point);
       feature.Styles.Add(new SymbolStyle
       {
-        SymbolScale = 0.5,
-        Fill = new Mapsui.Styles.Brush(Mapsui.Styles.Color.Red),
+        SymbolScale = 0.25,
+        Fill = new Mapsui.Styles.Brush(Mapsui.Styles.Color.Blue),
+        SymbolType = SymbolType.Ellipse,
+      });
+      return feature;
+    }
+
+    private IFeature CreatePinForFlightTakeOff(LoggedFlight flight)
+    {
+      var point = SphericalMercator.FromLonLat(flight.TakeOff.RunStartLocation.Longitude, flight.TakeOff.RunStartLocation.Latitude);
+      var feature = new PointFeature(point);
+      feature.Styles.Add(new SymbolStyle
+      {
+        SymbolScale = 0.25,
+        Fill = new Mapsui.Styles.Brush(Mapsui.Styles.Color.Green),
         SymbolType = SymbolType.Ellipse,
       });
       return feature;
