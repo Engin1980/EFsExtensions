@@ -23,8 +23,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.LogModel
 
     static LogStats()
     {
-      DescriptiveLogStats.Add(new("Flight Time", q => q.AirTime.Ticks, ValueStringFormatter: q => new TimeSpan((long)q).ToString(@"h\:mm\:ss")));
-      DescriptiveLogStats.Add(new("Block Time", q => q.BlockTime.Ticks, ValueStringFormatter: q => new TimeSpan((long)q).ToString(@"h\:mm\:ss")));
+      DescriptiveLogStats.Add(new("Flight Time", q => q.AirTime.TotalHours, ValueStringFormatter: q => TimeSpan.FromHours(q).ToString(@"h\:mm\:ss")));
+      DescriptiveLogStats.Add(new("Block Time", q => q.BlockTime.TotalHours, ValueStringFormatter: q => TimeSpan.FromHours(q).ToString(@"h\:mm\:ss")));
       DescriptiveLogStats.Add(new("Air Time Ratio", q => q.AirTime.TotalSeconds / q.BlockTime.TotalSeconds, "{0:P1}"));
 
       DescriptiveLogStats.Add(new("Distance",

@@ -1,0 +1,39 @@
+﻿<Window x:Class="Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.Stats.DescriptiveStats.DescriptiveStatsHistogram"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Eng.EFsExtensions.Modules.FlightLogModule.Controls.FlightLog.Stats.DescriptiveStats"
+        mc:Ignorable="d"
+        xmlns:oxy="http://oxyplot.org/wpf"
+        Title="DescriptiveStatsHistogram" Height="450" Width="800">
+  <TabControl>
+    <TabItem Header="Histogram">
+      <DockPanel>
+        <GroupBox DockPanel.Dock="Top" Header="Options:">
+          <DockPanel >
+            <TextBlock Text="Bins:" DockPanel.Dock="Left" />
+            <Slider Minimum="3" Maximum="30" Value="{Binding NumberHistogramOfBins}" />
+          </DockPanel>
+        </GroupBox>
+        <oxy:PlotView x:Name="pltHistogram" />
+      </DockPanel>
+    </TabItem>
+    <TabItem Header="Scatter Plot">
+      <oxy:PlotView x:Name="pltScatterPlot" />
+    </TabItem>
+    <TabItem Header="Data View">
+      <DataGrid ItemsSource="{Binding Data}" AutoGenerateColumns="False">
+        <DataGrid.Columns>
+          <DataGridTextColumn Header="#" Binding="{Binding Index}" />
+          <DataGridTextColumn Header="Callsign" Binding="{Binding Callsign}" />
+          <DataGridTextColumn Header="Registration" Binding="{Binding Registration}" />
+          <DataGridTextColumn Header="From" Binding="{Binding From}" />
+          <DataGridTextColumn Header="To" Binding="{Binding To}" />
+          <DataGridTextColumn Header="Date" Binding="{Binding Date, StringFormat=yyyy-MM-dd HH:mm}" />
+          <DataGridTextColumn Header="Value" Binding="{Binding Value, StringFormat=N2}" />
+        </DataGrid.Columns>
+      </DataGrid>
+    </TabItem>
+  </TabControl>
+</Window>

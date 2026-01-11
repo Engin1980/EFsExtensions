@@ -50,6 +50,17 @@
           </DataTemplate>
         </DataGridTemplateColumn.CellTemplate>
       </DataGridTemplateColumn>
+      <DataGridTemplateColumn>
+        <DataGridTemplateColumn.CellTemplate>
+          <DataTemplate>
+            <StackPanel Orientation="Horizontal">
+              <Button x:Name="btnShowCharts" Tag="{Binding}" Click="btnShowCharts_Click">
+                <Label Content="(...)" />
+              </Button>
+            </StackPanel>
+          </DataTemplate>
+        </DataGridTemplateColumn.CellTemplate>
+      </DataGridTemplateColumn>
     </DataGrid.Columns>
   </DataGrid>
 </UserControl>
