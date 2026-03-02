@@ -158,7 +158,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
         isActivated = prob <= incident.Trigger.Trigger.Probability;
         logger.Log(LogLevel.INFO, 
           $"Incident '{incident.IncidentDefinition.Title}' is evaluated by trigger as {(isActivated ? "activated" : "not activated")}, " +
-          $"random value is {prob}, required probability is {incident.Trigger.Trigger.Probability}");
+          $"random value is {prob}, required probability is {incident.Trigger.Trigger.Probability.ToDouble()} (range 0-1)"); //TODO after check prob value revert to percent view
       }
       else
         isActivated = false;
@@ -284,10 +284,7 @@ namespace Eng.EFsExtensions.Modules.FailuresModule
     internal void FireFail(FailId f)
     {
       FailureDefinition fd = this.FailureDefinitions.First(q => q.Id == f.Id);
-      List<FailureDefinition> fds = new()
-      {
-        fd
-      };
+      List<FailureDefinition> fds = [fd];
       StartFailures(fds);
     }
 
