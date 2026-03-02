@@ -10,9 +10,11 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.Eventing.Reader;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -67,6 +69,11 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public InitContext(Settings settings, Action<bool> onReadyChange)
     {
+      string xmlContent = System.IO.File.ReadAllText(@"C:\Users\marek\Desktop\netshare\invalid-simbrief.xml");
+      using StringReader stringReader = new(xmlContent);
+      XmlSerializer serializer = new(typeof(OfpData));
+
+
       this.onReadyChange = onReadyChange;
       this.settings = settings;
       this.Profiles = new();

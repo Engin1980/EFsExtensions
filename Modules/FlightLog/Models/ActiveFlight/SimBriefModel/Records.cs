@@ -300,6 +300,6 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models.ActiveFlight.SimBrief
     public string Taf { get; set; } = null!;
 
     [XmlElement("taf_time")]
-    public DateTime TafTime { get; set; }
+    public DateTime? TafTime { get; set; }
   }
 }
