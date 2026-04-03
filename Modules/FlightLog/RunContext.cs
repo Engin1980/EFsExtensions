@@ -38,6 +38,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     private readonly NewSimObject simObj;
     private readonly Logger logger;
     private readonly Profile selectedProfile;
+    private readonly System.Timers.Timer connectTimer = new(1000);
 
     public RunContext(InitContext initContext, Settings settings)
     {
@@ -58,7 +59,19 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
       this.LoggedFlights = ProfileManager.GetProfileFlights(initContext.SelectedProfile);
 
-      this.simObj.ExtOpen.OpenInBackground(() => this.simPropValues = new SimPropValues(this.simObj));
+      this.connectTimer.Elapsed += ConnectTimer_Elapsed;
+      this.simObj.ExtOpen.OpenInBackground();
+    }
+
+    private void ConnectTimer_Elapsed(object? sender, System.Timers.ElapsedEventArgs e)
+    {
+      if (this.simObj.ExtOpen.IsOpened)
+      {
+        this.simPropValues = new SimPropValues(this.simObj);
+        this.connectTimer.Stop();
+        //TODO add to runlog here
+        logger.Log(LogLevel.INFO, "Connected to sim.");
+      }
     }
 
     public ActiveFlightViewModel RunVM
