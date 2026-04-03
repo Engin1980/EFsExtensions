@@ -23,6 +23,7 @@ using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
 using ESystem.Structs;
 using System.Windows.Controls;
+using System.Collections.ObjectModel;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -38,6 +39,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     private readonly NewSimObject simObj;
     private readonly Logger logger;
     private readonly Profile selectedProfile;
+    private readonly SemaphoreSlim simbriefAndVatsimUpdateMonitor = new(1);
 
     public RunContext(InitContext initContext, Settings settings)
     {
@@ -342,6 +344,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     private void ProcessWaitForLanding()
     {
+      this.logger.Log(LogLevel.DEBUG, "Checking for landing...");
       if (this.simPropValues.IsFlying)
       {
         if (this.landingDetector == null && this.simPropValues.Height < 400) //TODO remove magic numbers
@@ -362,23 +365,36 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       this.RunVM.LandingCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude, this.RunVM.NumberOfGoArounds);
       this.RunVM.State = ActiveFlightViewModel.RunModelState.LandedWaitingForShutdown;
+      this.RunVM.LocalLog.Add($"Landing detected at {DateTime.Now:T}; current state {RunVM.State}");  
+
+      this.logger.Log(LogLevel.INFO, "Landing detected; current state " + RunVM.State);
     }
 
     private void ProcessWaitForTakeOff()
     {
+      this.logger.Log(LogLevel.DEBUG, "Checking for takeoff...");
       if (!this.simPropValues.IsFlying) return;
+
+      this.logger.Log(LogLevel.INFO, "Takeoff detected.");
+      this.RunVM.LocalLog.Add($"Takeoff detected at {DateTime.Now:T}");
 
       this.RunVM.TakeOffCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
       UpdateSimbriefAndVatsimIfRequiredAsync();
 
       this.RunVM.State = ActiveFlightViewModel.RunModelState.InFlightWaitingForLanding;
+      this.RunVM.LocalLog.Add($"Takeoff handling started at {DateTime.Now:T}; current state {RunVM.State}");
+
+      this.logger.Log(LogLevel.INFO, "Takeoff handling completed; current state " + RunVM.State);
     }
 
     private void ProcessWaitForOffBlocks()
     {
+      logger.Log(LogLevel.DEBUG, "Checking for offblocks...");
       if (this.simPropValues.SmartParkingBrakeSet) return;
 
+      RunVM.LocalLog.Add($"Offblocks detected at {DateTime.Now:T}");
+      logger.Log(LogLevel.INFO, "Offblocks detected.");
       if (RunVM.State == ActiveFlightViewModel.RunModelState.WaitingForStartupAfterShutdown)
         this.RunVM.Clear();
 
@@ -401,6 +417,8 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       };
       this.takeoffDetector.InitAndStart();
       RunVM.State = ActiveFlightViewModel.RunModelState.StartedWaitingForTakeOff;
+      RunVM.LocalLog.Add($"Offblocks handling started at {DateTime.Now:T}; current state {RunVM.State}");
+      logger.Log(LogLevel.INFO, "Offblocks handling completed.");
     }
 
     private void ProcessLandedWaitingForShutdown()
@@ -449,6 +467,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     private void UpdateSimbriefAndVatsimIfRequired()
     {
+      bool acquired = simbriefAndVatsimUpdateMonitor.Wait(0);
+      if (!acquired) return;
+
       if (this.RunVM.VatsimCache == null && this.settings.VatsimId != null)
         try
         {
@@ -469,6 +490,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         {
           logger.Log(LogLevel.ERROR, "SimBrief flight plan download failed. " + ex.Message);
         }
+      simbriefAndVatsimUpdateMonitor.Release();
     }
 
     internal void Start()
