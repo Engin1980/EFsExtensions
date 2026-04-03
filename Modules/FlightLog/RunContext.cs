@@ -349,23 +349,32 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       {
         if (this.landingDetector == null && this.simPropValues.Height < 400) //TODO remove magic numbers
         {
+          this.logger.Log(LogLevel.INFO, "Landing detected (ground contact). Starting landing detection.");
+          this.RunVM.LocalLog.Add($"Landing detected (ground contact) at {DateTime.Now:T}; starting landing detection; current state {RunVM.State}");
           this.landingDetector = new(this.simObj, this.RunVM);
           this.landingDetector.AttemptRecorded += r => this.RunVM.LandingAttempts.Add(r);
           this.landingDetector.InitAndStart();
         }
         else if (this.landingDetector != null && this.simPropValues.Height > 500)
         {
+          this.logger.Log(LogLevel.INFO, "GoAround detected after landing. Stopping landing detection.");
           this.landingDetector.Stop();
           this.landingDetector = null;
           this.RunVM.NumberOfGoArounds++;
+          this.RunVM.LocalLog.Add($"GoAround detected after landing at {DateTime.Now:T}; stopping landing detection; current state {RunVM.State}, goArounds {this.RunVM.NumberOfGoArounds}");
         }
-        return;
+        else
+          // if no landing-state-change is required
+          return;
       }
 
+      this.logger.Log(LogLevel.DEBUG, "Completed Landing detected.");
+
+      // here is a quite assumption that the plane was flying before, or the state will not get me here
       this.RunVM.LandingCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude, this.RunVM.NumberOfGoArounds);
       this.RunVM.State = ActiveFlightViewModel.RunModelState.LandedWaitingForShutdown;
-      this.RunVM.LocalLog.Add($"Landing detected at {DateTime.Now:T}; current state {RunVM.State}");  
+      this.RunVM.LocalLog.Add($"Landing detected at {DateTime.Now:T}; current state {RunVM.State}");
 
       this.logger.Log(LogLevel.INFO, "Landing detected; current state " + RunVM.State);
     }
@@ -423,39 +432,48 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     private void ProcessLandedWaitingForShutdown()
     {
+      this.logger.Log(LogLevel.DEBUG, "Checking for shutdown...");
       if (!this.simPropValues.SmartParkingBrakeSet) return;
       if (this.simPropValues.IsAnyEngineRunning) return;
       if (this.simPropValues.IsFlying)
       {
         // got airborne after landing
+        this.logger.Log(LogLevel.INFO, "Airborne detected after landing (STRANGE?!). Changing state to InFlightWaitingForLanding.");
         this.RunVM.State = ActiveFlightViewModel.RunModelState.InFlightWaitingForLanding;
+        this.RunVM.LocalLog.Add($"Airborne detected after landing at {DateTime.Now:T} (STRANGE?!); current state {RunVM.State}");
         return;
       }
 
       if (this.landingDetector != null)
       {
+        this.logger.Log(LogLevel.DEBUG, "Stopping landing detector...");
         this.landingDetector.Stop();
         this.landingDetector = null;
       }
 
+      this.logger.Log(LogLevel.DEBUG, "Setting up final shutdown info");
       this.RunVM.ShutDownCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.Latitude, this.simPropValues.Longitude);
       LoggedFlight logFlight = GenerateLogFlight(this.RunVM);
 
       try
       {
+        logger.Log(LogLevel.DEBUG, "Creating logged flight...");
         ProfileManager.CreateFlight(logFlight, selectedProfile);
         logger.Log(LogLevel.INFO, $"Flight {logFlight.DepartureICAO}-{logFlight.DestinationICAO} saved.");
       }
       catch (Exception ex)
       {
         logger.Log(LogLevel.ERROR, "Failed to save flight. " + ex.Message);
+        this.RunVM.LocalLog.Add($"Failed to save flight: {ex.Message}");
       }
 
       this.LoggedFlights = ProfileManager.GetProfileFlights(this.selectedProfile);
       this.RunVM.Clear();
 
       this.RunVM.State = ActiveFlightViewModel.RunModelState.WaitingForStartupForTheFirstTime;
+
+      this.logger.Log(LogLevel.INFO, "Shutdown detected; current state " + RunVM.State);
     }
 
     private Task UpdateSimbriefAndVatsimIfRequiredAsync()
