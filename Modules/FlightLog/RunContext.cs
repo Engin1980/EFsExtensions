@@ -23,6 +23,7 @@ using Eng.EFsExtensions.EFsExtensionsModuleBase;
 using Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.Globals;
 using ESystem.Structs;
 using System.Windows.Controls;
+using System.Collections.ObjectModel;
 
 namespace Eng.EFsExtensions.Modules.FlightLogModule
 {
@@ -39,6 +40,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
     private readonly Logger logger;
     private readonly Profile selectedProfile;
     private readonly System.Timers.Timer connectTimer = new(1000);
+    private readonly SemaphoreSlim simbriefAndVatsimUpdateMonitor = new(1);
 
     public RunContext(InitContext initContext, Settings settings)
     {
@@ -355,43 +357,66 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     private void ProcessWaitForLanding()
     {
+      this.logger.Log(LogLevel.DEBUG, "Checking for landing...");
       if (this.simPropValues.IsFlying)
       {
         if (this.landingDetector == null && this.simPropValues.Height < 400) //TODO remove magic numbers
         {
+          this.logger.Log(LogLevel.INFO, "Landing detected (ground contact). Starting landing detection.");
+          this.RunVM.LocalLog.Add($"Landing detected (ground contact) at {DateTime.Now:T}; starting landing detection; current state {RunVM.State}");
           this.landingDetector = new(this.simObj, this.RunVM);
           this.landingDetector.AttemptRecorded += r => this.RunVM.LandingAttempts.Add(r);
           this.landingDetector.InitAndStart();
         }
         else if (this.landingDetector != null && this.simPropValues.Height > 500)
         {
+          this.logger.Log(LogLevel.INFO, "GoAround detected after landing. Stopping landing detection.");
           this.landingDetector.Stop();
           this.landingDetector = null;
           this.RunVM.NumberOfGoArounds++;
+          this.RunVM.LocalLog.Add($"GoAround detected after landing at {DateTime.Now:T}; stopping landing detection; current state {RunVM.State}, goArounds {this.RunVM.NumberOfGoArounds}");
         }
-        return;
+        else
+          // if no landing-state-change is required
+          return;
       }
 
+      this.logger.Log(LogLevel.DEBUG, "Completed Landing detected.");
+
+      // here is a quite assumption that the plane was flying before, or the state will not get me here
       this.RunVM.LandingCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude, this.RunVM.NumberOfGoArounds);
       this.RunVM.State = ActiveFlightViewModel.RunModelState.LandedWaitingForShutdown;
+      this.RunVM.LocalLog.Add($"Landing detected at {DateTime.Now:T}; current state {RunVM.State}");
+
+      this.logger.Log(LogLevel.INFO, "Landing detected; current state " + RunVM.State);
     }
 
     private void ProcessWaitForTakeOff()
     {
+      this.logger.Log(LogLevel.DEBUG, "Checking for takeoff...");
       if (!this.simPropValues.IsFlying) return;
+
+      this.logger.Log(LogLevel.INFO, "Takeoff detected.");
+      this.RunVM.LocalLog.Add($"Takeoff detected at {DateTime.Now:T}");
 
       this.RunVM.TakeOffCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude);
       UpdateSimbriefAndVatsimIfRequiredAsync();
 
       this.RunVM.State = ActiveFlightViewModel.RunModelState.InFlightWaitingForLanding;
+      this.RunVM.LocalLog.Add($"Takeoff handling started at {DateTime.Now:T}; current state {RunVM.State}");
+
+      this.logger.Log(LogLevel.INFO, "Takeoff handling completed; current state " + RunVM.State);
     }
 
     private void ProcessWaitForOffBlocks()
     {
+      logger.Log(LogLevel.DEBUG, "Checking for offblocks...");
       if (this.simPropValues.SmartParkingBrakeSet) return;
 
+      RunVM.LocalLog.Add($"Offblocks detected at {DateTime.Now:T}");
+      logger.Log(LogLevel.INFO, "Offblocks detected.");
       if (RunVM.State == ActiveFlightViewModel.RunModelState.WaitingForStartupAfterShutdown)
         this.RunVM.Clear();
 
@@ -414,43 +439,54 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       };
       this.takeoffDetector.InitAndStart();
       RunVM.State = ActiveFlightViewModel.RunModelState.StartedWaitingForTakeOff;
+      RunVM.LocalLog.Add($"Offblocks handling started at {DateTime.Now:T}; current state {RunVM.State}");
+      logger.Log(LogLevel.INFO, "Offblocks handling completed.");
     }
 
     private void ProcessLandedWaitingForShutdown()
     {
+      this.logger.Log(LogLevel.DEBUG, "Checking for shutdown...");
       if (!this.simPropValues.SmartParkingBrakeSet) return;
       if (this.simPropValues.IsAnyEngineRunning) return;
       if (this.simPropValues.IsFlying)
       {
         // got airborne after landing
+        this.logger.Log(LogLevel.INFO, "Airborne detected after landing (STRANGE?!). Changing state to InFlightWaitingForLanding.");
         this.RunVM.State = ActiveFlightViewModel.RunModelState.InFlightWaitingForLanding;
+        this.RunVM.LocalLog.Add($"Airborne detected after landing at {DateTime.Now:T} (STRANGE?!); current state {RunVM.State}");
         return;
       }
 
       if (this.landingDetector != null)
       {
+        this.logger.Log(LogLevel.DEBUG, "Stopping landing detector...");
         this.landingDetector.Stop();
         this.landingDetector = null;
       }
 
+      this.logger.Log(LogLevel.DEBUG, "Setting up final shutdown info");
       this.RunVM.ShutDownCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
         this.simPropValues.Latitude, this.simPropValues.Longitude);
       LoggedFlight logFlight = GenerateLogFlight(this.RunVM);
 
       try
       {
+        logger.Log(LogLevel.DEBUG, "Creating logged flight...");
         ProfileManager.CreateFlight(logFlight, selectedProfile);
         logger.Log(LogLevel.INFO, $"Flight {logFlight.DepartureICAO}-{logFlight.DestinationICAO} saved.");
       }
       catch (Exception ex)
       {
         logger.Log(LogLevel.ERROR, "Failed to save flight. " + ex.Message);
+        this.RunVM.LocalLog.Add($"Failed to save flight: {ex.Message}");
       }
 
       this.LoggedFlights = ProfileManager.GetProfileFlights(this.selectedProfile);
       this.RunVM.Clear();
 
       this.RunVM.State = ActiveFlightViewModel.RunModelState.WaitingForStartupForTheFirstTime;
+
+      this.logger.Log(LogLevel.INFO, "Shutdown detected; current state " + RunVM.State);
     }
 
     private Task UpdateSimbriefAndVatsimIfRequiredAsync()
@@ -462,6 +498,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     private void UpdateSimbriefAndVatsimIfRequired()
     {
+      bool acquired = simbriefAndVatsimUpdateMonitor.Wait(0);
+      if (!acquired) return;
+
       if (this.RunVM.VatsimCache == null && this.settings.VatsimId != null)
         try
         {
@@ -482,6 +521,7 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
         {
           logger.Log(LogLevel.ERROR, "SimBrief flight plan download failed. " + ex.Message);
         }
+      simbriefAndVatsimUpdateMonitor.Release();
     }
 
     internal void Start()

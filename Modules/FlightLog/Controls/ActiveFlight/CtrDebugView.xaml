@@ -20,5 +20,9 @@
     <TabItem Header="Block-on" >
       <debug:CtrShutDownView />
     </TabItem>
+    <TabItem Header="Log">
+      <ListView ItemsSource="{Binding RunVM.LocalLog}">
+      </ListView>
+    </TabItem>
   </TabControl>
 </UserControl>

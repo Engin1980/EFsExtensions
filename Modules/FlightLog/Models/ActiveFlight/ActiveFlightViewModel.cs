@@ -4,6 +4,7 @@ using Eng.EFsExtensions.Modules.FlightLogModule.Models.Profiling;
 using ESystem.Miscelaneous;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -100,12 +101,13 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule.Models
       set => UpdateProperty(nameof(LastLoggedFlight), value);
     }
 
-
     public int NumberOfGoArounds
     {
       get => base.GetProperty<int>(nameof(NumberOfGoArounds))!;
       set => base.UpdateProperty(nameof(NumberOfGoArounds), value);
     }
+
+    public ObservableCollection<string> LocalLog { get; } = [];
 
     public ActiveFlightViewModel()
     {
