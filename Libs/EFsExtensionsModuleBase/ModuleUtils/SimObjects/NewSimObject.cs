@@ -61,12 +61,6 @@ namespace Eng.EFsExtensions.EFsExtensionsModuleBase.ModuleUtils.SimObjects
     public bool IsSimPaused => this.extTime.IsSimPaused;
     public bool IsOpened => this.extOpen.IsOpened;
 
-    [Obsolete("Used ..ExtOpen.StartInBackground() instead.")]
-    public void StartInBackground(Action? onStarted = null)
-    {
-      this.extOpen.OpenInBackground(onStarted);
-    }
-
     public void RegisterProperties(IEnumerable<SimProperty> simProperties)
     {
       EAssert.Argument.IsNotNull(simProperties, nameof(simProperties));

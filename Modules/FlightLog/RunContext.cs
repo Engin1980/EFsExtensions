@@ -366,34 +366,33 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
       {
         if (this.landingDetector == null && this.simPropValues.Height < 400) //TODO remove magic numbers
         {
-          this.logger.Log(LogLevel.INFO, "Landing detected (ground contact). Starting landing detection.");
-          this.RunVM.LocalLog.Add($"Landing detected (ground contact) at {DateTime.Now:T}; starting landing detection; current state {RunVM.State}");
+          this.logger.Log(LogLevel.INFO, "Landing expected. Starting landing detection.");
+          this.RunVM.LocalLog.Add($"Landing expected - close to ground at {DateTime.Now:T}; starting landing detection; current state {RunVM.State}");
           this.landingDetector = new(this.simObj, this.RunVM);
           this.landingDetector.AttemptRecorded += r => this.RunVM.LandingAttempts.Add(r);
           this.landingDetector.InitAndStart();
         }
         else if (this.landingDetector != null && this.simPropValues.Height > 500)
         {
-          this.logger.Log(LogLevel.INFO, "GoAround detected after landing. Stopping landing detection.");
+          this.logger.Log(LogLevel.INFO, "Too high (probably GoAround after landing). Stopping landing detection.");
           this.landingDetector.Stop();
           this.landingDetector = null;
           this.RunVM.NumberOfGoArounds++;
-          this.RunVM.LocalLog.Add($"GoAround detected after landing at {DateTime.Now:T}; stopping landing detection; current state {RunVM.State}, goArounds {this.RunVM.NumberOfGoArounds}");
+          this.RunVM.LocalLog.Add($"Too high (probably GoAround detected after landing) at {DateTime.Now:T}; stopping landing detection; current state {RunVM.State}, goArounds {this.RunVM.NumberOfGoArounds}");
         }
-        else
-          // if no landing-state-change is required
-          return;
       }
+      else
+      {
+        this.logger.Log(LogLevel.DEBUG, "Completed Landing detected.");
 
-      this.logger.Log(LogLevel.DEBUG, "Completed Landing detected.");
+        // here is a quite assumption that the plane was flying before, or the state will not get me here
+        this.RunVM.LandingCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
+          this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude, this.RunVM.NumberOfGoArounds);
+        this.RunVM.State = ActiveFlightViewModel.RunModelState.LandedWaitingForShutdown;
+        this.RunVM.LocalLog.Add($"Landing detected at {DateTime.Now:T}; current state {RunVM.State}");
 
-      // here is a quite assumption that the plane was flying before, or the state will not get me here
-      this.RunVM.LandingCache = new(DateTime.UtcNow, (int)(this.simPropValues.TotalFuelLtrs * FUEL_LITRES_TO_KG),
-        this.simPropValues.IAS, this.simPropValues.Latitude, this.simPropValues.Longitude, this.RunVM.NumberOfGoArounds);
-      this.RunVM.State = ActiveFlightViewModel.RunModelState.LandedWaitingForShutdown;
-      this.RunVM.LocalLog.Add($"Landing detected at {DateTime.Now:T}; current state {RunVM.State}");
-
-      this.logger.Log(LogLevel.INFO, "Landing detected; current state " + RunVM.State);
+        this.logger.Log(LogLevel.INFO, "Landing completed detected; current state " + RunVM.State);
+      }
     }
 
     private void ProcessWaitForTakeOff()

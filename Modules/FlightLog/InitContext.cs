@@ -69,9 +69,9 @@ namespace Eng.EFsExtensions.Modules.FlightLogModule
 
     public InitContext(Settings settings, Action<bool> onReadyChange)
     {
-      string xmlContent = System.IO.File.ReadAllText(@"C:\Users\marek\Desktop\netshare\invalid-simbrief.xml");
-      using StringReader stringReader = new(xmlContent);
-      XmlSerializer serializer = new(typeof(OfpData));
+      //string xmlContent = System.IO.File.ReadAllText(@"C:\Users\marek\Desktop\netshare\invalid-simbrief.xml");
+      //using StringReader stringReader = new(xmlContent);
+      //XmlSerializer serializer = new(typeof(OfpData));
 
 
       this.onReadyChange = onReadyChange;
